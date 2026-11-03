@@ -42,3 +42,13 @@ Source: https://github.com/SmileycorpMC/tf2-stuff-reloaded (LGPL-2.1), plus asse
 - `remap.py` first rename pass, `fix2.py`/`fix3.py` later passes, `addimports.py` adds shim imports.
 - `ci.sh` pushes, waits for GitHub Actions and summarises errors per file; `errs.sh <file>` lists one file's errors.
 - `convert_assets.py` regenerates `src/main/resources/assets` and `data` from the 1.12 jar's assets.
+
+## Test build status (2026-11-03)
+
+- Compiles cleanly; CI smoke test boots a dedicated server (world generated) and a client (title screen).
+- Every push to `main` publishes the jar as the `test-build` prerelease.
+- Not yet in this build: arena/map tooling (game configure, capture points, overhead doors, robot deploy, resupply
+  cabinet, door controller, configurator), electric ammo furnace, ore world generation. Their code is parked in
+  `disabled-src/`.
+- Known rough edges: ammo furnace never burns (same as original), two potion icons missing, some world/HUD
+  rendering paths are untested in-game.
