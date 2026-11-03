@@ -58,4 +58,25 @@ public class ClientHandler {
 				() -> Minecraft.getInstance().setScreen(new GuiTeamSelect(teams, counts, allowed)));
 	}
 
+
+	private static final java.util.HashMap<Integer, net.minecraft.client.resources.sounds.SoundInstance> NETWORKED_SOUNDS = new java.util.HashMap<>();
+
+	public static void playNetworkedSound(rafradek.TF2weapons.message.TF2Message.NetworkedSoundMessage message) {
+		net.minecraft.client.resources.sounds.SoundInstance old = NETWORKED_SOUNDS.remove(message.id);
+		if (old != null)
+			Minecraft.getInstance().getSoundManager().stop(old);
+		rafradek.TF2weapons.client.audio.NetworkedSound sound;
+		if (message.pos != null)
+			sound = new rafradek.TF2weapons.client.audio.NetworkedSound(message.pos, message.event, message.category,
+					message.volume, message.pitch, message.id, message.repeat);
+		else {
+			net.minecraft.world.entity.Entity entity = Minecraft.getInstance().level.getEntity(message.target);
+			if (entity == null)
+				return;
+			sound = new rafradek.TF2weapons.client.audio.NetworkedSound(entity, message.event, message.category,
+					message.volume, message.pitch, message.id, message.repeat);
+		}
+		NETWORKED_SOUNDS.put(message.id, sound);
+		Minecraft.getInstance().getSoundManager().play(sound);
+	}
 }
