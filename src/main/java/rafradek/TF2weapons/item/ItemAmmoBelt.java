@@ -42,15 +42,19 @@ public class ItemAmmoBelt extends LegacyItem {
 			super(9);
 		}
 
-		@Override
-		public boolean hasCapability(Capability<?> capability, Direction facing) {
+		public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 		}
 
 		@Override
-		public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this);
+				return (T) (Object) this;
 			return null;
 		}
 

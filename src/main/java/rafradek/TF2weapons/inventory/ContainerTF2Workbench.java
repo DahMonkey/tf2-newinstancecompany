@@ -98,16 +98,16 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 		}
 		if (!stack.isEmpty() && stack.getItem() instanceof ItemBuildingBox) {
 			if (stack.getDamageValue() / 2 == 11) {
-				ItemStack wrench = TF2Util.getFirstItem(player.inventory,
+				ItemStack wrench = TF2Util.getFirstItem(player.getInventory(),
 						stackL -> TF2Attribute.getModifier("Teleporter Cost", stackL, 1, player) != 1);
 				if (!wrench.isEmpty()) {
 					stack.setCount((int) TF2Attribute.getModifier("Teleporter Cost", wrench, 1, player));
 				}
 			} else if (stack.getDamageValue() / 2 == 9) {
-				ItemStack gunslinger = TF2Util.getFirstItem(player.inventory,
+				ItemStack gunslinger = TF2Util.getFirstItem(player.getInventory(),
 						stackL -> stackL.getItem() instanceof ItemWrench
 								&& TF2Attribute.getModifier("Weapon Mode", stackL, 0, player) == 2);
-				ItemStack bonusSentry = TF2Util.getFirstItem(player.inventory,
+				ItemStack bonusSentry = TF2Util.getFirstItem(player.getInventory(),
 						stackL -> TF2Attribute.getModifier("Sentry Bonus", stackL, 1, player) != 1);
 				if (!gunslinger.isEmpty()) {
 					stack.setTag(new CompoundTag());
@@ -135,7 +135,7 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 				ItemStack itemstack = this.craftMatrix.removeStackFromSlot(i);
 
 				if (!itemstack.isEmpty())
-					player.dropItem(itemstack, false);
+					player.drop(itemstack, false);
 			}
 	}
 

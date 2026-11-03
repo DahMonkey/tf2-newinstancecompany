@@ -177,14 +177,18 @@ public class ItemFireAmmo extends ItemAmmo {
 			return this.stack;
 		}
 
-		@Override
-		public boolean hasCapability(Capability<?> capability, Direction facing) {
+		public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 			return capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 			return capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY ? (T) this : null;
 		}
 

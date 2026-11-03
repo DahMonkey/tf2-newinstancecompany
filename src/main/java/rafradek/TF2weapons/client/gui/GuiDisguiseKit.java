@@ -65,7 +65,7 @@ public class GuiDisguiseKit extends Screen {
 		playerNameField.setMaxStringLength(64);
 		playerNameField.setFocused(true);
 		buttonList.clear();
-		for (int i = 0; i < 16; i++) buttonList.add(new Button(i, this.getBbWidth() / 2 - 135 + (i % 2) * 70, this.getBbHeight() / 2 - 60 + i / 2 * 20,
+		for (int i = 0; i < 16; i++) buttonList.add(new Button(i, this.width / 2 - 135 + (i % 2) * 70, this.height / 2 - 60 + i / 2 * 20,
 					70, 20, I18n.get(EntityList.getTranslationName(EntityList.getKey(Zombie.class)), new Object[0])));
 		buttonList.add(playerDisguise = new Button(30, width / 2 + 25, height / 2 + 80, 110, 20, "Player"));
 		setButtons();

@@ -41,8 +41,8 @@ public class EntityOutputManager {
 		for (String key : outputs.keySet()) {
 			ListTag list = new ListTag();
 			for (Tuple<BlockPos, Integer> pos : outputs.get(key)) {
-				list.add(new IntArrayTag(new int[] { pos.getFirst().getX(), pos.getFirst().getY(),
-						pos.getFirst().getZ(), pos.getSecond() }));
+				list.add(new IntArrayTag(new int[] { pos.getA().getX(), pos.getA().getY(),
+						pos.getA().getZ(), pos.getB() }));
 			}
 			tag.put(key, list);
 		}
@@ -65,7 +65,7 @@ public class EntityOutputManager {
 	public void activateOutput(String output, float power, int minTime) {
 		TF2weapons.LOGGER.info("activated " + output);
 		for (Tuple<BlockPos, Integer> tup : outputs.get(output)) {
-			BlockPos pos = tup.getFirst();
+			BlockPos pos = tup.getA();
 			BlockState state = world.getBlockState(pos);
 			if (state.getBlock() instanceof BlockButton) {
 				world.setBlock(pos, state.setValue(BlockButton.POWERED, Boolean.valueOf(true)), 3);
@@ -73,9 +73,9 @@ public class EntityOutputManager {
 				world.notifyNeighborsOfStateChange(pos.move(state.getValue(BlockDirectional.FACING).getOpposite()),
 						state.getBlock(), false);
 				world.scheduleUpdate(pos, state.getBlock(),
-						(int) (state.getBlock().tickRate(world) * power * 15f / tup.getSecond()));
+						(int) (state.getBlock().tickRate(world) * power * 15f / tup.getB()));
 			} else if (state.getBlock() instanceof BlockLever) {
-				state = state.setValue(BlockLever.POWERED, tup.getSecond() != 0);
+				state = state.setValue(BlockLever.POWERED, tup.getB() != 0);
 				Direction enumfacing = state.getValue(BlockLever.FACING).getFacing();
 				world.setBlock(pos, state, 3);
 				world.notifyNeighborsOfStateChange(pos.move(enumfacing.getOpposite()), state.getBlock(), false);
@@ -83,7 +83,7 @@ public class EntityOutputManager {
 			} else if (state.getBlock() instanceof BlockRedstoneComparator) {
 				world.setBlock(pos, state.setValue(BlockButton.POWERED, Boolean.valueOf(true)), 3);
 				if (world.getBlockEntity(pos) != null)
-					((TileEntityComparator) world.getBlockEntity(pos)).setOutputSignal((int) (tup.getSecond() * power));
+					((TileEntityComparator) world.getBlockEntity(pos)).setOutputSignal((int) (tup.getB() * power));
 
 				world.scheduleUpdate(pos, state.getBlock(), minTime);
 				world.notifyNeighborsOfStateChange(pos, state.getBlock(), false);

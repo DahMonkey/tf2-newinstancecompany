@@ -204,7 +204,7 @@ public class TF2Explosion extends Explosion {
 						// entity.getDataWatcher().updateObject(29,
 						// Byte.valueOf((byte) 1));
 					} else if (!(entity instanceof LivingEntity && ((LivingEntity) entity).getAttributes()
-							.getAttributeInstance(Attributes.KNOCKBACK_RESISTANCE)
+							.getInstance(Attributes.KNOCKBACK_RESISTANCE)
 							.getValue() >= 1)) {
 						this.getKnockbackMap().put(entity, move);
 					}

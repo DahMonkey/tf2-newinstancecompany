@@ -88,7 +88,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			if (slot == 4 && TF2PlayerCapability.get(player).calculateMaxSentries() <= 0)
 				return;
 			if (!PlayerPersistStorage.get(player).hasBuilding(slot)) {
-				int metal = EntityBuilding.getCost(slot, TF2Util.getFirstItem(player.inventory,
+				int metal = EntityBuilding.getCost(slot, TF2Util.getFirstItem(player.getInventory(),
 						stackL -> (TF2Attribute.getModifier("Teleporter Cost", stackL, 1, player) != 1)));
 
 				if (WeaponsCapability.get(player).hasMetal(metal)) {
@@ -175,7 +175,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 							"upgraderange", TF2Attribute.getModifier("Sentry Range", stack, 1f, entity) - 1f, 2), true);
 					((EntitySentry) entity).setHeat((int) TF2Attribute.getModifier("Piercing", stack, 0, player));
 					if (disposable || !TF2Util
-							.getFirstItem(player.inventory,
+							.getFirstItem(player.getInventory(),
 									stackL -> stackL.getItem() instanceof ItemWrench
 											&& TF2Attribute.getModifier("Weapon Mode", stackL, 0, player) == 2)
 							.isEmpty()) {
@@ -213,7 +213,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 				if (!player.getAbilities().instabuild && TF2PlayerCapability.get(player).carrying == null)
 					WeaponsCapability.get(player).consumeMetal(EntityBuilding.getCost(
 							stack.getTag().getByte("Building") - 1,
-							TF2Util.getFirstItem(player.inventory, stackL -> stackL.getItem() instanceof ItemWrench)),
+							TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench)),
 							false);
 			}
 
@@ -262,7 +262,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			int buildCount = TF2Attribute.getModifier("Extra Sentry", stack, 0, player) > 0 ? 5 : 4;
 			for (int i = 0; i < buildCount; i++) {
 				int cost = EntityBuilding.getCost(i,
-						TF2Util.getFirstItem(player.inventory, stackL -> stackL.getItem() instanceof ItemWrench));
+						TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
 				if (hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).getSize() != 0) {
 					gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
 							resolution.getScaledHeight() / 2, 0, 64, 64, 64);
@@ -282,7 +282,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			}
 			for (int i = 0; i < buildCount; i++) {
 				int cost = EntityBuilding.getCost(i,
-						TF2Util.getFirstItem(player.inventory, stackL -> stackL.getItem() instanceof ItemWrench));
+						TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
 				gui.drawString(gui.getFontRenderer(), Integer.toString(cost),
 						resolution.getScaledWidth() / 2 - 72
 								- gui.getFontRenderer().width(Integer.toString(cost)) + i * 72,

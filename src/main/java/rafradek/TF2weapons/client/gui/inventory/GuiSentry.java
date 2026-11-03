@@ -36,7 +36,7 @@ public class GuiSentry extends AbstractContainerScreen {
 	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/building.png");
 
 	public GuiSentry(EntitySentry sentry) {
-		super(new ContainerEnergy(sentry, Minecraft.getInstance().player.inventory));
+		super(new ContainerEnergy(sentry, Minecraft.getInstance().player.getInventory()));
 		this.sentry = sentry;
 		attackFlags = sentry.getAttackFlags();
 		imageWidth = 212;

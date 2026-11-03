@@ -136,7 +136,7 @@ public class ItemWearable extends ItemFromData {
 		if (slot == EquipmentSlot.HEAD && stack.getTag().contains("UEffect")) {
 			Tuple<String, AttributeModifier> tuple = EFFECT_MODIFIERS[stack.getTag().getByte("UEffect")
 					% EFFECT_MODIFIERS.length];
-			multimap.put(tuple.getFirst(), tuple.getSecond());
+			multimap.put(tuple.getA(), tuple.getB());
 		}
 
 		return multimap;

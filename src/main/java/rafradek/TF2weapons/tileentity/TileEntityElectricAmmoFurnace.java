@@ -175,7 +175,12 @@ public class TileEntityElectricAmmoFurnace extends TileEntityAbstractAmmoFurnace
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (capability == CapabilityEnergy.ENERGY) return (T) this;
 		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
 			if (facing == Direction.DOWN)
@@ -184,7 +189,7 @@ public class TileEntityElectricAmmoFurnace extends TileEntityAbstractAmmoFurnace
 				return (T) handlerTop;
 			else
 				return (T) handlerSide;
-		return super.getCapability(capability, facing);
+		return super.getCapability(capability, facing).orElse(null);
 	}
 	
 	@Override

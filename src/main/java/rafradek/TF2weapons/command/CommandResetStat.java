@@ -24,7 +24,7 @@ public class CommandResetStat extends CommandBase {
 			ServerPlayer entityplayermp = args.length > 0 ? getPlayer(server, sender, args[0])
 					: getCommandSenderAsPlayer(sender);
 			entityplayermp.getCapability(TF2weapons.PLAYER_CAP).orElse(null).highestBossLevel.clear();
-			LevelChunk chunk = entityplayermp.level.getChunkFromBlockCoords(entityplayermp.blockPosition());
+			LevelChunk chunk = entityplayermp.level.getChunkAt(entityplayermp.blockPosition());
 			int australium = 0;
 			for (int x = 0; x < 16; x++) {
 				for (int y = 0; y < 128; y++) {

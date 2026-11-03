@@ -87,7 +87,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		List<ServerPlayer> players = this.level.getPlayers(ServerPlayer.class,
 				player -> this.isInRange(player.blockPosition()));
 		for (ServerPlayer player : players) {
-			float killed = player.getStatFile().readStat(TF2weapons.robotsKilled);
+			float killed = player.getStats().readStat(TF2weapons.robotsKilled);
 			this.difficulty += 1f + Math.min(0.5f + diff * 0.1, killed / (500f * (diff + 1)));
 			this.onPlayerEnter(player);
 			this.lowestInvasionBeaten = Math.min(lowestInvasionBeaten,

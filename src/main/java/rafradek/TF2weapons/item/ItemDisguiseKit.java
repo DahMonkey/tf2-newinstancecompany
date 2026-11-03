@@ -57,7 +57,7 @@ public class ItemDisguiseKit extends LegacyItem implements IItemSlotNumber, IIte
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player living, InteractionHand hand) {
 		if (world.isClientSide && !TF2ConfigVars.limitedDisguise && ItemToken.allowUse(living, TF2Class.SPY)
-				&& TF2Util.getFirstItem(living.inventory,
+				&& TF2Util.getFirstItem(living.getInventory(),
 						stack -> TF2Attribute.getModifier("No Disguise Kit", stack, 0, living) != 0).isEmpty())
 			ClientProxy.showGuiDisguise();
 		return new InteractionResultHolder<>(InteractionResult.SUCCESS, living.getItemInHand(hand));
@@ -98,7 +98,7 @@ public class ItemDisguiseKit extends LegacyItem implements IItemSlotNumber, IIte
 			ScaledResolution resolution) {
 		if (ItemToken.allowUse(player, TF2Class.SPY) && TF2ConfigVars.limitedDisguise
 				&& TF2Util
-						.getFirstItem(player.inventory,
+						.getFirstItem(player.getInventory(),
 								stackl -> TF2Attribute.getModifier("No Disguise Kit", stackl, 0, player) != 0)
 						.isEmpty()) {
 			GuiComponent gui = Minecraft.getInstance().gui;
@@ -127,7 +127,7 @@ public class ItemDisguiseKit extends LegacyItem implements IItemSlotNumber, IIte
 	public void onSlotSelection(ItemStack stack, Player player, int slot) {
 		if (ItemToken.allowUse(player, TF2Class.SPY)
 				&& TF2Util
-						.getFirstItem(player.inventory,
+						.getFirstItem(player.getInventory(),
 								stackl -> TF2Attribute.getModifier("No Disguise Kit", stackl, 0, player) != 0)
 						.isEmpty()) {
 			TF2weapons.network.sendToServer(new TF2Message.DisguiseMessage("T:" + TF2Class.getClass(slot)));

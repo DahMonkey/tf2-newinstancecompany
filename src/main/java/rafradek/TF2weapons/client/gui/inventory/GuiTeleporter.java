@@ -35,7 +35,7 @@ public class GuiTeleporter extends AbstractContainerScreen {
 			"textures/gui/container/building.png");
 
 	public GuiTeleporter(EntityTeleporter teleporter) {
-		super(new ContainerEnergy(teleporter, Minecraft.getInstance().player.inventory));
+		super(new ContainerEnergy(teleporter, Minecraft.getInstance().player.getInventory()));
 		this.teleporter = teleporter;
 		exit = teleporter.isExit();
 		channel = teleporter.getID();

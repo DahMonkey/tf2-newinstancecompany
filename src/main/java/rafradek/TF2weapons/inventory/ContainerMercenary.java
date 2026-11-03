@@ -37,7 +37,7 @@ public class ContainerMercenary extends MerchantMenu {
 	public int secondaryAmmo;
 
 	public ContainerMercenary(Player player, EntityTF2Character merc, Level world) {
-		super(player.inventory, merc, world);
+		super(player.getInventory(), merc, world);
 		this.mercenary = merc;
 		if (this.mercenary.hasHeldInventory()) {
 			for (int i = 0; i < 4; i++) {

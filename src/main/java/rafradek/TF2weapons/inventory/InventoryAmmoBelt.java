@@ -24,15 +24,19 @@ public class InventoryAmmoBelt extends SimpleContainer implements ICapabilityPro
 		return true;
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		return TF2weapons.INVENTORY_BELT_CAP != null && capability == TF2weapons.INVENTORY_BELT_CAP;
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (TF2weapons.INVENTORY_BELT_CAP != null && capability == TF2weapons.INVENTORY_BELT_CAP)
-			return TF2weapons.INVENTORY_BELT_CAP.cast(this);
+			return (T) (Object) this;
 		return null;
 	}
 
@@ -59,7 +63,7 @@ public class InventoryAmmoBelt extends SimpleContainer implements ICapabilityPro
 		for (int i = 0; i < nbt.size(); ++i) {
 			CompoundTag nbttagcompound = nbt.getCompound(i);
 			int j = nbttagcompound.getByte("Slot");
-			this.setInventorySlotContents(j, new ItemStack(nbttagcompound));
+			this.setInventorySlotContents(j, ItemStack.of(nbttagcompound));
 		}
 		// System.out.println("Reading ");
 	}

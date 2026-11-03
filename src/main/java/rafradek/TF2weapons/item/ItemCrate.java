@@ -116,7 +116,7 @@ public class ItemCrate extends ItemFromData {
 				stack.getTag().putBoolean("Strange", true);
 
 			if (!player.getInventory().add(stack))
-				player.dropItem(stack, true);
+				player.drop(stack, true);
 			// player.addStat(TF2Achievements.LOOT_CRATE);
 			player.addStat(TF2weapons.cratesOpened);
 			/*

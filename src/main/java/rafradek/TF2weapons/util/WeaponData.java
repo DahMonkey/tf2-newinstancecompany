@@ -182,7 +182,7 @@ public class WeaponData implements ICapabilityProvider {
 				attributelist = MapList.buildInAttributes.get(ItemFromData.getData(stack).getName());
 				if (attributelist != null)
 					for (String name : attributelist.getAllKeys()) {
-						Tag tag = attributelist.getTag(name);
+						Tag tag = attributelist.get(name);
 						if (tag instanceof FloatTag) {
 							TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
 
@@ -202,7 +202,7 @@ public class WeaponData implements ICapabilityProvider {
 				if (stack.hasTag()) {
 					attributelist = stack.getTag().getCompound("Attributes");
 					for (String name : attributelist.getAllKeys()) {
-						Tag tag = attributelist.getTag(name);
+						Tag tag = attributelist.get(name);
 						if (tag instanceof FloatTag) {
 							TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
 
@@ -252,16 +252,20 @@ public class WeaponData implements ICapabilityProvider {
 			return (initial + valueadd) * valuemult;
 		}
 
-		@Override
-		public boolean hasCapability(Capability<?> capability, Direction facing) {
+		public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 			// System.out.println("capinit: "+TF2weapons.WEAPONS_DATA_CAP);
 			return TF2weapons.WEAPONS_DATA_CAP != null && capability == TF2weapons.WEAPONS_DATA_CAP;
 		}
 
 		@Override
-		public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 			if (TF2weapons.WEAPONS_DATA_CAP != null && capability == TF2weapons.WEAPONS_DATA_CAP)
-				return TF2weapons.WEAPONS_DATA_CAP.cast(this);
+				return (T) (Object) this;
 			return null;
 		}
 
@@ -271,13 +275,17 @@ public class WeaponData implements ICapabilityProvider {
 		return stack.getCapability(TF2weapons.WEAPONS_DATA_CAP).orElse(null);
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		return capabilities.hasCapability(capability, facing);
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		return capabilities.getCapability(capability, facing);
 	}
 }

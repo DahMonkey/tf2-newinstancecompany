@@ -44,20 +44,23 @@ public class TileEntityGameConfigure extends BlockEntity implements BlockEntityT
 		return super.receiveClientEvent(id, type);
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability,
-			@Nullable Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return true;
 		}
-		return super.hasCapability(capability, facing);
+		return super.getCapability(capability, facing).isPresent();
 	}
 
 	@Override
 	@Nullable
-	public <T> T getCapability(Capability<T> capability,
-			@Nullable Direction facing) {
-		return super.getCapability(capability, facing);
+	@Override
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
+		return super.getCapability(capability, facing).orElse(null);
 	}
 
 	@Override

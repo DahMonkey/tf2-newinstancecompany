@@ -252,28 +252,31 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 		this.classType = TF2Class.getClass(pkt.getNbtCompound().getByte("C"));
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability,
-			@Nullable Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return true;
 		}
-		return super.hasCapability(capability, facing);
+		return super.getCapability(capability, facing).isPresent();
 	}
 
 	@Override
 	@Nullable
-	public <T> T getCapability(Capability<T> capability,
-			@Nullable Direction facing) {
+	@Override
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			if (facing.getAxis() == Axis.Y)
-				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.weapon);
+				return (T) (Object) this.weapon;
 			else if (facing.getAxis() == Axis.X)
-				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.parts);
+				return (T) (Object) this.parts;
 			else
-				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.money);
+				return (T) (Object) this.money;
 		} else
-			return super.getCapability(capability, facing);
+			return super.getCapability(capability, facing).orElse(null);
 	}
 
 	public void setOwner(String name, UUID uniqueID) {

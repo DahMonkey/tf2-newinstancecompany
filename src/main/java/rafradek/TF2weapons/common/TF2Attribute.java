@@ -452,7 +452,7 @@ public class TF2Attribute {
 
 	public static float addValue(float value, CompoundTag attributelist, String effect) {
 		for (String name : attributelist.getAllKeys()) {
-			Tag tag = attributelist.getTag(name);
+			Tag tag = attributelist.get(name);
 			if (tag instanceof FloatTag) {
 				TF2Attribute attribute = attributes[Integer.parseInt(name)];
 				if (attribute != null && attribute.effect.equals(effect))

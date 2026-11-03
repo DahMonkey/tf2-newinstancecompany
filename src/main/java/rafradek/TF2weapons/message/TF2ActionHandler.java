@@ -216,7 +216,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 					int id3 = message.value - 64;
 					if (player != null && id3 < player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.size()) {
 						player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.remove(id3);
-						player.getStatFile().unlockAchievement(player, TF2Achievements.CONTRACT_DAY,
+						player.getStats().unlockAchievement(player, TF2Achievements.CONTRACT_DAY,
 								(int) (player.level.getDayTime() / 24000 + 1));
 					}
 				} else if (message.value >= 100 && message.value < 109) {
@@ -246,7 +246,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 									BlockPos pos1 = it1.next();
 									success1 = false;
 									ArrayList<EntityMedic> list1 = new ArrayList<>();
-									player.level.getChunkFromBlockCoords(pos1).getEntitiesOfTypeWithinAABB(
+									player.level.getChunkAt(pos1).getEntitiesOfTypeWithinAABB(
 											EntityMedic.class, new AABB(pos1), list1,
 											test2 -> player.getUUID().equals(test2.getOwnerUUID()));
 									for (EntityMedic medic2 : list1) {
@@ -281,7 +281,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 									BlockPos pos2 = it2.next();
 									success2 = false;
 									ArrayList<EntityTF2Character> list2 = new ArrayList<>();
-									player.level.getChunkFromBlockCoords(pos2).getEntitiesOfTypeWithinAABB(
+									player.level.getChunkAt(pos2).getEntitiesOfTypeWithinAABB(
 											EntityTF2Character.class, new AABB(pos2), list2,
 											test4 -> player.getUUID().equals(test4.getOwnerUUID()));
 									for (EntityTF2Character medic3 : list2) {

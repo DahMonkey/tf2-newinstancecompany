@@ -764,9 +764,9 @@ public class ClientProxy extends CommonProxy {
 		@Override
 		public void drawScreen(GuiErrorScreen errorScreen, Font fontRenderer, int mouseRelX, int mouseRelY,
 				float tickTime) {
-			errorScreen.drawCenteredString(fontRenderer, "TF2 Stuff Mod", errorScreen.getBbWidth() / 2, 70, 16777215);
+			errorScreen.drawCenteredString(fontRenderer, "TF2 Stuff Mod", errorScreen.width / 2, 70, 16777215);
 			errorScreen.drawCenteredString(fontRenderer, "Failed to copy weapon files. Restart the game and try again",
-					errorScreen.getBbWidth() / 2, 90, 16777215);
+					errorScreen.width / 2, 90, 16777215);
 
 		}
 

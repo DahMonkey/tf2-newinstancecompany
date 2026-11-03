@@ -62,7 +62,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 			fields = new GuiComponent[tag.getSize()];
 			for (String key : tag.getAllKeys()) {
 				keys[i] = key;
-				int type = tag.getTag(key).getId();
+				int type = tag.get(key).getId();
 				types[i] = type;
 				if (type == 8) {
 					fields[i] = new EditBox(5, fontRenderer, this.leftPos + 10, this.topPos + 10 + i * 20, 120,

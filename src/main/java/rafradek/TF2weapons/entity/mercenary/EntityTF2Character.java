@@ -827,7 +827,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 							blockpos$pooledmutableblockpos.setPos(this.getX(), 0.0D, this.getZ());
 
 							if (!this.level.isClientSide || this.level.isLoaded(blockpos$pooledmutableblockpos)
-									&& this.level.getChunkFromBlockCoords(blockpos$pooledmutableblockpos).isLoaded()) {
+									&& this.level.getChunkAt(blockpos$pooledmutableblockpos).isLoaded()) {
 								if (!this.isNoGravity()) {
 									this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (0.08D), this.getDeltaMovement().z);
 								}
@@ -1047,7 +1047,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			if (s.getEntity().getTeam() != null || TF2ConfigVars.neutralAttack) {
 				if (!this.isRobot()) {
 					player.addStat(TF2Achievements.KILLED_MERC);
-					if (player.getStatFile().readStat(TF2Achievements.KILLED_MERC) >= 5 && player.getStatFile()
+					if (player.getStats().readStat(TF2Achievements.KILLED_MERC) >= 5 && player.getStats()
 							.readStat(TF2Achievements.CONTRACT_DAY) == 0/*
 																		 * player.getCapability(TF2weapons.PLAYER_CAP,
 																		 * null).nextContractDay == -1
@@ -1137,7 +1137,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				for (int i = 0; i < list.size(); ++i) {
 					CompoundTag nbttagcompound = list.getCompound(i);
 					int j = nbttagcompound.getByte("Slot");
-					this.loadout.setStackInSlot(j, new ItemStack(nbttagcompound));
+					this.loadout.setStackInSlot(j, ItemStack.of(nbttagcompound));
 				}
 			}
 		} else
@@ -1353,7 +1353,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			 * this.world.getLightFromNeighbors(blockpos);
 			 * this.world.setSkylightSubtracted(j); }
 			 */
-			LevelChunk chunk = this.level.getChunkFromBlockCoords(blockpos);
+			LevelChunk chunk = this.level.getChunkAt(blockpos);
 			boolean spawnDay = event
 					|| (this.random.nextInt(32) == 0 && chunk.getRandomWithSeed(987234911L).nextInt(10) == 0);
 			return spawnDay || i <= 4 + this.random.nextInt(4);
@@ -1942,7 +1942,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 					scale = 1.65f;
 				else if (this.getRobotSize() > 2)
 					scale = 1.88f;
-				this.setSize(Math.min(0.98f, this.getWidth() * scale), this.getHeight() * scale);
+				this.setSize(Math.min(0.98f, this.getBbWidth() * scale), this.getBbHeight() * scale);
 			}
 		}
 	}
@@ -2076,7 +2076,13 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
-	public <T> T getCapability(Capability<T> capability, @Nullable Direction facing) {
+	@Override
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (capability == TF2weapons.WEAPONS_CAP) {
 			return (T) this.weaponCap;
 		}
@@ -2084,13 +2090,12 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		 * else if (capability == TF2weapons.INVENTORY_CAP){ return (T)
 		 * this.wearablesCap; }
 		 */
-		return super.getCapability(capability, facing);
+		return super.getCapability(capability, facing).orElse(null);
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		return capability == TF2weapons.WEAPONS_CAP
-				/* || capability == TF2weapons.INVENTORY_CAP */ || super.hasCapability(capability, facing);
+				/* || capability == TF2weapons.INVENTORY_CAP */ || super.getCapability(capability, facing).isPresent();
 	}
 
 	@Override

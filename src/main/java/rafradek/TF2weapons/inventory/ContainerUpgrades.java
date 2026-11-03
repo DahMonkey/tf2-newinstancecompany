@@ -118,7 +118,7 @@ public class ContainerUpgrades extends AbstractContainerMenu {
 			ItemStack itemstack = this.upgradedItem.removeStackFromSlot(0);
 
 			if (!itemstack.isEmpty())
-				player.dropItem(itemstack, false);
+				player.drop(itemstack, false);
 		}
 	}
 

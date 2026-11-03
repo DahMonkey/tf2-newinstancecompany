@@ -188,17 +188,17 @@ public class EntityDispenser extends EntityBuilding {
 					}
 				}
 				Tuple<Integer, ItemStack> cloak = ItemCloak.searchForWatches(living);
-				if (!cloak.getSecond().isEmpty() || (!living.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()
+				if (!cloak.getB().isEmpty() || (!living.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()
 						&& living.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemCloak)) {
-					if (cloak.getSecond().isEmpty())
+					if (cloak.getB().isEmpty())
 						cloak = new Tuple<>(-1, living.getMainHandItem());
 
-					if (TF2Attribute.getModifier("No External Cloak", cloak.getSecond(), 0, living) == 0) {
-						cloak.getSecond()
-								.setDamageValue(Math.max(cloak.getSecond().getDamageValue() - (2 + this.getLevel()), 0));
+					if (TF2Attribute.getModifier("No External Cloak", cloak.getB(), 0, living) == 0) {
+						cloak.getB()
+								.setDamageValue(Math.max(cloak.getB().getDamageValue() - (2 + this.getLevel()), 0));
 						if (living instanceof ServerPlayer)
 							((ServerPlayer) living).connection
-									.send(new ClientboundContainerSetSlotPacket(-2, cloak.getFirst(), cloak.getSecond()));
+									.send(new ClientboundContainerSetSlotPacket(-2, cloak.getA(), cloak.getB()));
 					}
 				}
 				if (this.dispenserTarget != null && !this.dispenserTarget.contains(living))

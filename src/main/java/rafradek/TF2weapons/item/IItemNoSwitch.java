@@ -19,13 +19,13 @@ public interface IItemNoSwitch {
 					if (old.getItem() instanceof IItemNoSwitch
 							&& ((IItemNoSwitch) old.getItem()).stopSlotSwitch(old, (Player) entityIn)) {
 						((Player) entityIn).getInventory().setItem(itemSlot, ItemStack.EMPTY);
-						((Player) entityIn).dropItem(stack, true);
+						((Player) entityIn).drop(stack, true);
 					} else {
 						((Player) entityIn).getInventory().setItem(itemSlot, old);
 						((Player) entityIn).setItemInHand(InteractionHand.MAIN_HAND, stack);
 					}
 				} else if (stack == ((Player) entityIn).getOffhandItem()) {
-					((Player) entityIn).dropItem(stack, true);
+					((Player) entityIn).drop(stack, true);
 					((Player) entityIn).getInventory().offhand.set(0, ItemStack.EMPTY);
 				}
 			}

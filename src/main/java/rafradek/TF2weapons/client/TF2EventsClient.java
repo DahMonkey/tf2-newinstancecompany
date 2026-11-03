@@ -583,22 +583,22 @@ public class TF2EventsClient {
 					|| event.getGui() instanceof GuiWearables)
 					&& !Minecraft.getInstance().player.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).isEmpty()) {
 				// GuiContainer gui = (GuiContainer) event.getGui();
-				event.getButtonList().add(new GuiButtonImage(97535627, event.getGui().getBbWidth() / 2 - 10,
-						event.getGui().getBbHeight() / 2 + 95, 18, 18, 238, 220, 18, GuiWearables.WEARABLES_TEXTURE));
+				event.getButtonList().add(new GuiButtonImage(97535627, event.getScreen().width / 2 - 10,
+						event.getScreen().height / 2 + 95, 18, 18, 238, 220, 18, GuiWearables.WEARABLES_TEXTURE));
 			}
 
 			if (event.getGui() instanceof MerchantScreen)
 				if (((MerchantScreen) event.getGui()).getMerchant().getHoverName().getString()
 						.equals(I18n.get("entity.hale.name"))) {
-					event.getButtonList().add(new Button(7578, event.getGui().getBbWidth() / 2 - 100,
-							event.getGui().getBbHeight() / 2 - 110, 100, 20, "Leave Team"));
-					event.getButtonList().add(new Button(7579, event.getGui().getBbWidth() / 2,
-							event.getGui().getBbHeight() / 2 - 110, 100, 20, "Recover Lost Items"));
+					event.getButtonList().add(new Button(7578, event.getScreen().width / 2 - 100,
+							event.getScreen().height / 2 - 110, 100, 20, "Leave Team"));
+					event.getButtonList().add(new Button(7579, event.getScreen().width / 2,
+							event.getScreen().height / 2 - 110, 100, 20, "Recover Lost Items"));
 				}
 
 			if (event.getGui() instanceof GuiIngameMenu)
-				event.getButtonList().add(new Button(125362351, event.getGui().getBbWidth() / 2 - 40,
-						event.getGui().getBbHeight() - 40, 80, 20, "Contracts"));
+				event.getButtonList().add(new Button(125362351, event.getScreen().width / 2 - 40,
+						event.getScreen().height - 40, 80, 20, "Contracts"));
 			ItemStack stack = Minecraft.getInstance().player.getMainHandItem();
 
 		}
@@ -756,7 +756,7 @@ public class TF2EventsClient {
 				RenderHelper.disableStandardItemLighting();
 				GlStateManager.enableBlend();
 			}
-			ItemStack pda = TF2Util.getFirstItem(Minecraft.getInstance().player.inventory,
+			ItemStack pda = TF2Util.getFirstItem(Minecraft.getInstance().player.getInventory(),
 					stackL -> stackL.getItem() instanceof ItemPDA);
 			if (TF2EventsCommon.sentryView != null && !pda.isEmpty() && pda.hasTag()
 					&& pda.getTag().getBoolean("ShowHud")) {
@@ -1451,8 +1451,8 @@ public class TF2EventsClient {
 
 					if (player2 != null) {
 
-						origStack = player.inventory;
-						player.inventory = player2.inventory;
+						origStack = player.getInventory();
+						player.inventory = player2.getInventory();
 						/*
 						 * for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 						 * origStack.put(slot,event.getEntity().getItemStackFromSlot(slot));

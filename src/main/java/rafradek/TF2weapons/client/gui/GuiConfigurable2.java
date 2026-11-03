@@ -46,25 +46,25 @@ public class GuiConfigurable2 extends GuiConfig {
 				Property prop = null;
 				switch (tag.getTagId(key)) {
 				case 8:
-					prop = addString(category, key, (StringTag) tag.getTag(key));
+					prop = addString(category, key, (StringTag) tag.get(key));
 					break;
 				case 1:
-					prop = addByte(category, key, (NBTTagByte) tag.getTag(key));
+					prop = addByte(category, key, (NBTTagByte) tag.get(key));
 					break;
 				case 3:
-					prop = addPrimitive(category, key, (IntTag) tag.getTag(key));
+					prop = addPrimitive(category, key, (IntTag) tag.get(key));
 					break;
 				case 5:
-					prop = addPrimitive(category, key, (FloatTag) tag.getTag(key));
+					prop = addPrimitive(category, key, (FloatTag) tag.get(key));
 					break;
 				case 6:
-					prop = addPrimitive(category, key, (NBTTagDouble) tag.getTag(key));
+					prop = addPrimitive(category, key, (NBTTagDouble) tag.get(key));
 					break;
 				case 7:
-					prop = addPrimitive(category, key, (NBTTagDouble) tag.getTag(key));
+					prop = addPrimitive(category, key, (NBTTagDouble) tag.get(key));
 					break;
 				case 11:
-					prop = addIntArray(category, key, (IntArrayTag) tag.getTag(key));
+					prop = addIntArray(category, key, (IntArrayTag) tag.get(key));
 					break;
 				}
 				if (prop != null) {

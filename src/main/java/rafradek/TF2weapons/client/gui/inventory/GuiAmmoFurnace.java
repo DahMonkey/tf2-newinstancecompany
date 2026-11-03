@@ -50,8 +50,8 @@ public class GuiAmmoFurnace extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, FURNACE_GUI_TEXTURES);
-		int i = (this.getBbWidth() - this.imageWidth) / 2;
-		int j = (this.getBbHeight() - this.imageHeight) / 2;
+		int i = (this.width - this.imageWidth) / 2;
+		int j = (this.height - this.imageHeight) / 2;
 		drawTexturedModalRect(i, j, 0, 0, this.imageWidth, this.imageHeight);
 		if (TileEntityAmmoFurnace.isBurning(this.tileFurnace)) {
 			int k = this.getBurnLeftScaled(13);

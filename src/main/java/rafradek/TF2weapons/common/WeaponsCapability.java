@@ -802,7 +802,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				 * 5; owner.motionZ = loaded ? 50 : 5; }
 				 */
 				if (owner.level.isClientSide && owner instanceof Player
-						&& !owner.level.getChunkFromBlockCoords(owner.blockPosition()).isLoaded()) {
+						&& !owner.level.getChunkAt(owner.blockPosition()).isLoaded()) {
 					owner.setDeltaMovement(owner.getDeltaMovement().x * (0.99), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
 					owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (0.99));
 				}
@@ -1014,7 +1014,7 @@ if (typeIn == Type.SKIN) {
 		}
 		if (this.isInvisible()) {
 			// System.out.println("cloak");
-			ItemStack cloak = ItemCloak.searchForWatches(owner).getSecond();
+			ItemStack cloak = ItemCloak.searchForWatches(owner).getB();
 			boolean feign = !cloak.isEmpty() && ((ItemCloak) cloak.getItem()).isFeignDeath(cloak, owner);
 			boolean visible = owner.hurtTime == 10 && !feign;
 			if (!visible && !feign) {
@@ -1057,15 +1057,19 @@ if (typeIn == Type.SKIN) {
 		this.lastPosZ = owner.getZ();
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		return TF2weapons.WEAPONS_CAP != null && capability == TF2weapons.WEAPONS_CAP;
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (TF2weapons.WEAPONS_CAP != null && capability == TF2weapons.WEAPONS_CAP)
-			return TF2weapons.WEAPONS_CAP.cast(this);
+			return (T) (Object) this;
 		return null;
 	}
 

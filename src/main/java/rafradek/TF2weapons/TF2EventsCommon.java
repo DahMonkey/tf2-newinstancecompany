@@ -591,7 +591,7 @@ public class TF2EventsCommon {
 					target.clearFire();
 				}
 				if (WeaponsCapability.get(target).isInvisible()) {
-					if (TF2Attribute.getModifier("Weapon Mode", ItemCloak.searchForWatches(target).getSecond(), 0,
+					if (TF2Attribute.getModifier("Weapon Mode", ItemCloak.searchForWatches(target).getB(), 0,
 							target) == 1)
 						event.setAmount(event.getAmount() * 0.5f);
 					else
@@ -679,12 +679,12 @@ public class TF2EventsCommon {
 				if ((event.getSource().msgId.equals("mob") || event.getSource().msgId.equals("player"))
 						&& (attacker != null
 								&& attacker.getAttributes()
-										.getAttributeInstance(Attributes.ATTACK_DAMAGE) != null
+										.getInstance(Attributes.ATTACK_DAMAGE) != null
 								&& attacker.getAttributes()
-										.getAttributeInstance(Attributes.ATTACK_DAMAGE).getModifier(
+										.getInstance(Attributes.ATTACK_DAMAGE).getModifier(
 												UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF")) != null)) {
 					event.setAmount((float) Math.min(event.getAmount(),
-							1 + attacker.getAttributes().getAttributeInstance(Attributes.ATTACK_DAMAGE)
+							1 + attacker.getAttributes().getInstance(Attributes.ATTACK_DAMAGE)
 									.getModifier(UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF"))
 									.getAmount()))/*
 													 * ((EntityLivingBase)event. getSource().getEntity()).
@@ -978,7 +978,7 @@ public class TF2EventsCommon {
 
 		if (event.getEntity() instanceof LivingEntity) {
 			// event.getEntity().getDataManager().register(ENTITY_UBER, false);
-			event.getEntity().getEntityData().register(ENTITY_OVERHEAL, 0f);
+			event.getEntity().getEntityData().define(ENTITY_OVERHEAL, 0f);
 		}
 
 		if (event.getEntity() instanceof Player && TF2UdpClient.instance != null) {
@@ -2120,15 +2120,19 @@ public class TF2EventsCommon {
 			}
 		}
 
-		@Override
-		public boolean hasCapability(Capability<?> capability, Direction facing) {
+		public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 			return TF2weapons.WORLD_CAP != null && capability == TF2weapons.WORLD_CAP;
 		}
 
 		@Override
-		public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 			if (TF2weapons.WORLD_CAP != null && capability == TF2weapons.WORLD_CAP)
-				return TF2weapons.WORLD_CAP.cast(this);
+				return (T) (Object) this;
 			return null;
 		}
 

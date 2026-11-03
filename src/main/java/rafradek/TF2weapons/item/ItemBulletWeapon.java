@@ -98,7 +98,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 
 					if (entity instanceof LivingEntity)
 						knockbackAmount *= 1 - ((LivingEntity) entity).getAttributes()
-								.getAttributeInstance(Attributes.KNOCKBACK_RESISTANCE).getValue();
+								.getInstance(Attributes.KNOCKBACK_RESISTANCE).getValue();
 					if (knockbackAmount > 0) {
 						boolean flag = map.get(entity)[1] < 3.75
 								&& living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).fanCool <= 0

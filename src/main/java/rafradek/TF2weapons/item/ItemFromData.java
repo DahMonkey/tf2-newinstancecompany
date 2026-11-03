@@ -430,7 +430,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 			Iterator<String> iterator = attributeList.getAllKeys().iterator();
 			while (iterator.hasNext()) {
 				String name = iterator.next();
-				Tag tag = attributeList.getTag(name);
+				Tag tag = attributeList.get(name);
 				if (tag instanceof FloatTag) {
 					FloatTag tagFloat = (FloatTag) tag;
 					TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
@@ -444,7 +444,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 			iterator = attributeList.getAllKeys().iterator();
 			while (iterator.hasNext()) {
 				String name = iterator.next();
-				Tag tag = attributeList.getTag(name);
+				Tag tag = attributeList.get(name);
 				if (tag instanceof FloatTag) {
 					FloatTag tagFloat = (FloatTag) tag;
 					TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];

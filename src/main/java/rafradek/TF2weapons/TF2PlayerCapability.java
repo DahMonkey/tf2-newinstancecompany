@@ -207,7 +207,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 					ItemStack toUse = ((ItemBackpack) backpack.getItem()).getBackpackItemToUse(backpack, owner);
 					if (!toUse.sameItem(this.owner.getMainHandItem())) {
 						if (!this.owner.getMainHandItem().isEmpty()) {
-							this.owner.dropItem(this.getBackpackItemHold(), false);
+							this.owner.drop(this.getBackpackItemHold(), false);
 							this.setBackpackItemHold(this.owner.getMainHandItem());
 						}
 						this.owner.setItemInHand(InteractionHand.MAIN_HAND, toUse.copy());
@@ -238,7 +238,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 				while (it.hasNext()) {
 					BlockPos pos = it.next();
 					ArrayList<EntityTF2Character> list = new ArrayList<>();
-					this.owner.level.getChunkFromBlockCoords(pos).getEntitiesOfTypeWithinAABB(EntityTF2Character.class,
+					this.owner.level.getChunkAt(pos).getEntitiesOfTypeWithinAABB(EntityTF2Character.class,
 							new AABB(pos), list, test -> {
 								return test.getOrder() == Order.FOLLOW && owner.getUUID().equals(test.getOwnerUUID());
 							});
@@ -302,7 +302,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 
 			}
 			if (!TF2ConfigVars.disableContracts && this.contracts.size() < 2
-					&& (contractDay = ((ServerPlayer) this.owner).getStatFile()
+					&& (contractDay = ((ServerPlayer) this.owner).getStats()
 							.readStat(TF2Achievements.CONTRACT_DAY)) != 0
 					&& this.owner.level.getDayTime() % 24000 > 1000
 					&& this.owner.level.getDayTime() / 24000 >= contractDay) {
@@ -340,7 +340,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 						name = "kill";
 					}
 				} while (this.contracts.size() > 0 && this.contracts.get(0).className.equals(name));
-				((ServerPlayer) this.owner).getStatFile().unlockAchievement(this.owner, TF2Achievements.CONTRACT_DAY,
+				((ServerPlayer) this.owner).getStats().unlockAchievement(this.owner, TF2Achievements.CONTRACT_DAY,
 						(int) (this.owner.level.getDayTime() / 24000 + 7));
 				Contract contract = new Contract(name, 0, this.owner.getRandom());
 				this.contracts.add(contract);
@@ -361,15 +361,19 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 		}
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, Direction facing) {
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
 		return TF2weapons.PLAYER_CAP != null && capability == TF2weapons.PLAYER_CAP;
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, Direction facing) {
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (TF2weapons.PLAYER_CAP != null && capability == TF2weapons.PLAYER_CAP)
-			return TF2weapons.PLAYER_CAP.cast(this);
+			return (T) (Object) this;
 		return null;
 	}
 
@@ -454,25 +458,25 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	public void updateBuildings() {
 		PlayerPersistStorage storage = PlayerPersistStorage.get((this.owner));
 		if (storage.buildings[0] != null) {
-			this.entityData.set(SENTRY_VIEW, storage.buildings[0].getSecond());
+			this.entityData.set(SENTRY_VIEW, storage.buildings[0].getB());
 			this.entityData.setDirty(SENTRY_VIEW);
 		} else
 			this.entityData.set(SENTRY_VIEW, EMPTY);
 
 		if (storage.buildings[1] != null) {
-			this.entityData.set(DISPENSER_VIEW, storage.buildings[1].getSecond());
+			this.entityData.set(DISPENSER_VIEW, storage.buildings[1].getB());
 			this.entityData.setDirty(DISPENSER_VIEW);
 		} else
 			this.entityData.set(DISPENSER_VIEW, EMPTY);
 
 		if (storage.buildings[2] != null) {
-			this.entityData.set(TELEPORTERA_VIEW, storage.buildings[2].getSecond());
+			this.entityData.set(TELEPORTERA_VIEW, storage.buildings[2].getB());
 			this.entityData.setDirty(TELEPORTERA_VIEW);
 		} else
 			this.entityData.set(TELEPORTERA_VIEW, EMPTY);
 
 		if (storage.buildings[3] != null) {
-			this.entityData.set(TELEPORTERB_VIEW, storage.buildings[3].getSecond());
+			this.entityData.set(TELEPORTERB_VIEW, storage.buildings[3].getB());
 			this.entityData.setDirty(TELEPORTERB_VIEW);
 		} else
 			this.entityData.set(TELEPORTERB_VIEW, EMPTY);
@@ -505,12 +509,12 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	}
 
 	public int calculateMaxSentries() {
-		ItemStack wrench = TF2Util.getBestItem(this.owner.inventory, (stack1, stack2) -> {
+		ItemStack wrench = TF2Util.getBestItem(this.owner.getInventory(), (stack1, stack2) -> {
 			float sentries1 = TF2Attribute.getModifier("Sentry Bonus", stack1, 1, this.owner);
 			float sentries2 = TF2Attribute.getModifier("Sentry Bonus", stack2, 1, this.owner);
 			return sentries1 > sentries2 ? 1 : sentries1 == sentries2 ? 0 : -1;
 		}, stack -> stack.getItem() instanceof ItemWrench);
-		ItemStack pda = TF2Util.getBestItem(this.owner.inventory, (stack1, stack2) -> {
+		ItemStack pda = TF2Util.getBestItem(this.owner.getInventory(), (stack1, stack2) -> {
 			float sentries1 = TF2Attribute.getModifier("Extra Sentry", stack1, 0, this.owner);
 			float sentries2 = TF2Attribute.getModifier("Extra Sentry", stack2, 0, this.owner);
 			return sentries1 > sentries2 ? 1 : sentries1 == sentries2 ? 0 : -1;
@@ -532,7 +536,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 				equip = false;
 			if (equip) {
 				if (!toUse.sameItem(this.owner.getMainHandItem())) {
-					this.owner.dropItem(this.getBackpackItemHold(), false);
+					this.owner.drop(this.getBackpackItemHold(), false);
 					this.setBackpackItemHold(this.owner.getMainHandItem());
 				}
 				this.owner.setItemInHand(InteractionHand.MAIN_HAND, toUse.copy());
@@ -541,7 +545,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 
 					this.owner.setItemInHand(InteractionHand.MAIN_HAND, this.getBackpackItemHold());
 				} else {
-					this.owner.dropItem(this.getBackpackItemHold(), false);
+					this.owner.drop(this.getBackpackItemHold(), false);
 
 				}
 				this.setBackpackItemHold(ItemStack.EMPTY);
@@ -596,7 +600,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 		tag.putBoolean("MerasmusSummonedDay", this.merasmusSummonedDay == this.owner.level.getDayTime() / 24000);
 		if (this.bossToSpawn != null) {
 			CompoundTag bosstag = new CompoundTag();
-			this.bossToSpawn.writeToNBTOptional(bosstag);
+			this.bossToSpawn.saveAsPassenger(bosstag);
 			tag.put("BossSpawn", bosstag);
 		}
 		tag.putInt("LastDayInvasion", this.lastDayInvasion);

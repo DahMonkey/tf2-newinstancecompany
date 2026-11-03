@@ -170,7 +170,7 @@ public class ItemCloak extends ItemFromData {
 
 	public void setCloak(boolean active, ItemStack stack, LivingEntity living, Level world) {
 		// System.out.println("set active: "+active);
-		if (!active || !(living instanceof Player) || searchForWatches(living).getSecond().isEmpty()) {
+		if (!active || !(living instanceof Player) || searchForWatches(living).getB().isEmpty()) {
 			if (!active) {
 				living.setInvisible(false);
 				living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).invisTicks = 20;

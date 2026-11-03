@@ -102,7 +102,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 		list.addAll(this.tradeOffers);
 		if (!TF2ConfigVars.disableInvasionItems) {
 			for (int i = 0; i <= TF2PlayerCapability.get(player).maxInvasionBeaten; i++) {
-				if (!(i == 4 && ((ServerPlayer) player).getStatFile().readStat(TF2weapons.robotsKilled) < 2000)
+				if (!(i == 4 && ((ServerPlayer) player).getStats().readStat(TF2weapons.robotsKilled) < 2000)
 						&& i != InvasionEvent.DIFFICULTY.length)
 					this.addTradeOffer(TF2Util.metaStack(TF2weapons.itemEventMaker, 1, i), 27 + i * 9, list, i + 1);
 			}

@@ -27,17 +27,20 @@ public class EntityDummy extends Mob {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
-	public <T> T getCapability(Capability<T> capability,
-			@Nullable Direction facing) {
+	@Override
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (capability == TF2weapons.WEAPONS_CAP)
 			return (T) cap;
 		else
-			return super.getCapability(capability, facing);
+			return super.getCapability(capability, facing).orElse(null);
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability,
-			@Nullable Direction facing) {
-		return capability == TF2weapons.WEAPONS_CAP || super.hasCapability(capability, facing);
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
+		return capability == TF2weapons.WEAPONS_CAP || super.getCapability(capability, facing).isPresent();
 	}
 }

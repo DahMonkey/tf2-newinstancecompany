@@ -1392,7 +1392,7 @@ public class TF2Util {
 	public static boolean isBaseSame(CompoundTag base, CompoundTag second) {
 		if (base != null)
 			for (String key : base.getAllKeys()) {
-				if (!base.getTag(key).equals(second.getTag(key)))
+				if (!base.get(key).equals(second.get(key)))
 					return false;
 			}
 		return true;

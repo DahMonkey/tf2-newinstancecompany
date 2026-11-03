@@ -60,23 +60,23 @@ public class PlayerPersistStorage implements INBTSerializable<CompoundTag> {
 		tag.put("MercsRest", list3);
 
 		if (buildings[0] != null) {
-			tag.putUUID("SentryUUID", buildings[0].getFirst());
-			tag.put("Sentry", buildings[0].getSecond());
+			tag.putUUID("SentryUUID", buildings[0].getA());
+			tag.put("Sentry", buildings[0].getB());
 		}
 
 		if (buildings[1] != null) {
-			tag.putUUID("DispenserUUID", buildings[1].getFirst());
-			tag.put("Dispenser", buildings[1].getSecond());
+			tag.putUUID("DispenserUUID", buildings[1].getA());
+			tag.put("Dispenser", buildings[1].getB());
 		}
 
 		if (buildings[2] != null) {
-			tag.putUUID("TeleporterAUUID", buildings[2].getFirst());
-			tag.put("TeleporterA", buildings[2].getSecond());
+			tag.putUUID("TeleporterAUUID", buildings[2].getA());
+			tag.put("TeleporterA", buildings[2].getB());
 		}
 
 		if (buildings[3] != null) {
-			tag.putUUID("TeleporterBUUID", buildings[3].getFirst());
-			tag.put("TeleporterB", buildings[3].getSecond());
+			tag.putUUID("TeleporterBUUID", buildings[3].getA());
+			tag.put("TeleporterB", buildings[3].getB());
 		}
 		tag.putByte("DispBuildingsCount", (byte) disposableBuildings.size());
 		for (int i = 0; i < disposableBuildings.size(); i++) {
@@ -164,7 +164,7 @@ public class PlayerPersistStorage implements INBTSerializable<CompoundTag> {
 	public boolean allowBuilding(EntityBuilding building) {
 		if (building.getDisposableID() == -1)
 			return this.buildings[building.getBuildingID()] == null
-					|| this.buildings[building.getBuildingID()].getFirst().equals(building.getUUID());
+					|| this.buildings[building.getBuildingID()].getA().equals(building.getUUID());
 		else
 			return this.disposableBuildings.contains(building.getUUID());
 	}

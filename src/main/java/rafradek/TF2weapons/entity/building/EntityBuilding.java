@@ -350,12 +350,12 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 				PlayerPersistStorage storage = PlayerPersistStorage.get(this.level, this.getOwnerUUID());
 				if (this.disposableID == -1) {
 					if (storage.buildings[this.getBuildingID()] == null
-							|| !storage.buildings[this.getBuildingID()].getFirst().equals(this.getUUID())) {
+							|| !storage.buildings[this.getBuildingID()].getA().equals(this.getUUID())) {
 						this.setHealth(0);
 						this.onDeath(DETONATE);
 						return;
 					}
-					CompoundTag tag = storage.buildings[this.getBuildingID()].getSecond();
+					CompoundTag tag = storage.buildings[this.getBuildingID()].getB();
 					this.addAdditionalSaveData(tag);
 				} else {
 					if (!storage.disposableBuildings.contains(this.getUUID())) {
@@ -710,16 +710,21 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
-	public <T> T getCapability(Capability<T> capability, @Nullable Direction facing) {
+	@Override
+	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
+		T value = this.getCapabilityLegacy(capability, facing);
+		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
+	}
+
+	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
 		if (capability == CapabilityEnergy.ENERGY) {
 			return (T) this.energy;
 		}
-		return super.getCapability(capability, facing);
+		return super.getCapability(capability, facing).orElse(null);
 	}
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable Direction facing) {
-		return capability == CapabilityEnergy.ENERGY || super.hasCapability(capability, facing);
+	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
+		return capability == CapabilityEnergy.ENERGY || super.getCapability(capability, facing).isPresent();
 	}
 
 	public static int getCost(int building, ItemStack wrench) {
