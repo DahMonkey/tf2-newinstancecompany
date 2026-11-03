@@ -1363,7 +1363,7 @@ public class TF2EventsCommon {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void craftItem(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
+	public void craftItem(PlayerEvent.ItemCraftedEvent event) {
 		ItemStack withPattern = ItemStack.EMPTY;
 		ItemStack noPattern = ItemStack.EMPTY;
 		for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
@@ -1748,7 +1748,7 @@ public class TF2EventsCommon {
 	}
 
 	@SubscribeEvent
-	public void craftEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
+	public void craftEvent(PlayerEvent.ItemCraftedEvent event) {
 		/*
 		 * if (event.crafting != null &&
 		 * Block.getBlockFromItem(event.crafting.getItem()) == TF2weapons.blockCabinet)

@@ -205,7 +205,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 	}
 
 	@Override
-	public net.minecraftforge.common.getAbilities().ICapabilityProvider initCapabilities(ItemStack stack,
+	public ICapabilityProvider initCapabilities(ItemStack stack,
 			CompoundTag nbt) {
 		return new WeaponData.WeaponDataCapability();
 	}

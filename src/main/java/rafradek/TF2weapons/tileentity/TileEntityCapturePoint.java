@@ -3,6 +3,7 @@ package rafradek.TF2weapons.tileentity;
 import rafradek.TF2weapons.TF2weapons;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -152,9 +153,9 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 	 */
 
 	@Override
-	public boolean hasCapability(net.minecraftforge.common.getAbilities().Capability<?> capability,
-			@Nullable net.minecraft.util.EnumFacing facing) {
-		if (facing != null && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+	public boolean hasCapability(Capability<?> capability,
+			@Nullable Direction facing) {
+		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -162,8 +163,8 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 
 	@Override
 	@Nullable
-	public <T> T getCapability(net.minecraftforge.common.getAbilities().Capability<T> capability,
-			@Nullable net.minecraft.util.EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability,
+			@Nullable Direction facing) {
 		/*
 		 * if (facing != null && capability ==
 		 * net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) { if

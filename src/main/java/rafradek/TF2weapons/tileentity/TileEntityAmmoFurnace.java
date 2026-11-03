@@ -172,7 +172,7 @@ public class TileEntityAmmoFurnace extends TileEntityAbstractAmmoFurnace {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getCapability(net.minecraftforge.common.getAbilities().Capability<T> capability,
+	public <T> T getCapability(Capability<T> capability,
 			Direction facing) {
 		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
 			if (facing == Direction.DOWN)

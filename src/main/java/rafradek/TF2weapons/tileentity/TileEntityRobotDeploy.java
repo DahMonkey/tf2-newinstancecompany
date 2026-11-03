@@ -16,6 +16,7 @@ import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
@@ -245,16 +246,16 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 	}
 
 	@Override
-	public void onDataPacket(net.minecraft.network.NetworkManager net,
-			net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+	public void onDataPacket(Connection net,
+			ClientboundBlockEntityDataPacket pkt) {
 		this.progressClient = pkt.getNbtCompound().getByte("P");
 		this.classType = TF2Class.getClass(pkt.getNbtCompound().getByte("C"));
 	}
 
 	@Override
-	public boolean hasCapability(net.minecraftforge.common.getAbilities().Capability<?> capability,
-			@Nullable net.minecraft.util.EnumFacing facing) {
-		if (facing != null && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+	public boolean hasCapability(Capability<?> capability,
+			@Nullable Direction facing) {
+		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -262,9 +263,9 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 
 	@Override
 	@Nullable
-	public <T> T getCapability(net.minecraftforge.common.getAbilities().Capability<T> capability,
-			@Nullable net.minecraft.util.EnumFacing facing) {
-		if (facing != null && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+	public <T> T getCapability(Capability<T> capability,
+			@Nullable Direction facing) {
+		if (facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			if (facing.getAxis() == Axis.Y)
 				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.weapon);
 			else if (facing.getAxis() == Axis.X)

@@ -290,7 +290,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 										entityliving.moveTo(f, i3, f1, world.rand.nextFloat() * 360.0F,
 												0.0F);
 										entityliving.setRobot(1);
-										Event.Result canSpawn = net.minecraftforge.event.ForgeEventFactory
+										Event.Result canSpawn = ForgeEventFactory
 												.canEntitySpawn(entityliving, world, f, i3, f1, false);
 										if (canSpawn == Event.Result.ALLOW || (canSpawn == Event.Result.DEFAULT
 												&& (entityliving.getCanSpawnHere() && entityliving.isNotColliding()))) {

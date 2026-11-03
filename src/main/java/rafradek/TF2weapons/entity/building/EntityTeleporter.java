@@ -85,7 +85,7 @@ public class EntityTeleporter extends EntityBuilding {
 					if (exit != null && this.consumeEnergy(this.getMinEnergy())) {
 						if (exit.dimension != this.dimension) {
 							if (entityIn instanceof ServerPlayer
-									&& net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, exit.dimension)) {
+									&& ForgeHooks.onTravelToDimension(this, exit.dimension)) {
 								this.level.getServer().getPlayerList().transferPlayerToDimension(
 										(ServerPlayer) entityIn, exit.dimension,
 										new TeleporterDim((ServerLevel) this.level, exit));

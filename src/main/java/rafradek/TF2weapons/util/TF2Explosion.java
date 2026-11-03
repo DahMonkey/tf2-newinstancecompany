@@ -142,7 +142,7 @@ public class TF2Explosion extends Explosion {
 				input -> input != exploder && !input.isImmuneToExplosions()
 						&& (input.canBeAttackedWithItem() || TF2ConfigVars.destTerrain == 2)
 						&& TF2Util.canHit(getExplosivePlacedBy(), input));
-		net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.level, this, list, f3);
+		ForgeEventFactory.onExplosionDetonate(this.level, this, list, f3);
 		Vec3 Vec3 = new Vec3(this.explosionX, this.explosionY, this.explosionZ);
 		int livingEntities = 0;
 		for (Object obj : list)

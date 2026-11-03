@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -474,7 +475,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	@Override
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public <T> T getCapability(Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, @Nullable Direction facing) {
 		if (capability == TF2weapons.WEAPONS_CAP) {
 			return (T) this.weaponCap;
 		}
@@ -486,7 +487,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing) {
+	public boolean hasCapability(Capability<?> capability, @Nullable Direction facing) {
 		return capability == TF2weapons.WEAPONS_CAP
 				/* || capability == TF2weapons.INVENTORY_CAP */ || super.hasCapability(capability, facing);
 	}

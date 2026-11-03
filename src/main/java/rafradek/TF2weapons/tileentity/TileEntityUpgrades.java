@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -112,8 +113,8 @@ public class TileEntityUpgrades extends BlockEntity {
 	}
 
 	@Override
-	public void onDataPacket(net.minecraft.network.NetworkManager net,
-			net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+	public void onDataPacket(Connection net,
+			ClientboundBlockEntityDataPacket pkt) {
 		// System.out.println("Received: "+pkt.getNbtCompound());
 		this.readFromNBT(pkt.getNbtCompound());
 	}

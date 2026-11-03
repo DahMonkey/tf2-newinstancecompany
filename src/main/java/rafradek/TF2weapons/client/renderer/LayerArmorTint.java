@@ -220,7 +220,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 	 * @param type   Subtype, can be null or "overlay"
 	 * @return ResourceLocation pointing at the armor's texture
 	 */
-	public ResourceLocation getArmorResource(net.minecraft.entity.Entity entity, ItemStack stack,
+	public ResourceLocation getArmorResource(Entity entity, ItemStack stack,
 			EquipmentSlot slot, String type) {
 		ArmorItem item = (ArmorItem) stack.getItem();
 		String texture = item.getArmorMaterial().getName();
@@ -233,7 +233,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 		String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture,
 				(isLegSlot(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
 
-		s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
+		s1 = ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
 		ResourceLocation resourcelocation = ARMOR_TEXTURE_RES_MAP.get(s1);
 
 		if (resourcelocation == null) {

@@ -136,7 +136,7 @@ public class ItemBackpack extends ItemFromData {
 	}
 
 	@Override
-	public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.enchantment.Enchantment enchantment) {
+	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
 		return super.canApplyAtEnchantingTable(stack, enchantment)
 				|| enchantment.type == EnchantmentCategory.ARMOR_CHEST || enchantment.type == EnchantmentCategory.ARMOR
 				|| enchantment.type == EnchantmentCategory.WEARABLE;

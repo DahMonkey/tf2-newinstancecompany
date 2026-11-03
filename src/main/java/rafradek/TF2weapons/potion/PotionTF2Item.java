@@ -38,7 +38,7 @@ public class PotionTF2Item extends MobEffect {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void renderHUDEffect(int x, int y, MobEffectInstance effect, net.minecraft.client.Minecraft mc, float alpha) {
+	public void renderHUDEffect(int x, int y, MobEffectInstance effect, Minecraft mc, float alpha) {
 		mc.RenderSystem.setShaderTexture(0, texture);
 		// mc.ingameGUI.drawTexturedModalRect(x+3,y+3,0,0,16,16);
 		Tesselator tessellator = Tesselator.getInstance();

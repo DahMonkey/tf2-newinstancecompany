@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class JumperRecipe extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Recipe>
+public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		implements Recipe, IRecipeTF2 {
 
 	String nameBefore;
@@ -71,7 +71,7 @@ public class JumperRecipe extends net.minecraftforge.registries.IForgeRegistryEn
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
-			aitemstack.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+			aitemstack.set(i, ForgeHooks.getContainerItem(itemstack));
 		}
 
 		return aitemstack;

@@ -84,7 +84,7 @@ public class RecipeApplyEffect implements Recipe, IRecipeTF2 {
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
-			aitemstack.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+			aitemstack.set(i, ForgeHooks.getContainerItem(itemstack));
 		}
 
 		return aitemstack;

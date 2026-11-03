@@ -66,7 +66,7 @@ public class RenderPickup extends EntityRenderer<EntityPickup> {
 
 		GlStateManager.pushMatrix();
 
-		BakedModel transformedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel,
+		BakedModel transformedModel = ForgeHooksClient.handleCameraTransforms(ibakedmodel,
 				ItemTransforms.TransformType.GROUND, false);
 		itemRenderer.renderItem(model, transformedModel);
 		GlStateManager.popMatrix();

@@ -266,7 +266,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 	}
 
 	@Override
-	public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
+	public AABB getRenderBoundingBox() {
 		if (this.minBounds == null)
 			return new AABB(pos);
 		else

@@ -45,12 +45,12 @@ public class SlotCraftingTF2 extends ResultSlot {
 		if (stack.hasTag() && stack.getTag().getBoolean("Australium")) {
 			// player.addStat(TF2Achievements.SHINY);
 		}
-		net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(player, stack, craftMatrix);
+		FMLCommonHandler.instance().firePlayerCraftingEvent(player, stack, craftMatrix);
 		this.onCrafting(stack);
-		net.minecraftforge.common.ForgeHooks.setCraftingPlayer(player);
+		ForgeHooks.setCraftingPlayer(player);
 		NonNullList<ItemStack> aitemstack = TF2CraftingManager.INSTANCE.getRemainingItems(this.craftMatrix,
 				player.level);
-		net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
+		ForgeHooks.setCraftingPlayer(null);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = this.craftMatrix.getStackInSlot(i);

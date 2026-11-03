@@ -10,7 +10,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class OpenCrateRecipe extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Recipe>
+public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		implements Recipe, IRecipeTF2 {
 
 	@Override
@@ -67,7 +67,7 @@ public class OpenCrateRecipe extends net.minecraftforge.registries.IForgeRegistr
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
-			nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+			nonnulllist.set(i, ForgeHooks.getContainerItem(itemstack));
 		}
 
 		return nonnulllist;

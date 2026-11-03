@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -896,7 +897,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			this.prevLimbSwingAmount = this.limbSwingAmount;
 			double d5 = this.getX() - this.xo;
 			double d7 = this.getZ() - this.zo;
-			double d9 = this instanceof net.minecraft.entity.passive.EntityFlying ? this.getY() - this.yo : 0.0D;
+			double d9 = this instanceof EntityFlying ? this.getY() - this.yo : 0.0D;
 			float f10 = Mth.sqrt((float)d5 * d5 + d9 * d9 + d7 * d7) * 4.0F;
 
 			if (f10 > 1.0F) {
@@ -1313,10 +1314,10 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	@Override
 	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
 		if (!this.isInvulnerableTo(damageSrc)) {
-			damageAmount = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, damageSrc, damageAmount);
+			damageAmount = ForgeHooks.onLivingHurt(this, damageSrc, damageAmount);
 			if (damageAmount <= 0)
 				return;
-			damageAmount = net.minecraftforge.common.ISpecialArmor.ArmorProperties.applyArmor(this,
+			damageAmount = ISpecialArmor.ArmorProperties.applyArmor(this,
 					(NonNullList<ItemStack>) this.getArmorSlots(), damageSrc, damageAmount);
 			if (damageAmount <= 0)
 				return;
@@ -1324,7 +1325,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			float f = damageAmount;
 			damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
 			this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - damageAmount));
-			damageAmount = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, damageSrc, damageAmount);
+			damageAmount = ForgeHooks.onLivingDamage(this, damageSrc, damageAmount);
 
 			if (damageAmount != 0.0F) {
 				float f1 = this.getHealth();
@@ -2074,7 +2075,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
-	public <T> T getCapability(Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, @Nullable Direction facing) {
 		if (capability == TF2weapons.WEAPONS_CAP) {
 			return (T) this.weaponCap;
 		}
@@ -2086,7 +2087,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing) {
+	public boolean hasCapability(Capability<?> capability, @Nullable Direction facing) {
 		return capability == TF2weapons.WEAPONS_CAP
 				/* || capability == TF2weapons.INVENTORY_CAP */ || super.hasCapability(capability, facing);
 	}

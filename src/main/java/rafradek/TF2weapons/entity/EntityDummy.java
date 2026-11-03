@@ -3,6 +3,7 @@ package rafradek.TF2weapons.entity;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import javax.annotation.Nullable;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
@@ -21,8 +22,8 @@ public class EntityDummy extends Mob {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
-	public <T> T getCapability(net.minecraftforge.common.getAbilities().Capability<T> capability,
-			@Nullable net.minecraft.util.EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability,
+			@Nullable Direction facing) {
 		if (capability == TF2weapons.WEAPONS_CAP)
 			return (T) cap;
 		else
@@ -30,8 +31,8 @@ public class EntityDummy extends Mob {
 	}
 
 	@Override
-	public boolean hasCapability(net.minecraftforge.common.getAbilities().Capability<?> capability,
-			@Nullable net.minecraft.util.EnumFacing facing) {
+	public boolean hasCapability(Capability<?> capability,
+			@Nullable Direction facing) {
 		return capability == TF2weapons.WEAPONS_CAP || super.hasCapability(capability, facing);
 	}
 }

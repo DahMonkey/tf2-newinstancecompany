@@ -14,6 +14,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 
 public class EntityPickup extends Entity {
@@ -127,7 +128,7 @@ public class EntityPickup extends Entity {
 		if (this.onGround) {
 			BlockPos underPos = new BlockPos(Mth.floor(this.getX()),
 					Mth.floor(this.getBoundingBox().minY) - 1, Mth.floor(this.getZ()));
-			net.minecraft.block.state.IBlockState underState = this.level.getBlockState(underPos);
+			BlockState underState = this.level.getBlockState(underPos);
 			f = underState.getBlock().getSlipperiness(underState, this.level, underPos, this) * 0.98F;
 		}
 

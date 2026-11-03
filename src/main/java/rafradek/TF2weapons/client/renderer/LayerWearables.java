@@ -118,10 +118,10 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 		}
 	}
 
-	public ResourceLocation getArmorResource(net.minecraft.entity.Entity entity, ItemStack stack,
+	public ResourceLocation getArmorResource(Entity entity, ItemStack stack,
 			EquipmentSlot slot, String type) {
 		return new ResourceLocation(
-				net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, "", slot, type));
+				ForgeHooksClient.getArmorTexture(entity, stack, "", slot, type));
 	}
 
 	@Override
