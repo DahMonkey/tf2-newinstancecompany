@@ -1,0 +1,62 @@
+package rafradek.TF2weapons.entity.projectile;
+
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
+
+public class EntityStickProjectile extends EntityProjectileSimple {
+
+	public boolean sticked;
+
+	public boolean clientSticked;
+
+	public EntityStickProjectile(Level world) {
+		super(world);
+		this.setSize(0.3F, 0.3F);
+
+	}
+
+	@Override
+	public void onHitGround(int x, int y, int z, HitResult mop) {
+		super.onHitGround(x, y, z, mop);
+		if (!this.level.isEmptyBlock(mop.getBlockPos())) {
+			this.setPos(mop.getLocation().x + mop.getDirection().getStepX() * 0.1,
+					mop.getLocation().y + mop.getDirection().getStepY() * 0.1f,
+					mop.getLocation().z + mop.getDirection().getStepZ() * 0.1);
+			this.sticked = true;
+			this.stickedBlock = mop.getBlockPos();
+		}
+	}
+
+	@Override
+	public void onUpdate() {
+		if (this.tickCount > this.getMaxTime()
+				|| (this.level.isClientSide && this.sticked && this.level.isEmptyBlock(stickedBlock))) {
+			this.discard();
+			return;
+		} else if (!this.sticked)
+			super.onUpdate();
+	}
+
+	@Override
+	public void discard() {
+		if (this.level.isClientSide && this.sticked && this.getThrower() != null && !this.clientSticked) {
+			EntityStickProjectile ent = new EntityStickProjectile(this.level);
+			ent.absMoveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+			ent.sticked = true;
+			ent.setType(this.getType());
+			ent.setThrower(this.getThrower());
+			ent.clientSticked = true;
+			ent.stickedBlock = this.stickedBlock;
+			this.level.addFreshEntity(ent);
+		}
+		super.discard();
+	}
+
+	@Override
+	public void spawnParticles(double x, double y, double z) {}
+
+	@Override
+	public boolean moveable() {
+		return !this.sticked;
+	}
+}

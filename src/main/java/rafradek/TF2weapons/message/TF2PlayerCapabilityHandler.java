@@ -1,0 +1,31 @@
+package rafradek.TF2weapons.message;
+
+import rafradek.TF2weapons.TF2PlayerCapability;
+import rafradek.TF2weapons.TF2weapons;
+import rafradek.TF2weapons.message.TF2Message.PlayerCapabilityMessage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+
+public class TF2PlayerCapabilityHandler implements IMessageHandler<PlayerCapabilityMessage, IMessage> {
+
+	@Override
+	public IMessage onMessage(final PlayerCapabilityMessage message, MessageContext ctx) {
+		Minecraft.getInstance().addScheduledTask(() -> {
+			Entity ent = Minecraft.getInstance().level.getEntity(message.entityID);
+			if (ent != null && ent.getCapability(TF2weapons.WEAPONS_CAP).isPresent()) {
+				TF2PlayerCapability cap = ent.getCapability(TF2weapons.PLAYER_CAP).orElse(null);
+				if (message.entries != null) {
+					for (DataEntry<?> param : message.entries) {
+						cap.onChangeValue(param.getKey(), param.getValue());
+					}
+					if (message.global)
+						cap.dataManagerGlobal.setEntryValues(message.entries);
+					else
+						cap.entityData.setEntryValues(message.entries);
+				}
+			}
+		});
+		return null;
+	}
+
+}

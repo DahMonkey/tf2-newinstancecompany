@@ -1,0 +1,208 @@
+package rafradek.TF2weapons.client.renderer.entity;
+
+import rafradek.TF2weapons.TF2weapons;
+import rafradek.TF2weapons.client.ClientProxy;
+import rafradek.TF2weapons.client.model.ModelBuild;
+import rafradek.TF2weapons.client.model.ModelSentry;
+import rafradek.TF2weapons.client.model.ModelSentry2;
+import rafradek.TF2weapons.client.model.ModelSentry3;
+import rafradek.TF2weapons.entity.building.EntitySentry;
+import rafradek.TF2weapons.util.TF2Util;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+
+public class RenderSentry extends MobRenderer<EntitySentry> {
+
+	private static final ResourceLocation SENTRY_RED = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/red/Sentry.png");
+	private static final ResourceLocation SENTRY_MINI_RED = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/red/Sentrymini.png");
+	private static final ResourceLocation SENTRY_BLU = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/blu/Sentry.png");
+	private static final ResourceLocation SENTRY_MINI_BLU = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/blu/Sentrymini.png");
+	private static final ResourceLocation SENTRY_ROBOT = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/robot/Sentry.png");
+	private static final ResourceLocation SENTRY_MINI_ROBOT = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/robot/Sentrymini.png");
+	private static final ResourceLocation BOX_RED = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/red/box.png");
+	private static final ResourceLocation BOX_BLU = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/entity/tf2/blu/box.png");
+	public EntityModel level1;
+	public EntityModel level2;
+	public EntityModel level3;
+	public EntityModel box;
+
+	public RenderSentry(EntityRenderDispatcher renderManager) {
+		super(renderManager, new ModelSentry(), 0.6f);
+		level1 = this.mainModel;
+		level2 = new ModelSentry2();
+		level3 = new ModelSentry3();
+		box = new ModelBuild();
+	}
+
+	@Override
+	protected ResourceLocation getEntityTexture(EntitySentry par1EntityLiving) {
+		// System.out.println("class: "+clazz);
+		boolean constr = par1EntityLiving.isConstructing();
+		switch (par1EntityLiving.getEntTeam()) {
+		case 0:
+			return constr ? BOX_RED : par1EntityLiving.isMini() ? SENTRY_MINI_RED : SENTRY_RED;
+		case 1:
+			return constr ? BOX_BLU : par1EntityLiving.isMini() ? SENTRY_MINI_BLU : SENTRY_BLU;
+		case 2:
+			return constr ? BOX_BLU : par1EntityLiving.isMini() ? SENTRY_MINI_ROBOT : SENTRY_ROBOT;
+		default:
+			return constr ? BOX_BLU : par1EntityLiving.isMini() ? SENTRY_MINI_BLU : SENTRY_BLU;
+		}
+	}
+
+	@Override
+	protected void preRenderCallback(EntitySentry entitylivingbaseIn, float partialTickTime) {
+		if (entitylivingbaseIn.isMini())
+			GlStateManager.scale(0.65, 0.65, 0.65);
+	}
+
+	@Override
+	public void doRender(EntitySentry living, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_,
+			float p_76986_9_) {
+		if (living.isConstructing())
+			this.mainModel = this.box;
+		else {
+			if (living.getLevel() == 1)
+				this.mainModel = this.level1;
+			else if (living.getLevel() == 2)
+				this.mainModel = this.level2;
+			else
+				this.mainModel = this.level3;
+		}
+		super.doRender(living, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
+
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder BufferBuilder = tessellator.getBuffer();
+		if (living.isControlled()) {
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(p_76986_2_, p_76986_4_, p_76986_6_);
+			GlStateManager.disableTexture2D();
+			GlStateManager.disableLighting();
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+					GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+					GlStateManager.DestFactor.ZERO);
+			// GL11.glEnable(GL11.GL_BLEND);
+			// OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+			ClientProxy.setColor(TF2Util.getTeamColor(living), 0.23f, 0, 0f, 1f);
+			AABB boundingBox = living.getBoundingBox().grow(0.3f, 0.3f, 0.3f);
+			BufferBuilder.begin(7, DefaultVertexFormat.POSITION_NORMAL);
+			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 0.0F, 1.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(0.0F, -1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, -1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, -1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(0.0F, -1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(0.0F, 1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 1.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).normal(-1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).normal(-1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(-1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).normal(-1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).normal(1.0F, 0.0F, 0.0F)
+					.endVertex();
+			BufferBuilder.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).normal(1.0F, 0.0F, 0.0F)
+					.endVertex();
+			tessellator.draw();
+			GlStateManager.popMatrix();
+
+			Vec3 look = living.getViewVector(p_76986_9_).scale(200);
+			HitResult target = TF2Util.pierce(living.level, living, living.getX(),
+					living.getY() + living.getEyeHeight(), living.getZ(), look.x + living.getX(),
+					look.y + living.getY() + living.getEyeHeight(), look.z + living.getZ(), false, 0.02f, false).get(0);
+			if (target != null) {
+				GlStateManager.pushMatrix();
+
+				double xDist = target.getLocation().x - (living.xo + (living.getX() - living.xo) * p_76986_9_);
+				double yDist = (target.getLocation().y)
+						- (living.yo + (living.getY() - living.yo) * p_76986_9_ + living.getBbHeight() / 2);
+				double zDist = target.getLocation().z - (living.zo + (living.getZ() - living.zo) * p_76986_9_);
+				float f = Mth.sqrt((float)xDist * xDist + zDist * zDist);
+				float fullDist = Mth.sqrt((float)xDist * xDist + yDist * yDist + zDist * zDist);
+				GlStateManager.translate((float) p_76986_2_, (float) p_76986_4_ + living.getEyeHeight(),
+						(float) p_76986_6_);
+				GL11.glRotatef((float) (Math.atan2(xDist, zDist) * 180.0D / Math.PI), 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef((float) (Math.atan2(yDist, f) * 180.0D / Math.PI) * -1, 1.0F, 0.0F, 0.0F);
+				BufferBuilder.begin(7, DefaultVertexFormat.POSITION);
+				BufferBuilder.pos(-0.04, -0.04, 0).endVertex();
+				BufferBuilder.pos(0.04, 0.04, 0).endVertex();
+				BufferBuilder.pos(0.04, 0.04, fullDist).endVertex();
+				BufferBuilder.pos(-0.04, -0.04, fullDist).endVertex();
+				tessellator.draw();
+				BufferBuilder.begin(7, DefaultVertexFormat.POSITION);
+				BufferBuilder.pos(-0.04, -0.04, fullDist).endVertex();
+				BufferBuilder.pos(0.04, 0.04, fullDist).endVertex();
+				BufferBuilder.pos(0.04, 0.04, 0).endVertex();
+				BufferBuilder.pos(-0.04, -0.04, 0).endVertex();
+				tessellator.draw();
+				BufferBuilder.begin(7, DefaultVertexFormat.POSITION);
+				BufferBuilder.pos(0.04, -0.04, 0).endVertex();
+				BufferBuilder.pos(-0.04, 0.04, 0).endVertex();
+				BufferBuilder.pos(-0.04, 0.04, fullDist).endVertex();
+				BufferBuilder.pos(0.04, -0.04, fullDist).endVertex();
+				tessellator.draw();
+				BufferBuilder.begin(7, DefaultVertexFormat.POSITION);
+				BufferBuilder.pos(0.04, -0.04, fullDist).endVertex();
+				BufferBuilder.pos(-0.04, 0.04, fullDist).endVertex();
+				BufferBuilder.pos(-0.04, 0.04, 0).endVertex();
+				BufferBuilder.pos(0.04, -0.04, 0).endVertex();
+				tessellator.draw();
+				GlStateManager.popMatrix();
+			}
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.disableBlend();
+			GlStateManager.enableLighting();
+			GlStateManager.enableTexture2D();
+
+		}
+	}
+}
