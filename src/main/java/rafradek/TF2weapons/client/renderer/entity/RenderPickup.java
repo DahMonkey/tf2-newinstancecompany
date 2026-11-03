@@ -1,10 +1,15 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.RenderHelper;
+
 import rafradek.TF2weapons.entity.EntityPickup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -12,11 +17,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-public class RenderPickup extends EntityRenderer<EntityPickup> {
+public class RenderPickup extends Render<EntityPickup> {
 
 	// if you want a model, be sure to add it here:
 
-	public RenderPickup(EntityRenderDispatcher manager) {
+	public RenderPickup(EntityRendererProvider.Context manager) {
 		super(manager);
 	}
 

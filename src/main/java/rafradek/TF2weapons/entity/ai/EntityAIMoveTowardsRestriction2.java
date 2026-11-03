@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.ai;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;

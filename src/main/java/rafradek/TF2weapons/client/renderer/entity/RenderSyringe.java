@@ -1,24 +1,29 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.model.ModelSyringe;
 import rafradek.TF2weapons.entity.projectile.EntityStickProjectile;
 import rafradek.TF2weapons.util.TF2Util;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderSyringe extends EntityRenderer<EntityStickProjectile> {
+public class RenderSyringe extends Render<EntityStickProjectile> {
 
 	// if you want a model, be sure to add it here:
-	private EntityModel model;
+	private ModelBase model;
 	private static final ResourceLocation texturered = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/projectile/syringered.png");
 	private static final ResourceLocation textureblu = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/projectile/syringeblu.png");
 
-	public RenderSyringe(EntityRenderDispatcher manager) {
+	public RenderSyringe(EntityRendererProvider.Context manager) {
 		super(manager);
 		// we could have initialized it above, but here is fine as well:
 		model = new ModelSyringe();

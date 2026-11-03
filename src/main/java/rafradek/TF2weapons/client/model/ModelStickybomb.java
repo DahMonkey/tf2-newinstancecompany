@@ -1,30 +1,31 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
+
 import net.minecraft.world.entity.Entity;
 
-public class ModelStickybomb extends EntityModel {
+public class ModelStickybomb extends ModelBase {
 	// fields
-	ModelPart Shape1;
-	ModelPart Shape2;
-	ModelPart Shape3;
+	ModelRenderer Shape1;
+	ModelRenderer Shape2;
+	ModelRenderer Shape3;
 
 	public ModelStickybomb() {
 		textureWidth = 16;
 		textureHeight = 32;
 
-		Shape1 = new ModelPart(this, 0, 6);
+		Shape1 = new ModelRenderer(this, 0, 6);
 		Shape1.addBox(0F, 0F, 0F, 3, 3, 5);
 		Shape1.setRotationPoint(-1F, -1F, -2F);
 		Shape1.setTextureSize(16, 32);
 		Shape1.mirror = true;
-		Shape2 = new ModelPart(this, 0, 14);
+		Shape2 = new ModelRenderer(this, 0, 14);
 		Shape2.addBox(0F, 0F, 0F, 3, 5, 3);
 		Shape2.setRotationPoint(-1F, -2F, -1F);
 		Shape2.setTextureSize(16, 32);
 		Shape2.mirror = true;
-		Shape3 = new ModelPart(this, 0, 0);
+		Shape3 = new ModelRenderer(this, 0, 0);
 		Shape3.addBox(0F, 0F, 0F, 5, 3, 3);
 		Shape3.setRotationPoint(-2F, -1F, -1F);
 		Shape3.setTextureSize(16, 32);

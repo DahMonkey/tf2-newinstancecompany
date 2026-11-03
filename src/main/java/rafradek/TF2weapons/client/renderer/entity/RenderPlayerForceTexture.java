@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.util.TF2Class;
@@ -11,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class RenderPlayerForceTexture extends PlayerRenderer {
 
-	public RenderPlayerForceTexture(EntityRenderDispatcher renderManager) {
+	public RenderPlayerForceTexture(EntityRendererProvider.Context renderManager) {
 		super(renderManager);
 	}
 

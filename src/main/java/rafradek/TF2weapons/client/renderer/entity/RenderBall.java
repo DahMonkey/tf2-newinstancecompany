@@ -1,21 +1,26 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.model.ModelStickybomb;
 import rafradek.TF2weapons.entity.projectile.EntityBall;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderBall extends EntityRenderer<EntityBall> {
+public class RenderBall extends Render<EntityBall> {
 
 	// if you want a model, be sure to add it here:
-	private EntityModel model;
+	private ModelBase model;
 	private static final ResourceLocation texture = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/projectile/ball.png");
 
-	public RenderBall(EntityRenderDispatcher manager) {
+	public RenderBall(EntityRendererProvider.Context manager) {
 		super(manager);
 		// we could have initialized it above, but here is fine as well:
 		model = new ModelStickybomb();

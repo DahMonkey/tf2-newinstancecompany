@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+import rafradek.TF2weapons.client.compat.RenderHelper;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import org.apache.commons.lang3.StringUtils;

@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.util.TF2Class;
@@ -16,7 +18,7 @@ import net.minecraft.world.scores.Team;
 
 public class RenderPlayerDisguised extends PlayerRenderer {
 
-	public RenderPlayerDisguised(EntityRenderDispatcher renderManager) {
+	public RenderPlayerDisguised(EntityRendererProvider.Context renderManager) {
 		super(renderManager);
 	}
 

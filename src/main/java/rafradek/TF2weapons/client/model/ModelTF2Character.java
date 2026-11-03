@@ -1,10 +1,12 @@
 package rafradek.TF2weapons.client.model;
 
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.entity.Entity;
 
-public class ModelTF2Character extends HumanoidModel {
+public class ModelTF2Character extends ModelBiped {
 
 	public ModelTF2Character() {
 		super(0.0f, 0.0f, 64, 64);

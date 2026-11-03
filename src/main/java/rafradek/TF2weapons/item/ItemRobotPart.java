@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.CreativeModeTab;

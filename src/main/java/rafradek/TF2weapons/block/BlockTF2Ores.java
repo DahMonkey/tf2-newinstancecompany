@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.block;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.CreativeModeTab;

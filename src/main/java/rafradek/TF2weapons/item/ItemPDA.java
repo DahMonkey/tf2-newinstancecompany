@@ -1,5 +1,10 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -14,8 +19,6 @@ import rafradek.TF2weapons.util.TF2Class;
 import rafradek.TF2weapons.util.TF2Util;
 import javax.annotation.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
@@ -246,7 +249,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 	}
 
 	@Override
-	public void drawOverlay(ItemStack stack, Player player, Tesselator tessellator, BufferBuilder buffer,
+	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution) {
 		if (!stack.hasTag() || (stack.getTag().getByte("Building") == 0)) {
 			TF2PlayerCapability plcap = TF2PlayerCapability.get(player);

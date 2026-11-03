@@ -1,8 +1,9 @@
 package rafradek.TF2weapons.client.particle;
 
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+
 import rafradek.TF2weapons.client.TF2EventsClient;
 import rafradek.TF2weapons.util.TF2Util;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.util.Mth;

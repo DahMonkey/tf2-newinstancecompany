@@ -1,5 +1,7 @@
 package rafradek.TF2weapons;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import com.google.common.collect.Lists;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

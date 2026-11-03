@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -11,8 +14,6 @@ import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.message.TF2Message;
 import rafradek.TF2weapons.util.TF2Class;
 import rafradek.TF2weapons.util.TF2Util;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.world.InteractionHand;
@@ -92,7 +93,7 @@ public class ItemDisguiseKit extends Item implements IItemSlotNumber, IItemOverl
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void drawOverlay(ItemStack stack, Player player, Tesselator tessellator, BufferBuilder buffer,
+	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution) {
 		if (ItemToken.allowUse(player, TF2Class.SPY) && TF2ConfigVars.limitedDisguise
 				&& TF2Util

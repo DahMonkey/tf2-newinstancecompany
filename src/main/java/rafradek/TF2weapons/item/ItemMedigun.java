@@ -1,5 +1,13 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2EventsCommon;
 import rafradek.TF2weapons.TF2weapons;
@@ -18,9 +26,6 @@ import rafradek.TF2weapons.util.TF2Util;
 import java.util.ArrayList;
 import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.core.NonNullList;
@@ -473,7 +478,7 @@ public class ItemMedigun extends ItemUsable {
 	}
 
 	@Override
-	public void drawOverlay(ItemStack stack, Player player, Tesselator tessellator, BufferBuilder renderer,
+	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder renderer,
 			ScaledResolution resolution) {
 		Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -483,7 +488,7 @@ public class ItemMedigun extends ItemUsable {
 
 		ClientProxy.setColor(TF2Util.getTeamColor(player), 0.7f, 0, 0.25f, 0.8f);
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(resolution.getScaledWidth() - 138, resolution.getScaledHeight() - 20, 0.0D).tex(0.0D, 1D)
 				.endVertex();
 		renderer.pos(resolution.getScaledWidth() - 14, resolution.getScaledHeight() - 20, 0.0D).tex(0.01D, 1D)
@@ -495,7 +500,7 @@ public class ItemMedigun extends ItemUsable {
 		tessellator.draw();
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(resolution.getScaledWidth() - 140, resolution.getScaledHeight() - 18, 0.0D).tex(0.0D, 0.265625D)
 				.endVertex();
 		renderer.pos(resolution.getScaledWidth() - 12, resolution.getScaledHeight() - 18, 0.0D).tex(1.0D, 0.265625D)
@@ -516,7 +521,7 @@ public class ItemMedigun extends ItemUsable {
 				resolution.getScaledWidth() - 130, resolution.getScaledHeight() - 48, 16777215);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.33F);
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(resolution.getScaledWidth() - 132, resolution.getScaledHeight() - 22, 0.0D).endVertex();
 		renderer.pos(resolution.getScaledWidth() - 20, resolution.getScaledHeight() - 22, 0.0D).endVertex();
 		renderer.pos(resolution.getScaledWidth() - 20, resolution.getScaledHeight() - 36, 0.0D).endVertex();
@@ -524,7 +529,7 @@ public class ItemMedigun extends ItemUsable {
 		tessellator.draw();
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.85F);
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(resolution.getScaledWidth() - 132, resolution.getScaledHeight() - 22, 0.0D).endVertex();
 		renderer.pos(resolution.getScaledWidth() - 132 + 112 * uber, resolution.getScaledHeight() - 22, 0.0D)
 				.endVertex();

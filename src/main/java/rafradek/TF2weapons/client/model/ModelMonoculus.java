@@ -1,27 +1,28 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
+
 import net.minecraft.world.entity.Entity;
 
 /**
  * ModelMonoculus - rafradek Created using Tabula 5.1.0
  */
-public class ModelMonoculus extends EntityModel {
-	public ModelPart shape1;
-	public ModelPart shape2;
-	public ModelPart shape3;
+public class ModelMonoculus extends ModelBase {
+	public ModelRenderer shape1;
+	public ModelRenderer shape2;
+	public ModelRenderer shape3;
 
 	public ModelMonoculus() {
 		textureWidth = 128;
 		textureHeight = 128;
-		shape2 = new ModelPart(this, 0, 0);
+		shape2 = new ModelRenderer(this, 0, 0);
 		shape2.setRotationPoint(0.0F, 8f, 0.0F);
 		shape2.addBox(-13.0F, -16.0F, -13.0F, 26, 32, 26, 0.0F);
-		shape3 = new ModelPart(this, 0, 64);
+		shape3 = new ModelRenderer(this, 0, 64);
 		shape3.setRotationPoint(0.0F, 8f, 0.0F);
 		shape3.addBox(-13.0F, -13.0F, -16.0F, 26, 26, 32, 0.0F);
-		shape1 = new ModelPart(this, 0, 0);
+		shape1 = new ModelRenderer(this, 0, 0);
 		shape1.setRotationPoint(0.0F, 8f, 0.0F);
 		shape1.addBox(-16.0F, -13.0F, -13.0F, 32, 26, 26, 0.0F);
 	}
@@ -36,7 +37,7 @@ public class ModelMonoculus extends EntityModel {
 	/**
 	 * This is a helper function from Tabula to set the rotation of model parts
 	 */
-	public void setRotateAngle(ModelPart modelRenderer, float x, float y, float z) {
+	public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
 		modelRenderer.rotateAngleX = x;
 		modelRenderer.rotateAngleY = y;
 		modelRenderer.rotateAngleZ = z;

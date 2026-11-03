@@ -1,24 +1,31 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderLivingBase;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.client.model.ModelMonoculus;
 import rafradek.TF2weapons.entity.boss.EntityMonoculus;
 import rafradek.TF2weapons.util.TF2Util;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderMonoculus extends LivingEntityRenderer<EntityMonoculus> {
+public class RenderMonoculus extends RenderLivingBase<EntityMonoculus> {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/monoculus.png");
 	private static final ResourceLocation TEXTURE_ANGRY = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/monoculusangry.png");
 
-	public RenderMonoculus(EntityRenderDispatcher renderManagerIn) {
+	public RenderMonoculus(EntityRendererProvider.Context renderManagerIn) {
 		super(renderManagerIn, new ModelMonoculus(), 0f);
 	}
 
@@ -50,7 +57,7 @@ public class RenderMonoculus extends LivingEntityRenderer<EntityMonoculus> {
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		if (entity.isLaser()) {
 			float scale = Math.min(0.12f, (EntityMonoculus.LASER_DURATION - entity.laserTime) * 0.006f);
-			Tesselator tessellator = Tesselator.getInstance();
+			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder renderer = tessellator.getBuffer();
 			GlStateManager.pushMatrix();
 			GlStateManager.translate((float) x, (float) y + entity.getEyeHeight(), (float) z);
@@ -66,25 +73,25 @@ public class RenderMonoculus extends LivingEntityRenderer<EntityMonoculus> {
 			GL11.glEnable(GL11.GL_BLEND);
 			OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 			ClientProxy.setColor(TF2Util.getTeamColor(entity), 0.28f, 0, 0f, 1f);
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(-scale, -scale, 0).endVertex();
 			renderer.pos(scale, scale, 0).endVertex();
 			renderer.pos(scale, scale, 50).endVertex();
 			renderer.pos(-scale, -scale, 50).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(-scale, -scale, 50).endVertex();
 			renderer.pos(scale, scale, 50).endVertex();
 			renderer.pos(scale, scale, 0).endVertex();
 			renderer.pos(-scale, -scale, 0).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(scale, -scale, 0).endVertex();
 			renderer.pos(-scale, scale, 0).endVertex();
 			renderer.pos(-scale, scale, 50).endVertex();
 			renderer.pos(scale, -scale, 50).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(scale, -scale, 50).endVertex();
 			renderer.pos(-scale, scale, 50).endVertex();
 			renderer.pos(-scale, scale, 0).endVertex();

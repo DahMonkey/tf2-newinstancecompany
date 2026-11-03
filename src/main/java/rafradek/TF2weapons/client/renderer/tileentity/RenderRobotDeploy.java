@@ -1,10 +1,13 @@
 package rafradek.TF2weapons.client.renderer.tileentity;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.model.ModelTF2Character;
 import rafradek.TF2weapons.client.renderer.entity.RenderTF2Character;
 import rafradek.TF2weapons.tileentity.TileEntityRobotDeploy;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +27,7 @@ public class RenderRobotDeploy extends BlockEntityRenderer<TileEntityRobotDeploy
 		int progress = te.progressClient;
 		if (progress > 0) {
 			GlStateManager.pushMatrix();
-			Tesselator tessellator = Tesselator.getInstance();
+			Tessellator tessellator = Tessellator.getInstance();
 			bindTexture(new ResourceLocation(RenderTF2Character.TEXTURE_PATH_BASE + "robot/" +
 					te.classType.getName() + ".png"));
 			boolean giant = te.produceGiant();

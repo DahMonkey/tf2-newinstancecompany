@@ -1,20 +1,27 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderLiving;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.model.ModelBuild;
 import rafradek.TF2weapons.client.model.ModelTeleporter;
 import rafradek.TF2weapons.entity.building.EntityTeleporter;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderTeleporter extends MobRenderer<EntityTeleporter> {
+public class RenderTeleporter extends RenderLiving<EntityTeleporter> {
 
 	private static final ResourceLocation TELEPORTER_RED = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/red/Teleporter.png");
@@ -26,10 +33,10 @@ public class RenderTeleporter extends MobRenderer<EntityTeleporter> {
 			"textures/entity/tf2/red/box.png");
 	private static final ResourceLocation BOX_BLU = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/blu/box.png");
-	public EntityModel box;
-	public EntityModel main;
+	public ModelBase box;
+	public ModelBase main;
 
-	public RenderTeleporter(EntityRenderDispatcher renderManager) {
+	public RenderTeleporter(EntityRendererProvider.Context renderManager) {
 		super(renderManager, new ModelTeleporter(), 0.6f);
 		main = this.mainModel;
 		box = new ModelBuild();
@@ -69,7 +76,7 @@ public class RenderTeleporter extends MobRenderer<EntityTeleporter> {
 
 		if (living.getSoundState() == 1) {
 
-			Tesselator tessellator = Tesselator.getInstance();
+			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder renderer = tessellator.getBuffer();
 			GlStateManager.pushMatrix();
 			GlStateManager.translate((float) x, (float) y + 0.23D, (float) z);
@@ -87,7 +94,7 @@ public class RenderTeleporter extends MobRenderer<EntityTeleporter> {
 			 * if(TF2weapons.getTeamForDisplay(living)==0){ GlStateManager.color(1.0F, 0.0F,
 			 * 0.0F, 0.28F); } else{ GlStateManager.color(0.0F, 0.0F, 1.0F, 0.28F); }
 			 */
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(-0.5, 0.0D, 0.5).tex(0.75D, 0.5D).endVertex();
 			renderer.pos(0.5, 0.0D, 0.5).tex(1D, 0.5D).endVertex();
 			renderer.pos(0.5, 0.0D, -0.5).tex(1D, 0.0D).endVertex();
@@ -98,7 +105,7 @@ public class RenderTeleporter extends MobRenderer<EntityTeleporter> {
 				float[] color = Sheep.getDyeRgb(DyeColor.byDyeDamage(living.getColor()));
 				GlStateManager.color(color[0], color[1], color[2], 0.85F);
 
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos(-0.5, 0.0D, 0.5).tex(0.75D, 1D).endVertex();
 				renderer.pos(0.5, 0.0D, 0.5).tex(1D, 1D).endVertex();
 				renderer.pos(0.5, 0.0D, -0.5).tex(1D, 0.5D).endVertex();

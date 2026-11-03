@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.mixin;
 
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.PyrolandRenderer;
 import rafradek.TF2weapons.item.ItemFromData;

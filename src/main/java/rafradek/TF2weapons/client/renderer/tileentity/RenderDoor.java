@@ -1,11 +1,14 @@
 package rafradek.TF2weapons.client.renderer.tileentity;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.block.BlockOverheadDoor;
 import rafradek.TF2weapons.tileentity.TileEntityOverheadDoor;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -30,7 +33,7 @@ public class RenderDoor extends BlockEntityRenderer<TileEntityOverheadDoor> {
 		for (int i = 0; i <= amountScrolled; i++) {
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			Tesselator tessellator = Tesselator.getInstance();
+			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferbuilder = tessellator.getBuffer();
 			BlockPos blockpos = orig.below(i);
 			// GlStateManager.translate(-blockpos.getX(), -blockpos.getY(),
@@ -42,7 +45,7 @@ public class RenderDoor extends BlockEntityRenderer<TileEntityOverheadDoor> {
 				yscale = 1 / off;
 			}
 			GlStateManager.translate((float) x, (float) (y - i + 1 - off) * yscale, (float) z);
-			bufferbuilder.begin(7, DefaultVertexFormat.BLOCK);
+			bufferbuilder.begin(7, DefaultVertexFormats.BLOCK);
 
 			bufferbuilder.setTranslation(-blockpos.getX(), -blockpos.getY(), -blockpos.getZ());
 			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();

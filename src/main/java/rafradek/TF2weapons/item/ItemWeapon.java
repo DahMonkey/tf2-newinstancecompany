@@ -1,5 +1,13 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.NBTLiterals;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -23,9 +31,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -1014,7 +1019,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
-	public void drawOverlay(ItemStack stack, Player player, Tesselator tessellator, BufferBuilder buffer,
+	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution) {
 		if (this.hasKillstreak(stack, 1)) {
 			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
@@ -1026,7 +1031,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			GuiComponent gui = Minecraft.getInstance().gui;
 			ClientProxy.setColor(TF2Util.getTeamColor(player), 0.7f, 0, 0.25f, 0.8f);
 
-			buffer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			buffer.pos(30, resolution.getScaledHeight() - 20, 0.0D).tex(0.0D, 1D).endVertex();
 			buffer.pos(71, resolution.getScaledHeight() - 20, 0.0D).tex(0.01D, 1D).endVertex();
 			buffer.pos(71, resolution.getScaledHeight() - 46, 0.0D).tex(0.01D, 0.99D).endVertex();
@@ -1039,7 +1044,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			float progress = Mth.clamp(
 					1f - (WeaponsCapability.get(player).ticksTotal - timestart) / (float) (timeend - timestart), 0f,
 					1f);
-			buffer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			buffer.pos(30, resolution.getScaledHeight() - 20, 0.0D).tex(0.0D, 1D).endVertex();
 			buffer.pos(30 + progress * 41f, resolution.getScaledHeight() - 20, 0.0D).tex(0.01D, 1D).endVertex();
 			buffer.pos(30 + progress * 41f, resolution.getScaledHeight() - 21, 0.0D).tex(0.01D, 0.99D).endVertex();

@@ -1,9 +1,10 @@
 package rafradek.TF2weapons.client.particle;
 
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+
 import rafradek.TF2weapons.client.PyrolandRenderer;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.item.ItemProjectileWeapon;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;

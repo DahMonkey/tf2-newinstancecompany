@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -18,8 +21,6 @@ import rafradek.TF2weapons.util.PlayerPersistStorage;
 import rafradek.TF2weapons.util.TF2Util;
 import javax.annotation.Nullable;
 import java.util.UUID;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import java.util.Optional;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.core.BlockPos;
@@ -680,7 +681,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void renderGUI(BufferBuilder renderer, Tesselator tessellator, Player player, int width, int height,
+	public void renderGUI(BufferBuilder renderer, Tessellator tessellator, Player player, int width, int height,
 			GuiComponent gui) {
 
 	}

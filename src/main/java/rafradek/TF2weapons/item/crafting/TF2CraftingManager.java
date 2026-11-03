@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item.crafting;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import com.google.common.collect.Lists;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;

@@ -1,14 +1,15 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
 
-public class ModelOverheadDoor extends EntityModel {
 
-	public ModelPart roller;
-	public ModelPart door;
+public class ModelOverheadDoor extends ModelBase {
+
+	public ModelRenderer roller;
+	public ModelRenderer door;
 	public ModelOverheadDoor() {
-		roller = new ModelPart(this, 0, 0).setTextureSize(32, 16);
-		door = new ModelPart(this, 16, 0).setTextureSize(32, 16);
+		roller = new ModelRenderer(this, 0, 0).setTextureSize(32, 16);
+		door = new ModelRenderer(this, 16, 0).setTextureSize(32, 16);
 	}
 }

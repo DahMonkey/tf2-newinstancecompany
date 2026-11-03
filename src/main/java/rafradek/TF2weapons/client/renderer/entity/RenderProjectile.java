@@ -1,19 +1,24 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.entity.projectile.EntityProjectileBase;
 import rafradek.TF2weapons.util.TF2Util;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderProjectile extends EntityRenderer<EntityProjectileBase> {
-	private EntityModel model;
+public class RenderProjectile extends Render<EntityProjectileBase> {
+	private ModelBase model;
 	private final ResourceLocation texturered;
 	private final ResourceLocation textureblu;
 
-	public RenderProjectile(EntityModel model, ResourceLocation redTexture, ResourceLocation bluTexture,
-			EntityRenderDispatcher manager) {
+	public RenderProjectile(ModelBase model, ResourceLocation redTexture, ResourceLocation bluTexture,
+			EntityRendererProvider.Context manager) {
 		super(manager);
 		// we could have initialized it above, but here is fine as well:
 		this.model = model;

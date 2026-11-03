@@ -1,19 +1,24 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.entity.EntityStatue;
 import java.nio.FloatBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderStatue extends EntityRenderer<EntityStatue> {
+public class RenderStatue extends Render<EntityStatue> {
 
 	private static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
 	private FloatBuffer brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
 
-	public RenderStatue(EntityRenderDispatcher renderManager) {
+	public RenderStatue(EntityRendererProvider.Context renderManager) {
 		super(renderManager);
 	}
 

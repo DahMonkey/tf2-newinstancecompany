@@ -1,5 +1,17 @@
 package rafradek.TF2weapons.client;
 
+import rafradek.TF2weapons.client.compat.RenderLivingBase;
+
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+import rafradek.TF2weapons.client.compat.RenderHelper;
+
 import org.apache.commons.io.IOUtils;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2EventsCommon;
@@ -30,9 +42,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -42,9 +51,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
@@ -653,7 +660,7 @@ public class TF2EventsClient {
 		ItemStack held = player.getItemInHand(InteractionHand.MAIN_HAND);
 		int width = event.getResolution().getScaledWidth();
 		int height = event.getResolution().getScaledHeight();
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder renderer = tessellator.getBuffer();
 		Entity mouseTarget = Minecraft.getInstance().hitResult != null
 				? Minecraft.getInstance().hitResult.getEntity()
@@ -705,7 +712,7 @@ public class TF2EventsClient {
 				ClientProxy.setColor(TF2Util.getTeamColor(player), 1f, 0, 0f, 1f);
 				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.VIGNETTE);
 				BufferBuilder BufferBuilder = tessellator.getBuffer();
-				BufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
+				BufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 				BufferBuilder.pos(0.0D, event.getResolution().getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
 				BufferBuilder
 						.pos(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight(), -90.0D)
@@ -820,7 +827,7 @@ public class TF2EventsClient {
 
 					ClientProxy.setColor(TF2Util.getTeamColor(player), 0.7f, 0, 0.25f, 0.8f);
 
-					renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+					renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 					renderer.pos(event.getResolution().getScaledWidth() - 74,
 							event.getResolution().getScaledHeight() - 20, 0.0D).tex(0.0D, 1D).endVertex();
 					renderer.pos(event.getResolution().getScaledWidth() - 14,
@@ -832,7 +839,7 @@ public class TF2EventsClient {
 					tessellator.draw();
 
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-					renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+					renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 					renderer.pos(event.getResolution().getScaledWidth() - 76,
 							event.getResolution().getScaledHeight() - 18, 0.0D).tex(0.5D, 0.265625D).endVertex();
 					renderer.pos(event.getResolution().getScaledWidth() - 12,
@@ -852,8 +859,8 @@ public class TF2EventsClient {
 					// GL11.glEnable(GL11.GL_ALPHA_TEST);
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				}
-				((IItemOverlay) held.getItem()).drawOverlay(held, player, Tesselator.getInstance(),
-						Tesselator.getInstance().getBuffer(), event.getResolution());
+				((IItemOverlay) held.getItem()).drawOverlay(held, player, Tessellator.getInstance(),
+						Tessellator.getInstance().getBuffer(), event.getResolution());
 			}
 			if (player.getEffect(TF2weapons.it) != null) {
 				// GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -899,7 +906,7 @@ public class TF2EventsClient {
 				// event.getResolution().getScaledHeight()/2+35, 0, 0, 128, 40);
 				setColorTeam(player, 0.7f);
 
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos(event.getResolution().getScaledWidth() / 2 - 62,
 						event.getResolution().getScaledHeight() / 2 + 70, 0.0D).tex(0.0D, 1D).endVertex();
 				renderer.pos(event.getResolution().getScaledWidth() / 2 + 62,
@@ -911,7 +918,7 @@ public class TF2EventsClient {
 				tessellator.draw();
 
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos(event.getResolution().getScaledWidth() / 2 - 64,
 						event.getResolution().getScaledHeight() / 2 + 72, 0.0D).tex(0.0D, 0.265625D).endVertex();
 				renderer.pos(event.getResolution().getScaledWidth() / 2 + 64,
@@ -924,7 +931,7 @@ public class TF2EventsClient {
 				float overheal = 1f + living.getAbsorptionAmount() / living.getMaxHealth();
 				if (overheal > 1f) {
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.4F);
-					renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+					renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 					renderer.pos(event.getResolution().getScaledWidth() / 2 - 47 - 10 * overheal,
 							event.getResolution().getScaledHeight() / 2 + 55 + 10 * overheal, 0.0D).tex(0.0D, 0.59375D)
 							.endVertex();
@@ -940,7 +947,7 @@ public class TF2EventsClient {
 					tessellator.draw();
 				}
 				GlStateManager.color(0.12F, 0.12F, 0.12F, 1F);
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos(event.getResolution().getScaledWidth() / 2 - 58.3,
 						event.getResolution().getScaledHeight() / 2 + 66.4, 0.0D).tex(0.0D, 0.59375D).endVertex();
 				renderer.pos(event.getResolution().getScaledWidth() / 2 - 35.7,
@@ -958,7 +965,7 @@ public class TF2EventsClient {
 				}
 				int tf2health = Math.round((living.getHealth() / TF2ConfigVars.damageMultiplier) * overheal * 10);
 
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos(event.getResolution().getScaledWidth() / 2 - 57,
 						event.getResolution().getScaledHeight() / 2 + 65, 0.0D).tex(0.0D, 0.59375D).endVertex();
 				renderer.pos(event.getResolution().getScaledWidth() / 2 - 37,
@@ -1112,7 +1119,7 @@ public class TF2EventsClient {
 			double zDist = zPos2 - zPos1;
 			float f = Mth.sqrt((float)xDist * xDist + zDist * zDist);
 			float fullDist = Mth.sqrt((float)xDist * xDist + yDist * yDist + zDist * zDist);
-			Tesselator tessellator = Tesselator.getInstance();
+			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder renderer = tessellator.getBuffer();
 			GlStateManager.pushMatrix();
 			GlStateManager.translate((float) xPos1 - cameraX, (float) (yPos1 + ent.getEyeHeight() - 0.1) - cameraY,
@@ -1128,25 +1135,25 @@ public class TF2EventsClient {
 			 * if (TF2Util.getTeamForDisplay(ent) == 0) { GlStateManager.color(1.0F, 0.0F,
 			 * 0.0F, 0.23F); } else { GlStateManager.color(0.0F, 0.0F, 1.0F, 0.23F); }
 			 */
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(-size, -size, 0).endVertex();
 			renderer.pos(size, size, 0).endVertex();
 			renderer.pos(size, size, fullDist).endVertex();
 			renderer.pos(-size, -size, fullDist).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(-size, -size, fullDist).endVertex();
 			renderer.pos(size, size, fullDist).endVertex();
 			renderer.pos(size, size, 0).endVertex();
 			renderer.pos(-size, -size, 0).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(size, -size, 0).endVertex();
 			renderer.pos(-size, size, 0).endVertex();
 			renderer.pos(-size, size, fullDist).endVertex();
 			renderer.pos(size, -size, fullDist).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(size, -size, fullDist).endVertex();
 			renderer.pos(-size, size, fullDist).endVertex();
 			renderer.pos(-size, size, 0).endVertex();
@@ -1296,13 +1303,13 @@ public class TF2EventsClient {
 				&& event.getEntity().getItemInHand(InteractionHand.MAIN_HAND) != null
 				&& event.getEntity().getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemUsable
 				&& !(event.getEntity().getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemMeleeWeapon)
-				&& event.getRenderer().getMainModel() instanceof HumanoidModel) {
-			((HumanoidModel) event.getRenderer()
+				&& event.getRenderer().getMainModel() instanceof ModelBiped) {
+			((ModelBiped) event.getRenderer()
 					.getMainModel()).rightArmPose = ((event.getEntity().getCapability(TF2weapons.WEAPONS_CAP,
 							null).state & 3) > 0)
 							|| event.getEntity().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isCharging()
-									? HumanoidModel.ArmPose.BOW_AND_ARROW
-									: HumanoidModel.ArmPose.ITEM;
+									? ModelBiped.ArmPose.BOW_AND_ARROW
+									: ModelBiped.ArmPose.ITEM;
 		}
 		if (event.getEntity().getEffect(TF2weapons.buffbanner) != null
 				|| event.getEntity().getEffect(TF2weapons.backup) != null
@@ -1312,11 +1319,11 @@ public class TF2EventsClient {
 			GlStateManager.enableBlend();
 			GlStateManager.disableLighting();
 			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.circleTexture);
-			Tesselator tessellator = Tesselator.getInstance();
+			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferbuilder = tessellator.getBuffer();
 			float size = (event.getEntity().tickCount % 20) / 20f;
 			ClientProxy.setColor(TF2Util.getTeamColor(event.getEntity()), size, 0.2f, 0f, 1f);
-			bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
+			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 			bufferbuilder.pos(event.getX() - 0.7 * size, event.getY() + 0.1, event.getZ() + 0.7 * size).tex(0, 1)
 					.endVertex();
 			bufferbuilder.pos(event.getX() + 0.7 * size, event.getY() + 0.1, event.getZ() + 0.7 * size).tex(1, 1)
@@ -1396,7 +1403,7 @@ public class TF2EventsClient {
 				&& (seeDisguise || usesForceTexture(event.getEntity()))) {
 			float partialTicks = tickTime;
 			String disguiseType = WeaponsCapability.get(event.getEntity()).getDisguiseType();
-			LivingEntityRenderer<LivingEntity> render = null;
+			RenderLivingBase<LivingEntity> render = null;
 			Inventory origStack = null;
 			ItemStack mainhanditem = null;
 			if (seeDisguise && disguiseType.startsWith("M:")) {

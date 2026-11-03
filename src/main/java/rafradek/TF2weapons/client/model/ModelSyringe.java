@@ -1,7 +1,8 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
+
 import net.minecraft.world.entity.Entity;
 
 // Date: 06.01.2016 15:27:35
@@ -11,33 +12,33 @@ import net.minecraft.world.entity.Entity;
 // - ZeuX
 
 
-public class ModelSyringe extends EntityModel {
+public class ModelSyringe extends ModelBase {
 	// fields
-	ModelPart Shape1;
-	ModelPart Shape2;
-	ModelPart Shape3;
-	ModelPart Shape4;
+	ModelRenderer Shape1;
+	ModelRenderer Shape2;
+	ModelRenderer Shape3;
+	ModelRenderer Shape4;
 
 	public ModelSyringe() {
 		textureWidth = 32;
 		textureHeight = 32;
 
-		Shape1 = new ModelPart(this, 0, 6);
+		Shape1 = new ModelRenderer(this, 0, 6);
 		Shape1.addBox(0F, 0F, 1F, 1, 1, 5);
 		Shape1.setRotationPoint(0F, 0F, 0F);
 		Shape1.setTextureSize(32, 32);
 		Shape1.mirror = true;
-		Shape2 = new ModelPart(this, 0, 0);
+		Shape2 = new ModelRenderer(this, 0, 0);
 		Shape2.addBox(-1F, -1F, 0F, 3, 3, 1);
 		Shape2.setRotationPoint(0F, 0F, 0F);
 		Shape2.setTextureSize(32, 32);
 		Shape2.mirror = true;
-		Shape3 = new ModelPart(this, 8, 0);
+		Shape3 = new ModelRenderer(this, 8, 0);
 		Shape3.addBox(-0.5F, -0.5F, -3F, 2, 2, 3);
 		Shape3.setRotationPoint(0F, 0F, 0F);
 		Shape3.setTextureSize(32, 32);
 		Shape3.mirror = true;
-		Shape4 = new ModelPart(this, 0, 0);
+		Shape4 = new ModelRenderer(this, 0, 0);
 		Shape4.addBox(-1F, -1F, -4F, 3, 3, 1);
 		Shape4.setRotationPoint(0F, 0F, 0F);
 		Shape4.setTextureSize(32, 32);

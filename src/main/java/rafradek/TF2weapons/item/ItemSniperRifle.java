@@ -1,5 +1,13 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -12,9 +20,6 @@ import rafradek.TF2weapons.util.TF2DamageSource;
 import rafradek.TF2weapons.util.TF2Util;
 import java.util.UUID;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -249,7 +254,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 	}
 
 	@Override
-	public void drawOverlay(ItemStack stack, Player player, Tesselator tessellator, BufferBuilder renderer,
+	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder renderer,
 			ScaledResolution resolution) {
 		// System.out.println("drawing");
 
@@ -265,20 +270,20 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.scopeTexture);
 			double widthDrawStart = (double) (resolution.getScaledWidth() - resolution.getScaledHeight()) / 2;
 			double widthDrawEnd = widthDrawStart + resolution.getScaledHeight();
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(widthDrawStart, resolution.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
 			renderer.pos(widthDrawEnd, resolution.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
 			renderer.pos(widthDrawEnd, 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
 			renderer.pos(widthDrawStart, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
 			tessellator.draw();
 			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.blackTexture);
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(0, resolution.getScaledHeight(), -90.0D).tex(0d, 1d).endVertex();
 			renderer.pos(widthDrawStart, resolution.getScaledHeight(), -90.0D).tex(1d, 1d).endVertex();
 			renderer.pos(widthDrawStart, 0.0D, -90.0D).tex(1d, 0d).endVertex();
 			renderer.pos(0, 0.0D, -90.0D).tex(0d, 0d).endVertex();
 			tessellator.draw();
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(widthDrawEnd, resolution.getScaledHeight(), -90.0D).tex(0d, 1d).endVertex();
 			renderer.pos(resolution.getScaledWidth(), resolution.getScaledHeight(), -90.0D).tex(1d, 1d).endVertex();
 			renderer.pos(resolution.getScaledWidth(), 0.0D, -90.0D).tex(1d, 0d).endVertex();
@@ -286,7 +291,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			tessellator.draw();
 			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.chargeTexture);
 			GlStateManager.color(0.5F, 0.5F, 0.5F, 0.7F);
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos((double) resolution.getScaledWidth() / 2 + 50, (double) resolution.getScaledHeight() / 2 + 15,
 					-90.0D).tex(0d, 0.25d).endVertex();
 			renderer.pos((double) resolution.getScaledWidth() / 2 + 100, (double) resolution.getScaledHeight() / 2 + 15,
@@ -297,7 +302,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 					-90.0D).tex(0d, 0d).endVertex();
 			tessellator.draw();
 			if (cap.chargeTicks >= ItemSniperRifle.getChargeStartTime(stack, player)) {
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos((double) resolution.getScaledWidth() / 2 + 110,
 						(double) resolution.getScaledHeight() / 2 + 18, -90.0D).tex(0d, 0.57d).endVertex();
 				renderer.pos((double) resolution.getScaledWidth() / 2 + 121,
@@ -310,7 +315,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			}
 			double progress = cap.chargeTicks / ItemSniperRifle.getChargeTime(stack, player);
 			GlStateManager.color(1F, 1F, 1F, 1F);
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos((double) resolution.getScaledWidth() / 2 + 50, (double) resolution.getScaledHeight() / 2 + 15,
 					-90.0D).tex(0d, 0.25d).endVertex();
 			renderer.pos((double) resolution.getScaledWidth() / 2 + 50 + progress * 50,
@@ -321,7 +326,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 					-90.0D).tex(0d, 0d).endVertex();
 			tessellator.draw();
 			if (progress >= 1d) {
-				renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 				renderer.pos((double) resolution.getScaledWidth() / 2 + 110,
 						(double) resolution.getScaledHeight() / 2 + 18, -90.0D).tex(0d, 0.57d).endVertex();
 				renderer.pos((double) resolution.getScaledWidth() / 2 + 121,

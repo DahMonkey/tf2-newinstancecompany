@@ -1,10 +1,13 @@
 package rafradek.TF2weapons.client;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +40,7 @@ public class ClientRender {
 	public static void renderIconWorld(double minu, double minv, double maxu, double maxv, double xsize, double ysize) {
 		GlStateManager.pushMatrix();
 		GlStateManager.enableRescaleNormal();
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		GlStateManager.rotate(180.0F - Minecraft.getInstance().getEntityRenderDispatcher().playerViewY, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotate((Minecraft.getInstance().getEntityRenderDispatcher().options.thirdPersonView == 2 ? -1 : 1)
@@ -46,7 +49,7 @@ public class ClientRender {
 		double xsizeh = xsize / 2D;
 		double ysizeh = ysize / 2D;
 
-		bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX_NORMAL);
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
 		bufferbuilder.pos(-xsizeh, -ysizeh, 0.0D).tex(minu, maxv).normal(0.0F, 1.0F, 0.0F).endVertex();
 		bufferbuilder.pos(xsizeh, -ysizeh, 0.0D).tex(maxu, maxv).normal(0.0F, 1.0F, 0.0F).endVertex();
 		bufferbuilder.pos(xsizeh, ysizeh, 0.0D).tex(maxu, minv).normal(0.0F, 1.0F, 0.0F).endVertex();
@@ -59,9 +62,9 @@ public class ClientRender {
 
 	public static void renderAABBTexture(AABB boundingBox, double minu, double minv, double maxu,
 			double maxv) {
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX_NORMAL);
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
 		bufferbuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).tex(minu, maxv)
 				.normal(0.0F, 0.0F, -1.0F).endVertex();
 		bufferbuilder.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).tex(maxu, maxv)

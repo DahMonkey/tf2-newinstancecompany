@@ -1,5 +1,19 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderBiped;
+import rafradek.TF2weapons.client.compat.LayerRenderer;
+import rafradek.TF2weapons.client.compat.LayerHeldItem;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.client.TF2EventsClient;
@@ -13,31 +27,25 @@ import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.item.ItemMeleeWeapon;
 import rafradek.TF2weapons.util.TF2Class;
 import rafradek.TF2weapons.util.TF2Util;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
-public class RenderTF2Character extends HumanoidMobRenderer<EntityTF2Character> {
+public class RenderTF2Character extends RenderBiped<EntityTF2Character> {
 
 	public static final String TEXTURE_PATH_BASE = TF2weapons.MOD_ID + ":textures/entity/tf2/";
 
-	public HumanoidModel modelHeavy = new ModelHeavy();
-	public HumanoidModel modelMain;
+	public ModelBiped modelHeavy = new ModelHeavy();
+	public ModelBiped modelMain;
 
-	public RenderTF2Character(EntityRenderDispatcher renderManager) {
+	public RenderTF2Character(EntityRendererProvider.Context renderManager) {
 		super(renderManager, new ModelTF2Character(), 0.5F);
-		this.modelMain = (HumanoidModel) this.mainModel;
+		this.modelMain = (ModelBiped) this.mainModel;
 		this.addLayer(new LayerHeldItem(this));
 		this.addLayer(new LayerArmorTint(this));
 		this.addLayer(new LayerWearables(this));
-		this.layerRenderers.removeIf(layer -> (RenderLayer<?>) layer instanceof LayerCustomHead);
+		this.layerRenderers.removeIf(layer -> (LayerRenderer<?>) layer instanceof LayerCustomHead);
 	}
 
 	@Override
@@ -65,14 +73,14 @@ public class RenderTF2Character extends HumanoidMobRenderer<EntityTF2Character> 
 			sniperZoomed = living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isCharging();
 			// System.out.println("pos: "+p_76986_2_+" "+p_76986_4_+"
 			// "+p_76986_8_);
-			((HumanoidModel) this.mainModel).rightArmPose = ((living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state
-					& 3) > 0) || sniperZoomed ? HumanoidModel.ArmPose.BOW_AND_ARROW : HumanoidModel.ArmPose.EMPTY;
+			((ModelBiped) this.mainModel).rightArmPose = ((living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state
+					& 3) > 0) || sniperZoomed ? ModelBiped.ArmPose.BOW_AND_ARROW : ModelBiped.ArmPose.EMPTY;
 		}
 		super.doRender(living, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
 		if (living.isAlive()) {
 			TF2EventsClient.renderBeam(living, p_76986_9_, 0.04f);
 			if (sniperZoomed) {
-				Tesselator tessellator = Tesselator.getInstance();
+				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder renderer = tessellator.getBuffer();
 				GlStateManager.pushMatrix();
 				GlStateManager.translate((float) p_76986_2_, (float) p_76986_4_ + living.getEyeHeight(),
@@ -89,25 +97,25 @@ public class RenderTF2Character extends HumanoidMobRenderer<EntityTF2Character> 
 				GL11.glEnable(GL11.GL_BLEND);
 				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				ClientProxy.setColor(TF2Util.getTeamColor(living), 0.28f, 0, 0f, 1f);
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(-0.03, -0.03, 0).endVertex();
 				renderer.pos(0.03, 0.03, 0).endVertex();
 				renderer.pos(0.03, 0.03, 50).endVertex();
 				renderer.pos(-0.03, -0.03, 50).endVertex();
 				tessellator.draw();
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(-0.03, -0.03, 50).endVertex();
 				renderer.pos(0.03, 0.03, 50).endVertex();
 				renderer.pos(0.03, 0.03, 0).endVertex();
 				renderer.pos(-0.03, -0.03, 0).endVertex();
 				tessellator.draw();
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(0.03, -0.03, 0).endVertex();
 				renderer.pos(-0.03, 0.03, 0).endVertex();
 				renderer.pos(-0.03, 0.03, 50).endVertex();
 				renderer.pos(0.03, -0.03, 50).endVertex();
 				tessellator.draw();
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(0.03, -0.03, 50).endVertex();
 				renderer.pos(-0.03, 0.03, 50).endVertex();
 				renderer.pos(-0.03, 0.03, 0).endVertex();

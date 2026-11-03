@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item.crafting;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.util.TF2Class;
 import net.minecraft.nbt.CompoundTag;

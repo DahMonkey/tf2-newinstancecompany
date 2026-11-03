@@ -1,67 +1,69 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import net.minecraft.world.entity.Entity;
 
 /**
  * ModelBuild - rafradek Created using Tabula 5.1.0
  */
-public class ModelBuild extends EntityModel {
+public class ModelBuild extends ModelBase {
 	public double[] modelScale = new double[] { 1.2D, 1.2D, 1.2D };
-	public ModelPart shape1;
-	public ModelPart shape1_1;
-	public ModelPart shape1_2;
-	public ModelPart shape1_3;
-	public ModelPart shape1_4;
-	public ModelPart shape1_5;
-	public ModelPart shape1_6;
-	public ModelPart shape1_7;
-	public ModelPart shape1_8;
-	public ModelPart shape1_9;
-	public ModelPart shape1_10;
-	public ModelPart shape1_11;
+	public ModelRenderer shape1;
+	public ModelRenderer shape1_1;
+	public ModelRenderer shape1_2;
+	public ModelRenderer shape1_3;
+	public ModelRenderer shape1_4;
+	public ModelRenderer shape1_5;
+	public ModelRenderer shape1_6;
+	public ModelRenderer shape1_7;
+	public ModelRenderer shape1_8;
+	public ModelRenderer shape1_9;
+	public ModelRenderer shape1_10;
+	public ModelRenderer shape1_11;
 
 	public ModelBuild() {
 		textureWidth = 64;
 		textureHeight = 32;
-		shape1_2 = new ModelPart(this, 0, 18);
+		shape1_2 = new ModelRenderer(this, 0, 18);
 		shape1_2.setRotationPoint(-6.0F, 28.800000000000054F, 3.0F);
 		shape1_2.addBox(0.0F, -3.0F, 0.0F, 12, 3, 6, 0.0F);
 		setRotateAngle(shape1_2, 1.3658946726107624F, 0.0F, 0.0F);
-		shape1_7 = new ModelPart(this, 32, 0);
+		shape1_7 = new ModelRenderer(this, 32, 0);
 		shape1_7.setRotationPoint(-3.5F, 23.100000000000055F, -1.5F);
 		shape1_7.addBox(0.0F, -3.0F, 0.0F, 1, 1, 3, 0.0F);
-		shape1_11 = new ModelPart(this, 32, 0);
+		shape1_11 = new ModelRenderer(this, 32, 0);
 		shape1_11.setRotationPoint(-2.5F, 18.600000000000016F, 0.0F);
 		shape1_11.addBox(0.0F, 0.0F, -0.5F, 5, 1, 1, 0.0F);
-		shape1 = new ModelPart(this, 0, 0);
+		shape1 = new ModelRenderer(this, 0, 0);
 		shape1.setRotationPoint(-6.0F, 25.800000000000054F, -3.0F);
 		shape1.addBox(0.0F, 0.0F, 0.0F, 12, 3, 6, 0.0F);
-		shape1_10 = new ModelPart(this, 32, 0);
+		shape1_10 = new ModelRenderer(this, 32, 0);
 		shape1_10.setRotationPoint(2.0F, 18.600000000000016F, 0.0F);
 		shape1_10.addBox(0.0F, 0.0F, -0.5F, 1, 2, 1, 0.0F);
-		shape1_1 = new ModelPart(this, 0, 9);
+		shape1_1 = new ModelRenderer(this, 0, 9);
 		shape1_1.setRotationPoint(-6.0F, 28.800000000000054F, -3.0F);
 		shape1_1.addBox(0.0F, 0.0F, 0.0F, 12, 3, 6, 0.0F);
 		setRotateAngle(shape1_1, 1.7756979809790308F, 0.0F, 0.0F);
-		shape1_8 = new ModelPart(this, 0, 0);
+		shape1_8 = new ModelRenderer(this, 0, 0);
 		shape1_8.setRotationPoint(-6.0F, 23.800000000000054F, -2.1F);
 		shape1_8.addBox(0.0F, -3.0F, 0.0F, 12, 3, 3, 0.0F);
-		shape1_9 = new ModelPart(this, 32, 0);
+		shape1_9 = new ModelRenderer(this, 32, 0);
 		shape1_9.setRotationPoint(-2.5F, 18.600000000000016F, 0.0F);
 		shape1_9.addBox(0.0F, 0.0F, -0.5F, 1, 2, 1, 0.0F);
-		shape1_5 = new ModelPart(this, 0, 0);
+		shape1_5 = new ModelRenderer(this, 0, 0);
 		shape1_5.setRotationPoint(-6.0F, 23.800000000000054F, -2.0F);
 		shape1_5.addBox(0.0F, -0.1F, 0.0F, 12, 3, 3, 0.0F);
-		shape1_6 = new ModelPart(this, 32, 0);
+		shape1_6 = new ModelRenderer(this, 32, 0);
 		shape1_6.setRotationPoint(2.5F, 23.100000000000055F, -1.5F);
 		shape1_6.addBox(0.0F, -3.0F, 0.0F, 1, 1, 3, 0.0F);
-		shape1_3 = new ModelPart(this, 0, 0);
+		shape1_3 = new ModelRenderer(this, 0, 0);
 		shape1_3.setRotationPoint(-6.0F, 22.900000000000055F, 0.0F);
 		shape1_3.addBox(0.0F, -3.0F, 0.0F, 12, 3, 3, 0.0F);
 		setRotateAngle(shape1_3, 2.356194490192345F, 0.0F, 0.0F);
-		shape1_4 = new ModelPart(this, 0, 0);
+		shape1_4 = new ModelRenderer(this, 0, 0);
 		shape1_4.setRotationPoint(-6.0F, 22.900000000000055F, 4.2F);
 		shape1_4.addBox(0.0F, -3.0F, 0.0F, 12, 3, 3, 0.0F);
 		setRotateAngle(shape1_4, 2.356194490192345F, 0.0F, 0.0F);
@@ -125,7 +127,7 @@ public class ModelBuild extends EntityModel {
 	/**
 	 * This is a helper function from Tabula to set the rotation of model parts
 	 */
-	public void setRotateAngle(ModelPart modelRenderer, float x, float y, float z) {
+	public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
 		modelRenderer.rotateAngleX = x;
 		modelRenderer.rotateAngleY = y;
 		modelRenderer.rotateAngleZ = z;

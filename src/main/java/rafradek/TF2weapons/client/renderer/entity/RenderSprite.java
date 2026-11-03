@@ -1,16 +1,20 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
+import rafradek.TF2weapons.client.compat.Render;
+
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public class RenderSprite<T extends Entity> extends EntityRenderer<T> {
+public class RenderSprite<T extends Entity> extends Render<T> {
 
 	private TextureAtlasSprite sprite;
 
@@ -38,7 +42,7 @@ public class RenderSprite<T extends Entity> extends EntityRenderer<T> {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scale(this.scale, this.scale, this.scale);
 		TextureAtlasSprite textureatlassprite = getSprite(entity);
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		float f = textureatlassprite.getMinU();
 		float f1 = textureatlassprite.getMaxU();
@@ -57,7 +61,7 @@ public class RenderSprite<T extends Entity> extends EntityRenderer<T> {
 			GlStateManager.enableOutlineMode(this.getTeamColor(entity));
 		}
 
-		bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX_NORMAL);
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
 		bufferbuilder.pos(-0.5D, -0.25D, 0.0D).tex(f, f3).normal(0.0F, 1.0F, 0.0F).endVertex();
 		bufferbuilder.pos(0.5D, -0.25D, 0.0D).tex(f1, f3).normal(0.0F, 1.0F, 0.0F).endVertex();
 		bufferbuilder.pos(0.5D, 0.75D, 0.0D).tex(f1, f2).normal(0.0F, 1.0F, 0.0F).endVertex();

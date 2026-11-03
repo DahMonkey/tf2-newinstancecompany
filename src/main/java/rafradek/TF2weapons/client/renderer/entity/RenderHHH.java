@@ -1,18 +1,23 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderBiped;
+import rafradek.TF2weapons.client.compat.LayerHeldItem;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.boss.EntityHHH;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderHHH extends HumanoidMobRenderer<EntityHHH> {
+public class RenderHHH extends RenderBiped<EntityHHH> {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/hhh.png");
 
-	public RenderHHH(EntityRenderDispatcher renderManagerIn) {
-		super(renderManagerIn, new HumanoidModel(), 0.8F);
+	public RenderHHH(EntityRendererProvider.Context renderManagerIn) {
+		super(renderManagerIn, new ModelBiped(), 0.8F);
 		this.addLayer(new LayerHeldItem(this));
 
 	}

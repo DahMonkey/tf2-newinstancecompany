@@ -1,24 +1,29 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.model.ModelJar;
 import rafradek.TF2weapons.entity.projectile.EntityJar;
 import rafradek.TF2weapons.item.ItemFromData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderJar extends EntityRenderer<EntityJar> {
+public class RenderJar extends Render<EntityJar> {
 
 	// if you want a model, be sure to add it here:
-	private EntityModel model;
+	private ModelBase model;
 	private static final ResourceLocation texture = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/projectile/jarate.png");
 
-	public RenderJar(EntityRenderDispatcher manager) {
+	public RenderJar(EntityRendererProvider.Context manager) {
 		super(manager);
 		// we could have initialized it above, but here is fine as well:
 		model = new ModelJar();

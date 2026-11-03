@@ -1,14 +1,17 @@
 package rafradek.TF2weapons.client.renderer;
 
+import rafradek.TF2weapons.client.compat.RenderLivingBase;
+import rafradek.TF2weapons.client.compat.LayerRenderer;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import com.google.common.collect.Maps;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.util.TF2Util;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,12 +19,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 
-public class LayerArmorTint implements RenderLayer<LivingEntity> {
+public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 	protected static final ResourceLocation ENCHANTED_ITEM_GLINT_RES = new ResourceLocation(
 			"textures/misc/enchanted_item_glint.png");
-	protected HumanoidModel modelLeggings;
-	protected HumanoidModel modelArmor;
-	private final LivingEntityRenderer<?> renderer;
+	protected ModelBiped modelLeggings;
+	protected ModelBiped modelArmor;
+	private final RenderLivingBase<?> renderer;
 	private float alpha = 1.0F;
 	private float colorR = 1.0F;
 	private float colorG = 1.0F;
@@ -30,7 +33,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 	private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps
 			.<String, ResourceLocation>newHashMap();
 
-	public LayerArmorTint(LivingEntityRenderer<?> rendererIn) {
+	public LayerArmorTint(RenderLivingBase<?> rendererIn) {
 		this.renderer = rendererIn;
 		this.initArmor();
 	}
@@ -62,7 +65,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 			ArmorItem itemarmor = (ArmorItem) itemstack.getItem();
 
 			if (itemarmor.getEquipmentSlot() == slotIn) {
-				HumanoidModel t = this.getModelFromSlot(slotIn);
+				ModelBiped t = this.getModelFromSlot(slotIn);
 				t = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, t);
 				t.setModelAttributes(this.renderer.getMainModel());
 				t.setLivingAnimations(entityLivingBaseIn, limbSwing, animationSpeed, partialTicks);
@@ -98,7 +101,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 		}
 	}
 
-	public HumanoidModel getModelFromSlot(EquipmentSlot slotIn) {
+	public ModelBiped getModelFromSlot(EquipmentSlot slotIn) {
 		return this.isLegSlot(slotIn) ? this.modelLeggings : this.modelArmor;
 	}
 
@@ -106,8 +109,8 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 		return slotIn == EquipmentSlot.LEGS;
 	}
 
-	public static void renderEnchantedGlint(LivingEntityRenderer<?> p_188364_0_, LivingEntity p_188364_1_,
-			EntityModel model, float p_188364_3_, float p_188364_4_, float p_188364_5_, float p_188364_6_,
+	public static void renderEnchantedGlint(RenderLivingBase<?> p_188364_0_, LivingEntity p_188364_1_,
+			ModelBase model, float p_188364_3_, float p_188364_4_, float p_188364_5_, float p_188364_6_,
 			float p_188364_7_, float p_188364_8_, float p_188364_9_) {
 		float f = p_188364_1_.tickCount + p_188364_5_;
 		p_188364_0_.bindTexture(ENCHANTED_ITEM_GLINT_RES);
@@ -164,12 +167,12 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 	}
 
 	protected void initArmor() {
-		this.modelLeggings = new HumanoidModel(0.5F);
-		this.modelArmor = new HumanoidModel(1.0F);
+		this.modelLeggings = new ModelBiped(0.5F);
+		this.modelArmor = new ModelBiped(1.0F);
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	protected void setModelSlotVisible(HumanoidModel p_188359_1_, EquipmentSlot slotIn) {
+	protected void setModelSlotVisible(ModelBiped p_188359_1_, EquipmentSlot slotIn) {
 		this.setModelVisible(p_188359_1_);
 
 		switch (slotIn) {
@@ -193,7 +196,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 		}
 	}
 
-	protected void setModelVisible(HumanoidModel model) {
+	protected void setModelVisible(ModelBiped model) {
 		model.setVisible(false);
 	}
 
@@ -205,8 +208,8 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 	/**
 	 * Hook to allow item-sensitive armor model. for LayerBipedArmor.
 	 */
-	protected HumanoidModel getArmorModelHook(LivingEntity entity, ItemStack itemStack, EquipmentSlot slot,
-			HumanoidModel model) {
+	protected ModelBiped getArmorModelHook(LivingEntity entity, ItemStack itemStack, EquipmentSlot slot,
+			ModelBiped model) {
 		return model;
 	}
 

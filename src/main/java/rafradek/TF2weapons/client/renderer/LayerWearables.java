@@ -1,5 +1,13 @@
 package rafradek.TF2weapons.client.renderer;
 
+import rafradek.TF2weapons.client.compat.RenderLivingBase;
+import rafradek.TF2weapons.client.compat.LayerRenderer;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.inventory.InventoryWearables;
@@ -8,12 +16,7 @@ import rafradek.TF2weapons.item.ItemFromData;
 import rafradek.TF2weapons.item.ItemWearable;
 import rafradek.TF2weapons.util.PropertyType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -24,17 +27,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemStackHandler;
 
 @OnlyIn(Dist.CLIENT)
-public class LayerWearables implements RenderLayer<LivingEntity> {
-	public final HumanoidModel modelBig;
-	public final HumanoidModel modelMedium;
-	public final HumanoidModel modelSmall;
-	public LivingEntityRenderer<?> renderer;
+public class LayerWearables implements LayerRenderer<LivingEntity> {
+	public final ModelBiped modelBig;
+	public final ModelBiped modelMedium;
+	public final ModelBiped modelSmall;
+	public RenderLivingBase<?> renderer;
 
-	public LayerWearables(LivingEntityRenderer<?> render) {
+	public LayerWearables(RenderLivingBase<?> render) {
 		this.renderer = render;
-		this.modelBig = new HumanoidModel(1.15F);
-		this.modelMedium = new HumanoidModel(0.75F);
-		this.modelSmall = new HumanoidModel(0.25F);
+		this.modelBig = new ModelBiped(1.15F);
+		this.modelMedium = new ModelBiped(0.75F);
+		this.modelSmall = new ModelBiped(0.25F);
 	}
 
 	@Override
@@ -102,7 +105,7 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 
 			if (!ItemFromData.getData(stack).getString(PropertyType.ARMOR_IMAGE).isEmpty()) {
 				this.renderer.bindTexture(this.getArmorResource(living, stack, EquipmentSlot.CHEST, null));
-				EntityModel model = this.modelBig;
+				ModelBase model = this.modelBig;
 				model.setModelAttributes(this.renderer.getMainModel());
 				model.setLivingAnimations(living, limbSwing, animationSpeed, partialTicks);
 				model.render(living, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch, scale);
@@ -111,7 +114,7 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 		}
 		if (stack.getItem() instanceof ItemAmmoBelt) {
 			this.renderer.bindTexture(this.getArmorResource(living, stack, EquipmentSlot.CHEST, null));
-			EntityModel model = this.modelBig;
+			ModelBase model = this.modelBig;
 			model.setModelAttributes(this.renderer.getMainModel());
 			model.setLivingAnimations(living, limbSwing, animationSpeed, partialTicks);
 			model.render(living, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch, scale);
@@ -129,11 +132,11 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 		return false;
 	}
 
-	private ModelPart getHead() {
-		return ((HumanoidModel) this.renderer.getMainModel()).bipedHead;
+	private ModelRenderer getHead() {
+		return ((ModelBiped) this.renderer.getMainModel()).bipedHead;
 	}
 
-	private ModelPart getBody() {
-		return ((HumanoidModel) this.renderer.getMainModel()).bipedBody;
+	private ModelRenderer getBody() {
+		return ((ModelBiped) this.renderer.getMainModel()).bipedBody;
 	}
 }

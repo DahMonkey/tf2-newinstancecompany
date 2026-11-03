@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.RenderHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.item.*;

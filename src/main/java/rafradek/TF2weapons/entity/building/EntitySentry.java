@@ -1,5 +1,12 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2EventsCommon;
 import rafradek.TF2weapons.TF2weapons;
@@ -23,9 +30,6 @@ import rafradek.TF2weapons.util.TF2DamageSource;
 import rafradek.TF2weapons.util.TF2Util;
 import java.util.List;
 import java.util.UUID;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -592,7 +596,7 @@ public class EntitySentry extends EntityBuilding {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void renderGUI(BufferBuilder renderer, Tesselator tessellator, Player player, int width, int height,
+	public void renderGUI(BufferBuilder renderer, Tessellator tessellator, Player player, int width, int height,
 			GuiComponent gui) {
 		ClientProxy.setColor(TF2Util.getTeamColor(this), 0.7f, 0, 0.25f, 0.8f);
 
@@ -601,7 +605,7 @@ public class EntitySentry extends EntityBuilding {
 		gui.drawTexturedModalRect(0, 0, 0, 48, 144, 64);
 		double imagePos = this.getLevel() == 1 ? 0.375D : this.getLevel() == 2 ? 0.1875D : 0D;
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(19, 56, 0.0D).tex(0.75D, imagePos + 0.1875D).endVertex();
 		renderer.pos(67, 56, 0.0D).tex(0.9375D, imagePos + 0.1875D).endVertex();
 		renderer.pos(67, 8, 0.0D).tex(0.9375D, imagePos).endVertex();
@@ -612,21 +616,21 @@ public class EntitySentry extends EntityBuilding {
 			return;
 
 		imagePos = this.getLevel() == 3 ? 0D : 0.0625D;
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(67, 57, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(83, 57, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
 		renderer.pos(83, 41, 0.0D).tex(1D, imagePos).endVertex();
 		renderer.pos(67, 41, 0.0D).tex(0.9375D, imagePos).endVertex();
 		tessellator.draw();
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(67, 21, 0.0D).tex(0.9375D, 0.25D).endVertex();
 		renderer.pos(83, 21, 0.0D).tex(1D, 0.25D).endVertex();
 		renderer.pos(83, 5, 0.0D).tex(1D, 0.1875D).endVertex();
 		renderer.pos(67, 5, 0.0D).tex(0.9375D, 0.1875D).endVertex();
 		tessellator.draw();
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(67, 39, 0.0D).tex(0.9375D, 0.1875D).endVertex();
 		renderer.pos(83, 39, 0.0D).tex(1D, 0.1875D).endVertex();
 		renderer.pos(83, 23, 0.0D).tex(1D, 0.125D).endVertex();
@@ -634,7 +638,7 @@ public class EntitySentry extends EntityBuilding {
 		tessellator.draw();
 
 		imagePos = this.getLevel() == 1 ? 0.3125D : this.getLevel() == 2 ? 0.375D : 0.4375D;
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(50, 18, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 18, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 2, 0.0D).tex(1D, imagePos).endVertex();
@@ -651,7 +655,7 @@ public class EntitySentry extends EntityBuilding {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		for (int i = 0; i < health * 11; i++) {
 
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(19, 55 - i * 5, 0.0D).endVertex();
 			renderer.pos(9, 55 - i * 5, 0.0D).endVertex();
 			renderer.pos(9, 59 - i * 5, 0.0D).endVertex();
@@ -660,14 +664,14 @@ public class EntitySentry extends EntityBuilding {
 		}
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.33F);
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 38, 0.0D).endVertex();
 		renderer.pos(140, 38, 0.0D).endVertex();
 		renderer.pos(140, 24, 0.0D).endVertex();
 		renderer.pos(85, 24, 0.0D).endVertex();
 		tessellator.draw();
 
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 56, 0.0D).endVertex();
 		renderer.pos(140, 56, 0.0D).endVertex();
 		renderer.pos(140, 42, 0.0D).endVertex();
@@ -675,7 +679,7 @@ public class EntitySentry extends EntityBuilding {
 		tessellator.draw();
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.85F);
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 38, 0.0D).endVertex();
 		renderer.pos(85 + (double) this.getAmmo() / (double) this.getMaxAmmo() * 55D, 38, 0.0D).endVertex();
 		renderer.pos(85 + (double) this.getAmmo() / (double) this.getMaxAmmo() * 55D, 24, 0.0D).endVertex();
@@ -683,7 +687,7 @@ public class EntitySentry extends EntityBuilding {
 		tessellator.draw();
 
 		double xOffset = this.getLevel() < 3 ? this.getProgress() * 0.275D : this.getRocketAmmo() * 2.75D;
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 56, 0.0D).endVertex();
 		renderer.pos(85 + xOffset, 56, 0.0D).endVertex();
 		renderer.pos(85 + xOffset, 42, 0.0D).endVertex();

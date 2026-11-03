@@ -1,5 +1,12 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -16,9 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -452,7 +456,7 @@ public class EntityDispenser extends EntityBuilding {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void renderGUI(BufferBuilder renderer, Tesselator tessellator, Player player, int width, int height,
+	public void renderGUI(BufferBuilder renderer, Tessellator tessellator, Player player, int width, int height,
 			GuiComponent gui) {
 		// GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 		// gui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
@@ -474,7 +478,7 @@ public class EntityDispenser extends EntityBuilding {
 		 * 0D).endVertex(); tessellator.draw();
 		 */
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(19, 48, 0.0D).tex(0.75D, 0.75D).endVertex();
 		renderer.pos(65, 48, 0.0D).tex(0.9375D, 0.75D).endVertex();
 		renderer.pos(65, 0, 0.0D).tex(0.9375D, 0.5625D).endVertex();
@@ -484,7 +488,7 @@ public class EntityDispenser extends EntityBuilding {
 		if (!this.isAlive())
 			return;
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(67, 22, 0.0D).tex(0.9375D, 0.1875D).endVertex();
 		renderer.pos(83, 22, 0.0D).tex(1D, 0.1875D).endVertex();
 		renderer.pos(83, 6, 0.0D).tex(1D, 0.125D).endVertex();
@@ -492,7 +496,7 @@ public class EntityDispenser extends EntityBuilding {
 		tessellator.draw();
 
 		double imagePos = this.getLevel() == 1 ? 0.3125D : this.getLevel() == 2 ? 0.375D : 0.4375D;
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(50, 18, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 18, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 2, 0.0D).tex(1D, imagePos).endVertex();
@@ -500,7 +504,7 @@ public class EntityDispenser extends EntityBuilding {
 		tessellator.draw();
 
 		if (this.getLevel() < 3) {
-			renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(67, 42, 0.0D).tex(0.9375D, 0.125D).endVertex();
 			renderer.pos(83, 42, 0.0D).tex(1D, 0.125D).endVertex();
 			renderer.pos(83, 26, 0.0D).tex(1D, 0.0625).endVertex();
@@ -516,7 +520,7 @@ public class EntityDispenser extends EntityBuilding {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		for (int i = 0; i < health * 8; i++) {
 
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(19, 39 - i * 5, 0.0D).endVertex();
 			renderer.pos(9, 39 - i * 5, 0.0D).endVertex();
 			renderer.pos(9, 43 - i * 5, 0.0D).endVertex();
@@ -525,7 +529,7 @@ public class EntityDispenser extends EntityBuilding {
 		}
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.33F);
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 21, 0.0D).endVertex();
 		renderer.pos(140, 21, 0.0D).endVertex();
 		renderer.pos(140, 7, 0.0D).endVertex();
@@ -533,7 +537,7 @@ public class EntityDispenser extends EntityBuilding {
 		tessellator.draw();
 
 		if (this.getLevel() < 3) {
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 41, 0.0D).endVertex();
 			renderer.pos(140, 41, 0.0D).endVertex();
 			renderer.pos(140, 27, 0.0D).endVertex();
@@ -542,7 +546,7 @@ public class EntityDispenser extends EntityBuilding {
 		}
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.85F);
-		renderer.begin(7, DefaultVertexFormat.POSITION);
+		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 21, 0.0D).endVertex();
 		renderer.pos(85 + this.getMetal() * 0.1375D, 21, 0.0D).endVertex();
 		renderer.pos(85 + this.getMetal() * 0.1375D, 7, 0.0D).endVertex();
@@ -550,7 +554,7 @@ public class EntityDispenser extends EntityBuilding {
 		tessellator.draw();
 
 		if (this.getLevel() < 3) {
-			renderer.begin(7, DefaultVertexFormat.POSITION);
+			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 41, 0.0D).endVertex();
 			renderer.pos(85 + this.getProgress() * 0.275D, 41, 0.0D).endVertex();
 			renderer.pos(85 + this.getProgress() * 0.275D, 27, 0.0D).endVertex();

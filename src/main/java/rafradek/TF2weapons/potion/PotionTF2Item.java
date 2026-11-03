@@ -1,9 +1,10 @@
 package rafradek.TF2weapons.potion;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -25,9 +26,9 @@ public class PotionTF2Item extends MobEffect {
 	public void renderInventoryEffect(int x, int y, MobEffectInstance effect, Minecraft mc) {
 		mc.RenderSystem.setShaderTexture(0, texture);
 		// mc.ingameGUI.drawTexturedModalRect(x+6,y+7,0,0,16,16);
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder renderer = tessellator.getBuffer();
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 
 		renderer.pos(x + 7, y + 23, 0.0D).tex(0.0D, 1D).endVertex();
 		renderer.pos(x + 23, y + 23, 0.0D).tex(1.0D, 1D).endVertex();
@@ -41,10 +42,10 @@ public class PotionTF2Item extends MobEffect {
 	public void renderHUDEffect(int x, int y, MobEffectInstance effect, Minecraft mc, float alpha) {
 		mc.RenderSystem.setShaderTexture(0, texture);
 		// mc.ingameGUI.drawTexturedModalRect(x+3,y+3,0,0,16,16);
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder renderer = tessellator.getBuffer();
 
-		renderer.begin(7, DefaultVertexFormat.POSITION_TEX);
+		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 
 		renderer.pos(x + 4, y + 20, 0.0D).tex(0.0D, 1D).endVertex();
 		renderer.pos(x + 20, y + 20, 0.0D).tex(1.0D, 1D).endVertex();

@@ -1,5 +1,12 @@
 package rafradek.TF2weapons.client;
 
+import rafradek.TF2weapons.client.compat.RenderLivingBase;
+import rafradek.TF2weapons.client.compat.RenderBiped;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.message.MessageContext;
 
 import com.google.common.collect.BiMap;
@@ -48,13 +55,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -86,13 +89,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 @SuppressWarnings("rawtypes")
 public class ClientProxy extends CommonProxy {
 
-	public static HashMap<String, EntityModel> entityModel = new HashMap<>();
+	public static HashMap<String, ModelBase> entityModel = new HashMap<>();
 	public static HashMap<String, ResourceLocation> textureDisguise = new HashMap<>();
 
 	public static RenderCustomModel disguiseRender;
-	public static LivingEntityRenderer disguiseRenderPlayer;
-	public static LivingEntityRenderer disguiseRenderPlayerSmall;
-	public static LivingEntityRenderer forceTextureRenderPlayer;
+	public static RenderLivingBase disguiseRenderPlayer;
+	public static RenderLivingBase disguiseRenderPlayerSmall;
+	public static RenderLivingBase forceTextureRenderPlayer;
 	public static TextureAtlas particleMap;
 	public static KeyMapping reload = new KeyMapping("key.reload", Keyboard.KEY_R, "TF2");
 	public static KeyMapping backpackitem = new KeyMapping("key.activatebackpack", Keyboard.KEY_0, "TF2");
@@ -518,7 +521,7 @@ public class ClientProxy extends CommonProxy {
 					}
 				});
 		RenderingRegistry.registerEntityRenderingHandler(EntitySaxtonHale.class,
-				manager -> new HumanoidMobRenderer<EntitySaxtonHale>(manager, new HumanoidModel(0.1f), 0.5F) {
+				manager -> new RenderBiped<EntitySaxtonHale>(manager, new ModelBiped(0.1f), 0.5F) {
 					private final ResourceLocation TEXTURE = new ResourceLocation(TF2weapons.MOD_ID,
 							"textures/entity/tf2/SaxtonHale.png");
 
@@ -649,11 +652,11 @@ public class ClientProxy extends CommonProxy {
 		spawnParticle(world, new EntityRocketEffect(world, rocket));
 	}
 
-	public static class RenderCustomModel extends LivingEntityRenderer<LivingEntity> {
+	public static class RenderCustomModel extends RenderLivingBase<LivingEntity> {
 
 		private ResourceLocation texture;
 
-		public RenderCustomModel(EntityRenderDispatcher renderManagerIn, EntityModel modelBaseIn, float shadowSizeIn) {
+		public RenderCustomModel(EntityRenderDispatcher renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
 			super(renderManagerIn, modelBaseIn, shadowSizeIn);
 		}
 
@@ -662,7 +665,7 @@ public class ClientProxy extends CommonProxy {
 			return texture;
 		}
 
-		public void setRenderOptions(EntityModel model, ResourceLocation texture) {
+		public void setRenderOptions(ModelBase model, ResourceLocation texture) {
 			this.mainModel = model;
 			this.texture = texture;
 		}

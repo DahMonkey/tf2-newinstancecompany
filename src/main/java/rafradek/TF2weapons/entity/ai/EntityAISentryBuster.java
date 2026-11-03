@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.ai;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import rafradek.TF2weapons.entity.mercenary.EntityDemoman;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;

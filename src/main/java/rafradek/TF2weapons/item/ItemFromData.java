@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+
 import rafradek.TF2weapons.client.ItemMeshDefinition;
 
 import com.google.common.collect.Iterables;
@@ -29,8 +32,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -496,7 +497,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 	}
 
 	@Override
-	public void drawOverlay(ItemStack stack, Player player, Tesselator tesselator, BufferBuilder buffer,
+	public void drawOverlay(ItemStack stack, Player player, Tessellator tesselator, BufferBuilder buffer,
 			ScaledResolution resolution) {}
 
 	@OnlyIn(Dist.CLIENT)

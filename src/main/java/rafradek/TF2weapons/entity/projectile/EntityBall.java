@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;

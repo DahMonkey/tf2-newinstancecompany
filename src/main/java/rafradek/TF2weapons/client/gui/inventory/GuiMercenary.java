@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.util.TF2Util;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.RenderHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character.Order;

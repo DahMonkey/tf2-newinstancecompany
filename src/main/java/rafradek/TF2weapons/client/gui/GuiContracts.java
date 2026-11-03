@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.message.TF2Message;

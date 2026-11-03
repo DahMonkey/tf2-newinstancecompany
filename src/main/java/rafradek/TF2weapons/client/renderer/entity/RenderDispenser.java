@@ -1,5 +1,17 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderLiving;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.Tessellator;
+import rafradek.TF2weapons.client.compat.BufferBuilder;
+import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+import rafradek.TF2weapons.client.compat.OpenGlHelper;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.client.model.ModelBuild;
@@ -8,17 +20,12 @@ import rafradek.TF2weapons.client.model.ModelDispenser2;
 import rafradek.TF2weapons.client.model.ModelDispenser3;
 import rafradek.TF2weapons.entity.building.EntityDispenser;
 import rafradek.TF2weapons.util.TF2Util;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
-public class RenderDispenser extends MobRenderer<EntityDispenser> {
+public class RenderDispenser extends RenderLiving<EntityDispenser> {
 
 	private static final ResourceLocation DISPENSER_RED = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/red/Dispenser.png");
@@ -31,12 +38,12 @@ public class RenderDispenser extends MobRenderer<EntityDispenser> {
 	private static final ResourceLocation BOX_BLU = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/blu/box.png");
 
-	public EntityModel level1;
-	public EntityModel level2;
-	public EntityModel level3;
-	public EntityModel box;
+	public ModelBase level1;
+	public ModelBase level2;
+	public ModelBase level3;
+	public ModelBase box;
 
-	public RenderDispenser(EntityRenderDispatcher renderManager) {
+	public RenderDispenser(EntityRendererProvider.Context renderManager) {
 		super(renderManager, new ModelDispenser(), 0.8f);
 		level1 = this.mainModel;
 		level2 = new ModelDispenser2();
@@ -73,7 +80,7 @@ public class RenderDispenser extends MobRenderer<EntityDispenser> {
 				this.mainModel = this.level3;
 		}
 		super.doRender(living, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-		Tesselator tessellator = Tesselator.getInstance();
+		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder renderer = tessellator.getBuffer();
 		if (living.dispenserTarget != null)
 			for (LivingEntity target : living.dispenserTarget) {
@@ -96,25 +103,25 @@ public class RenderDispenser extends MobRenderer<EntityDispenser> {
 				GL11.glEnable(GL11.GL_BLEND);
 				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				ClientProxy.setColor(TF2Util.getTeamColor(living), 0.23f, 0, 0f, 1f);
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(-0.04, -0.04, 0).endVertex();
 				renderer.pos(0.04, 0.04, 0).endVertex();
 				renderer.pos(0.04, 0.04, fullDist).endVertex();
 				renderer.pos(-0.04, -0.04, fullDist).endVertex();
 				tessellator.draw();
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(-0.04, -0.04, fullDist).endVertex();
 				renderer.pos(0.04, 0.04, fullDist).endVertex();
 				renderer.pos(0.04, 0.04, 0).endVertex();
 				renderer.pos(-0.04, -0.04, 0).endVertex();
 				tessellator.draw();
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(0.04, -0.04, 0).endVertex();
 				renderer.pos(-0.04, 0.04, 0).endVertex();
 				renderer.pos(-0.04, 0.04, fullDist).endVertex();
 				renderer.pos(0.04, -0.04, fullDist).endVertex();
 				tessellator.draw();
-				renderer.begin(7, DefaultVertexFormat.POSITION);
+				renderer.begin(7, DefaultVertexFormats.POSITION);
 				renderer.pos(0.04, -0.04, fullDist).endVertex();
 				renderer.pos(-0.04, 0.04, fullDist).endVertex();
 				renderer.pos(-0.04, 0.04, 0).endVertex();

@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.loot;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;

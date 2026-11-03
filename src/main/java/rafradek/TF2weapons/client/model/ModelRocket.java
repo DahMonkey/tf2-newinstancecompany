@@ -1,24 +1,25 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.ModelRenderer;
+
 import net.minecraft.world.entity.Entity;
 
-public class ModelRocket extends EntityModel {
+public class ModelRocket extends ModelBase {
 	// fields
-	ModelPart bigger;
-	ModelPart longer;
+	ModelRenderer bigger;
+	ModelRenderer longer;
 
 	public ModelRocket() {
 		textureWidth = 32;
 		textureHeight = 32;
 
-		bigger = new ModelPart(this, 0, 0);
+		bigger = new ModelRenderer(this, 0, 0);
 		bigger.addBox(0F, 0F, 0F, 3, 2, 2);
 		bigger.setRotationPoint(-1F, -1F, -1F);
 		bigger.setTextureSize(32, 32);
 		bigger.mirror = true;
-		longer = new ModelPart(this, 0, 4);
+		longer = new ModelRenderer(this, 0, 4);
 		longer.addBox(0F, 0F, 0F, 7, 1, 1);
 		longer.setRotationPoint(-4F, -0.5F, -0.5F);
 		longer.setTextureSize(32, 32);

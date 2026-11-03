@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.block;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import rafradek.TF2weapons.tileentity.TileEntityCapturePoint;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

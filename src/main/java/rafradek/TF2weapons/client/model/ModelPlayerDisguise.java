@@ -1,9 +1,10 @@
 package rafradek.TF2weapons.client.model;
 
-import net.minecraft.client.model.EntityModel;
+import rafradek.TF2weapons.client.compat.ModelBase;
 
-public class ModelPlayerDisguise extends EntityModel {
 
-	public EntityModel baseModel;
+public class ModelPlayerDisguise extends ModelBase {
+
+	public ModelBase baseModel;
 
 }

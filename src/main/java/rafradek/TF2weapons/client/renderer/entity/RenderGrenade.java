@@ -1,21 +1,26 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.Render;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBase;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+import rafradek.TF2weapons.client.compat.GL11;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.model.ModelBomb;
 import rafradek.TF2weapons.client.model.ModelGrenade;
 import rafradek.TF2weapons.client.model.ModelStickybomb;
 import rafradek.TF2weapons.entity.projectile.EntityGrenade;
 import rafradek.TF2weapons.util.TF2Util;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderGrenade extends EntityRenderer<EntityGrenade> {
+public class RenderGrenade extends Render<EntityGrenade> {
 
 	// if you want a model, be sure to add it here:
-	private EntityModel model;
-	private EntityModel modelBomb;
+	private ModelBase model;
+	private ModelBase modelBomb;
 	private ModelStickybomb modelBurst;
 	private static final ResourceLocation TEXTURE_RED = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/projectile/grenadered.png");
@@ -24,7 +29,7 @@ public class RenderGrenade extends EntityRenderer<EntityGrenade> {
 	public static final ResourceLocation TEXTURE_BOMB = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/projectile/bomb.png");
 
-	public RenderGrenade(EntityRenderDispatcher manager) {
+	public RenderGrenade(EntityRendererProvider.Context manager) {
 		super(manager);
 		// we could have initialized it above, but here is fine as well:
 		model = new ModelGrenade();
@@ -54,7 +59,7 @@ public class RenderGrenade extends EntityRenderer<EntityGrenade> {
 			GL11.glScalef(0.6f, 0.6f, 0.6f);
 		bindEntityTexture(entity);
 
-		EntityModel model = this.model;
+		ModelBase model = this.model;
 		if (entity.isBurst()) {
 			model = this.modelBurst;
 		} else if (entity.getBomb() > 0) {

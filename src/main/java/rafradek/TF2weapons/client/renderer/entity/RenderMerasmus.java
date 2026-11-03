@@ -1,19 +1,23 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderBiped;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+
+import rafradek.TF2weapons.client.compat.ModelBiped;
+import rafradek.TF2weapons.client.compat.GlStateManager;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.boss.EntityMerasmus;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
-public class RenderMerasmus extends HumanoidMobRenderer<EntityMerasmus> {
+public class RenderMerasmus extends RenderBiped<EntityMerasmus> {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/merasmus.png");
 
-	public RenderMerasmus(EntityRenderDispatcher renderManagerIn) {
+	public RenderMerasmus(EntityRendererProvider.Context renderManagerIn) {
 		super(renderManagerIn, new ModelMerasmus(), 0.8F);
 		// this.addLayer(new LayerHeldItem(this));
 
@@ -38,7 +42,7 @@ public class RenderMerasmus extends HumanoidMobRenderer<EntityMerasmus> {
 		GlStateManager.scale(f, f, f);
 	}
 
-	public static class ModelMerasmus extends HumanoidModel {
+	public static class ModelMerasmus extends ModelBiped {
 
 		public ModelMerasmus() {
 			super();
