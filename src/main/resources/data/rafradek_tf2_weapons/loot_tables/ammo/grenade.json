@@ -1,0 +1,20 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:ammo_box",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 8
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

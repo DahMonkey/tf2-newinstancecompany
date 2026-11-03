@@ -1,0 +1,132 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance_with_looting",
+          "chance": 0.5,
+          "looting_multiplier": 0.17
+        },
+        {
+          "condition": "rafradek_tf2_weapons:nbt_test",
+          "test": "{Robot:1b}",
+          "negate": false
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:robot_part",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "rafradek_tf2_weapons:entities/robotpartmed",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "rafradek_tf2_weapons:nbt_test",
+          "test": "{Robot:2b}",
+          "negate": false
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "rafradek_tf2_weapons:entities/robotpartmed",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 4
+              }
+            },
+            {
+              "function": "minecraft:looting_enchant",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:robot_part",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": {
+                "type": "minecraft:uniform",
+                "min": 5,
+                "max": 6
+              }
+            },
+            {
+              "function": "minecraft:looting_enchant",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance_with_looting",
+          "chance": 0.5,
+          "looting_multiplier": 0.05
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:ammo_box",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

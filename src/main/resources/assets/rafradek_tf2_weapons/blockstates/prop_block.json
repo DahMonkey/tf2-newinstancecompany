@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "type=diamond": {
+      "model": "minecraft:block/diamond_block"
+    },
+    "type=iron": {
+      "model": "minecraft:block/iron_block"
+    },
+    "type=gold": {
+      "model": "minecraft:block/gold_block"
+    },
+    "type=obsidian": {
+      "model": "minecraft:block/obsidian"
+    }
+  }
+}

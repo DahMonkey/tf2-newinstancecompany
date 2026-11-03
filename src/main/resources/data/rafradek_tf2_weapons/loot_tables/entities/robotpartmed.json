@@ -1,0 +1,24 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:robot_part",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 4
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

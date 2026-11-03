@@ -1,0 +1,16 @@
+{
+  "overrides": [
+    {
+      "predicate": {
+        "backstab": 0
+      },
+      "model": "rafradek_tf2_weapons:item/knife_normal"
+    },
+    {
+      "predicate": {
+        "backstab": 1
+      },
+      "model": "rafradek_tf2_weapons:item/knife_backstab"
+    }
+  ]
+}

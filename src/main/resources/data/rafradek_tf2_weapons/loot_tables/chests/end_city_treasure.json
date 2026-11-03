@@ -1,0 +1,72 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 11
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:minigun",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_weapon_upgraded",
+              "upgrade_range": {
+                "type": "minecraft:uniform",
+                "min": 320,
+                "max": 520
+              },
+              "valve_chance": 0.6
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:item_tf2",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 7
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:eventmaker",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 3
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:strangifier",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:projectile",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_weapon_upgraded",
+              "upgrade_range": {
+                "type": "minecraft:uniform",
+                "min": 1080,
+                "max": 1800
+              },
+              "valve_chance": 0.3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

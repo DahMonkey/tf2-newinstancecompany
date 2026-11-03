@@ -1,0 +1,99 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "rafradek_tf2_weapons:killed_by_player_team"
+        },
+        {
+          "condition": "minecraft:random_chance_with_looting",
+          "chance": 0.6,
+          "looting_multiplier": 0.2
+        },
+        {
+          "condition": "rafradek_tf2_weapons:nbt_test",
+          "test": "{Robot:0b}",
+          "negate": false
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:item_tf2",
+          "weight": 12,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 3
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:crate",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_weapon_class",
+              "weaponClass": "crate"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:strangifier",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{class:pyro}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "rafradek_tf2_weapons:nbt_test",
+          "test": "{Robot:0b}",
+          "negate": false
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "rafradek_tf2_weapons:ammo/gas",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "rafradek_tf2_weapons:ammo/shotgun",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "rafradek_tf2_weapons:killed_by_player_team"
+        },
+        {
+          "condition": "rafradek_tf2_weapons:nbt_test",
+          "test": "{Robot:0b}",
+          "negate": true
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "rafradek_tf2_weapons:entities/robot",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

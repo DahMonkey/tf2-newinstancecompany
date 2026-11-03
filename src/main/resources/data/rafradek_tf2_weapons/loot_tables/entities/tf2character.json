@@ -1,0 +1,27 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance_with_looting",
+          "chance": 0.4,
+          "looting_multiplier": 0.16
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:item_tf2",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rafradek_tf2_weapons:item_tf2",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 32
+            },
+            {
+              "function": "rafradek_tf2_weapons:set_meta",
+              "meta": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
