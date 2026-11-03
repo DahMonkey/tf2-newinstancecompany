@@ -260,6 +260,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution) {
 		if (!stack.hasTag() || (stack.getTag().getByte("Building") == 0)) {

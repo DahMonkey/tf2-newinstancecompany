@@ -12,6 +12,7 @@ public interface IItemOverlay {
 
 	public String[] getInfoBoxLines(ItemStack stack, Player player);
 
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution);
 }

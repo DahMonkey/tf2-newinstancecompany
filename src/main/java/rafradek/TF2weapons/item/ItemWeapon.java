@@ -1016,6 +1016,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution) {
 		if (this.hasKillstreak(stack, 1)) {

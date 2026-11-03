@@ -502,6 +502,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tesselator, BufferBuilder buffer,
 			ScaledResolution resolution) {}
 

@@ -19,10 +19,10 @@ public class ItemStrangifier extends ItemApplicableEffect {
 	@Override
 	public Component getName(ItemStack stack) {
 		if (stack.hasTag() && MapList.nameToData.containsKey(stack.getTag().getString("Weapon"))) {
-			return Component.literal(I18n.get("weapon." + stack.getTag().getString("Weapon")) + " "
-					+ super.getName(stack).getString());
+			return Component.translatable("weapon." + stack.getTag().getString("Weapon")).append(" ")
+					.append(super.getName(stack));
 		}
-		return Component.literal(super.getName(stack).getString());
+		return super.getName(stack);
 	}
 
 	@Override

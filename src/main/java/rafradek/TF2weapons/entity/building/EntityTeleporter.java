@@ -427,6 +427,7 @@ public class EntityTeleporter extends EntityBuilding {
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void renderGUI(BufferBuilder renderer, Tessellator tessellator, Player player, int width, int height,
 			GuiComponent gui) {
 		// GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);

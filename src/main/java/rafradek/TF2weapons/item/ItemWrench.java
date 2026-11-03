@@ -261,6 +261,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder renderer,
 			ScaledResolution resolution) {
 		if (player.getUseItem().getItem() instanceof ItemWrench && player.getUseItemRemainingTicks() < 770) {

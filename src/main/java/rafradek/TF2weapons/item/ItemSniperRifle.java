@@ -257,6 +257,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder renderer,
 			ScaledResolution resolution) {
 		// System.out.println("drawing");

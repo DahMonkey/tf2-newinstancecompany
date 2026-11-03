@@ -479,6 +479,7 @@ public class ItemMedigun extends ItemUsable {
 	}
 
 	@Override
+	@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder renderer,
 			ScaledResolution resolution) {
 		RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
