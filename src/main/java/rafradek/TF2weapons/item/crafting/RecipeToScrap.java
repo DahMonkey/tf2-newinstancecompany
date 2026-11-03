@@ -12,12 +12,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class RecipeToScrap extends IForgeRegistryEntry.Impl<Recipe>
-		implements Recipe, IRecipeTF2 {
+public class RecipeToScrap implements TF2Recipe, IRecipeTF2 {
 
 	public int token;
 
@@ -31,7 +29,7 @@ public class RecipeToScrap extends IForgeRegistryEntry.Impl<Recipe>
 
 		HashSet<String> classnames = new HashSet<>();
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() instanceof ItemFromData
 						&& ItemFromData.getData(stack).getInt(PropertyType.COST) >= 6 && (token == -1 || ItemFromData
@@ -65,8 +63,8 @@ public class RecipeToScrap extends IForgeRegistryEntry.Impl<Recipe>
 		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
-			ItemStack itemstack = inv.getStackInSlot(i);
-			nonnulllist.set(i, ForgeHooks.getContainerItem(itemstack));
+			ItemStack itemstack = inv.getItem(i);
+			nonnulllist.set(i, (itemstack.hasCraftingRemainingItem() ? itemstack.getCraftingRemainingItem() : ItemStack.EMPTY));
 		}
 
 		return nonnulllist;

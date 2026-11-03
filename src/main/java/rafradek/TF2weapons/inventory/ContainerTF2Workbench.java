@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import rafradek.TF2weapons.item.crafting.TF2Recipe;
 import net.minecraft.world.Container;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -19,7 +20,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 
 public class ContainerTF2Workbench extends LegacyContainer implements IRecipeContainer {
@@ -67,7 +67,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 	@Override
 	public void onCraftMatrixChanged(Container inventoryIn) {
 		ItemStack stack = ItemStack.EMPTY;
-		List<Recipe> recipes = TF2CraftingManager.INSTANCE.getRecipeList();
+		List<TF2Recipe> recipes = TF2CraftingManager.INSTANCE.getRecipeList();
 		if (currentRecipe >= 0 && currentRecipe < recipes.size()
 				&& recipes.get(currentRecipe).matches(this.craftMatrix, world))
 			stack = getReplacement(player, recipes.get(currentRecipe).getCraftingResult(this.craftMatrix));

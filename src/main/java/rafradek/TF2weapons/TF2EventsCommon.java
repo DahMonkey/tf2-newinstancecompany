@@ -48,9 +48,6 @@ import rafradek.TF2weapons.item.*;
 import rafradek.TF2weapons.message.TF2Message;
 import rafradek.TF2weapons.util.*;
 import rafradek.TF2weapons.util.Contract.Objective;
-import rafradek.TF2weapons.world.gen.structure.MannCoBuilding;
-import rafradek.TF2weapons.world.gen.structure.ScatteredFeatureTF2Base;
-import rafradek.TF2weapons.world.gen.structure.ScatteredFeatureTF2Base.MapGen;
 import java.util.*;
 import java.util.Map.Entry;
 import net.minecraft.ChatFormatting;
@@ -1921,8 +1918,6 @@ public class TF2EventsCommon {
 		public Map<UUID, InvasionEvent> invasions = new HashMap<>();
 		public ArrayList<DestroyBlockEntry> destroyProgress = new ArrayList<>();
 		public HashMap<String, GameArena> gameArenas = new HashMap<>();
-		public MannCoBuilding.MapGen mannCoGenerator = new MannCoBuilding.MapGen();
-		public MapGen tf2BaseGenerator = new ScatteredFeatureTF2Base.MapGen(null);
 		public boolean silent;
 
 		/*

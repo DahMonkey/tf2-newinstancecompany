@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.tileentity;
 
+import rafradek.TF2weapons.item.crafting.TF2Ingredient;
 import com.google.common.collect.Lists;
 import rafradek.TF2weapons.block.BlockAmmoFurnace;
 import rafradek.TF2weapons.inventory.ContainerAmmoFurnace;
@@ -17,7 +18,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 
@@ -183,7 +183,7 @@ public abstract class TileEntityAbstractAmmoFurnace extends BaseContainerBlockEn
 					int[] sizes = new int[9];
 					List<ItemStack> items = Lists.newArrayList(getOutput());
 					for (int i = 0; i < 9; i++) sizes[i] = items.get(i).getCount();
-					for (Ingredient output : recipe.getIngredients()) {
+					for (TF2Ingredient output : recipe.getIngredients()) {
 						if (output.getMatchingStacks().length > 0) {
 							ItemStack stack1 = output.getMatchingStacks()[0];
 							int count = stack1.getCount();

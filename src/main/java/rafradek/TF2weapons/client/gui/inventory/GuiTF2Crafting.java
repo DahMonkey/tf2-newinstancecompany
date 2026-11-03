@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.item.crafting.TF2Recipe;
 import rafradek.TF2weapons.client.compat.GuiContainer;
 import rafradek.TF2weapons.client.compat.GuiButton;
 import rafradek.TF2weapons.client.compat.LegacyInput;
@@ -26,8 +27,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -116,7 +115,7 @@ public class GuiTF2Crafting extends GuiContainer {
 		menu.onCraftMatrixChanged(null);
 		itemsToRender = NonNullList.withSize(9, ItemStack.EMPTY);
 		if (currentRecipe < 0 || currentRecipe >= TF2CraftingManager.INSTANCE.getRecipeList().size()) return;
-		Recipe recipe = TF2CraftingManager.INSTANCE.getRecipeList().get(currentRecipe);
+		TF2Recipe recipe = TF2CraftingManager.INSTANCE.getRecipeList().get(currentRecipe);
 		for (int i = 1; i < 10; i++) {
 			this.slotClicked(this.menu.getSlot(i), i, 0, ClickType.QUICK_MOVE);
 

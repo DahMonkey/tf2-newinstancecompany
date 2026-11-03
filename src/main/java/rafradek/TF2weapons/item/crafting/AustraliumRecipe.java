@@ -12,11 +12,10 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class AustraliumRecipe implements Recipe, IRecipeTF2 {
+public class AustraliumRecipe implements TF2Recipe, IRecipeTF2 {
 
 	public static final ItemStack ITEM = ItemFromData.getNewStack("minigun");
 
@@ -30,7 +29,7 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 		ItemStack stack2 = ItemStack.EMPTY;
 
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 2) {
 					if (australium < 8)
@@ -54,7 +53,7 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 		ItemStack stack2 = ItemStack.EMPTY;
 
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (!(stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 2))
 					stack2 = stack;
@@ -81,26 +80,11 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
-			ItemStack itemstack = inv.getStackInSlot(i);
-			aitemstack.set(i, ForgeHooks.getContainerItem(itemstack));
+			ItemStack itemstack = inv.getItem(i);
+			aitemstack.set(i, (itemstack.hasCraftingRemainingItem() ? itemstack.getCraftingRemainingItem() : ItemStack.EMPTY));
 		}
 
 		return aitemstack;
-	}
-
-	@Override
-	public Recipe setRegistryName(ResourceLocation name) {
-		return null;
-	}
-
-	@Override
-	public ResourceLocation getRegistryName() {
-		return new ResourceLocation(TF2weapons.MOD_ID, "australium_recipe");
-	}
-
-	@Override
-	public Class<Recipe> getRegistryType() {
-		return Recipe.class;
 	}
 
 	@Override

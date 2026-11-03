@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item.crafting;
 
+import net.minecraft.tags.ItemTags;
 import rafradek.TF2weapons.util.TF2Util;
 
 import com.google.common.collect.Lists;
@@ -20,8 +21,6 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import java.util.function.Predicate;
@@ -29,16 +28,16 @@ import java.util.function.Predicate;
 public class TF2CraftingManager {
 	public static final ShapelessOreRecipe[] AMMO_RECIPES = new ShapelessOreRecipe[14];
 	public static final TF2CraftingManager INSTANCE = new TF2CraftingManager();
-	private final List<Recipe> recipes = Lists.<Recipe>newArrayList();
-	private final Map<Recipe, Predicate<Player>> recipeConditions = new HashMap<>();
+	private final List<TF2Recipe> recipes = Lists.<TF2Recipe>newArrayList();
+	private final Map<TF2Recipe, Predicate<Player>> recipeConditions = new HashMap<>();
 
 	public TF2CraftingManager() {
 
-		Ingredient sentrybuilding = Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 18),
+		Ingredient sentrybuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 18),
 				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 19));
-		Ingredient dispenserbuilding = Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 20),
+		Ingredient dispenserbuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 20),
 				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 21));
-		Ingredient teleporterbuilding = Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 22),
+		Ingredient teleporterbuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 22),
 				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 23));
 
 		ItemStack bonk = ItemFromData.getNewStack("bonk");
@@ -70,7 +69,7 @@ public class TF2CraftingManager {
 		addRecipe(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemAmmo, 8, 14),
 				new Object[] { " S ", "SLS", " S ", 'S', "string", 'L', "leather" }));
 		addShapelessRecipe(new ItemStack(TF2weapons.itemAmmoMedigun, 1),
-				new Object[] { Items.SPECKLED_MELON, Items.GHAST_TEAR, TF2Util.metaStack(Items.DYE, 1, 15) });
+				new Object[] { Items.GLISTERING_MELON_SLICE, Items.GHAST_TEAR, new ItemStack(Items.BONE_MEAL) });
 		addRecipe(new ShapelessOreRecipe(null, new ItemStack(TF2weapons.itemAmmoFire, 1),
 				new Object[] { "ingotIron", Items.MAGMA_CREAM, "ingotIron" }));
 		addRecipe(TF2CraftingManager.AMMO_RECIPES[9] = new ShapelessOreRecipe(null,
@@ -129,9 +128,9 @@ public class TF2CraftingManager {
 						new ItemStack(Items.WATER_BUCKET), 'S', new ItemStack(Items.SUGAR), 'D', "dyeMagenta" }));
 		addRecipe(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemSandvich),
 				new Object[] { " B ", "LHL", " B ", 'B', new ItemStack(Items.BREAD), 'L',
-						TF2Util.metaStack(Blocks.TALLGRASS, 1, 1), 'H', new ItemStack(Items.PORKCHOP) }));
+						new ItemStack(Blocks.GRASS), 'H', new ItemStack(Items.PORKCHOP) }));
 		addRecipe(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemChocolate, 2), new Object[] { "CCC", "CCC",
-				"MII", 'C', TF2Util.metaStack(Items.DYE, 1, 3), 'M', new ItemStack(Items.MILK_BUCKET), 'I', "paper" }));
+				"MII", 'C', new ItemStack(Items.COCOA_BEANS), 'M', new ItemStack(Items.MILK_BUCKET), 'I', "paper" }));
 		addRecipe(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemScoutBoots), new Object[] { "FFF", "FBF",
 				"FFF", 'F', new ItemStack(Items.FEATHER), 'B', new ItemStack(Items.LEATHER_BOOTS) }));
 		addRecipe(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemMantreads),
@@ -150,13 +149,13 @@ public class TF2CraftingManager {
 		addRecipe(new ShapedOreRecipe(null, ItemFromData.getNewStack("basejumper"), new Object[] { "LLL", "S S", " s ",
 				'L', "leather", 'S', "string", 's', TF2Util.metaStack(TF2weapons.itemTF2, 1, 3) }));
 
-		ItemStack banner = TF2Util.metaStack(Items.BANNER, 1, DyeColor.RED.getDyeDamage());
+		ItemStack banner = new ItemStack(Items.RED_BANNER);
 		banner.getOrCreateTagElement("BlockEntityTag").put("Patterns", new ListTag());
 		banner.setCount(2);
-		addRecipe(new ShapedOreRecipe(null, banner, new Object[] { "WWW", "WWW", "AS ", 'W', new ItemStack(Blocks.WOOL),
+		addRecipe(new ShapedOreRecipe(null, banner, new Object[] { "WWW", "WWW", "AS ", 'W', ItemTags.WOOL,
 				'A', TF2Util.metaStack(TF2weapons.itemTF2, 1, 2), 'S', Items.STICK }));
 
-		ItemStack bannern = TF2Util.metaStack(Items.BANNER, 1, DyeColor.GRAY.getDyeDamage());
+		ItemStack bannern = new ItemStack(Items.GRAY_BANNER);
 		bannern.getOrCreateTagElement("BlockEntityTag").put("Patterns", new ListTag());
 		bannern.setCount(4);
 
@@ -166,7 +165,7 @@ public class TF2CraftingManager {
 		pattern.putInt("Color", 15);
 		bannern.getOrCreateTagElement("BlockEntityTag").getList("Patterns", 10).add(pattern);
 		addRecipe(new ShapedOreRecipe(null, bannern, new Object[] { "WWW", "WWW", " SA", 'W',
-				new ItemStack(Blocks.WOOL), 'A', TF2Util.metaStack(TF2weapons.itemTF2, 1, 2), 'S', Items.STICK }));
+				ItemTags.WOOL, 'A', TF2Util.metaStack(TF2weapons.itemTF2, 1, 2), 'S', Items.STICK }));
 
 		/*
 		 * addRecipe(new ShapedOreRecipe(null,new
@@ -437,33 +436,14 @@ public class TF2CraftingManager {
 				ItemFromData.getNewStack("cloakanddagger"));*/
 	}
 
-	public ShapedRecipes addRecipe(ItemStack stack, Object... recipeComponents) {
-		ShapedPrimer primer = CraftingHelper.parseShaped(recipeComponents);
-		ShapedRecipes recipe;
-		recipe = new ShapedRecipes("", primer.getBbWidth(), primer.getBbHeight(), primer.input, stack);
-		this.recipes.add(recipe);
-		return recipe;
-	}
-
-	/**
-	 * Adds a shapeless crafting recipe to the the game.
-	 */
-	public Recipe addShapelessRecipe(ItemStack stack, Object... recipeComponents) {
-		NonNullList<Ingredient> list = NonNullList.create();
-
-		for (Object object : recipeComponents)
-			list.add(CraftingHelper.getIngredient(object));
-
-		ShapelessRecipes recipe;
-		recipe = new ShapelessRecipes("", stack, list);
-		this.recipes.add(recipe);
-		return recipe;
+	public TF2Recipe addShapelessRecipe(ItemStack stack, Object... recipeComponents) {
+		return addRecipe(new ShapelessOreRecipe(null, stack, recipeComponents));
 	}
 
 	/**
 	 * Adds an IRecipe to the list of crafting recipes.
 	 */
-	public Recipe addRecipe(Recipe recipe) {
+	public TF2Recipe addRecipe(TF2Recipe recipe) {
 		this.recipes.add(recipe);
 		return recipe;
 	}
@@ -472,7 +452,7 @@ public class TF2CraftingManager {
 		for (TF2Class clazz : TF2Class.getClasses()) recipes.add(new RecipeToken(group, result, inputs, clazz));
 	}
 
-	public void addRecipeCondition(Recipe recipe, Predicate<Player> predicate) {
+	public void addRecipeCondition(TF2Recipe recipe, Predicate<Player> predicate) {
 		this.recipeConditions.put(recipe, predicate);
 	}
 
@@ -481,8 +461,8 @@ public class TF2CraftingManager {
 	 */
 	@Nullable
 	public ItemStack findMatchingRecipe(CraftingContainer craftMatrix, Level world, Player player) {
-		for (Recipe irecipe : this.recipes)
-			if (!(this.recipeConditions.containsKey(irecipe) && !this.recipeConditions.get(irecipe).apply(player))
+		for (TF2Recipe irecipe : this.recipes)
+			if (!(this.recipeConditions.containsKey(irecipe) && !this.recipeConditions.get(irecipe).test(player))
 					&& irecipe.matches(craftMatrix, world))
 				return irecipe.getCraftingResult(craftMatrix);
 
@@ -490,19 +470,19 @@ public class TF2CraftingManager {
 	}
 
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer craftMatrix, Level world) {
-		for (Recipe irecipe : this.recipes)
+		for (TF2Recipe irecipe : this.recipes)
 			if (irecipe.matches(craftMatrix, world))
 				return irecipe.getRemainingItems(craftMatrix);
 
 		NonNullList<ItemStack> aitemstack = NonNullList.withSize(craftMatrix.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < aitemstack.size(); ++i)
-			aitemstack.set(i, craftMatrix.getStackInSlot(i));
+			aitemstack.set(i, craftMatrix.getItem(i));
 
 		return aitemstack;
 	}
 
-	public List<Recipe> getRecipeList() {
+	public List<TF2Recipe> getRecipeList() {
 		return this.recipes;
 	}
 }

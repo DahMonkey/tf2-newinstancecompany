@@ -8,12 +8,10 @@ import rafradek.TF2weapons.item.ItemFromData;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
-		implements Recipe, IRecipeTF2 {
+public class OpenCrateRecipe implements TF2Recipe, IRecipeTF2 {
 
 	@Override
 	public boolean matches(CraftingContainer inv, Level world) {
@@ -21,7 +19,7 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		ItemStack crate = ItemStack.EMPTY;
 
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 7) {
 					if (!key)
@@ -42,7 +40,7 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		ItemStack stack2 = ItemStack.EMPTY;
 
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (!(stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 7))
 					stack2 = stack;
@@ -68,8 +66,8 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
-			ItemStack itemstack = inv.getStackInSlot(i);
-			nonnulllist.set(i, ForgeHooks.getContainerItem(itemstack));
+			ItemStack itemstack = inv.getItem(i);
+			nonnulllist.set(i, (itemstack.hasCraftingRemainingItem() ? itemstack.getCraftingRemainingItem() : ItemStack.EMPTY));
 		}
 
 		return nonnulllist;

@@ -10,12 +10,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
-		implements Recipe, IRecipeTF2 {
+public class RecipeFromScrap implements TF2Recipe, IRecipeTF2 {
 
 	public boolean withToken;
 
@@ -29,7 +27,7 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 
 		int tokens = 0;
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() instanceof ItemTF2 && stack.getDamageValue() == 3)
 					stacks.add(stack);
@@ -46,7 +44,7 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 	public ItemStack getCraftingResult(CraftingContainer inv) {
 		ItemStack result = TF2Util.metaStack(TF2weapons.itemTF2, 1, 9);
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (stack.getItem() instanceof ItemToken) {
 				result.setTag(new CompoundTag());
 				result.getTag().putByte("Token", (byte) stack.getDamageValue());
@@ -65,8 +63,8 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
-			ItemStack itemstack = inv.getStackInSlot(i);
-			nonnulllist.set(i, ForgeHooks.getContainerItem(itemstack));
+			ItemStack itemstack = inv.getItem(i);
+			nonnulllist.set(i, (itemstack.hasCraftingRemainingItem() ? itemstack.getCraftingRemainingItem() : ItemStack.EMPTY));
 		}
 
 		return nonnulllist;

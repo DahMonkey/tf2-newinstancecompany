@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.Container;
@@ -556,7 +557,7 @@ public class TF2Util {
 		double d0 = targetX - entity.getX();
 		double d1 = targetY - (entity.getY() + entity.getEyeHeight());
 		double d2 = targetZ - entity.getZ();
-		double d3 = Mth.sqrt((float)d0 * d0 + d2 * d2);
+		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 		float f = (float) (Mth.atan2(d2, d0) * 180.0D / Math.PI) - 90.0F;
 		float f1 = (float) (-(Mth.atan2(d1, d3) * 180.0D / Math.PI));
 		float compareyaw = Math.abs(180 - Math.abs(Math.abs(f - Mth.wrapDegrees(entity.yHeadRot)) - 180));
@@ -730,9 +731,9 @@ public class TF2Util {
 			float damage, Vec3 forwardVec, Explosion explosion) {
 		BlockState state = world.getBlockState(pos);
 		Block block = state.getBlock();
-		if (block.isAir(state, world, pos) || TF2ConfigVars.destTerrain == 0 || state.getDestroySpeed(world, pos) < 0
+		if (state.isAir() || TF2ConfigVars.destTerrain == 0 || state.getDestroySpeed(world, pos) < 0
 				|| (!(living instanceof Player) && !world.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING))
-				|| (living instanceof Player && !world.isBlockModifiable((Player) living, pos)))
+				|| (living instanceof Player && !world.mayInteract((Player) living, pos)))
 			return 0;
 
 		DestroyBlockEntry finalEntry = null;
@@ -774,32 +775,30 @@ public class TF2Util {
 		finalEntry.curDamage += damage;
 
 		if (living != null)
-			world.sendBlockBreakProgress(Math.min(Integer.MAX_VALUE, 0xFFFF + entryId), pos,
+			world.destroyBlockProgress(Math.min(Integer.MAX_VALUE, 0xFFFF + entryId), pos,
 					(int) ((finalEntry.curDamage / hardness) * 10));
 
 		if (finalEntry.curDamage >= hardness) {
-			if (living != null && living instanceof Player)
-				block.harvestBlock(world, (Player) living, pos, state, null, stack);
-			else {
-				block.dropBlockAsItem(world, pos, state, (int) TF2Attribute.getModifier("Looting", stack, 0, living));
-				if (explosion != null) block.onBlockExploded(world, pos, explosion);
-			}
 			cap.destroyProgress.remove(finalEntry);
+			boolean destroyed;
+			if (living instanceof ServerPlayer) {
+				destroyed = ((ServerPlayer) living).gameMode.destroyBlock(pos);
+			} else {
+				if (world instanceof ServerLevel)
+					Block.dropResources(state, world, pos, world.getBlockEntity(pos), living, stack);
+				destroyed = world.removeBlock(pos, false);
+			}
 
-			boolean flag = (living instanceof Player) ? (world.isEmptyBlock(pos)) && block.removedByPlayer(state, world, pos, (Player) living, true) : true;
-
-			if (flag) {
+			if (destroyed) {
 				if (living != null) {
-					world.levelEvent(2001, pos, Block.getStateId(state));
-					world.sendBlockBreakProgress(Math.min(Integer.MAX_VALUE, 0xFFFF + entryId), pos, -1);
+					world.levelEvent(2001, pos, Block.getId(state));
+					world.destroyBlockProgress(Math.min(Integer.MAX_VALUE, 0xFFFF + entryId), pos, -1);
 				}
-				block.onBlockDestroyedByPlayer(world, pos, state);
 
-				if (forwardVec != null) {
-					HitResult trace = world.rayTraceBlocks(
-							living.position().add(0, living.getEyeHeight(), 0), forwardVec, false, true,
-							false);
-					if (trace != null)
+				if (forwardVec != null && living != null) {
+					BlockHitResult trace = world.clip(new ClipContext(living.getEyePosition(), forwardVec,
+							ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, living));
+					if (trace.getType() == HitResult.Type.BLOCK)
 						damageBlock(trace.getBlockPos(), living, world, stack, critical,
 								finalEntry.curDamage - hardness, forwardVec, explosion);
 				}
@@ -811,7 +810,7 @@ public class TF2Util {
 
 	public static float getHardness(BlockState state, Level world, BlockPos pos) {
 		return state.getDestroySpeed(world, pos)
-				* (!state.getMaterial().isToolNotRequired() && !(state.getBlock() instanceof BlockStone) ? 12f : 5.5f);
+				* (state.requiresCorrectToolForDrops() && !state.is(Blocks.STONE) ? 12f : 5.5f);
 	}
 
 	public static int getExperiencePoints(Player player) {
@@ -950,7 +949,7 @@ public class TF2Util {
 				if (expJump) {
 					TF2Class used = TF2Util.getWeaponUsedByClass(weapon);
 					if (used != null)
-						scale *= ItemToken.EXPLOSION_VALUES[used.get3DDataValue()];
+						scale *= ItemToken.EXPLOSION_VALUES[used.getIndex()];
 				} else {
 					if (ent instanceof LivingEntity)
 						scale *= 1 - ((LivingEntity) ent)
@@ -964,7 +963,7 @@ public class TF2Util {
 				if (ent.getDeltaMovement().y != 0)
 					ent.fallDistance = (float) Math.max(0f, ent.fallDistance * ((ent.getDeltaMovement().y + vec.y) / ent.getDeltaMovement().y));
 				if (vec.y > 0) {
-					ent.onGround = false;
+					ent.setOnGround(false);
 					if (expJump) {
 						// ent.fallDistance -= vec.y * 8 - 1;
 					} else
@@ -1004,15 +1003,14 @@ public class TF2Util {
 			 */
 			if (fromSentry) {
 				EntitySentry sentry = ((EntityProjectileBase) exploder).sentry;
-				((LivingEntity) ent).setLastAttackedEntity(sentry);
-				((LivingEntity) ent).setLastHurtByMob(sentry);
+								((LivingEntity) ent).setLastHurtByMob(sentry);
 
 				if (!ent.isAlive())
 					sentry.scoreKill((LivingEntity) ent);
 			}
 
 		}
-		Iterator<Player> iterator = world.players().iterator();
+		Iterator<? extends Player> iterator = world.players().iterator();
 
 		while (iterator.hasNext()) {
 			Player entityplayer = iterator.next();
@@ -1136,7 +1134,7 @@ public class TF2Util {
 			if (target instanceof LivingEntity) {
 				upgrade *= TF2Attribute.getModifier("Afterburn Reduction",
 						ItemBackpack.getBackpack((LivingEntity) target), 1, living);
-				fire *= 40f / ProtectionEnchantment.getFireTimeForEntity((LivingEntity) target, 40);
+				fire *= 40f / Math.max(1, ProtectionEnchantment.getFireAfterDampener((LivingEntity) target, 40));
 			}
 
 			if (fire <= 0)
@@ -1175,15 +1173,11 @@ public class TF2Util {
 	public static void sendTracking(IMessage message, Entity entity) {
 		if (entity instanceof ServerPlayer)
 			TF2weapons.network.sendTo(message, (ServerPlayer) entity);
-		for (Player player : ((ServerLevel) entity.level).getEntityTracker().getTrackingPlayers(entity)) {
-			TF2weapons.network.sendTo(message, (ServerPlayer) player);
-		}
+		TF2weapons.network.sendToAllTracking(message, entity);
 	}
 
 	public static void sendTrackingExcluding(IMessage message, Entity entity) {
-		for (Player player : ((ServerLevel) entity.level).getEntityTracker().getTrackingPlayers(entity)) {
-			TF2weapons.network.sendTo(message, (ServerPlayer) player);
-		}
+		TF2weapons.network.sendToAllTracking(message, entity);
 	}
 
 	/*
@@ -1197,13 +1191,26 @@ public class TF2Util {
 		return damage * (1.0F - f1 / 25.0F);
 	}
 
+	/** 1.12 ore dictionary lookup: the mod's own metadata items first, then the matching Forge tag. */
 	public static boolean isOre(String ore, ItemStack stack) {
-		for (ItemStack stackin : OreDictionary.getOres(ore)) {
-			if (stackin.sameItem(stack))
+		if (stack.isEmpty())
+			return false;
+		if (stack.getItem() == TF2weapons.itemTF2) {
+			int meta = getMeta(stack);
+			if ((ore.equals("ingotCopper") && meta == 0) || (ore.equals("ingotLead") && meta == 1)
+					|| (ore.equals("ingotAustralium") && meta == 2) || (ore.equals("nuggetAustralium") && meta == 9))
 				return true;
 		}
-		return false;
+		if (ore.equals("plankWood"))
+			return stack.is(net.minecraft.tags.ItemTags.PLANKS);
+		java.util.regex.Matcher m = java.util.regex.Pattern.compile("^([a-z]+)([A-Z]\\w*)$").matcher(ore);
+		if (!m.matches())
+			return false;
+		net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag = net.minecraft.tags.ItemTags
+				.create(new ResourceLocation("forge", m.group(1) + "s/" + m.group(2).toLowerCase()));
+		return stack.is(tag);
 	}
+
 
 	public static ItemStack getFirstItem(Container inventory, Predicate<ItemStack> pred) {
 
@@ -1325,7 +1332,7 @@ public class TF2Util {
 	public static int removeItemsMatching(IItemHandler inventory, int amount, Predicate<ItemStack> match) {
 		int left = amount;
 		for (int i = 0; i < inventory.getSlots(); i++) {
-			if (match.apply(inventory.getStackInSlot(i))) {
+			if (match.test(inventory.getStackInSlot(i))) {
 				left = left - inventory.extractItem(i, left, false).getCount();
 				if (left <= 0)
 					return 0;
@@ -1370,14 +1377,14 @@ public class TF2Util {
 	public static void addModifierSafe(LivingEntity living, Attribute attribute, AttributeModifier modifier,
 			boolean saved) {
 		living.getAttribute(attribute).removeModifier(modifier.getId());
-		living.getAttribute(attribute).addTransientModifier(modifier);
-		living.getAttribute(attribute).getValue();
-		if (!saved)
-			modifier.setSaved(false);
+		if (saved)
+			living.getAttribute(attribute).addPermanentModifier(modifier);
+		else
+			living.getAttribute(attribute).addTransientModifier(modifier);
 	}
 
 	public static boolean isHostile(LivingEntity living) {
-		return living instanceof Enemy && !TF2ConfigVars.hostileBlacklist.contains(EntityList.getKey(living));
+		return living instanceof Enemy && !TF2ConfigVars.hostileBlacklist.contains(EntityType.getKey(living.getType()));
 	}
 
 	public static Vec3 getRotationVector(float pitch, float yaw) {
@@ -1431,8 +1438,8 @@ public class TF2Util {
 			int p_192381_4_, int p_192381_5_) {
 		BlockPos blockpos = new BlockPos(x + p_192381_4_, y - 1, p_192381_2_ + p_192381_5_);
 		BlockState iblockstate = owner.level.getBlockState(blockpos);
-		return iblockstate.getBlockFaceShape(owner.level, blockpos, Direction.DOWN) == BlockFaceShape.SOLID
-				&& iblockstate.canEntitySpawn(owner) && owner.level.isEmptyBlock(blockpos.above())
+		return iblockstate.isFaceSturdy(owner.level, blockpos, Direction.UP)
+				&& iblockstate.isValidSpawn(owner.level, blockpos, owner.getType()) && owner.level.isEmptyBlock(blockpos.above())
 				&& owner.level.isEmptyBlock(blockpos.above(2));
 	}
 
@@ -1447,9 +1454,8 @@ public class TF2Util {
 	public static void addAndSendEffect(LivingEntity living, MobEffectInstance effect) {
 		living.addEffect(effect);
 		if (!living.level.isClientSide)
-			for (Player player : ((ServerLevel) living.level).getEntityTracker().getTrackingPlayers(living)) {
-				((ServerPlayer) player).connection.send(new ClientboundUpdateMobEffectPacket(living.getId(), effect));
-			}
+			((ServerLevel) living.level).getChunkSource().broadcast(living,
+					new ClientboundUpdateMobEffectPacket(living.getId(), effect));
 	}
 
 	public static Entity findAmmoSource(LivingEntity living, double range, boolean immediate) {
@@ -1471,8 +1477,10 @@ public class TF2Util {
 				return true;
 		}
 
-		Biome biome = world.getBiome(pos);
-		return block == biome.topBlock.getBlock() || block == biome.fillerBlock.getBlock();
+		BlockState biomeState = world.getBlockState(pos);
+		return biomeState.is(net.minecraft.tags.BlockTags.DIRT) || biomeState.is(net.minecraft.tags.BlockTags.SAND)
+				|| biomeState.is(net.minecraft.tags.BlockTags.BASE_STONE_OVERWORLD)
+				|| biomeState.is(Blocks.GRAVEL) || biomeState.is(Blocks.SNOW_BLOCK);
 	}
 
 	public static Vec2 getAngleFromFacing(Direction facing) {
@@ -1488,7 +1496,7 @@ public class TF2Util {
 
 	public static void stomp(LivingEntity living) {
 		for (LivingEntity target : living.level.getEntitiesOfClass(LivingEntity.class,
-				living.getBoundingBox().grow(0.25, -living.getDeltaMovement().y, 0.25),
+				living.getBoundingBox().inflate(0.25, -living.getDeltaMovement().y, 0.25),
 				input -> input != living && !TF2Util.isAlliedTo(input, living))) {
 
 			float damage = Math.max(0, living.fallDistance - 3) * 1.8f;
@@ -1596,18 +1604,18 @@ public class TF2Util {
 		BlockState south = world.getBlockState(pos.relative(Direction.SOUTH));
 		BlockState west = world.getBlockState(pos.relative(Direction.WEST));
 		BlockState east = world.getBlockState(pos.relative(Direction.EAST));
-		if (center.getCollisionBoundingBox(world, pos) != null)
-			vec = vec.add(0, 1 - center.getCollisionBoundingBox(world, pos).maxY, 0);
-		else if (down.getCollisionBoundingBox(world, pos) != null)
-			vec = vec.add(0, 2 - down.getCollisionBoundingBox(world, pos).maxY, 0);
-		if (north.getCollisionBoundingBox(world, pos) != null)
-			vec = vec.add(0, 0, north.getCollisionBoundingBox(world, pos).maxY);
-		if (south.getCollisionBoundingBox(world, pos) != null)
-			vec = vec.add(0, 0, -south.getCollisionBoundingBox(world, pos).maxY);
-		if (west.getCollisionBoundingBox(world, pos) != null)
-			vec = vec.add(west.getCollisionBoundingBox(world, pos).maxY, 0, 0);
-		if (east.getCollisionBoundingBox(world, pos) != null)
-			vec = vec.add(-east.getCollisionBoundingBox(world, pos).maxY, 0, 0);
+		if (!center.getCollisionShape(world, pos).isEmpty())
+			vec = vec.add(0, 1 - center.getCollisionShape(world, pos).max(Direction.Axis.Y), 0);
+		else if (!down.getCollisionShape(world, pos).isEmpty())
+			vec = vec.add(0, 2 - down.getCollisionShape(world, pos).max(Direction.Axis.Y), 0);
+		if (!north.getCollisionShape(world, pos).isEmpty())
+			vec = vec.add(0, 0, north.getCollisionShape(world, pos).max(Direction.Axis.Y));
+		if (!south.getCollisionShape(world, pos).isEmpty())
+			vec = vec.add(0, 0, -south.getCollisionShape(world, pos).max(Direction.Axis.Y));
+		if (!west.getCollisionShape(world, pos).isEmpty())
+			vec = vec.add(west.getCollisionShape(world, pos).max(Direction.Axis.Y), 0, 0);
+		if (!east.getCollisionShape(world, pos).isEmpty())
+			vec = vec.add(-east.getCollisionShape(world, pos).max(Direction.Axis.Y), 0, 0);
 		// vec = vec.normalize();
 		return vec;
 	}
@@ -1668,7 +1676,7 @@ public class TF2Util {
 		return stack;
 	}
 
-	public static int getValueOnAxis(Vec3i vec, Axis axis) {
+	public static int getValueOnAxis(Vec3i vec, Direction.Axis axis) {
 		switch (axis) {
 		case X:
 			return vec.getX();
@@ -1681,7 +1689,7 @@ public class TF2Util {
 		}
 	}
 
-	public static BlockPos setValueOnAxis(Vec3i vec, Axis axis, int value) {
+	public static BlockPos setValueOnAxis(Vec3i vec, Direction.Axis axis, int value) {
 		switch (axis) {
 		case X:
 			return new BlockPos(value, vec.getY(), vec.getZ());
@@ -1703,9 +1711,10 @@ public class TF2Util {
 	}
 
 	public static double getHeightAboveGround(Vec3 pos, Level world, boolean checkWater) {
-		HitResult ray = world.rayTraceBlocks(pos, pos.subtract(0., 256., 0.), checkWater);
+		HitResult ray = world.clip(new ClipContext(pos, pos.subtract(0., 256., 0.), ClipContext.Block.COLLIDER,
+				checkWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, null));
 
-		if (ray != null && ray.getLocation() != null)
+		if (ray != null && ray.getType() != HitResult.Type.MISS)
 			return pos.y - ray.getLocation().y;
 		else
 			return 0.;
@@ -1721,7 +1730,7 @@ public class TF2Util {
 						CombatRules.getDamageAfterAbsorb(damage, living.getArmorValue(),
 								(float) living.getAttribute(Attributes.ARMOR_TOUGHNESS)
 								.getValue()),
-						EnchantmentHelper.getEnchantmentModifierDamage(living.getArmorSlots(), source));
+						EnchantmentHelper.getDamageProtection(living.getArmorSlots(), source));
 	}
 
 	public static int getTotalCurrency(IItemHandler handler) {
@@ -1762,10 +1771,10 @@ public class TF2Util {
 	public static void playSoundToPlayer(Player player, SoundEvent event, SoundSource category, double x,
 			double y, double z, float volume, float pitch) {
 		if (player instanceof ServerPlayer)
-			((ServerPlayer) player).connection
-			.send(new ClientboundSoundPacket(event, category, x, y, z, volume, pitch));
-		else if (player.getLevel().isClientSide && player == Minecraft.getInstance().player)
-			player.getLevel().playSound(x, y, z, event, category, volume, pitch, false);
+			((ServerPlayer) player).connection.send(new ClientboundSoundPacket(event, category, x, y, z, volume, pitch,
+					player.getRandom().nextLong()));
+		else if (player.getLevel().isClientSide)
+			player.getLevel().playLocalSound(x, y, z, event, category, volume, pitch, false);
 	}
 
 	public static boolean restoreAmmoToWeapons(Player player, float ammo) {

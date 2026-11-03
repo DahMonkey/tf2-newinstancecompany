@@ -5,12 +5,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 
-public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
-		implements Recipe, IRecipeTF2 {
+public class JumperRecipe implements TF2Recipe, IRecipeTF2 {
 
 	String nameBefore;
 	String nameAfter;
@@ -26,7 +24,7 @@ public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		ItemStack stack2 = ItemStack.EMPTY;
 
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() == Items.FEATHER) {
 					if (feather < 8)
@@ -47,7 +45,7 @@ public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		ItemStack stack2 = ItemStack.EMPTY;
 
 		for (int x = 0; x < inv.getContainerSize(); x++) {
-			ItemStack stack = inv.getStackInSlot(x);
+			ItemStack stack = inv.getItem(x);
 			if (!stack.isEmpty())
 				if (!(stack.getItem() == Items.FEATHER))
 					stack2 = stack;
@@ -70,8 +68,8 @@ public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
-			ItemStack itemstack = inv.getStackInSlot(i);
-			aitemstack.set(i, ForgeHooks.getContainerItem(itemstack));
+			ItemStack itemstack = inv.getItem(i);
+			aitemstack.set(i, (itemstack.hasCraftingRemainingItem() ? itemstack.getCraftingRemainingItem() : ItemStack.EMPTY));
 		}
 
 		return aitemstack;
