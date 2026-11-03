@@ -30,7 +30,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	public LivingEntity entity;
 	public CompoundTag data;
 	public boolean isFeign;
-	public float renderYawOffset;
+	public float yBodyRot;
 	public boolean first;
 	public boolean clientOnly;
 	public int ticksLeft;
@@ -62,15 +62,15 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 		// this.data = this.entity.serializeNBT();
 		this.isFeign = isFeign;
 		if (isFeign) {
-			motionX = entity.getDeltaMovement().x;
-			motionY = entity.getDeltaMovement().y;
-			motionZ = entity.getDeltaMovement().z;
+			setDeltaMovement((entity.getDeltaMovement().x), getDeltaMovement().y, getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, (entity.getDeltaMovement().y), getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, (entity.getDeltaMovement().z));
 		} else {
 			entity.deathTime = 0;
 			entity.hurtTime = 0;
-			renderYawOffset = toCopy.yBodyRot;
-			prevRotationYaw = entity.yRotO;
-			rotationYaw = entity.getYRot();
+			yBodyRot = toCopy.yBodyRot;
+			yRotO = entity.yRotO;
+			setYRot((entity.getYRot()));
 		}
 	}
 
@@ -84,8 +84,8 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if (!isEntityInvulnerable(source) && source.getImmediateSource() instanceof Player) {
-			if (data != null) entityDropItem(ItemStatue.getStatue(this), 0);
+		if (!isEntityInvulnerable(source) && source.getDirectEntity() instanceof Player) {
+			if (data != null) spawnAtLocation(ItemStatue.getStatue(this), 0);
 			discard();
 			return true;
 		}
@@ -95,23 +95,23 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	@Override
 	public void onUpdate() {
 		if (onGround) {
-			motionX *= 0.1;
-			motionZ *= 0.1;
+			setDeltaMovement(getDeltaMovement().x * (0.1), getDeltaMovement().y, getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z * (0.1));
 		}
-		motionX *= 0.98;
-		motionY *= 0.98;
-		motionZ *= 0.98;
-		motionY -= 0.08;
+		setDeltaMovement(getDeltaMovement().x * (0.98), getDeltaMovement().y, getDeltaMovement().z);
+		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y * (0.98), getDeltaMovement().z);
+		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z * (0.98));
+		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y - (0.08), getDeltaMovement().z);
 		if (!world.isClientSide && ticksLeft >= 0 && ticksLeft-- == 0) discard();
-		move(MoverType.SELF, motionX, motionY, motionZ);
+		move(MoverType.SELF, getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z);
 		if (isFeign && tickCount >= 20) {
 			discard();
 			for (int k = 0; k < 20; ++k) {
-				double d2 = rand.nextGaussian() * 0.02D;
-				double d0 = rand.nextGaussian() * 0.02D;
-				double d1 = rand.nextGaussian() * 0.02D;
-				world.addParticle(ParticleTypes.EXPLOSION_NORMAL, posX + rand.nextFloat() * width * 2.0F - width,
-						posY + rand.nextFloat() * height, posZ + rand.nextFloat() * width * 2.0F - width, d2, d0, d1);
+				double d2 = random.nextGaussian() * 0.02D;
+				double d0 = random.nextGaussian() * 0.02D;
+				double d1 = random.nextGaussian() * 0.02D;
+				world.addParticle(ParticleTypes.EXPLOSION_NORMAL, getX() + random.nextFloat() * width * 2.0F - width,
+						getY() + random.nextFloat() * height, getZ() + random.nextFloat() * width * 2.0F - width, d2, d0, d1);
 			}
 		}
 	}
@@ -196,14 +196,14 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 			}
 			entity.deathTime = 0;
 			entity.hurtTime = 0;
-			entity.limbSwingAmount = 0.5f;
+			entity.animationSpeed = 0.5f;
 			entity.tickCount = 15;
-			entity.limbSwing += rand.nextFloat() * 10;
+			entity.limbSwing += random.nextFloat() * 10;
 			setSize(entity.getBbWidth(), entity.getBbHeight());
-			entity.setPos(posX, posY, posZ);
-			entity.rotationYawHead = rotationYaw;
-			entity.yBodyRot = rotationYaw;
-			entity.yBodyRotO = rotationYaw;
+			entity.setPos(getX(), getY(), getZ());
+			entity.yHeadRot = getYRot();
+			entity.yBodyRot = getYRot();
+			entity.yBodyRotO = getYRot();
 			if (buff.readBoolean()) WeaponsCapability.get(entity).state = 1;
 		} catch (Exception e) {
 			e.printStackTrace();

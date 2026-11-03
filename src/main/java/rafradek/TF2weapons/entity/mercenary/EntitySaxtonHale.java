@@ -74,8 +74,8 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, EntityTF2Character.class, 8.0F));
 		this.goalSelector.addGoal(7, new EntityAISeek(this));
 		this.targetSelector.addGoal(2, new HurtByTargetGoal(this, true));
-		this.experienceValue = 1500;
-		this.stepHeight = 1f;
+		this.xpReward = 1500;
+		this.maxUpStep = 1f;
 		this.setSize(0.6F, 1.99F);
 	}
 
@@ -99,7 +99,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 			for (int i = 0; i <= TF2PlayerCapability.get(player).maxInvasionBeaten; i++) {
 				if (!(i == 4 && ((ServerPlayer) player).getStatFile().readStat(TF2weapons.robotsKilled) < 2000)
 						&& i != InvasionEvent.DIFFICULTY.length)
-					this.addTradeOffer(new ItemStack(TF2weapons.itemEventMaker, 1, i), 27 + i * 9, list, i + 1);
+					this.addTradeOffer(TF2Util.metaStack(TF2weapons.itemEventMaker, 1, i), 27 + i * 9, list, i + 1);
 			}
 		}
 		return list;
@@ -114,20 +114,20 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 		this.lastWeekCheck = (int) (this.level.getGameTime() / 96000L);
 		this.tradeOffers = new MerchantOffers();
 		this.tradeOffers.addAll(addRecipes);
-		this.tradeOffers.add(new MerchantOffer(new ItemStack(TF2weapons.itemTF2, 5, 2), ItemStack.EMPTY,
-				new ItemStack(TF2weapons.itemTF2, 1, 7), 0, 100));
-		int weaponCount = 13 + this.rand.nextInt(2);
-		List<ItemStack> weapons = ItemFromData.getRandomWeapons(this.rand, ItemFromData.VISIBLE_WEAPON, weaponCount);
+		this.tradeOffers.add(new MerchantOffer(TF2Util.metaStack(TF2weapons.itemTF2, 5, 2), ItemStack.EMPTY,
+				TF2Util.metaStack(TF2weapons.itemTF2, 1, 7), 0, 100));
+		int weaponCount = 13 + this.random.nextInt(2);
+		List<ItemStack> weapons = ItemFromData.getRandomWeapons(this.random, ItemFromData.VISIBLE_WEAPON, weaponCount);
 		for (int i = 0; i < weaponCount; i++) {
 			ItemStack item = weapons.get(i);
 			int cost = ItemFromData.getData(item).getInt(PropertyType.COST);
 			this.addTradeOffer(item, cost);
 		}
-		int hatCount = 2 + this.rand.nextInt(3);
+		int hatCount = 2 + this.random.nextInt(3);
 
 		for (int i = 0; i < hatCount; i++) {
 
-			ItemStack item = ItemFromData.getRandomWeaponOfType("cosmetic", this.rand, false);
+			ItemStack item = ItemFromData.getRandomWeaponOfType("cosmetic", this.random, false);
 			int cost = ItemFromData.getData(item).getInt(PropertyType.COST);
 			this.addTradeOffer(item, cost);
 		}
@@ -150,16 +150,16 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
 	private void addTradeOffer(ItemStack toBuy, int cost) {
 		cost *= TF2ConfigVars.costMult;
-		ItemStack ingot = new ItemStack(TF2weapons.itemTF2, cost / 9, 2);
-		ItemStack nugget = new ItemStack(TF2weapons.itemTF2, cost % 9, 6);
+		ItemStack ingot = TF2Util.metaStack(TF2weapons.itemTF2, cost / 9, 2);
+		ItemStack nugget = TF2Util.metaStack(TF2weapons.itemTF2, cost % 9, 6);
 		this.tradeOffers.add(new MerchantOffer(ingot.getCount() > 0 ? ingot : nugget,
 				nugget.getCount() > 0 ? nugget : ItemStack.EMPTY, toBuy, 0, 100));
 	}
 
 	private void addTradeOffer(ItemStack toBuy, int cost, MerchantOffers list, int index) {
 		cost *= TF2ConfigVars.costMult;
-		ItemStack ingot = new ItemStack(TF2weapons.itemTF2, cost / 9, 2);
-		ItemStack nugget = new ItemStack(TF2weapons.itemTF2, cost % 9, 6);
+		ItemStack ingot = TF2Util.metaStack(TF2weapons.itemTF2, cost / 9, 2);
+		ItemStack nugget = TF2Util.metaStack(TF2weapons.itemTF2, cost % 9, 6);
 		list.add(index, new MerchantOffer(ingot.getCount() > 0 ? ingot : nugget,
 				nugget.getCount() > 0 ? nugget : ItemStack.EMPTY, toBuy, 0, 100));
 	}
@@ -173,7 +173,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 				this.superJump = true;
 				this.jump();
 			}
-			Entity entity = source.getTrueSource();
+			Entity entity = source.getEntity();
 			if (entity instanceof ServerPlayer)
 				this.bossInfo.addPlayer((ServerPlayer) entity);
 			this.rage += amount / 100f;
@@ -224,7 +224,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 		if (!this.level.isClientSide) {
 			this.jumpCooldown--;
 
-			if (this.rand.nextInt(20) == 0) {
+			if (this.random.nextInt(20) == 0) {
 				this.getAttribute(Attributes.MOVEMENT_SPEED)
 						.setBaseValue(0.12 * TF2Util.lerp(1.5f, 1, this.getHealth() / this.getMaxHealth()));
 			}
@@ -242,8 +242,8 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 				if (!this.onGround) {
 					Vec3 forward = new Vec3(this.getTarget().getX() - this.getX(), 0.,
 							this.getTarget().getZ() - this.getZ()).normalize().scale(this.getAIMoveSpeed() * 0.42);
-					this.motionX += forward.x;
-					this.motionZ += forward.z;
+					this.setDeltaMovement(this.getDeltaMovement().x + (forward.x), this.getDeltaMovement().y, this.getDeltaMovement().z);
+					this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z + (forward.z));
 				}
 
 				List<AABB> boxes = this.level.getCollisionBoxes(this, getBoundingBox().inflate(1, 0, 1));
@@ -362,7 +362,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 			return;
 
 		this.playSound(TF2Sounds.MOB_SAXTON_JUMP, 2F, 1F);
-		this.motionY = 0;
+		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 
 		this.jumpCooldown = 25;
 
@@ -383,7 +383,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getAttributeMap().registerAttribute(Attributes.ATTACK_DAMAGE);
+		this.getAttributes().registerAttribute(Attributes.ATTACK_DAMAGE);
 		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(50.0D);
 		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0D);
 		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.8D);
@@ -408,8 +408,8 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 			if (i > 0 && entityIn instanceof LivingEntity) {
 				((LivingEntity) entityIn).knockback(this, i * 0.5F, Mth.sin(this.getYRot() * 0.017453292F),
 						(-Mth.cos(this.getYRot() * 0.017453292F)));
-				this.motionX *= 0.6D;
-				this.motionZ *= 0.6D;
+				this.setDeltaMovement(this.getDeltaMovement().x * (0.6D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.6D));
 			}
 
 			int j = EnchantmentHelper.getFireAspectModifier(this);
@@ -426,7 +426,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 						&& itemstack1.getItem() == Items.SHIELD) {
 					float f1 = 0.25F + EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
 
-					if (this.rand.nextFloat() < f1) {
+					if (this.random.nextFloat() < f1) {
 						entityplayer.getCooldowns().setCooldown(Items.SHIELD, 100);
 						this.level.broadcastEntityEvent(entityplayer, (byte) 30);
 					}
@@ -510,7 +510,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 	}
 
 	@Override
-	public Level getWorld() {
+	public Level getLevel() {
 		return this.level;
 	}
 

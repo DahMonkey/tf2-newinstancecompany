@@ -8,7 +8,7 @@ public class TF2WeaponDropHandler implements IMessageHandler<TF2Message.WeaponDr
 
 	@Override
 	public IMessage onMessage(final WeaponDroppedMessage message, MessageContext ctx) {
-		Minecraft.getInstance().addScheduledTask(() -> ClientHandler.playerDropWeapon(message.name));
+		Minecraft.getInstance().execute(() -> ClientHandler.playerDropWeapon(message.name));
 		return null;
 	}
 

@@ -18,7 +18,7 @@ public class InventoryAmmoBelt extends SimpleContainer implements ICapabilityPro
 
 	@Override
 	public boolean isEmpty() {
-		for (int i = 0; i < this.getSizeInventory(); i++)
+		for (int i = 0; i < this.getContainerSize(); i++)
 			if (this.getStackInSlot(0) != null)
 				return false;
 		return true;
@@ -39,7 +39,7 @@ public class InventoryAmmoBelt extends SimpleContainer implements ICapabilityPro
 	@Override
 	public ListTag serializeNBT() {
 		ListTag list = new ListTag();
-		for (int i = 0; i < this.getSizeInventory(); i++) {
+		for (int i = 0; i < this.getContainerSize(); i++) {
 			ItemStack itemstack = this.getStackInSlot(i);
 
 			if (!itemstack.isEmpty()) {

@@ -83,7 +83,7 @@ public class ScatteredFeatureTF2Base extends StructureComponentTemplate {
 	}
 
 	@Override
-	public boolean addComponentParts(Level world, Random randomIn, StructureBoundingBox structureBoundingBoxIn) {
+	public boolean addComponentParts(Level world, RandomSource randomIn, StructureBoundingBox structureBoundingBoxIn) {
 		if (this.templatePosition.getY() == 64) {
 			int averageGroundLvl = this.getAverageGroundLevel(world, structureBoundingBoxIn);
 
@@ -128,24 +128,24 @@ public class ScatteredFeatureTF2Base extends StructureComponentTemplate {
 	}
 
 	@Override
-	protected void handleDataMarker(String function, BlockPos pos, Level world, Random rand,
+	protected void handleDataMarker(String function, BlockPos pos, Level world, RandomSource random,
 			StructureBoundingBox sbb) {
 		if (function.startsWith("ChestB")) {
-			BlockPos off = pos.down();
+			BlockPos off = pos.below();
 			BlockEntity ent = world.getBlockEntity(off);
-			((ChestBlockEntity) ent).setLootTable(TF2weapons.lootTF2Base, rand.nextLong());
+			((ChestBlockEntity) ent).setLootTable(TF2weapons.lootTF2Base, random.nextLong());
 		}
 	}
 
 	public static class Start extends StructureStart {
 		public Start() {}
 
-		public Start(Level world, Random random, IChunkGenerator provider, int chunkX, int chunkZ) {
+		public Start(Level world, RandomSource random, IChunkGenerator provider, int chunkX, int chunkZ) {
 			this(world, random, provider, chunkX, chunkZ,
 					world.getBiome(new BlockPos(chunkX * 16 + 8, 0, chunkZ * 16 + 8)));
 		}
 
-		public Start(Level world, Random random, IChunkGenerator provider, int chunkX, int chunkZ, Biome biomeIn) {
+		public Start(Level world, RandomSource random, IChunkGenerator provider, int chunkX, int chunkZ, Biome biomeIn) {
 			super(chunkX, chunkZ);
 			Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length)];
 			BlockPos pos = new BlockPos(chunkX * 16 + 8, 64, chunkZ * 16 + 8);
@@ -213,7 +213,7 @@ public class ScatteredFeatureTF2Base extends StructureComponentTemplate {
 
 		@Override
 		protected StructureStart getStructureStart(int chunkX, int chunkZ) {
-			return new Start(this.level, this.rand, this.provider, chunkX, chunkZ);
+			return new Start(this.level, this.random, this.provider, chunkX, chunkZ);
 		}
 	}
 }

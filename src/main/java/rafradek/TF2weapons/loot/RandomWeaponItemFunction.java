@@ -14,11 +14,11 @@ public class RandomWeaponItemFunction extends LootItemFunction {
 	}
 
 	@Override
-	public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
+	public ItemStack apply(ItemStack stack, RandomSource random, LootContext context) {
 		//loottweaker support
-		if (rand == null && context == null) return stack;
+		if (random == null && context == null) return stack;
 		if (!(stack.getDamageValue() == 9 || stack.getDamageValue() == 10)) return stack;
-		return ItemFromData.getRandomWeapon(stack, rand);
+		return ItemFromData.getRandomWeapon(stack, random);
 	}
 
 }

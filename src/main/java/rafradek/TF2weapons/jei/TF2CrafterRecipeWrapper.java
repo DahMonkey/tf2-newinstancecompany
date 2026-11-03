@@ -73,7 +73,7 @@ public class TF2CrafterRecipeWrapper implements IRecipeWrapper {
 						}
 					}
 					inputs.add(weapons);
-				} else inputs.add(Lists.newArrayList(new ItemStack(TF2weapons.itemTF2, 1, 2)));
+				} else inputs.add(Lists.newArrayList(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2)));
 			}
 		} else if (recipe instanceof RecipeApplyEffect) {
 			List<ItemStack> effectItems = Lists.newArrayList();
@@ -82,7 +82,7 @@ public class TF2CrafterRecipeWrapper implements IRecipeWrapper {
 				for (TF2Attribute attribute: TF2Attribute.attributes) {
 					if (attribute != null && attribute.perKill != 0) {
 						for(int level = 0; level < 3; level++) {
-							effectItems.add(new ItemStack(type, 1, attribute.id + (level<<9)));
+							effectItems.add(TF2Util.metaStack(type, 1, attribute.id + (level<<9)));
 						}
 					}
 				}
@@ -119,7 +119,7 @@ public class TF2CrafterRecipeWrapper implements IRecipeWrapper {
 				} else inputs.add(Lists.newArrayList(new ItemStack(Items.FEATHER)));
 			}
 		} else if (recipe instanceof OpenCrateRecipe) {
-			inputs.add(Lists.newArrayList(new ItemStack(TF2weapons.itemTF2, 1, 7)));
+			inputs.add(Lists.newArrayList(TF2Util.metaStack(TF2weapons.itemTF2, 1, 7)));
 			List<ItemStack> crates = Lists.newArrayList();
 			for (Entry<String, WeaponData> entry : MapList.nameToData.entrySet()) {
 				if (!entry.getValue().getBoolean(PropertyType.HIDDEN) && (entry.getValue().getString(PropertyType.CLASS).equals("crate")))

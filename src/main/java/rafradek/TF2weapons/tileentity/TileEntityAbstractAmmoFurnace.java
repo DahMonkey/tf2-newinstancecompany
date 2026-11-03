@@ -30,7 +30,7 @@ public abstract class TileEntityAbstractAmmoFurnace extends BaseContainerBlockEn
 	private int cachedSlot = -1;
 
 	@Override
-	public int getSizeInventory() {
+	public int getContainerSize() {
 		return getInventory().size();
 	}
 
@@ -102,7 +102,7 @@ public abstract class TileEntityAbstractAmmoFurnace extends BaseContainerBlockEn
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		compound.putInt("CookTime", this.cookTime);
 		compound.putInt("CookTimeTotal", this.totalCookTime);

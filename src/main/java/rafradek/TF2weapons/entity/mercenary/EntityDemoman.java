@@ -53,7 +53,7 @@ public class EntityDemoman extends EntityTF2Character {
 		}
 		this.rotation = 10;
 		// this.ammoLeft = 20;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 
 		// this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND,
 		// ItemUsable.getNewStack("Minigun"));
@@ -63,9 +63,9 @@ public class EntityDemoman extends EntityTF2Character {
 	@Override
 	protected void addWeapons() {
 		super.addWeapons();
-		if (this.rand.nextFloat() > 0.18f && !this.loadout.getStackInSlot(1).isEmpty()
+		if (this.random.nextFloat() > 0.18f && !this.loadout.getStackInSlot(1).isEmpty()
 				&& this.loadout.getStackInSlot(1).getItem() instanceof ItemChargingTarge) {
-			ItemStack sword = ItemFromData.getRandomWeapon(this.rand,
+			ItemStack sword = ItemFromData.getRandomWeapon(this.random,
 					Predicates.and(ItemFromData.VISIBLE_WEAPON, (Predicate<WeaponData>) input -> !input.getBoolean(PropertyType.STOCK)
 							&& ItemFromData.isItemOfClassSlot(input, 2, getTF2Class())));
 			if (!sword.isEmpty())
@@ -154,11 +154,11 @@ public class EntityDemoman extends EntityTF2Character {
 			if (!this.getWepCapability().activeBomb.isEmpty()
 					&& this.loadout.getStackInSlot(1).getItem() instanceof ItemStickyLauncher) {
 				EntityStickybomb bomb = this.getWepCapability().activeBomb
-						.get(this.rand.nextInt(this.getWepCapability().activeBomb.size()));
+						.get(this.random.nextInt(this.getWepCapability().activeBomb.size()));
 				for (LivingEntity target : this.level.getEntitiesOfClass(LivingEntity.class,
 						bomb.getBoundingBox().inflate(5))) {
 					if (this.isValidTarget(target) && target.distanceToSqr(bomb) < 7
-							&& this.getEntitySenses().canSee(target) && target.hasLineOfSight(bomb)) {
+							&& this.getSensing().canSee(target) && target.hasLineOfSight(bomb)) {
 						((ItemWeapon) this.loadout.getStackInSlot(1).getItem())
 								.altFireTick(this.loadout.getStackInSlot(1), this, world);
 						break;
@@ -169,7 +169,7 @@ public class EntityDemoman extends EntityTF2Character {
 			if (chargetick && this.loadout.getStackInSlot(1).getItem() instanceof ItemChargingTarge) {
 				this.setItemInHand(InteractionHand.OFF_HAND, this.loadout.getStackInSlot(1));
 				this.switchSlot(2);
-				if (this.getTarget() != null && this.getEntitySenses().canSee(this.getTarget())) {
+				if (this.getTarget() != null && this.getSensing().canSee(this.getTarget())) {
 					if (this.chargeCool < 0) {
 						this.moveAttack.setDodge(false, false);
 						this.chargeCool = 300;
@@ -228,10 +228,10 @@ public class EntityDemoman extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.075f + p_70628_2_ * 0.0375f)
-			this.entityDropItem(ItemFromData.getNewStack("grenadelauncher"), 0);
-		if (this.rand.nextFloat() < 0.06f + p_70628_2_ * 0.03f)
-			this.entityDropItem(ItemFromData.getNewStack("stickybomblauncher"), 0);
+		if (this.random.nextFloat() < 0.075f + p_70628_2_ * 0.0375f)
+			this.spawnAtLocation(ItemFromData.getNewStack("grenadelauncher"), 0);
+		if (this.random.nextFloat() < 0.06f + p_70628_2_ * 0.03f)
+			this.spawnAtLocation(ItemFromData.getNewStack("stickybomblauncher"), 0);
 	}
 
 	@Override

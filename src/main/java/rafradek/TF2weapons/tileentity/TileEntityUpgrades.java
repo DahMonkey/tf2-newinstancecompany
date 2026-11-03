@@ -36,15 +36,15 @@ public class TileEntityUpgrades extends BlockEntity {
 	 * Removes up to a specified number of items from an inventory slot and returns
 	 * them in a new stack.
 	 */
-	public void generateUpgrades(Random rand) {
+	public void generateUpgrades(RandomSource random) {
 		// System.out.println("Max Size: "+MapList.nameToAttribute.size());
 		List<TF2Attribute> passAttributes = TF2Attribute.getAllPassibleAttributesForUpgradeStation();
 		this.maxSize = passAttributes.size();
 		int size = (int) (passAttributes.size() * 0.67f);
 		for (int i = 0; i < size; i++)
 			while (true) {
-				TF2Attribute attr = passAttributes.get(rand.nextInt(passAttributes.size()));
-				if (!this.attributes.containsKey(attr) && attr.weight > rand.nextInt(8)) {
+				TF2Attribute attr = passAttributes.get(random.nextInt(passAttributes.size()));
+				if (!this.attributes.containsKey(attr) && attr.weight > random.nextInt(8)) {
 					this.attributeList.add(attr);
 					boolean high = i % 2 == 0;
 					this.attributes.put(attr,
@@ -79,7 +79,7 @@ public class TileEntityUpgrades extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		CompoundTag attrs = new CompoundTag();
 		ListTag attrList = new ListTag();

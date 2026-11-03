@@ -22,10 +22,10 @@ public class EntityOrCondition implements LootItemCondition {
 	}
 
 	@Override
-	public boolean testCondition(Random rand, LootContext context) {
+	public boolean testCondition(RandomSource random, LootContext context) {
 
 		for (LootItemCondition condition : conditions) {
-			if (condition.testCondition(rand, context))
+			if (condition.testCondition(random, context))
 				return !this.negate;
 		}
 		return this.negate;

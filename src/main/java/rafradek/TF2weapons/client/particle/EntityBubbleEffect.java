@@ -12,14 +12,14 @@ public class EntityBubbleEffect extends Particle {
 
 	protected EntityBubbleEffect(Level world, double p_i1209_2_, double p_i1209_4_, double p_i1209_6_, double motionX, double motionY, double motionZ, int time) {
 		super(world, p_i1209_2_, p_i1209_4_, p_i1209_6_);
-		motionX = motionX;
-		motionY = motionY;
-		motionZ = motionZ;
+		setDeltaMovement((motionX), getDeltaMovement().y, getDeltaMovement().z);
+		setDeltaMovement(getDeltaMovement().x, (motionY), getDeltaMovement().z);
+		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, (motionZ));
 		// noClip=false;
-		particleMaxAge = time;
-		particleRed = particleGreen = particleBlue = 1.0F;
-		particleScale = 0.5f;
-		particleMaxAge = 20;
+		lifetime = time;
+		rCol = gCol = bCol = 1.0F;
+		quadSize = 0.5f;
+		lifetime = 20;
 		setParticleTextureIndex(32);
 	}
 
@@ -32,7 +32,7 @@ public class EntityBubbleEffect extends Particle {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		particleAlpha *= 0.9f;
+		alpha *= 0.9f;
 	}
 
 	@Override

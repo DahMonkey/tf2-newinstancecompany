@@ -36,15 +36,15 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 	}
 
 	@Override
-	public void doRenderLayer(LivingEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount,
+	public void doRenderLayer(LivingEntity entitylivingbaseIn, float limbSwing, float animationSpeed,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-		this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+		this.renderArmorLayer(entitylivingbaseIn, limbSwing, animationSpeed, partialTicks, ageInTicks, netHeadYaw,
 				headPitch, scale, EquipmentSlot.CHEST);
-		this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+		this.renderArmorLayer(entitylivingbaseIn, limbSwing, animationSpeed, partialTicks, ageInTicks, netHeadYaw,
 				headPitch, scale, EquipmentSlot.LEGS);
-		this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+		this.renderArmorLayer(entitylivingbaseIn, limbSwing, animationSpeed, partialTicks, ageInTicks, netHeadYaw,
 				headPitch, scale, EquipmentSlot.FEET);
-		this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+		this.renderArmorLayer(entitylivingbaseIn, limbSwing, animationSpeed, partialTicks, ageInTicks, netHeadYaw,
 				headPitch, scale, EquipmentSlot.HEAD);
 	}
 
@@ -53,7 +53,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 		return false;
 	}
 
-	private void renderArmorLayer(LivingEntity entityLivingBaseIn, float limbSwing, float limbSwingAmount,
+	private void renderArmorLayer(LivingEntity entityLivingBaseIn, float limbSwing, float animationSpeed,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale,
 			EquipmentSlot slotIn) {
 		ItemStack itemstack = entityLivingBaseIn.getItemBySlot(slotIn);
@@ -65,7 +65,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 				HumanoidModel t = this.getModelFromSlot(slotIn);
 				t = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, t);
 				t.setModelAttributes(this.renderer.getMainModel());
-				t.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
+				t.setLivingAnimations(entityLivingBaseIn, limbSwing, animationSpeed, partialTicks);
 				this.setModelSlotVisible(t, slotIn);
 				boolean flag = this.isLegSlot(slotIn);
 				this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
@@ -78,7 +78,7 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 						float f1 = (i >> 8 & 255) / 255.0F;
 						float f2 = (i & 255) / 255.0F;
 						GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
-						t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
+						t.render(entityLivingBaseIn, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch,
 								scale);
 						this.renderer
 								.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, "overlay"));
@@ -86,11 +86,11 @@ public class LayerArmorTint implements RenderLayer<LivingEntity> {
 					{ // Non-colored
 						// GlStateManager.color(this.colorR, this.colorG, this.colorB, this.alpha);
 						ClientProxy.setColor(TF2Util.getTeamColor(entityLivingBaseIn), this.alpha, 0, 0.6f, 1);
-						t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
+						t.render(entityLivingBaseIn, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch,
 								scale);
 					} // Default
 					if (!this.skipRenderGlint && itemstack.hasEffect()) {
-						renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, limbSwingAmount,
+						renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, animationSpeed,
 								partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 					}
 				}

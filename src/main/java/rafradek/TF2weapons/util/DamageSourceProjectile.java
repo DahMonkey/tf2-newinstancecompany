@@ -62,16 +62,16 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 		// EntityLivingBase ?
 		// ((EntityLivingBase)this.damageSourceEntity).getHeldItem(EnumHand.MAIN_HAND)
 		// : null;
-		if (this.getTrueSource() == TF2weapons.dummyEnt)
+		if (this.getEntity() == TF2weapons.dummyEnt)
 			return Component.translatable("death.attack.explosion", p_151519_1_.getHoverName());
 		String s = "death.attack." + this.damageType;
 		String s1 = s + ".item";
 		return weapon != null && TF2Util.canTranslate(s1)
 				? Component.translatable(s1,
-						new Object[] { p_151519_1_.getHoverName(), this.getTrueSource().getHoverName(),
+						new Object[] { p_151519_1_.getHoverName(), this.getEntity().getHoverName(),
 								weapon.getHoverName() })
 				: Component.translatable(s,
-						new Object[] { p_151519_1_.getHoverName(), this.getTrueSource().getHoverName() });
+						new Object[] { p_151519_1_.getHoverName(), this.getEntity().getHoverName() });
 	}
 
 	/*
@@ -97,7 +97,7 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 
 	@Override
 	public Entity getTrueSource() {
-		return selfdmg ? TF2weapons.dummyEnt : super.getTrueSource();
+		return selfdmg ? TF2weapons.dummyEnt : super.getEntity();
 	}
 
 	@Override
@@ -107,9 +107,9 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 
 	@Override
 	public ItemStack getWeaponOrig() {
-		return this.getImmediateSource() instanceof EntityProjectileBase
-				&& !((EntityProjectileBase) this.getImmediateSource()).usedWeaponOrig.isEmpty()
-						? ((EntityProjectileBase) this.getImmediateSource()).usedWeaponOrig
+		return this.getDirectEntity() instanceof EntityProjectileBase
+				&& !((EntityProjectileBase) this.getDirectEntity()).usedWeaponOrig.isEmpty()
+						? ((EntityProjectileBase) this.getDirectEntity()).usedWeaponOrig
 						: this.getWeapon();
 	}
 

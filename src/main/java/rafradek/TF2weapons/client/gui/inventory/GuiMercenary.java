@@ -29,8 +29,8 @@ public class GuiMercenary extends MerchantScreen {
 		super(inv, mercenary, world);
 		this.mercenary = mercenary;
 		this.inv = inv;
-		inventorySlots = new ContainerMercenary(Minecraft.getInstance().player, mercenary, world);
-		xSize += 54;
+		slots = new ContainerMercenary(Minecraft.getInstance().player, mercenary, world);
+		imageWidth += 54;
 		// merInv=mercenary.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
 		// null);
 	}
@@ -38,13 +38,13 @@ public class GuiMercenary extends MerchantScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(hireBtn = new Button(60, guiLeft + (xSize / 2) - 75, guiTop - 25, 150, 20,
+		buttonList.add(hireBtn = new Button(60, leftPos + (imageWidth / 2) - 75, topPos - 25, 150, 20,
 				"Hire mercenary (1 Australium ingot)"));
-		buttonList.add(shareBtn = new Button(62, guiLeft + (xSize / 2) - 75,
-				guiTop + ySize + 5, 150, 20, "Share loot (1 Australium ingot)"));
-		buttonList.add(orderBtn = new Button(61, guiLeft + 179, guiTop + 123, 48, 20, "Order"));
-		for (int i = 0; i < 3; i++) buttonList.add(mainWeaponButton[i] = new Button(63 + i, guiLeft + 223,
-					guiTop + 12 + i * 18, 4, 6, ""));
+		buttonList.add(shareBtn = new Button(62, leftPos + (imageWidth / 2) - 75,
+				topPos + imageHeight + 5, 150, 20, "Share loot (1 Australium ingot)"));
+		buttonList.add(orderBtn = new Button(61, leftPos + 179, topPos + 123, 48, 20, "Order"));
+		for (int i = 0; i < 3; i++) buttonList.add(mainWeaponButton[i] = new Button(63 + i, leftPos + 223,
+					topPos + 12 + i * 18, 4, 6, ""));
 		updateButtons();
 	}
 
@@ -54,12 +54,12 @@ public class GuiMercenary extends MerchantScreen {
 			hireBtn.visible = false;
 			shareBtn.visible = false;
 		}
-		if (mercenary.getOwnerId() == null) {
-			hireBtn.enabled = inv.hasItemStack(new ItemStack(TF2weapons.itemTF2, 1, 2));
+		if (mercenary.getOwnerUUID() == null) {
+			hireBtn.enabled = inv.hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
 			hireBtn.displayString = "Hire this mercenary (1 Australium ingot)";
 			orderBtn.enabled = false;
 			shareBtn.visible = false;
-		} else if (mercenary.getOwnerId().equals(mc.player.getUUID())) {
+		} else if (mercenary.getOwnerUUID().equals(mc.player.getUUID())) {
 			hireBtn.enabled = true;
 			hireBtn.displayString = "Fire this mercenary";
 			orderBtn.enabled = true;
@@ -67,7 +67,7 @@ public class GuiMercenary extends MerchantScreen {
 			if (!mercenary.isRobot()) {
 				shareBtn.visible = true;
 				shareBtn.enabled = !mercenary.isSharing()
-						&& inv.hasItemStack(new ItemStack(TF2weapons.itemTF2, 1, 2));
+						&& inv.hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
 			}
 		} else {
 			hireBtn.enabled = false;
@@ -77,7 +77,7 @@ public class GuiMercenary extends MerchantScreen {
 			shareBtn.visible = false;
 		}
 		for (int i = 0; i < 3; i++) {
-			mainWeaponButton[i].enabled = mc.player.getUUID().equals(mercenary.getOwnerId()) || mc.player.isCreative();
+			mainWeaponButton[i].enabled = mc.player.getUUID().equals(mercenary.getOwnerUUID()) || mc.player.isCreative();
 			if (mercenary.getMainWeapon() == i) mainWeaponButton[i].displayString = "|";
 			else mainWeaponButton[i].displayString = "";
 		}
@@ -90,16 +90,16 @@ public class GuiMercenary extends MerchantScreen {
 		if (button.id == 61) {
 			if (mercenary.getOrder() == Order.FOLLOW) mercenary.setOrder(Order.HOLD);
 			else mercenary.setOrder(Order.FOLLOW);
-			mc.playerController.sendEnchantPacket(inventorySlots.windowId, 10 + mercenary.getOrder().ordinal());
+			mc.playerController.sendEnchantPacket(slots.windowId, 10 + mercenary.getOrder().ordinal());
 		} else if (button.id == 60) {
-			mc.playerController.sendEnchantPacket(inventorySlots.windowId, 0);
-			if (mercenary.getOwnerId() == null) mercenary.setOwner(mc.player);
+			mc.playerController.sendEnchantPacket(slots.windowId, 0);
+			if (mercenary.getOwnerUUID() == null) mercenary.setOwner(mc.player);
 			else mercenary.setOwner(null);
 		} else if (button.id == 62) {
-			mc.playerController.sendEnchantPacket(inventorySlots.windowId, 1);
+			mc.playerController.sendEnchantPacket(slots.windowId, 1);
 			mercenary.setSharing(true);
 		} else if (button.id >= 63 && button.id < 66) {
-			mc.playerController.sendEnchantPacket(inventorySlots.windowId, button.id - 13);
+			mc.playerController.sendEnchantPacket(slots.windowId, button.id - 13);
 			if (mercenary.getMainWeapon() == button.id - 63) mercenary.setMainWeapon(-1);
 			else mercenary.setMainWeapon(button.id - 63);
 		}
@@ -119,12 +119,12 @@ public class GuiMercenary extends MerchantScreen {
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-		int i = guiLeft + xSize - 54;
-		int j = guiTop;
+		int i = leftPos + imageWidth - 54;
+		int j = topPos;
 		drawTexturedModalRect(i, j, 176, 0, 54, 146);
 		fontRenderer.drawString("Refill", i + 7, j + 80, 4210752);
-		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.inventorySlots).primaryAmmo), i + 10, j + 113, 4210752);
-		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.inventorySlots).secondaryAmmo), i + 33, j + 113, 4210752);
+		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.slots).primaryAmmo), i + 10, j + 113, 4210752);
+		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.slots).secondaryAmmo), i + 33, j + 113, 4210752);
 		GlStateManager.enableLighting();
 		GlStateManager.enableRescaleNormal();
 		RenderHelper.enableGUIStandardItemLighting();
@@ -132,10 +132,10 @@ public class GuiMercenary extends MerchantScreen {
 		for (int k = 0; k < 4; k++) {
 			ItemStack stack = mercenary.loadout.getStackInSlot(k);
 			if (!stack.isEmpty()) {
-				if (k < 4 && !inventorySlots.getSlot(k + 43).getHasStack()) itemRender.renderItemIntoGUI(stack,
-						inventorySlots.getSlot(k + 43).xPos + guiLeft, inventorySlots.getSlot(k + 43).yPos + guiTop);
-				else if (k == 3 && !inventorySlots.getSlot(k + 36).getHasStack())
-					itemRender.renderItemIntoGUI(stack, inventorySlots.getSlot(k - 3).yPos, inventorySlots.getSlot(k - 3).xPos);
+				if (k < 4 && !slots.getSlot(k + 43).hasItem()) itemRender.renderItemIntoGUI(stack,
+						slots.getSlot(k + 43).xPos + leftPos, slots.getSlot(k + 43).yPos + topPos);
+				else if (k == 3 && !slots.getSlot(k + 36).hasItem())
+					itemRender.renderItemIntoGUI(stack, slots.getSlot(k - 3).yPos, slots.getSlot(k - 3).xPos);
 			}
 
 		}
@@ -167,7 +167,7 @@ public class GuiMercenary extends MerchantScreen {
 	@Override
 	protected void renderHoveredToolTip(int mouseX, int mouseY) {
 		super.renderHoveredToolTip(mouseX, mouseY);
-		if (mc.player.getInventory().getItemStack().isEmpty() && getSlotUnderMouse() != null && !getSlotUnderMouse().getHasStack()) {
+		if (mc.player.getInventory().getItem().isEmpty() && getSlotUnderMouse() != null && !getSlotUnderMouse().hasItem()) {
 			int id = getSlotUnderMouse().slotNumber;
 			if (id >= 43 && id < 47 && !mercenary.loadout.getStackInSlot(id - 43).isEmpty())
 				renderToolTip(mercenary.loadout.getStackInSlot(id - 43), mouseX, mouseY);

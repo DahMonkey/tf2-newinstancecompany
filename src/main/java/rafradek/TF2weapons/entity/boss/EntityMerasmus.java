@@ -71,8 +71,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 	public EntityMerasmus(Level world) {
 		super(world);
 		this.setSize(1.15f, 3.5f);
-		this.stepHeight = 1.05f;
-		this.setNoAI(true);
+		this.maxUpStep = 1.05f;
+		this.setNoAi(true);
 		this.setItemInHand(InteractionHand.MAIN_HAND, ItemFromData.getNewStack("mrsbomb"));
 	}
 
@@ -160,17 +160,17 @@ public class EntityMerasmus extends EntityTF2Boss {
 
 		super.aiStep();
 		if (this.getEffect(TF2weapons.stun) != null)
-			this.rotationPitch = 90;
+			this.setXRot((90));
 		if (this.begin-- > 20 && this.level.isClientSide)
 			for (int i = 0; i < 40; i++) {
-				Vec3 pos = TF2Util.radiusRandom2D(2.2f, this.rand);
+				Vec3 pos = TF2Util.radiusRandom2D(2.2f, this.random);
 				this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), this.getY() - 0.5,
 						pos.y + this.getZ(), 0, 0, 0, new int[0]);
 			}
 
 		if (!world.isClientSide) {
 			if (this.begin == 0) {
-				this.setNoAI(false);
+				this.setNoAi(false);
 				this.getAttribute(Attributes.ARMOR).removeModifier(BOSS_ARMOR_SPAWN);
 			}
 			this.bombDuration--;
@@ -187,7 +187,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 			if (!this.hidden) {
 
 				if (this.tickCount % 5 == 0) {
-					if (this.getTarget() != null && !this.getEntitySenses().canSee(this.getTarget())) {
+					if (this.getTarget() != null && !this.getSensing().canSee(this.getTarget())) {
 						TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[39], 0.35f);
 					} else
 						TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[39], 0f);
@@ -199,7 +199,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 									&& !TF2Util.isAlliedTo(EntityMerasmus.this, input) && TargetGoal
 											.isSuitableTarget(EntityMerasmus.this, input, false, false));
 					if (!list.isEmpty()) {
-						Player living = list.get(this.rand.nextInt(list.size()));
+						Player living = list.get(this.random.nextInt(list.size()));
 						living.addEffect(new MobEffectInstance(TF2weapons.bombmrs, 300));
 						TF2Util.stun(living, 300, false);
 						((ServerPlayer) living).connection
@@ -218,16 +218,16 @@ public class EntityMerasmus extends EntityTF2Boss {
 					float prevYaw = this.yHeadRot;
 					if (this.tickCount % 8 == 0) {
 						for (int i = 0; i < 16; i++) {
-							this.rotationPitch = -70 + this.rand.nextFloat() * 120f;
-							this.rotationYawHead = i * 22.5f + this.rand.nextFloat() * 22.5f;
+							this.setXRot((-70 + this.random.nextFloat() * 120f));
+							this.yHeadRot = i * 22.5f + this.random.nextFloat() * 22.5f;
 							((ItemProjectileWeapon) this.getMainHandItem().getItem())
 									.shoot(this.getMainHandItem(), this, this.level, 0, InteractionHand.MAIN_HAND);
 						}
 					}
 					if (this.getY() < topBlock) {
-						this.motionY = 0.15f;
+						this.setDeltaMovement(this.getDeltaMovement().x, (0.15f), this.getDeltaMovement().z);
 					} else {
-						this.motionY = 0;
+						this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 					}
 					if (this.bombDuration == 200 || !this.getMoveControl().isUpdating()) {
 
@@ -243,8 +243,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 						this.getMoveControl().setMoveTo(d0, this.topBlock, d2, 1.0D);
 
 					}
-					this.rotationPitch = prevPitch;
-					this.rotationYawHead = prevYaw;
+					this.setXRot((prevPitch));
+					this.yHeadRot = prevYaw;
 					if (this.bombDuration < 40) {
 						this.setBombSpell(false);
 					}
@@ -270,21 +270,21 @@ public class EntityMerasmus extends EntityTF2Boss {
 			double x;
 			double z;
 			if (this.getTarget() != null) {
-				x = this.getTarget().getX() + rand.nextDouble() * 40 - 20;
-				z = this.getTarget().getZ() + rand.nextDouble() * 40 - 20;
+				x = this.getTarget().getX() + random.nextDouble() * 40 - 20;
+				z = this.getTarget().getZ() + random.nextDouble() * 40 - 20;
 			} else {
-				x = this.getX() + rand.nextDouble() * 40 - 20;
-				z = this.getZ() + rand.nextDouble() * 40 - 20;
+				x = this.getX() + random.nextDouble() * 40 - 20;
+				z = this.getZ() + random.nextDouble() * 40 - 20;
 			}
 			double y = this.level.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z)).getY() + 3;
 			if (this.attemptTeleport(x, y, z)) {
 				this.playSound(TF2Sounds.MOB_MERASMUS_APPEAR, 1F, 1f);
 				for (int j = 0; j < 40; j++) {
-					Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.rand);
+					Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.random);
 					this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), pos.y + this.getY(),
 							pos.z + this.getZ(), 0, 0, 0, new int[0]);
 				}
-				this.teleportCooldown += 200 + rand.nextInt(80);
+				this.teleportCooldown += 200 + random.nextInt(80);
 				break;
 			}
 		}
@@ -296,7 +296,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 
 	public void setBombSpell(boolean bomb) {
 		this.getEntityData().set(SPELL_BOMB, bomb);
-		this.getNavigation().clearPath();
+		this.getNavigation().stop();
 		if (bomb) {
 			this.moveHelper = new FloatingMoveHelper(this);
 			this.setItemSlot(EquipmentSlot.OFFHAND, ItemFromData.getNewStack("bombinomicon"));
@@ -313,7 +313,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 	public void dropFewItems(boolean hit, int looting) {
 		ItemStack hat = ItemFromData.getNewStack("merasmushat");
 		hat.getTag().putShort("BossLevel", (short) this.level);
-		this.entityDropItem(hat, 0);
+		this.spawnAtLocation(hat, 0);
 	}
 
 	/*
@@ -373,7 +373,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 		this.hidden = nbt.getBoolean("Hidden");
 		this.hideCount = nbt.getByte("HideCount");
 		if (hidden) {
-			this.setNoAI(true);
+			this.setNoAi(true);
 			int[] pos = nbt.getIntArray("HiddenPos");
 			this.hiddenBlock = new BlockPos(pos[0], pos[1], pos[2]);
 			ListTag list = nbt.getList("Props", 11);
@@ -387,11 +387,11 @@ public class EntityMerasmus extends EntityTF2Boss {
 	@SuppressWarnings("deprecation")
 	public void hide(boolean hide) {
 		this.hidden = hide;
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 		if (hide) {
-			this.navigator.clearPath();
+			this.navigator.stop();
 			// this.moveHelper=null;
 			this.playSound(TF2Sounds.MOB_MERASMUS_HIDE, this.getSoundVolume(), 1F);
 			this.setInvisible(true);
@@ -400,13 +400,13 @@ public class EntityMerasmus extends EntityTF2Boss {
 			BlockPos initial = this.blockPosition();
 			for (int i = 0; i < blockCount; i++) {
 				BlockPos pos = initial.add(
-						this.rand.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f), 0,
-						this.rand.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f));
+						this.random.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f), 0,
+						this.random.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f));
 				pos = this.level.getTopSolidOrLiquidBlock(pos);
 				// pos=pos.add(0, 1, 0);
 				if (this.level.getBlockState(pos).getBlock().isReplaceable(this.level, pos)) {
 					this.level.setBlockAndUpdate(pos, TF2weapons.blockProp
-							.getStateFromMeta(this.rand.nextInt(BlockProp.EnumBlockType.values().length)));
+							.getStateFromMeta(this.random.nextInt(BlockProp.EnumBlockType.values().length)));
 				}
 				if (i == 0)
 					this.hiddenBlock = pos;
@@ -425,7 +425,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 					this.hiddenBlock.getZ() + 0.5);
 			this.teleportCooldown = 20;
 		}
-		this.setNoAI(hide);
+		this.setNoAi(hide);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -438,15 +438,15 @@ public class EntityMerasmus extends EntityTF2Boss {
 		if (this.isInWater()) {
 			this.moveRelative(strafe, forward, par3, 0.02F);
 			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.motionX *= 0.800000011920929D;
-			this.motionY *= 0.800000011920929D;
-			this.motionZ *= 0.800000011920929D;
+			this.setDeltaMovement(this.getDeltaMovement().x * (0.800000011920929D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.800000011920929D), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.800000011920929D));
 		} else if (this.isInLava()) {
 			this.moveRelative(strafe, forward, par3, 0.02F);
 			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.motionX *= 0.5D;
-			this.motionY *= 0.5D;
-			this.motionZ *= 0.5D;
+			this.setDeltaMovement(this.getDeltaMovement().x * (0.5D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.5D), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.5D));
 		} else {
 			float f = 0.91F;
 
@@ -467,12 +467,12 @@ public class EntityMerasmus extends EntityTF2Boss {
 						.getBlock().slipperiness * 0.91F;
 
 			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.motionX *= f;
-			this.motionY *= f;
-			this.motionZ *= f;
+			this.setDeltaMovement(this.getDeltaMovement().x * (f), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (f), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f));
 		}
 
-		this.prevLimbSwingAmount = this.limbSwingAmount;
+		this.animationSpeedOld = this.animationSpeed;
 		double d1 = this.getX() - this.xo;
 		double d0 = this.getZ() - this.zo;
 		float f2 = Mth.sqrt((float)d1 * d1 + d0 * d0) * 4.0F;
@@ -480,8 +480,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 		if (f2 > 1.0F)
 			f2 = 1.0F;
 
-		this.limbSwingAmount += (f2 - this.limbSwingAmount) * 0.4F;
-		this.limbSwing += this.limbSwingAmount;
+		this.animationSpeed += (f2 - this.animationSpeed) * 0.4F;
+		this.limbSwing += this.animationSpeed;
 	}
 
 	public static class AIAttack extends Goal {
@@ -523,7 +523,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 					this.host.bombDuration = 200;
 					this.host.teleport();
 					BlockPos pos = this.host.level.getTopSolidOrLiquidBlock(this.host.blockPosition());
-					this.host.topBlock = pos.getY() + 7 + this.host.rand.nextInt(3);
+					this.host.topBlock = pos.getY() + 7 + this.host.random.nextInt(3);
 					this.attackDuration = 200;
 				} else if (this.attacksMade % 2 == 0) {
 					this.attackDuration = 20 - this.host.level / 4;
@@ -540,8 +540,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 							Vec3 right = this.host.getVectorForRotation(0, this.host.yHeadRot + 90);
 							this.host.rotationYawHead -= 24;
 							for (int i = -2; i <= 2; i++) {
-								this.host.posX += right.x * i;
-								this.host.posZ += right.z * i;
+								this.host.setPos(this.host.getX() + (right.x * i), this.host.getY(), this.host.getZ());
+								this.host.setPos(this.host.getX(), this.host.getY(), this.host.getZ() + (right.z * i));
 								this.host.rotationYawHead += 12;
 								((ItemProjectileWeapon) this.host.getMainHandItem().getItem()).shoot(
 										this.host.getMainHandItem(), this.host, world, 0, InteractionHand.MAIN_HAND);
@@ -551,7 +551,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 					}
 				} else {
 					this.attackDuration = (int) (55 / (0.91 + this.host.level * 0.09f));
-					this.host.getNavigation().clearPath();
+					this.host.getNavigation().stop();
 					this.host.playSound(TF2Sounds.MOB_MERASMUS_SPELL, 2F, 1F);
 					boolean attacked = false;
 					double range = 10d + this.host.level * 0.8;
@@ -608,8 +608,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 					d3 = Mth.sqrt((float)d3);
 
 					if (this.isNotColliding(this.getX(), this.getY(), this.getZ(), d3)) {
-						this.parentEntity.motionX += d0 / d3 * 0.05D;
-						this.parentEntity.motionZ += d2 / d3 * 0.05D;
+						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x + (d0 / d3 * 0.05D), this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z);
+						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z + (d2 / d3 * 0.05D));
 					} else
 						this.action = MoveControl.Action.WAIT;
 				}
@@ -647,6 +647,6 @@ public class EntityMerasmus extends EntityTF2Boss {
 	public void returnSpawnItems() {
 		if (!this.usedPos.isEmpty())
 			this.setPos(hiddenBlock.getX(), hiddenBlock.getY(), hiddenBlock.getZ());
-		this.entityDropItem(new ItemStack(TF2weapons.itemBossSpawn, 1, 1), 0);
+		this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemBossSpawn, 1, 1), 0);
 	}
 }

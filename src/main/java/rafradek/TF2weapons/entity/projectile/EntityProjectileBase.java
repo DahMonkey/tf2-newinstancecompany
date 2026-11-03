@@ -117,11 +117,11 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			trace = ray.getLocation();
 		} else
 			trace = look;
-		this.posX -= Mth.cos(this.getYRot() / 180.0F * (float) Math.PI) * 0.16F
-				* (hand == InteractionHand.MAIN_HAND ? 1 : -1);
-		this.posY -= shooter instanceof EntitySentry ? -0.1D : (shooter instanceof Player ? 0.1D : 0D);
-		this.posZ -= Mth.sin(this.getYRot() / 180.0F * (float) Math.PI) * 0.16F
-				* (hand == InteractionHand.MAIN_HAND ? 1 : -1);
+		this.setPos(this.getX() - (Mth.cos(this.getYRot() / 180.0F * (float) Math.PI) * 0.16F
+				* (hand == InteractionHand.MAIN_HAND ? 1 : -1)), this.getY(), this.getZ());
+		this.setPos(this.getX(), this.getY() - (shooter instanceof EntitySentry ? -0.1D : (shooter instanceof Player ? 0.1D : 0D)), this.getZ());
+		this.setPos(this.getX(), this.getY(), this.getZ() - (Mth.sin(this.getYRot() / 180.0F * (float) Math.PI) * 0.16F
+				* (hand == InteractionHand.MAIN_HAND ? 1 : -1)));
 		if (trace.lengthSqr() < 2)
 			trace = look;
 		this.setPos(this.getX(), this.getY(), this.getZ());
@@ -178,12 +178,12 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			float xzlen = Mth.sqrt((float)x * x + z * z);
 			float yaw = (float) (Mth.atan2(x, z));
 			float pitch = (float) (Mth.atan2(y, xzlen));
-			Vec3 rand = TF2Util.radiusRandom2D(spread * 0.0075f, world.rand, yaw, pitch, speed);
+			Vec3 random = TF2Util.radiusRandom2D(spread * 0.0075f, world.random, yaw, pitch, speed);
 			// System.out.println("motion: "+p_70186_1_+" "+p_70186_3_+"
 			// "+p_70186_5_+" "+f2);
-			x = rand.x;
-			y = rand.y;
-			z = rand.z;
+			x = random.x;
+			y = random.y;
+			z = random.z;
 		} else {
 			double len = Mth.sqrt((float)x * x + y * y + z * z);
 			x = x / len * speed;
@@ -191,9 +191,9 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			z = z / len * speed;
 		}
 
-		this.motionX = x;
-		this.motionY = y;
-		this.motionZ = z;
+		this.setDeltaMovement((x), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (y), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (z));
 
 		float f3 = Mth.sqrt((float)x * x + z * z);
 		this.yRotO = this.rotationYaw = (float) (Mth.atan2(x, z) * 180.0D / Math.PI);
@@ -279,9 +279,9 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 	// @SideOnly(Side.CLIENT)
 	@Override
 	public void setVelocity(double p_70016_1_, double p_70016_3_, double p_70016_5_) {
-		this.motionX = p_70016_1_;
-		this.motionY = p_70016_3_;
-		this.motionZ = p_70016_5_;
+		this.setDeltaMovement((p_70016_1_), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (p_70016_3_), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (p_70016_5_));
 
 		if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
 			float f = Mth.sqrt((float)p_70016_1_ * p_70016_1_ + p_70016_5_ * p_70016_5_);
@@ -345,14 +345,14 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 						pushvec = pushvec.scale(((ItemWeapon) this.usedWeapon.getItem())
 								.getKnockbackForDamage(usedWeapon, shootingEntity, dmg, src));
 						if (target instanceof LivingEntity) {
-							pushvec = pushvec.scale(1 - ((LivingEntity) target).getAttributeMap()
+							pushvec = pushvec.scale(1 - ((LivingEntity) target).getAttributes()
 									.getAttributeInstance(Attributes.KNOCKBACK_RESISTANCE)
 									.getValue());
 						}
 						target.push(pushvec.x, pushvec.y, pushvec.z);
-						target.isAirBorne = target.isAirBorne || -(pushvec.y) > 0.02D;
+						target.hasImpulse = target.hasImpulse || -(pushvec.y) > 0.02D;
 						if (target instanceof ServerPlayer)
-							TF2weapons.network.sendTo(new TF2Message.VelocityAddMessage(pushvec, target.isAirBorne),
+							TF2weapons.network.sendTo(new TF2Message.VelocityAddMessage(pushvec, target.hasImpulse),
 									(ServerPlayer) target);
 					}
 					return true;
@@ -456,7 +456,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 
 		if (this.getCritical() == -1) {
 			this.setCritical(0);
-			this.explode(posX, posY, posZ, null, 1f);
+			this.explode(getX(), getY(), getZ(), null, 1f);
 			return;
 		}
 
@@ -514,27 +514,27 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 					offset = Vec3.fromPitchYaw(pitch, yaw).scale(Mth.sqrt((float)
 							this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().y * this.getDeltaMovement().y + this.getDeltaMovement().z * this.getDeltaMovement().z));
 					this.hurtMarked = true;
-					this.motionX = -offset.x;
-					this.motionY = -offset.y;
-					this.motionZ = offset.z;
+					this.setDeltaMovement((-offset.x), this.getDeltaMovement().y, this.getDeltaMovement().z);
+					this.setDeltaMovement(this.getDeltaMovement().x, (-offset.y), this.getDeltaMovement().z);
+					this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (offset.z));
 				}
 
 			}
 
 			if (!this.useCollisionBox()) {
-				this.posX += this.getDeltaMovement().x;
-				this.posY += this.getDeltaMovement().y;
-				this.posZ += this.getDeltaMovement().z;
+				this.setPos(this.getX() + (this.getDeltaMovement().x), this.getY(), this.getZ());
+				this.setPos(this.getX(), this.getY() + (this.getDeltaMovement().y), this.getZ());
+				this.setPos(this.getX(), this.getY(), this.getZ() + (this.getDeltaMovement().z));
 			} else
 				this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
 			float f3 = (float) (1 - this.getGravityOverride() / 5);
-			this.motionX *= f3;
-			this.motionY *= f3;
-			this.motionZ *= f3;
-			this.motionY -= this.getGravityOverride();
+			this.setDeltaMovement(this.getDeltaMovement().x * (f3), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (f3), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f3));
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (this.getGravityOverride()), this.getDeltaMovement().z);
 			f2 = Mth.sqrt((float)this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z);
 			if (f2 > 0.1 || Math.abs(this.getDeltaMovement().y) > this.getGravityOverride() * 3) {
-				this.rotationYaw = (float) (Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 180.0D / Math.PI);
+				this.setYRot(((float) (Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 180.0D / Math.PI)));
 
 				for (this.rotationPitch = (float) (Math.atan2(this.getDeltaMovement().y, f2) * 180.0D / Math.PI); this.getXRot()
 						- this.xRotO < -180.0F; this.xRotO -= 360.0F)
@@ -549,8 +549,8 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 				while (this.getYRot() - this.yRotO >= 180.0F)
 					this.yRotO += 360.0F;
 
-				this.rotationPitch = this.xRotO + (this.getXRot() - this.xRotO) * 0.2F;
-				this.rotationYaw = this.yRotO + (this.getYRot() - this.yRotO) * 0.2F;
+				this.setXRot((this.xRotO + (this.getXRot() - this.xRotO) * 0.2F));
+				this.setYRot((this.yRotO + (this.getYRot() - this.yRotO) * 0.2F));
 			}
 		}
 		if (this.level.isClientSide)
@@ -593,7 +593,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 	@Override
 	public void move(MoverType type, double x, double y, double z) {
 		if (this.noPhysics) {
-			this.setEntityBoundingBox(this.getBoundingBox().move(x, y, z));
+			this.setBoundingBox(this.getBoundingBox().move(x, y, z));
 			this.resetPositionToBB();
 		} else {
 			this.level.profiler.startSection("move");
@@ -601,14 +601,14 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			// double d4 = this.posY;
 			// double d5 = this.posZ;
 
-			if (this.isInWeb) {
-				this.isInWeb = false;
+			if (this.isInPowderSnow) {
+				this.isInPowderSnow = false;
 				x *= 0.25D;
 				y *= 0.05000000074505806D;
 				z *= 0.25D;
-				this.motionX = 0.0D;
-				this.motionY = 0.0D;
-				this.motionZ = 0.0D;
+				this.setDeltaMovement((0.0D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, (0.0D), this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0.0D));
 			}
 
 			double d3 = x;
@@ -624,7 +624,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 
 			double limit = y / d4;
 			if (!this.isSticky())
-				this.setEntityBoundingBox(this.getBoundingBox().move(0.0D, y, 0.0D));
+				this.setBoundingBox(this.getBoundingBox().move(0.0D, y, 0.0D));
 			boolean i_ = this.onGround || d4 != y && d4 < 0.0D;
 			int j4 = 0;
 
@@ -635,7 +635,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 				if (x / d3 < limit)
 					limit = x / d3;
 			} else
-				this.setEntityBoundingBox(this.getBoundingBox().move(x, 0.0D, 0.0D));
+				this.setBoundingBox(this.getBoundingBox().move(x, 0.0D, 0.0D));
 			j4 = 0;
 
 			for (int k4 = list1.size(); j4 < k4; ++j4)
@@ -644,17 +644,17 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			if (this.isSticky()) {
 				if (z / d5 < limit)
 					limit = z / d5;
-				this.setEntityBoundingBox(this.getBoundingBox().move(d3 * limit, d4 * limit, d5 * limit));
+				this.setBoundingBox(this.getBoundingBox().move(d3 * limit, d4 * limit, d5 * limit));
 			} else
-				this.setEntityBoundingBox(this.getBoundingBox().move(0.0D, 0.0D, z));
+				this.setBoundingBox(this.getBoundingBox().move(0.0D, 0.0D, z));
 
-			if (this.stepHeight > 0.0F && i_ && (d3 != x || d5 != z)) {
+			if (this.maxUpStep > 0.0F && i_ && (d3 != x || d5 != z)) {
 				double d11 = x;
 				double d7 = y;
 				double d8 = z;
 				AABB axisalignedbb1 = this.getBoundingBox();
-				this.setEntityBoundingBox(axisalignedbb);
-				y = this.stepHeight;
+				this.setBoundingBox(axisalignedbb);
+				y = this.maxUpStep;
 				List<AABB> list = this.level.getCollisionBoxes(this,
 						this.getBoundingBox().expandTowards(d3, y, d5));
 				AABB axisalignedbb2 = this.getBoundingBox();
@@ -709,12 +709,12 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 					x = d15;
 					z = d16;
 					y = -d9;
-					this.setEntityBoundingBox(axisalignedbb2);
+					this.setBoundingBox(axisalignedbb2);
 				} else {
 					x = d18;
 					z = d19;
 					y = -d17;
-					this.setEntityBoundingBox(axisalignedbb4);
+					this.setBoundingBox(axisalignedbb4);
 				}
 
 				int l3 = 0;
@@ -722,23 +722,23 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 				for (int i4 = list.size(); l3 < i4; ++l3)
 					y = list.get(l3).calculateYOffset(this.getBoundingBox(), y);
 
-				this.setEntityBoundingBox(this.getBoundingBox().move(0.0D, y, 0.0D));
+				this.setBoundingBox(this.getBoundingBox().move(0.0D, y, 0.0D));
 
 				if (d11 * d11 + d8 * d8 >= x * x + z * z) {
 					x = d11;
 					y = d7;
 					z = d8;
-					this.setEntityBoundingBox(axisalignedbb1);
+					this.setBoundingBox(axisalignedbb1);
 				}
 			}
 
 			this.level.profiler.endSection();
 			this.level.profiler.startSection("rest");
 			this.resetPositionToBB();
-			this.collidedHorizontally = d3 != x || d5 != z;
-			this.collidedVertically = d4 != y;
-			this.onGround = this.collidedVertically && d4 < 0.0D;
-			this.collided = this.collidedHorizontally || this.collidedVertically;
+			this.horizontalCollision = d3 != x || d5 != z;
+			this.verticalCollision = d4 != y;
+			this.onGround = this.verticalCollision && d4 < 0.0D;
+			this.collided = this.horizontalCollision || this.verticalCollision;
 			if (this.isSticky() && !this.level.isClientSide && this.collided)
 				this.setSticked(true);
 			j4 = Mth.floor(this.getX());
@@ -748,7 +748,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			BlockState iblockstate = this.level.getBlockState(blockpos);
 
 			if (iblockstate.getMaterial() == Material.AIR) {
-				BlockPos blockpos1 = blockpos.down();
+				BlockPos blockpos1 = blockpos.below();
 				BlockState iblockstate1 = this.level.getBlockState(blockpos1);
 				Block block1 = iblockstate1.getBlock();
 
@@ -921,7 +921,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 	}
 
 	public void onHitBlockX() {
-		this.motionX = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
 	}
 
 	public void onHitBlockY(Block block) {
@@ -929,7 +929,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 	}
 
 	public void onHitBlockZ() {
-		this.motionZ = 0;
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 	}
 
 	public abstract void spawnParticles(double x, double y, double z);
@@ -959,12 +959,12 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 	public boolean attackEntityFrom(DamageSource source, float damage) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (source.getTrueSource() != null && source.getTrueSource() instanceof LivingEntity
-				&& !TF2Util.isAlliedTo(source.getTrueSource(), this.shootingEntity)
+		} else if (source.getEntity() != null && source.getEntity() instanceof LivingEntity
+				&& !TF2Util.isAlliedTo(source.getEntity(), this.shootingEntity)
 				&& !(source.isExplosion() || source.isFireDamage())) {
 			if (source instanceof TF2DamageSource) {
 				damage *= Math.max(1f, TF2Attribute.getModifier("Destroy Projectiles",
-						((TF2DamageSource) source).getWeapon(), 0, (LivingEntity) source.getTrueSource()));
+						((TF2DamageSource) source).getWeapon(), 0, (LivingEntity) source.getEntity()));
 			}
 			this.health -= damage;
 			if (this.health <= 0)
@@ -1012,9 +1012,9 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 
 	@Override
 	public void readSpawnData(ByteBuf buffer) {
-		this.motionX = buffer.readInt() / 8000D;
-		this.motionY = buffer.readInt() / 8000D;
-		this.motionZ = buffer.readInt() / 8000D;
+		this.setDeltaMovement((buffer.readInt() / 8000D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (buffer.readInt() / 8000D), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (buffer.readInt() / 8000D));
 	}
 
 }

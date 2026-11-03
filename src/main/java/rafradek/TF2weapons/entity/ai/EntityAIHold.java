@@ -11,7 +11,7 @@ public class EntityAIHold extends Goal {
 
 	public EntityAIHold(EntityTF2Character entity) {
 		this.owner = entity;
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 	}
 
 	@Override
@@ -28,12 +28,12 @@ public class EntityAIHold extends Goal {
 
 	@Override
 	public void resetTask() {
-		this.owner.getNavigation().clearPath();
+		this.owner.getNavigation().stop();
 	}
 
 	@Override
 	public boolean shouldContinueExecuting() {
-		return !this.owner.getNavigation().noPath() && this.owner.distanceToSqr(this.owner.getOwner()) > 100;
+		return !this.owner.getNavigation().isDone() && this.owner.distanceToSqr(this.owner.getOwner()) > 100;
 	}
 
 	@Override

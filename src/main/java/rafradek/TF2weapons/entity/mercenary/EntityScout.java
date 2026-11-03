@@ -28,7 +28,7 @@ public class EntityScout extends EntityTF2Character {
 			this.attack.dodgeSpeed = 1.25f;
 		}
 		// this.ammoLeft = 24;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 
 		// this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND,
 		// ItemUsable.getNewStack("Minigun"));
@@ -116,12 +116,12 @@ public class EntityScout extends EntityTF2Character {
 		 * MOVEMENT_SPEED).getAttributeValue()/speed; this.motionX*=speedMultiply;
 		 * this.motionZ*=speedMultiply; }
 		 */
-		this.motionX = (-Mth.sin(this.getYRot() / 180.0F * (float) Math.PI));
-		this.motionZ = (Mth.cos(this.getYRot() / 180.0F * (float) Math.PI));
-		float f2 = (float) (Mth.sqrt((float)motionX * motionX + motionZ * motionZ)
+		this.setDeltaMovement(((-Mth.sin(this.getYRot() / 180.0F * (float) Math.PI))), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, ((Mth.cos(this.getYRot() / 180.0F * (float) Math.PI))));
+		float f2 = (float) (Mth.sqrt((float)getDeltaMovement().x * getDeltaMovement().x + getDeltaMovement().z * getDeltaMovement().z)
 				* this.getAttribute(Attributes.MOVEMENT_SPEED).getValue());
-		this.motionX *= f2;
-		this.motionZ *= f2;
+		this.setDeltaMovement(this.getDeltaMovement().x * (f2), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f2));
 		this.fallDistance = -3.0F;
 		if (!this.doubleJumped && this.jump) {
 			this.doubleJumped = true;
@@ -174,12 +174,12 @@ public class EntityScout extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.60f + p_70628_2_ * 0.30f)
-			this.entityDropItem(ItemFromData.getNewStack("bonk"), 0);
-		if (this.rand.nextFloat() < 0.12f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("scattergun"), 0);
-		if (this.rand.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("pistol"), 0);
+		if (this.random.nextFloat() < 0.60f + p_70628_2_ * 0.30f)
+			this.spawnAtLocation(ItemFromData.getNewStack("bonk"), 0);
+		if (this.random.nextFloat() < 0.12f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("scattergun"), 0);
+		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("pistol"), 0);
 	}
 
 	@Override

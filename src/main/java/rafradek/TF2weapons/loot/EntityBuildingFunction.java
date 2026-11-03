@@ -21,10 +21,10 @@ public class EntityBuildingFunction extends LootItemFunction {
 	}
 
 	@Override
-	public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
+	public ItemStack apply(ItemStack stack, RandomSource random, LootContext context) {
 		Entity entity = context.getEntity(EntityTarget.THIS);
 		if (entity != null && entity instanceof EntityTF2Character)
-			stack.setDamageValue(18 + rand.nextInt(3) * 2 + ((EntityTF2Character) entity).getEntTeam());
+			stack.setDamageValue(18 + random.nextInt(3) * 2 + ((EntityTF2Character) entity).getEntTeam());
 		return stack;
 	}
 

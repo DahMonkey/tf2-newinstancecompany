@@ -58,7 +58,7 @@ public class ItemAmmo extends Item {
 			return;
 		for (int i = 1; i < AMMO_TYPES.length - 1; i++)
 			if (i != 10 && i != 12 && i != 2 && i != 3 && i != 5 && i != 9)
-				par3List.add(new ItemStack(this, 1, i));
+				par3List.add(TF2Util.metaStack(this, 1, i));
 	}
 
 	@Override

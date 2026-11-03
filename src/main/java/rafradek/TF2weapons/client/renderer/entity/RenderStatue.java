@@ -75,7 +75,7 @@ public class RenderStatue extends EntityRenderer<EntityStatue> {
 			entity.entity.setInvisible(false);
 			WeaponsCapability.get(entity.entity).setInvisible(false);
 			// entity.entity.setHealth(0f);
-			entity.entity.limbSwingAmount = 0;
+			entity.entity.animationSpeed = 0;
 			entity.entity.yBodyRot = entity.yBodyRot;
 			entity.entity.deathTime = entity.tickCount;
 		}

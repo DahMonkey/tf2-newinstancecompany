@@ -67,7 +67,7 @@ public class ContainerMercenary extends MerchantMenu {
 		}
 		for (int k = 0; k < 4; ++k) {
 			final EquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[k];
-			this.addSlotToContainer(new SlotItemHandler(
+			this.addSlot(new SlotItemHandler(
 					merc.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.NORTH), 3 - k, 184,
 					8 + k * 18) {
 				/**
@@ -117,7 +117,7 @@ public class ContainerMercenary extends MerchantMenu {
 		}
 		for (int i = 0; i < 4; i++) {
 			final int index = i;
-			this.addSlotToContainer(
+			this.addSlot(
 					new SlotItemHandler(merc.hasHeldInventory() ? merc.loadoutHeld : merc.loadout, i, 206, 8 + i * 18) {
 
 						@Override
@@ -151,7 +151,7 @@ public class ContainerMercenary extends MerchantMenu {
 					});
 		}
 
-		this.addSlotToContainer(new SlotItemHandler(merc.refill, 0, 206, 93) {
+		this.addSlot(new SlotItemHandler(merc.refill, 0, 206, 93) {
 			@Override
 			public boolean isItemValid(@Nullable ItemStack stack) {
 				if (stack.isEmpty()
@@ -186,7 +186,7 @@ public class ContainerMercenary extends MerchantMenu {
 		});
 		for (int i = 0; i < 4; i++) {
 			final int index = i;
-			this.addSlotToContainer(new SlotItemHandler(merc.loadout, i, -888888, -566788) {
+			this.addSlot(new SlotItemHandler(merc.loadout, i, -888888, -566788) {
 
 				@Override
 				public boolean canTakeStack(Player player) {
@@ -245,10 +245,10 @@ public class ContainerMercenary extends MerchantMenu {
 	public boolean enchantItem(Player player, int id) {
 		if (id == 0 && !mercenary.isRobot()) {
 			if (mercenary.getOwner() == player) {
-				ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(TF2weapons.itemTF2, 1, 2));
+				ItemHandlerHelper.giveItemToPlayer(player, TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
 				this.mercenary.setOwner(null);
-			} else if (mercenary.getOwnerId() == null
-					&& player.getInventory().hasItemStack(new ItemStack(TF2weapons.itemTF2, 1, 2))) {
+			} else if (mercenary.getOwnerUUID() == null
+					&& player.getInventory().hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2))) {
 				player.getInventory().clearMatchingItems(TF2weapons.itemTF2, 2, 1, null);
 				this.mercenary.setOwner(player);
 			}
@@ -316,15 +316,15 @@ public class ContainerMercenary extends MerchantMenu {
 	@Override
 	public ItemStack transferStackInSlot(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
+		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 			EquipmentSlot equip = Mob.getSlotForItemStack(itemstack);
 
 			if (index == 2) {
-				if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
+				if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
@@ -332,32 +332,32 @@ public class ContainerMercenary extends MerchantMenu {
 			} else if (index != 0 && index != 1 && index < 39) {
 				if (equip.getSlotType() == EquipmentSlot.Type.ARMOR) {
 					if (!this.getSlot(43 - equip.getSlotIndex()).isItemValid(itemstack1) || !this
-							.mergeItemStack(itemstack1, 43 - equip.getSlotIndex(), 44 - equip.getSlotIndex(), false))
+							.moveItemStackTo(itemstack1, 43 - equip.getSlotIndex(), 44 - equip.getSlotIndex(), false))
 						return ItemStack.EMPTY;
 				} else if (itemstack1.getItem() instanceof ItemUsable) {
 					for (int i = 0; i < 4; i++) {
 						if (!this.getSlot(i + 43).isItemValid(itemstack1)
-								|| !this.mergeItemStack(itemstack1, i + 43, i + 44, false))
+								|| !this.moveItemStackTo(itemstack1, i + 43, i + 44, false))
 							return ItemStack.EMPTY;
 					}
 				} else if (this.getSlot(47).isItemValid(itemstack1)) {
-					if (!this.mergeItemStack(itemstack1, 47, 48, false))
+					if (!this.moveItemStackTo(itemstack1, 47, 48, false))
 						return ItemStack.EMPTY;
 				} else if (index >= 3 && index < 30) {
-					if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
+					if (!this.moveItemStackTo(itemstack1, 30, 39, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+				} else if (index >= 30 && index < 39 && !this.moveItemStackTo(itemstack1, 3, 30, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
+			} else if (!this.moveItemStackTo(itemstack1, 3, 39, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.isEmpty()) {
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.onSlotChanged();
+				slot.setChanged();
 			}
 
 			if (itemstack1.getCount() == itemstack.getCount()) {

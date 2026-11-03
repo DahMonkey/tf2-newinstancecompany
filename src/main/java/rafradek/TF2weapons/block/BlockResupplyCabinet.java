@@ -83,17 +83,17 @@ public class BlockResupplyCabinet extends BaseEntityBlock {
 	public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		world.setBlock(pos, state = state.setValue(FACING, placer.getDirection().getOpposite()), 2);
 		if (placer instanceof Player) {}
-		if (world.isEmptyBlock(pos.up()))
-			world.setBlock(pos.up(), state.setValue(HOLDER, false), 2);
+		if (world.isEmptyBlock(pos.above()))
+			world.setBlock(pos.above(), state.setValue(HOLDER, false), 2);
 	}
 
 	@Override
 	public void breakBlock(Level world, BlockPos pos, BlockState state) {
 		if (state.getValue(HOLDER)) {
-			if (world.getBlockState(pos.up()).getBlock() == this) world.setBlockToAir(pos.up());
+			if (world.getBlockState(pos.above()).getBlock() == this) world.setBlockToAir(pos.above());
 		} else {
-			if (world.getBlockState(pos.down()).getBlock() == this) world.setBlockToAir(pos.down());
-			if (world.getBlockState(pos.up()).getBlock() == this && !world.getBlockState(pos.up()).getValue(HOLDER)) world.setBlockToAir(pos.up());
+			if (world.getBlockState(pos.below()).getBlock() == this) world.setBlockToAir(pos.below());
+			if (world.getBlockState(pos.above()).getBlock() == this && !world.getBlockState(pos.above()).getValue(HOLDER)) world.setBlockToAir(pos.above());
 		}
 		BlockEntity ent = world.getBlockEntity(pos);
 		if (ent instanceof TileEntityRobotDeploy) ((TileEntityRobotDeploy) ent).dropInventory();
@@ -102,7 +102,7 @@ public class BlockResupplyCabinet extends BaseEntityBlock {
 	@Override
 	public boolean canPlaceBlockAt(Level world, BlockPos pos) {
 		return super.canPlaceBlockAt(world, pos)
-				&& world.getBlockState(pos.up()).getBlock().isReplaceable(world, pos.up());
+				&& world.getBlockState(pos.above()).getBlock().isReplaceable(world, pos.above());
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class BlockResupplyCabinet extends BaseEntityBlock {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		list.add(new ItemStack(this, 1, 4));
+		list.add(TF2Util.metaStack(this, 1, 4));
 	}
 
 	@Override

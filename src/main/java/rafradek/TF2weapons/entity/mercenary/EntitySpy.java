@@ -34,7 +34,7 @@ public class EntitySpy extends EntityTF2Character {
 
 	public EntitySpy(Level p_i1738_1_) {
 		super(p_i1738_1_);
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		this.rotation = 20;
 		this.goalSelector.addGoal(2,
 				new AvoidEntityGoal<>(this, LivingEntity.class,
@@ -143,7 +143,7 @@ public class EntitySpy extends EntityTF2Character {
 	@Override
 	protected void addWeapons() {
 		super.addWeapons();
-		this.loadout.setStackInSlot(1, ItemFromData.getRandomWeaponOfSlotMob(getTF2Class(), 1, this.rand, true,
+		this.loadout.setStackInSlot(1, ItemFromData.getRandomWeaponOfSlotMob(getTF2Class(), 1, this.random, true,
 				this.getStockWeight(1), this.noEquipment));
 		this.loadout.getStackInSlot(1).setCount(64);
 	}
@@ -216,14 +216,14 @@ public class EntitySpy extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.085f + p_70628_2_ * 0.05f)
-			this.entityDropItem(ItemFromData.getNewStack("revolver"), 0);
-		if (this.rand.nextFloat() < 0.06f + p_70628_2_ * 0.025f)
-			this.entityDropItem(ItemFromData.getNewStack("butterflyknife"), 0);
-		if (this.rand.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
-			this.entityDropItem(ItemFromData.getNewStack("cloak"), 0);
-		if (this.rand.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
-			this.entityDropItem(new ItemStack(TF2weapons.itemDisguiseKit), 0);
+		if (this.random.nextFloat() < 0.085f + p_70628_2_ * 0.05f)
+			this.spawnAtLocation(ItemFromData.getNewStack("revolver"), 0);
+		if (this.random.nextFloat() < 0.06f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(ItemFromData.getNewStack("butterflyknife"), 0);
+		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(ItemFromData.getNewStack("cloak"), 0);
+		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(new ItemStack(TF2weapons.itemDisguiseKit), 0);
 	}
 
 	@Override

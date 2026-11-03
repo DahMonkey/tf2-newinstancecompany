@@ -43,7 +43,7 @@ public class ItemTarget extends Item {
 			if (!player.canPlayerEdit(blockpos, facing, itemstack)) {
 				return InteractionResult.FAIL;
 			} else {
-				BlockPos blockpos1 = blockpos.up();
+				BlockPos blockpos1 = blockpos.above();
 				boolean flag1 = !world.isEmptyBlock(blockpos)
 						&& !world.getBlockState(blockpos).getBlock().isReplaceable(world, blockpos);
 				flag1 = flag1 | (!world.isEmptyBlock(blockpos1)
@@ -69,7 +69,7 @@ public class ItemTarget extends Item {
 							float f = Mth.floor(
 									(Mth.wrapDegrees(player.getYRot() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
 							entityarmorstand.moveTo(d0 + 0.5D, d1, d2 + 0.5D, f, 0.0F);
-							this.applyRandomRotations(entityarmorstand, world.rand);
+							this.applyRandomRotations(entityarmorstand, world.random);
 							SpawnEggItem.applyItemEntityDataToEntity(world, player, itemstack, entityarmorstand);
 							world.addFreshEntity(entityarmorstand);
 							world.playSound((Player) null, entityarmorstand.getX(), entityarmorstand.getY(),
@@ -85,14 +85,14 @@ public class ItemTarget extends Item {
 		}
 	}
 
-	private void applyRandomRotations(ArmorStand armorStand, Random rand) {
+	private void applyRandomRotations(ArmorStand armorStand, RandomSource random) {
 		Rotations rotations = armorStand.getHeadRotation();
-		float f = rand.nextFloat() * 5.0F;
-		float f1 = rand.nextFloat() * 20.0F - 10.0F;
+		float f = random.nextFloat() * 5.0F;
+		float f1 = random.nextFloat() * 20.0F - 10.0F;
 		Rotations rotations1 = new Rotations(rotations.getX() + f, rotations.getY() + f1, rotations.getZ());
 		armorStand.setHeadRotation(rotations1);
 		rotations = armorStand.getBodyRotation();
-		f = rand.nextFloat() * 10.0F - 5.0F;
+		f = random.nextFloat() * 10.0F - 5.0F;
 		rotations1 = new Rotations(rotations.getX(), rotations.getY() + f, rotations.getZ());
 		armorStand.setBodyRotation(rotations1);
 	}

@@ -25,7 +25,7 @@ public class TileEntityGameConfigure extends BlockEntity implements BlockEntityT
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		compound.put("Config", this.getOutputManager().writeConfig(new CompoundTag()));
 
@@ -100,7 +100,7 @@ public class TileEntityGameConfigure extends BlockEntity implements BlockEntityT
 			if (arena != null) {
 				arena.readConfig(tag);
 			} else {
-				arena = new GameArena(this.getWorld(), this.name, this.getBlockPos());
+				arena = new GameArena(this.getLevel(), this.name, this.getBlockPos());
 				arena.readConfig(tag);
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).gameArenas.put(this.name, arena);
 			}

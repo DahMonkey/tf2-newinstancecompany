@@ -65,7 +65,7 @@ public class BlockGameConfigure extends BaseEntityBlock {
 	@Override
 	public boolean canPlaceBlockAt(Level world, BlockPos pos) {
 		return super.canPlaceBlockAt(world, pos)
-				&& world.getBlockState(pos.up()).getBlock().isReplaceable(world, pos.up());
+				&& world.getBlockState(pos.above()).getBlock().isReplaceable(world, pos.above());
 	}
 
 	@Override

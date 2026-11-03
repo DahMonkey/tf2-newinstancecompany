@@ -31,7 +31,7 @@ public class ItemKillstreakKit extends ItemApplicableEffect {
 		for (TF2Attribute attribute : TF2Attribute.attributes) {
 			if (attribute != null && attribute.perKill != 0) {
 				for (int level = 0; level < 3; level++) {
-					par3List.add(new ItemStack(this, 1, attribute.id + (level << 9)));
+					par3List.add(TF2Util.metaStack(this, 1, attribute.id + (level << 9)));
 				}
 			}
 		}

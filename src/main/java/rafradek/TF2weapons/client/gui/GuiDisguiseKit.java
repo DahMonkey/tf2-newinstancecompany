@@ -46,7 +46,7 @@ public class GuiDisguiseKit extends Screen {
 
 	@Override
 	public void initGui() {
-		player = new RemotePlayer(this.mc.level, new GameProfile(mc.player.getUUID(), "name"));
+		player = new RemotePlayer(this.minecraft.level, new GameProfile(mc.player.getUUID(), "name"));
 		for (ResourceLocation entry : ForgeRegistries.ENTITIES.getKeys()) {
 			Entity entity = EntityList.createEntityByIDFromName(entry, mc.level);
 			if (entity instanceof LivingEntity && ((entity.getBbWidth() + entity.getBbHeight() < 6 && entity.canChangeDimensions() && entity instanceof PathfinderMob)
@@ -156,9 +156,9 @@ public class GuiDisguiseKit extends Screen {
 		RenderHelper.enableStandardItemLighting();
 		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
 		ent.yBodyRot = 0;
-		ent.rotationYaw = 0;
-		ent.rotationPitch = 0;
-		ent.rotationYawHead = ent.getYRot();
+		ent.setYRot((0));
+		ent.setXRot((0));
+		ent.yHeadRot = ent.getYRot();
 		ent.yHeadRotO = ent.getYRot();
 		GlStateManager.translate(0.0F, 0.0F, 0.0F);
 		EntityRenderDispatcher rendermanager = Minecraft.getInstance().getEntityRenderDispatcher();
@@ -167,10 +167,10 @@ public class GuiDisguiseKit extends Screen {
 		rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
 		rendermanager.setRenderShadow(true);
 		ent.yBodyRot = f;
-		ent.rotationYaw = f1;
-		ent.rotationPitch = f2;
+		ent.setYRot((f1));
+		ent.setXRot((f2));
 		ent.yHeadRotO = f3;
-		ent.rotationYawHead = f4;
+		ent.yHeadRot = f4;
 		GlStateManager.popMatrix();
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.disableRescaleNormal();

@@ -58,7 +58,7 @@ public class EntityDispenser extends EntityBuilding {
 	public int giveAmmoTimer;
 	public List<LivingEntity> dispenserTarget = new ArrayList<>();
 	private static final EntityDataAccessor<Integer> METAL = SynchedEntityData.createKey(EntityDispenser.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Float> RANGE = SynchedEntityData.createKey(EntityDispenser.class,
 			EntityDataSerializers.FLOAT);
 	public ItemStackHandler items = new ItemStackHandler(9);
@@ -354,7 +354,7 @@ public class EntityDispenser extends EntityBuilding {
 
 	@Override
 	public int getMinEnergy() {
-		return this.getOwnerId() != null ? TF2ConfigVars.dispenserUseEnergy : 0;
+		return this.getOwnerUUID() != null ? TF2ConfigVars.dispenserUseEnergy : 0;
 	}
 
 	public boolean isItemStackAccepted(ItemStack stack) {
@@ -441,7 +441,7 @@ public class EntityDispenser extends EntityBuilding {
 	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
 		super.dropEquipment(wasRecentlyHit, lootingModifier);
 		for (int i = 0; i < this.items.getSlots(); i++) {
-			this.entityDropItem(this.items.getStackInSlot(i), 0);
+			this.spawnAtLocation(this.items.getStackInSlot(i), 0);
 		}
 	}
 

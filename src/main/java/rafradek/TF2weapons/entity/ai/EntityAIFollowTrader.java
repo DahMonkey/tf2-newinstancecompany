@@ -12,7 +12,7 @@ public class EntityAIFollowTrader extends Goal {
 
 	public EntityAIFollowTrader(EntityTF2Character entity) {
 		this.owner = entity;
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 	}
 
 	@Override
@@ -29,12 +29,12 @@ public class EntityAIFollowTrader extends Goal {
 
 	@Override
 	public void resetTask() {
-		this.owner.getNavigation().clearPath();
+		this.owner.getNavigation().stop();
 	}
 
 	@Override
 	public boolean shouldContinueExecuting() {
-		return !this.owner.getNavigation().noPath() && this.owner.distanceToSqr(this.owner.getOwner()) > 100;
+		return !this.owner.getNavigation().isDone() && this.owner.distanceToSqr(this.owner.getOwner()) > 100;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class EntityAIFollowTrader extends Goal {
 			double distance = this.owner.distanceToSqr(this.owner.getOwner());
 			boolean move = this.owner.getNavigation().tryMoveToEntityLiving(this.owner.getOwner(), 1.08f);
 
-			if ((!move && distance > 750) || (this.owner.getNavigation().noPath() && distance > 144)) {
+			if ((!move && distance > 750) || (this.owner.getNavigation().isDone() && distance > 144)) {
 
 				TF2Util.teleportSafe(owner, owner.getOwner());
 			}

@@ -49,7 +49,7 @@ public class EntityAIRepair extends Goal {
 		this.attackRange = par5;
 		this.attackRangeSquared = par5 * par5;
 
-		this.setMutexBits(3);
+		this.setFlags(TF2Util.mutexFlags(3);
 	}
 
 	public void setRange(float range) {
@@ -110,7 +110,7 @@ public class EntityAIRepair extends Goal {
 	 */
 	@Override
 	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.entityHost.getNavigation().noPath();
+		return this.shouldExecute() || !this.entityHost.getNavigation().isDone();
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class EntityAIRepair extends Goal {
 			this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state = 0;
 			TF2Util.sendTracking(new TF2Message.ActionMessage(0, entityHost), entityHost);
 		}
-		this.entityHost.getNavigation().clearPath();
+		this.entityHost.getNavigation().stop();
 		this.attackTarget = null;
 		this.field_75318_f = 0;
 		this.entityHost.switchSlot(0);
@@ -151,7 +151,7 @@ public class EntityAIRepair extends Goal {
 		double lookX = this.attackTarget.getX();
 		double lookY = this.attackTarget.getY() + this.attackTarget.getEyeHeight();
 		double lookZ = this.attackTarget.getZ();
-		boolean comeCloser = this.entityHost.getEntitySenses().canSee(this.attackTarget);
+		boolean comeCloser = this.entityHost.getSensing().canSee(this.attackTarget);
 
 		this.entityHost.setJumping(true);
 		if (comeCloser)
@@ -161,7 +161,7 @@ public class EntityAIRepair extends Goal {
 
 		if (d0 <= this.attackRangeSquared && this.field_75318_f >= 6) {
 			if (!this.dodging) {
-				this.entityHost.getNavigation().clearPath();
+				this.entityHost.getNavigation().stop();
 				this.dodging = true;
 			}
 		} else {

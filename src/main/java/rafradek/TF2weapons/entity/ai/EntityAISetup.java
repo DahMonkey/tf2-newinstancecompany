@@ -29,7 +29,7 @@ public class EntityAISetup extends Goal {
 
 	public EntityAISetup(EntityEngineer engineer) {
 		this.engineer = engineer;
-		this.setMutexBits(3);
+		this.setFlags(TF2Util.mutexFlags(3);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class EntityAISetup extends Goal {
 
 	@Override
 	public void resetTask() {
-		this.engineer.getNavigation().clearPath();
+		this.engineer.getNavigation().stop();
 		this.engineer.switchSlot(0);
 		if (this.engineer.loadout.getStackInSlot(3).getItem() instanceof ItemPDA)
 			this.engineer.loadout.getStackInSlot(3).getTag().putByte("Building", (byte) 0);
@@ -114,7 +114,7 @@ public class EntityAISetup extends Goal {
 				this.engineer.grabbedid = 0;
 				return;
 			}
-			if (this.engineer.getNavigation().noPath()) {
+			if (this.engineer.getNavigation().isDone()) {
 
 				int size = 1 + buildType == 1 ? 1 : 0;
 				Vec3 Vec3 = DefaultRandomPos.findRandomTarget(this.engineer, size + 1, size);

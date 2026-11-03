@@ -57,7 +57,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 	public IMessage onMessage(final TF2Message.ActionMessage message, final MessageContext ctx) {
 		if (ctx.side == Dist.SERVER) {
 			final ServerPlayer player = ctx.getServerHandler().player;
-			((ServerLevel) player.level).addScheduledTask(() -> {
+			((ServerLevel) player.level).execute(() -> {
 				if (message.value <= 15) {
 					handleMessage(message, player, false);
 					message.entity = player.getId();
@@ -151,7 +151,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 						}
 
 						@Override
-						public Level getWorld() {
+						public Level getLevel() {
 							return player.level;
 						}
 
@@ -169,14 +169,14 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 					player.fallDistance = 0;
 					if (!WeaponsCapability.get(player).isGrappled()) {
 						WeaponsCapability.get(player).airJumps += 1;
-						player.getServerWorld().addParticle(ParticleTypes.CLOUD, player.getX(), player.getY(),
+						player.getLevel().addParticle(ParticleTypes.CLOUD, player.getX(), player.getY(),
 								player.getZ(), 12, 1, 0.2, 1, 0D);
 					} else {
 						if (player.getMainHandItem().getItem() instanceof ItemGrapplingHook) {
 							WeaponsCapability.get(player).setPrimaryCooldown(InteractionHand.MAIN_HAND,
 									((ItemGrapplingHook) player.getMainHandItem().getItem())
 									.getFiringSpeed(player.getMainHandItem(), player));
-							player.motionY += 0.42;
+							player.setDeltaMovement(player.getDeltaMovement().x, player.getDeltaMovement().y + (0.42), player.getDeltaMovement().z);
 							player.hurtMarked = true;
 						}
 					}
@@ -248,7 +248,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 									ArrayList<EntityMedic> list1 = new ArrayList<>();
 									player.level.getChunkFromBlockCoords(pos1).getEntitiesOfTypeWithinAABB(
 											EntityMedic.class, new AABB(pos1), list1,
-											test2 -> player.getUUID().equals(test2.getOwnerId()));
+											test2 -> player.getUUID().equals(test2.getOwnerUUID()));
 									for (EntityMedic medic2 : list1) {
 										if (TF2Util.teleportSafe(medic2, player)) {
 
@@ -283,7 +283,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 									ArrayList<EntityTF2Character> list2 = new ArrayList<>();
 									player.level.getChunkFromBlockCoords(pos2).getEntitiesOfTypeWithinAABB(
 											EntityTF2Character.class, new AABB(pos2), list2,
-											test4 -> player.getUUID().equals(test4.getOwnerId()));
+											test4 -> player.getUUID().equals(test4.getOwnerUUID()));
 									for (EntityTF2Character medic3 : list2) {
 										if (TF2Util.teleportSafe(medic3, player)) {
 
@@ -358,7 +358,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 			});
 		} else {
 			final LivingEntity player = ClientHandler.getClientEntity(message.entity);
-			Minecraft.getInstance().addScheduledTask(() -> {
+			Minecraft.getInstance().execute(() -> {
 				if (message.value <= 15)
 					handleMessage(message, player, true);
 				else if (message.value == 19) {

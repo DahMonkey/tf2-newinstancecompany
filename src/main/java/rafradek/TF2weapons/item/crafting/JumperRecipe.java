@@ -25,7 +25,7 @@ public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		int feather = 0;
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() == Items.FEATHER) {
@@ -46,7 +46,7 @@ public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 	public ItemStack getCraftingResult(CraftingContainer inv) {
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (!(stack.getItem() == Items.FEATHER))
@@ -67,7 +67,7 @@ public class JumperRecipe extends IForgeRegistryEntry.Impl<Recipe>
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);

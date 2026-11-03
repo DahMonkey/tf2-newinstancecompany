@@ -13,7 +13,7 @@ public class RecipeToken extends ShapelessOreRecipe {
 		super(group, result, recipe);
 		output.setTag(new CompoundTag());
 		output.getTag().putByte("Token", (byte) clazz.get3DDataValue());
-		input.add(Ingredient.fromStacks(new ItemStack(TF2weapons.itemToken, 1, clazz.get3DDataValue())));
+		input.add(Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemToken, 1, clazz.get3DDataValue())));
 	}
 
 }

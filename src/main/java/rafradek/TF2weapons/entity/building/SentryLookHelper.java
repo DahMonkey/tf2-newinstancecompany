@@ -35,14 +35,14 @@ public class SentryLookHelper extends LookControl {
 	 */
 	@Override
 	public void setLookPositionWithEntity(Entity entityIn, float deltaYaw, float deltaPitch) {
-		this.posX = entityIn.getX();
+		this.setPos((entityIn.getX()), this.getY(), this.getZ());
 
 		if (entityIn instanceof LivingEntity)
-			this.posY = entityIn.getY() + entityIn.getEyeHeight();
+			this.setPos(this.getX(), (entityIn.getY() + entityIn.getEyeHeight()), this.getZ());
 		else
-			this.posY = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D;
+			this.setPos(this.getX(), ((entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D), this.getZ());
 
-		this.posZ = entityIn.getZ();
+		this.setPos(this.getX(), this.getY(), (entityIn.getZ()));
 		this.deltaLookYaw = deltaYaw;
 		this.deltaLookPitch = deltaPitch;
 		this.isLooking = true;
@@ -53,9 +53,9 @@ public class SentryLookHelper extends LookControl {
 	 */
 	@Override
 	public void setLookPosition(double x, double y, double z, float deltaYaw, float deltaPitch) {
-		this.posX = x;
-		this.posY = y;
-		this.posZ = z;
+		this.setPos((x), this.getY(), this.getZ());
+		this.setPos(this.getX(), (y), this.getZ());
+		this.setPos(this.getX(), this.getY(), (z));
 		this.deltaLookYaw = deltaYaw;
 		this.deltaLookPitch = deltaPitch;
 		this.isLooking = true;
@@ -66,7 +66,7 @@ public class SentryLookHelper extends LookControl {
 	 */
 	@Override
 	public void onUpdateLook() {
-		this.entity.rotationPitch = 0.0F;
+		this.entity.setXRot((0.0F));
 
 		if (this.isLooking) {
 			this.isLooking = false;
@@ -76,27 +76,27 @@ public class SentryLookHelper extends LookControl {
 			double d3 = Mth.sqrt((float)d0 * d0 + d2 * d2);
 			float f = (float) (Mth.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
 			float f1 = (float) (-(Mth.atan2(d1, d3) * (180D / Math.PI)));
-			this.entity.rotationPitch = this.updateRotation(this.entity.getXRot(), f1, this.deltaLookPitch);
-			this.entity.rotationYawHead = this.updateRotation(this.entity.yHeadRot, f, this.deltaLookYaw);
+			this.entity.setXRot((this.updateRotation(this.entity.getXRot(), f1, this.deltaLookPitch)));
+			this.entity.yHeadRot = this.updateRotation(this.entity.yHeadRot, f, this.deltaLookYaw);
 		} else {
 			float fullrot = this.entity.tickCount % 120;
 			if (fullrot > 60) {
 				fullrot = 120 - fullrot;
 			}
 			fullrot /= 60f;
-			this.entity.rotationYawHead = this.updateRotation(this.entity.yHeadRot,
+			this.entity.yHeadRot = this.updateRotation(this.entity.yHeadRot,
 					this.entity.yBodyRot - 45 + fullrot * 90, 10.0F);
 		}
 
 		float f2 = Mth.wrapDegrees(this.entity.yHeadRot - this.entity.yBodyRot);
 
-		if (!this.entity.getNavigation().noPath()) {
+		if (!this.entity.getNavigation().isDone()) {
 			if (f2 < -75.0F) {
-				this.entity.rotationYawHead = this.entity.yBodyRot - 75.0F;
+				this.entity.yHeadRot = this.entity.yBodyRot - 75.0F;
 			}
 
 			if (f2 > 75.0F) {
-				this.entity.rotationYawHead = this.entity.yBodyRot + 75.0F;
+				this.entity.yHeadRot = this.entity.yBodyRot + 75.0F;
 			}
 		}
 	}

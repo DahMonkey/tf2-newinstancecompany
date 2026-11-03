@@ -14,7 +14,7 @@ public class EntityAIUseWrangler extends EntityAIUseRangedWeapon {
 
 	public EntityAIUseWrangler(EntityTF2Character par1IRangedAttackMob, float par2, float par5) {
 		super(par1IRangedAttackMob, par2, par5);
-		this.setMutexBits(3);
+		this.setFlags(TF2Util.mutexFlags(3);
 	}
 
 	@Override

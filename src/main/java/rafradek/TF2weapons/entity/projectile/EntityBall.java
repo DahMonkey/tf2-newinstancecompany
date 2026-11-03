@@ -37,31 +37,31 @@ public class EntityBall extends EntityProjectileSimple {
 	@Override
 	public void onHitBlockX() {
 		this.canBePickedUp = true;
-		this.motionX = -this.getDeltaMovement().x * 0.12;
-		this.motionY = this.getDeltaMovement().y * 0.3;
-		this.motionZ = this.getDeltaMovement().z * 0.3;
+		this.setDeltaMovement((-this.getDeltaMovement().x * 0.12), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (this.getDeltaMovement().y * 0.3), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (this.getDeltaMovement().z * 0.3));
 	}
 
 	@Override
 	public void onHitBlockY(Block block) {
 		this.canBePickedUp = true;
-		this.motionX = this.getDeltaMovement().x * 0.3;
-		this.motionY = -this.getDeltaMovement().y * 0.12;
-		this.motionZ = this.getDeltaMovement().z * 0.3;
+		this.setDeltaMovement((this.getDeltaMovement().x * 0.3), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (-this.getDeltaMovement().y * 0.12), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (this.getDeltaMovement().z * 0.3));
 	}
 
 	@Override
 	public void onHitBlockZ() {
 		this.canBePickedUp = true;
-		this.motionX = this.getDeltaMovement().x * 0.3;
-		this.motionY = this.getDeltaMovement().y * 0.3;
-		this.motionZ = -this.getDeltaMovement().z * 0.12;
+		this.setDeltaMovement((this.getDeltaMovement().x * 0.3), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (this.getDeltaMovement().y * 0.3), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (-this.getDeltaMovement().z * 0.12));
 	}
 
 	@Override
 	public void onCollideWithPlayer(Player entityIn) {
 		if (!this.level.isClientSide && this.canBePickedUp) {
-			if (!this.infinite && entityIn.getInventory().addItemStackToInventory(new ItemStack(TF2weapons.itemAmmo, 1, 14)))
+			if (!this.infinite && entityIn.getInventory().addItemStackToInventory(TF2Util.metaStack(TF2weapons.itemAmmo, 1, 14)))
 				this.discard();
 
 		}

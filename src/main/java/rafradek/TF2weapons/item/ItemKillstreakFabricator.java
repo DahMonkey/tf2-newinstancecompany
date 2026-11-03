@@ -34,7 +34,7 @@ public class ItemKillstreakFabricator extends ItemFabricator {
 		for (TF2Attribute attribute : TF2Attribute.attributes) {
 			if (attribute != null && attribute.perKill != 0) {
 				for (int level = 0; level < 3; level++) {
-					par3List.add(new ItemStack(this, 1, attribute.id + (level << 9)));
+					par3List.add(TF2Util.metaStack(this, 1, attribute.id + (level << 9)));
 				}
 			}
 		}
@@ -62,7 +62,7 @@ public class ItemKillstreakFabricator extends ItemFabricator {
 	@Override
 	public NonNullList<ItemStack> getOutput(ItemStack stack, Player player) {
 		NonNullList<ItemStack> list = NonNullList.create();
-		list.add(new ItemStack(TF2weapons.itemKillstreak, 1, stack.getDamageValue()));
+		list.add(TF2Util.metaStack(TF2weapons.itemKillstreak, 1, stack.getDamageValue()));
 		return list;
 	}
 
@@ -101,11 +101,11 @@ public class ItemKillstreakFabricator extends ItemFabricator {
 				int meta2 = ItemRobotPart.LEVEL2[i % ItemRobotPart.LEVEL2.length];
 				int meta3 = ItemRobotPart.LEVEL3[i % ItemRobotPart.LEVEL3.length];
 				NonNullList<TF2Ingredient> list = NonNullList.create();
-				list.add(new IngredientItemStack(new ItemStack(TF2weapons.itemRobotPart, 12, meta1)));
+				list.add(new IngredientItemStack(TF2Util.metaStack(TF2weapons.itemRobotPart, 12, meta1)));
 				standardInput.put(attribute, list);
 				list = NonNullList.create();
-				list.add(new IngredientItemStack(new ItemStack(TF2weapons.itemRobotPart, 12, meta2)));
-				list.add(new IngredientItemStack(new ItemStack(TF2weapons.itemRobotPart, 8, meta1)));
+				list.add(new IngredientItemStack(TF2Util.metaStack(TF2weapons.itemRobotPart, 12, meta2)));
+				list.add(new IngredientItemStack(TF2Util.metaStack(TF2weapons.itemRobotPart, 8, meta1)));
 				list.add(new IngredientPredicate(
 						stack -> ((stack.getItem() instanceof ItemKillstreakKit
 								&& ((ItemKillstreakKit) stack.getItem()).getLevel(stack) == 0)
@@ -114,8 +114,8 @@ public class ItemKillstreakFabricator extends ItemFabricator {
 						1, "Killstreak kit or weapon"));
 				specializedInput.put(attribute, list);
 				list = NonNullList.create();
-				list.add(new IngredientItemStack(new ItemStack(TF2weapons.itemRobotPart, 9, meta3)));
-				list.add(new IngredientItemStack(new ItemStack(TF2weapons.itemRobotPart, 8, meta2)));
+				list.add(new IngredientItemStack(TF2Util.metaStack(TF2weapons.itemRobotPart, 9, meta3)));
+				list.add(new IngredientItemStack(TF2Util.metaStack(TF2weapons.itemRobotPart, 8, meta2)));
 				list.add(new IngredientPredicate(
 						stack -> ((stack.getItem() instanceof ItemKillstreakKit
 								&& ((ItemKillstreakKit) stack.getItem()).getLevel(stack) == 1)

@@ -34,7 +34,7 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	public int firstIndex;
 	public float scroll;
 	public int tabid;
-	public ItemStack craftingTabStack = new ItemStack(TF2weapons.itemAmmo, 1, 1);
+	public ItemStack craftingTabStack = TF2Util.metaStack(TF2weapons.itemAmmo, 1, 1);
 	public ItemStack chestTabStack = new ItemStack(Blocks.CHEST);
 
 	// public TileEntityCabinet cabinet;
@@ -45,8 +45,8 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	public GuiTF2Crafting(Inventory playerv, Level world, BlockPos blockPosition) {
 		super(new ContainerTF2Workbench(Minecraft.getInstance().player, playerv, world, blockPosition));
 		// this.cabinet=cabinet;
-		xSize = 176;
-		ySize = 180;
+		imageWidth = 176;
+		imageHeight = 180;
 		itemsToRender = NonNullList.<ItemStack>withSize(9, ItemStack.EMPTY);
 		buttonsItem = new GuiButtonToggleItem[12];
 	}
@@ -55,7 +55,7 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	public void initGui() {
 		super.initGui();
 		for (int x = 0; x < 3; x++) for (int y = 0; y < 4; y++) buttonList.add(buttonsItem[x + y * 3] = new GuiButtonToggleItem(x + y * 3,
-				guiLeft + 7 + x * 18, guiTop + 14 + y * 18, 18, 18));
+				leftPos + 7 + x * 18, topPos + 14 + y * 18, 18, 18));
 		setButtons();
 	}
 
@@ -65,7 +65,7 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 			if (i + firstIndex < TF2CraftingManager.INSTANCE.getRecipeList().size()) {
 				buttonsItem[i].stackToDraw = ContainerTF2Workbench.getReplacement(mc.player,
 						TF2CraftingManager.INSTANCE.getRecipeList().get(i + firstIndex).getRecipeOutput().copy());
-				buttonsItem[i].selected = i + firstIndex == ((ContainerTF2Workbench) inventorySlots).currentRecipe;
+				buttonsItem[i].selected = i + firstIndex == ((ContainerTF2Workbench) slots).currentRecipe;
 			} else {
 				buttonsItem[i].stackToDraw = ItemStack.EMPTY;
 				buttonsItem[i].selected = false;
@@ -77,8 +77,8 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
 		boolean flag = Mouse.isButtonDown(0);
-		int i = guiLeft;
-		int j = guiTop;
+		int i = leftPos;
+		int j = topPos;
 		int k = i + 61;
 		int l = j + 14;
 		int i1 = k + 14;
@@ -94,7 +94,7 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 			setButtons();
 		}
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		if (getSlotUnderMouse() != null && getSlotUnderMouse().getStack().isEmpty() && mc.player.getInventory().getItemStack().isEmpty()
+		if (getSlotUnderMouse() != null && getSlotUnderMouse().getStack().isEmpty() && mc.player.getInventory().getItem().isEmpty()
 				&& getSlotUnderMouse().inventory instanceof CraftingContainer &! itemsToRender.get(getSlotUnderMouse().slotNumber - 1).isEmpty())
 			renderToolTip(itemsToRender.get(getSlotUnderMouse().slotNumber - 1), mouseX, mouseY);
 		renderHoveredToolTip(mouseX, mouseY);
@@ -104,15 +104,15 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	protected void actionPerformed(Button button) throws IOException {
 		if (button.id >= 12) return;
 		int currentRecipe = button.id + firstIndex;
-		((ContainerTF2Workbench)inventorySlots).currentRecipe = currentRecipe;
-		mc.playerController.sendEnchantPacket(inventorySlots.windowId, currentRecipe);
+		((ContainerTF2Workbench)slots).currentRecipe = currentRecipe;
+		mc.playerController.sendEnchantPacket(slots.windowId, currentRecipe);
 		setButtons();
-		inventorySlots.onCraftMatrixChanged(null);
+		slots.onCraftMatrixChanged(null);
 		itemsToRender = NonNullList.withSize(9, ItemStack.EMPTY);
 		if (currentRecipe < 0 || currentRecipe >= TF2CraftingManager.INSTANCE.getRecipeList().size()) return;
 		Recipe recipe = TF2CraftingManager.INSTANCE.getRecipeList().get(currentRecipe);
 		for (int i = 1; i < 10; i++) {
-			this.handleMouseClick(this.inventorySlots.getSlot(i), i, 0, ClickType.QUICK_MOVE);
+			this.handleMouseClick(this.slots.getSlot(i), i, 0, ClickType.QUICK_MOVE);
 
 		}
 		if (recipe instanceof IRecipeTF2) {
@@ -130,10 +130,10 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 				itemsToRender.set(i + space, input.get(i).getMatchingStacks()[0]);
 				if (itemsToRender.get(i + space).getDamageValue() == 32767) itemsToRender.get(i + space).setDamageValue(0);
 			}
-			for (int j = 10; j < 46; j++) if (input.get(i).apply(inventorySlots.getSlot(j).getStack())) {
-				handleMouseClick(inventorySlots.getSlot(j), j, 0, ClickType.PICKUP);
-				handleMouseClick(inventorySlots.getSlot(i + space + 1), i + space + 1, 1, ClickType.PICKUP);
-				handleMouseClick(inventorySlots.getSlot(j), j, 0, ClickType.PICKUP);
+			for (int j = 10; j < 46; j++) if (input.get(i).apply(slots.getSlot(j).getStack())) {
+				handleMouseClick(slots.getSlot(j), j, 0, ClickType.PICKUP);
+				handleMouseClick(slots.getSlot(i + space + 1), i + space + 1, 1, ClickType.PICKUP);
+				handleMouseClick(slots.getSlot(j), j, 0, ClickType.PICKUP);
 				break;
 			}
 		}
@@ -146,10 +146,10 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		fontRenderer.drawString(I18n.get("container.crafting", new Object[0]), 8, 5, 4210752);
-		fontRenderer.drawString(I18n.get("container.inventory", new Object[0]), 8, ySize - 96 + 3,
+		fontRenderer.drawString(I18n.get("container.inventory", new Object[0]), 8, imageHeight - 96 + 3,
 				4210752);
 		for (int i = 0; i < 12; i++) if (buttonsItem[i].stackToDraw != null && buttonsItem[i].isMouseOver())
-			renderToolTip(buttonsItem[i].stackToDraw, mouseX - guiLeft, mouseY - guiTop);
+			renderToolTip(buttonsItem[i].stackToDraw, mouseX - leftPos, mouseY - topPos);
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 	}
 
@@ -160,13 +160,13 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);
 		// this.drawTab(0);
 		// this.drawTab(1);
-		x = guiLeft + 62;
-		y = guiTop + 15;
+		x = leftPos + 62;
+		y = topPos + 15;
 		int k = y + 72;
 		drawTexturedModalRect(x, y + (int) ((k - y - 17) * scroll), 232, 0, 12, 15);
 		GlStateManager.enableLighting();
@@ -175,7 +175,7 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 		itemRender.zLevel = 0;
 		for (x = 0; x < 3; x++) for (y = 0; y < 3; y++) {
 			ItemStack stack = itemsToRender.get(x + y * 3);
-			if (stack != null && !stack.isEmpty()) itemRender.renderItemIntoGUI(stack, guiLeft + 86 + 18 * x, guiTop + 23 + 18 * y);
+			if (stack != null && !stack.isEmpty()) itemRender.renderItemIntoGUI(stack, leftPos + 86 + 18 * x, topPos + 23 + 18 * y);
 		}
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.disableLighting();
@@ -183,7 +183,7 @@ public class GuiTF2Crafting extends AbstractContainerScreen {
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
 		zLevel = 120;
-		drawTexturedModalRect(85 + guiLeft, 22 + guiTop, 85, 22, 54, 54);
+		drawTexturedModalRect(85 + leftPos, 22 + topPos, 85, 22, 54, 54);
 		zLevel = 0;
 	}
 

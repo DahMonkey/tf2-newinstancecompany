@@ -21,7 +21,7 @@ public class RandomWeaponCategory implements IRecipeCategory<RandomWeaponCategor
 
     public RandomWeaponCategory(IGuiHelper guiHelper) {
         background = guiHelper.createDrawable(TEXTURE, 0, 0, 168, 114);
-        icon = guiHelper.createDrawableIngredient(new ItemStack(TF2weapons.itemTF2, 1, 9));
+        icon = guiHelper.createDrawableIngredient(TF2Util.metaStack(TF2weapons.itemTF2, 1, 9));
     }
 
     @Nullable
@@ -51,8 +51,8 @@ public class RandomWeaponCategory implements IRecipeCategory<RandomWeaponCategor
 
     public static List<Wrapper> getRecipes() {
         List<Wrapper> recipes = Lists.newArrayList();
-        recipes.add(new Wrapper(new ItemStack(TF2weapons.itemTF2, 1, 10)));
-        ItemStack stack = new ItemStack(TF2weapons.itemTF2, 1, 9);
+        recipes.add(new Wrapper(TF2Util.metaStack(TF2weapons.itemTF2, 1, 10)));
+        ItemStack stack = TF2Util.metaStack(TF2weapons.itemTF2, 1, 9);
         recipes.add(new Wrapper(stack));
         for (TF2Class clazz : TF2Class.getClasses()) {
             ItemStack newStack = stack.copy();

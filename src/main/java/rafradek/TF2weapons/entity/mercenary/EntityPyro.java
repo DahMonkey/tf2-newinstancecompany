@@ -33,7 +33,7 @@ public class EntityPyro extends EntityTF2Character {
 		}
 		this.rotation = 16;
 		// this.ammoLeft = 250;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		// ((PathNavigateGround)this.getNavigator()).set(true);
 		// this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND,
 		// ItemUsable.getNewStack("Minigun"));
@@ -60,7 +60,7 @@ public class EntityPyro extends EntityTF2Character {
 		}
 
 		if (ItemFromData.getData(this.getItemBySlot(EquipmentSlot.HEAD)).getName().equals("head_prize")
-				&& this.rand.nextInt(3) == 0)
+				&& this.random.nextInt(3) == 0)
 			this.setCustomNameTag("Pywwo OwO");
 	}
 
@@ -169,10 +169,10 @@ public class EntityPyro extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("shotgun"), 0);
-		if (this.rand.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
-			this.entityDropItem(ItemFromData.getNewStack("flamethrower"), 0);
+		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("shotgun"), 0);
+		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(ItemFromData.getNewStack("flamethrower"), 0);
 	}
 
 	@Override

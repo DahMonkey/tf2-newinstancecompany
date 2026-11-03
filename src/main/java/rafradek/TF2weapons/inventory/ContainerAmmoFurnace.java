@@ -23,18 +23,18 @@ public class ContainerAmmoFurnace extends AbstractContainerMenu {
 	public ContainerAmmoFurnace(Inventory inventory, AbstractContainerMenu furnaceInventory) {
 		this.tileFurnace = furnaceInventory;
 		for (int i = 0; i < 9; i++)
-			this.addSlotToContainer(new Slot(furnaceInventory, i, 9 + (i % 3) * 18, 17 + (i / 3) * 18));
-		this.addSlotToContainer(new SlotFurnaceFuel(furnaceInventory, 9, 80, 53));
+			this.addSlot(new Slot(furnaceInventory, i, 9 + (i % 3) * 18, 17 + (i / 3) * 18));
+		this.addSlot(new SlotFurnaceFuel(furnaceInventory, 9, 80, 53));
 		for (int i = 0; i < 9; i++)
-			this.addSlotToContainer(new SlotFurnaceOutput(inventory.player, furnaceInventory, i + 10,
+			this.addSlot(new SlotFurnaceOutput(inventory.player, furnaceInventory, i + 10,
 					116 + (i % 3) * 18, 17 + (i / 3) * 18));
 
 		for (int i = 0; i < 3; ++i)
 			for (int j = 0; j < 9; ++j)
-				this.addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+				this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 
 		for (int k = 0; k < 9; ++k)
-			this.addSlotToContainer(new Slot(inventory, k, 8 + k * 18, 142));
+			this.addSlot(new Slot(inventory, k, 8 + k * 18, 142));
 	}
 
 	@Override
@@ -90,36 +90,36 @@ public class ContainerAmmoFurnace extends AbstractContainerMenu {
 	@Nullable
 	public ItemStack transferStackInSlot(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
+		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
 			if (index > 9 && index < 19) {
-				if (!this.mergeItemStack(itemstack1, 19, 55, true))
+				if (!this.moveItemStackTo(itemstack1, 19, 55, true))
 					return ItemStack.EMPTY;
 
 				slot.onSlotChange(itemstack1, itemstack);
 			} else if (index > 9) {
 				if (itemstack1.getItem() instanceof ItemAmmo) {
-					if (!this.mergeItemStack(itemstack1, 0, 9, false))
+					if (!this.moveItemStackTo(itemstack1, 0, 9, false))
 						return ItemStack.EMPTY;
 				} else if (AbstractFurnaceBlockEntity.isItemFuel(itemstack1)) {
-					if (!this.mergeItemStack(itemstack1, 9, 10, false))
+					if (!this.moveItemStackTo(itemstack1, 9, 10, false))
 						return ItemStack.EMPTY;
 				} else if (index >= 19 && index < 46) {
-					if (!this.mergeItemStack(itemstack1, 46, 55, false))
+					if (!this.moveItemStackTo(itemstack1, 46, 55, false))
 						return ItemStack.EMPTY;
-				} else if (index >= 46 && index < 55 && !this.mergeItemStack(itemstack1, 19, 46, false))
+				} else if (index >= 46 && index < 55 && !this.moveItemStackTo(itemstack1, 19, 46, false))
 					return ItemStack.EMPTY;
-			} else if (!this.mergeItemStack(itemstack1, 19, 55, false))
+			} else if (!this.moveItemStackTo(itemstack1, 19, 55, false))
 				return ItemStack.EMPTY;
 
 			if (itemstack1.isEmpty())
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			else
-				slot.onSlotChanged();
+				slot.setChanged();
 
 			if (itemstack1.getCount() == itemstack.getCount())
 				return ItemStack.EMPTY;

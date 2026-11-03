@@ -97,7 +97,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 							damage, var22);
 
 					if (entity instanceof LivingEntity)
-						knockbackAmount *= 1 - ((LivingEntity) entity).getAttributeMap()
+						knockbackAmount *= 1 - ((LivingEntity) entity).getAttributes()
 								.getAttributeInstance(Attributes.KNOCKBACK_RESISTANCE).getValue();
 					if (knockbackAmount > 0) {
 						boolean flag = map.get(entity)[1] < 3.75
@@ -107,9 +107,9 @@ public class ItemBulletWeapon extends ItemWeapon {
 								(pushvec.y + (flag ? 1 : 0)) * knockbackAmount,
 								pushvec.z * knockbackAmount * (flag ? 2.8 : 1));
 						entity.push(pushvec.x, pushvec.y, pushvec.z);
-						entity.isAirBorne = entity.isAirBorne || -(pushvec.y * knockbackAmount) > 0.02D;
+						entity.hasImpulse = entity.hasImpulse || -(pushvec.y * knockbackAmount) > 0.02D;
 						if (entity instanceof ServerPlayer)
-							TF2weapons.network.sendTo(new TF2Message.VelocityAddMessage(pushvec, entity.isAirBorne),
+							TF2weapons.network.sendTo(new TF2Message.VelocityAddMessage(pushvec, entity.hasImpulse),
 									(ServerPlayer) entity);
 					}
 				}
@@ -234,7 +234,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 		float spreadPitch = living.getXRot() / 180 * (float) Math.PI;
 		float spreadYaw = living.yHeadRot / 180 * (float) Math.PI;
 
-		Vec3 rand = TF2Util.radiusRandom2D(this.getWeaponSpread(stack, living), world.rand, -spreadYaw, -spreadPitch,
+		Vec3 random = TF2Util.radiusRandom2D(this.getWeaponSpread(stack, living), world.random, -spreadYaw, -spreadPitch,
 				getMaxRange(stack));
 		startX = living.getX();
 		startY = living.getY() + living.getEyeHeight();
@@ -244,9 +244,9 @@ public class ItemBulletWeapon extends ItemWeapon {
 		endY = 0;
 		endZ = 0;
 
-		endX = endX + rand.x;
-		endY = endY + rand.y;
-		endZ = endZ + rand.z;
+		endX = endX + random.x;
+		endY = endY + random.y;
+		endZ = endZ + random.z;
 
 		endX += startX;
 		endY += startY;

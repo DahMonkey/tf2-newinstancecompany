@@ -11,7 +11,7 @@ public class TF2ParticleSpawnHandler implements IMessageHandler<ParticleSpawnMes
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public IMessage onMessage(final ParticleSpawnMessage message, MessageContext ctx) {
-		Minecraft.getInstance().addScheduledTask(() -> {
+		Minecraft.getInstance().execute(() -> {
 			ClientHandler.processParticleSpawnMessage(message);
 		});
 		return null;

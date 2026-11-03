@@ -12,7 +12,7 @@ public class EntityAISentryAttack extends Goal {
 
 	public EntityAISentryAttack(EntitySentry sentry) {
 		this.host = sentry;
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class EntityAISentryAttack extends Goal {
 	@Override
 	public boolean shouldExecute() {
 		return !this.host.isDisabled() && !this.host.isControlled() && (this.host.getTarget()) != null
-				&& this.host.getEntitySenses().canSee(this.host.getTarget());
+				&& this.host.getSensing().canSee(this.host.getTarget());
 	}
 
 	@Override

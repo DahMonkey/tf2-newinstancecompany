@@ -186,7 +186,7 @@ public class ModelSentry extends EntityModel {
     }
     
     @Override
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+	public void setRotationAngles(float limbSwing, float animationSpeed, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
 		head.rotateAngleY = netHeadYaw / (180F / (float) Math.PI);
 		head.rotateAngleX = headPitch / (180F / (float) Math.PI);
 		minilight.rotateAngleY = ageInTicks / 2;

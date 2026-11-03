@@ -23,7 +23,7 @@ public class EntityHeavy extends EntityTF2Character {
 		}
 		this.rotation = 10;
 		// this.ammoLeft = 133;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		this.setSize(0.6F, 1.99F);
 
 		// this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND,
@@ -44,7 +44,7 @@ public class EntityHeavy extends EntityTF2Character {
 	protected void addWeapons() {
 		super.addWeapons();
 		if (!this.noEquipment && !this.isRobot()) {
-			float chance = this.rand.nextFloat();
+			float chance = this.random.nextFloat();
 			if (chance < 0.2f)
 				this.refill.setStackInSlot(0, new ItemStack(TF2weapons.itemSandvich));
 			else if (chance < 0.3f)
@@ -114,10 +114,10 @@ public class EntityHeavy extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("shotgun"), 0);
-		if (this.rand.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
-			this.entityDropItem(ItemFromData.getNewStack("minigun"), 0);
+		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("shotgun"), 0);
+		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(ItemFromData.getNewStack("minigun"), 0);
 	}
 
 	@Override

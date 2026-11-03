@@ -35,7 +35,7 @@ public class TF2UseHandler implements IMessageHandler<TF2Message.UseMessage, IMe
 						WeaponsCapability.get(player).reloadCool = ((ItemWeapon) stack.getItem())
 								.getWeaponFirstReloadTime(stack, player);
 						WeaponsCapability.get(player).reloadingHand = message.hand;
-						Minecraft.getInstance().addScheduledTask(() -> {
+						Minecraft.getInstance().execute(() -> {
 							TF2weapons.proxy.playReloadSound(player, fstack);
 						});
 					} else {

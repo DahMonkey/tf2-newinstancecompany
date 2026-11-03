@@ -322,7 +322,7 @@ public class TF2weapons {
 		tabspawnertf2 = new CreativeModeTab("tf2spawner") {
 			@Override
 			public ItemStack getTabIconItem() {
-				return new ItemStack(itemBuildingBox, 1, 18);
+				return TF2Util.metaStack(itemBuildingBox, 1, 18);
 			}
 
 		};
@@ -348,7 +348,7 @@ public class TF2weapons {
 					for (int j = 0; j < 2; j++) {
 						if (i == 2 && j == 1)
 							continue;
-						ItemStack banner = new ItemStack(Items.BANNER, 1,
+						ItemStack banner = TF2Util.metaStack(Items.BANNER, 1,
 								(i == 0 ? DyeColor.RED : (i == 1 ? DyeColor.BLUE : DyeColor.GRAY))
 								.getDyeDamage());
 						ListTag patterns = new ListTag();
@@ -385,7 +385,7 @@ public class TF2weapons {
 		tabarenatf2 = new CreativeModeTab("tf2arena") {
 			@Override
 			public ItemStack getTabIconItem() {
-				return new ItemStack(itemPickup, 1, 2);
+				return TF2Util.metaStack(itemPickup, 1, 2);
 			}
 
 		};
@@ -644,10 +644,10 @@ public class TF2weapons {
 		OreDictionary.registerOre("oreLead", blockLeadOre);
 		OreDictionary.registerOre("oreAustralium", blockAustraliumOre);
 		OreDictionary.registerOre("blockAustralium", blockAustralium);
-		OreDictionary.registerOre("ingotCopper", new ItemStack(itemTF2, 1, 0));
-		OreDictionary.registerOre("ingotLead", new ItemStack(itemTF2, 1, 1));
-		OreDictionary.registerOre("ingotAustralium", new ItemStack(itemTF2, 1, 2));
-		OreDictionary.registerOre("nuggetAustralium", new ItemStack(itemTF2, 1, 9));
+		OreDictionary.registerOre("ingotCopper", TF2Util.metaStack(itemTF2, 1, 0));
+		OreDictionary.registerOre("ingotLead", TF2Util.metaStack(itemTF2, 1, 1));
+		OreDictionary.registerOre("ingotAustralium", TF2Util.metaStack(itemTF2, 1, 2));
+		OreDictionary.registerOre("nuggetAustralium", TF2Util.metaStack(itemTF2, 1, 9));
 
 		blockCopperOre.setHarvestLevel("pickaxe", 1);
 		blockLeadOre.setHarvestLevel("pickaxe", 1);
@@ -713,7 +713,7 @@ public class TF2weapons {
 			public void applyAttributesModifiersToEntity(LivingEntity entityLivingBaseIn,
 					AttributeMap attributeMapIn, int amplifier) {
 				super.applyAttributesModifiersToEntity(entityLivingBaseIn, attributeMapIn, amplifier);
-				entityLivingBaseIn.stepHeight += amplifier;
+				entityLivingBaseIn.maxUpStep += amplifier;
 				if (entityLivingBaseIn instanceof EntityTF2Character) {
 					((EntityTF2Character) entityLivingBaseIn).rotation *= 0.1f;
 				}
@@ -723,7 +723,7 @@ public class TF2weapons {
 			public void removeAttributesModifiersFromEntity(LivingEntity entityLivingBaseIn,
 					AttributeMap attributeMapIn, int amplifier) {
 				super.removeAttributesModifiersFromEntity(entityLivingBaseIn, attributeMapIn, amplifier);
-				entityLivingBaseIn.stepHeight -= amplifier;
+				entityLivingBaseIn.maxUpStep -= amplifier;
 				if (entityLivingBaseIn.getCapability(TF2weapons.WEAPONS_CAP).isPresent()) {
 					WeaponsCapability.get(entityLivingBaseIn).setExpJump(true);
 				}
@@ -881,9 +881,9 @@ public class TF2weapons {
 		 */
 
 		TF2Achievements.init();
-		GameRegistry.addSmelting(new ItemStack(blockCopperOre), new ItemStack(itemTF2, 1, 0), 0.5f);
-		GameRegistry.addSmelting(new ItemStack(blockLeadOre), new ItemStack(itemTF2, 1, 1), 0.55f);
-		GameRegistry.addSmelting(new ItemStack(blockAustraliumOre), new ItemStack(itemTF2, 1, 2), 2f);
+		GameRegistry.addSmelting(new ItemStack(blockCopperOre), TF2Util.metaStack(itemTF2, 1, 0), 0.5f);
+		GameRegistry.addSmelting(new ItemStack(blockLeadOre), TF2Util.metaStack(itemTF2, 1, 1), 0.55f);
+		GameRegistry.addSmelting(new ItemStack(blockAustraliumOre), TF2Util.metaStack(itemTF2, 1, 2), 2f);
 
 		/*
 		 * GameRegistry.(new IFuelHandler() {
@@ -894,43 +894,43 @@ public class TF2weapons {
 		 * });
 		 */
 		ForgeRegistries.RECIPES.register(
-				new ShapedOreRecipe(null, new ItemStack(blockCabinet), "SCS", "SIS", 'S', new ItemStack(itemTF2, 1, 3),
+				new ShapedOreRecipe(null, new ItemStack(blockCabinet), "SCS", "SIS", 'S', TF2Util.metaStack(itemTF2, 1, 3),
 						'C', "workbench", 'I', "blockIron").setRegistryName(TF2weapons.MOD_ID, "recipe1"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(itemTF2, 1, 2), "AAA", "AAA", "AAA",
-				'A', new ItemStack(itemTF2, 1, 6)).setRegistryName(TF2weapons.MOD_ID, "recipe2"));
-		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, new ItemStack(itemTF2, 9, 6), "ingotAustralium")
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(itemTF2, 1, 2), "AAA", "AAA", "AAA",
+				'A', TF2Util.metaStack(itemTF2, 1, 6)).setRegistryName(TF2weapons.MOD_ID, "recipe2"));
+		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, TF2Util.metaStack(itemTF2, 9, 6), "ingotAustralium")
 				.setRegistryName(TF2weapons.MOD_ID, "recipe3"));
 		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(blockAustralium), "AAA", "AAA", "AAA",
-				'A', new ItemStack(itemTF2, 1, 2)).setRegistryName(TF2weapons.MOD_ID, "recipe4"));
-		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, new ItemStack(itemTF2, 9, 2), "blockAustralium")
+				'A', TF2Util.metaStack(itemTF2, 1, 2)).setRegistryName(TF2weapons.MOD_ID, "recipe4"));
+		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, TF2Util.metaStack(itemTF2, 9, 2), "blockAustralium")
 				.setRegistryName(TF2weapons.MOD_ID, "recipe5"));
 		ForgeRegistries.RECIPES.register(new OpenCrateRecipe().setRegistryName(TF2weapons.MOD_ID, "opencrate"));
 
 		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.blockOverheadDoor),
 				new Object[] { "BI", "B ", "B ", 'B', Blocks.IRON_BARS, 'I', "ingotIron" })
 				.setRegistryName(TF2weapons.MOD_ID, "blockoverhead"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemDoorController, 1, 0),
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemDoorController, 1, 0),
 				new Object[] { "RIR", "IOI", "RIR", 'R', "dustRedstone", 'I', "ingotIron", 'O', Blocks.OBSERVER })
 				.setRegistryName(TF2weapons.MOD_ID, "doorcontroller1"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemDoorController, 1, 1),
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemDoorController, 1, 1),
 				new Object[] { "SIS", "IOI", "SIS", 'S', "gunpowder", 'I', "ingotIron", 'O', Blocks.OBSERVER })
 				.setRegistryName(TF2weapons.MOD_ID, "doorcontroller2"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemDoorController, 1, 2),
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemDoorController, 1, 2),
 				new Object[] { "RIR", "IOI", "RIR", 'R', "dyeRed", 'I', "ingotIron", 'O', Blocks.OBSERVER })
 				.setRegistryName(TF2weapons.MOD_ID, "doorcontroller3"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemDoorController, 1, 3),
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemDoorController, 1, 3),
 				new Object[] { "RIR", "IOI", "RIR", 'R', "dyeBlue", 'I', "ingotIron", 'O', Blocks.OBSERVER })
 				.setRegistryName(TF2weapons.MOD_ID, "doorcontroller4"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemMoney, 1, 1),
-				new Object[] { "AAA", "AAA", "AAA", 'A', new ItemStack(TF2weapons.itemMoney, 1, 0) })
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemMoney, 1, 1),
+				new Object[] { "AAA", "AAA", "AAA", 'A', TF2Util.metaStack(TF2weapons.itemMoney, 1, 0) })
 				.setRegistryName(TF2weapons.MOD_ID, "money1"));
-		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemMoney, 1, 2),
-				new Object[] { "AAA", "AAA", "AAA", 'A', new ItemStack(TF2weapons.itemMoney, 1, 1) })
+		ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, TF2Util.metaStack(TF2weapons.itemMoney, 1, 2),
+				new Object[] { "AAA", "AAA", "AAA", 'A', TF2Util.metaStack(TF2weapons.itemMoney, 1, 1) })
 				.setRegistryName(TF2weapons.MOD_ID, "money2"));
-		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, new ItemStack(TF2weapons.itemMoney, 9, 0),
-				new ItemStack(TF2weapons.itemMoney, 1, 1)).setRegistryName(TF2weapons.MOD_ID, "money3"));
-		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, new ItemStack(TF2weapons.itemMoney, 9, 1),
-				new ItemStack(TF2weapons.itemMoney, 1, 2)).setRegistryName(TF2weapons.MOD_ID, "money4"));
+		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, TF2Util.metaStack(TF2weapons.itemMoney, 9, 0),
+				TF2Util.metaStack(TF2weapons.itemMoney, 1, 1)).setRegistryName(TF2weapons.MOD_ID, "money3"));
+		ForgeRegistries.RECIPES.register(new ShapelessOreRecipe(null, TF2Util.metaStack(TF2weapons.itemMoney, 9, 1),
+				TF2Util.metaStack(TF2weapons.itemMoney, 1, 2)).setRegistryName(TF2weapons.MOD_ID, "money4"));
 
 		LootFunctionManager.registerFunction(new EntityBuildingFunction.Serializer());
 		LootFunctionManager.registerFunction(new EntityOfClassFunction.Serializer());
@@ -968,16 +968,16 @@ public class TF2weapons {
 				double d0 = p_82487_1_.getX() + enumfacing.getStepX();
 				double d1 = p_82487_1_.getY() + 0.2F;
 				double d2 = p_82487_1_.getZ() + enumfacing.getStepZ();
-				Entity entity = ItemMonsterPlacerPlus.spawnCreature(null, p_82487_1_.getWorld(),
+				Entity entity = ItemMonsterPlacerPlus.spawnCreature(null, p_82487_1_.getLevel(),
 						p_82487_2_.getDamageValue(), d0, d1, d2,
 						p_82487_2_.getTag() != null && p_82487_2_.getTag().contains("SavedEntity")
 						? p_82487_2_.getTag().getCompound("SavedEntity")
 								: null);
 
 				if (entity instanceof LivingEntity && p_82487_2_.hasCustomHoverName())
-					((Mob) entity).setCustomNameTag(p_82487_2_.getHoverName());
+					((Mob) entity).setCustomName(p_82487_2_.getHoverName());
 
-				p_82487_2_.splitStack(1);
+				p_82487_2_.split(1);
 				return p_82487_2_;
 			}
 		});
@@ -988,16 +988,16 @@ public class TF2weapons {
 				double d0 = p_82487_1_.getX() + enumfacing.getStepX();
 				double d1 = p_82487_1_.getY() + 0.2F;
 				double d2 = p_82487_1_.getZ() + enumfacing.getStepZ();
-				Entity entity = ItemMonsterPlacerPlus.spawnCreature(null, p_82487_1_.getWorld(),
+				Entity entity = ItemMonsterPlacerPlus.spawnCreature(null, p_82487_1_.getLevel(),
 						p_82487_2_.getDamageValue(), d0, d1, d2,
 						p_82487_2_.getTag() != null && p_82487_2_.getTag().contains("SavedEntity")
 						? p_82487_2_.getTag().getCompound("SavedEntity")
 								: null);
 
 				if (entity instanceof LivingEntity && p_82487_2_.hasCustomHoverName())
-					((Mob) entity).setCustomNameTag(p_82487_2_.getHoverName());
+					((Mob) entity).setCustomName(p_82487_2_.getHoverName());
 
-				p_82487_2_.splitStack(1);
+				p_82487_2_.split(1);
 				return p_82487_2_;
 			}
 		});
@@ -1045,13 +1045,13 @@ public class TF2weapons {
 				}
 				if (weapon.isEmpty())
 					return stack;
-				Level world = source.getWorld();
+				Level world = source.getLevel();
 				Position iposition = DispenserBlock.getDispensePosition(source);
 				Direction enumfacing = source.getBlockState().getValue(DispenserBlock.FACING);
 				dummyEnt.setPos(iposition.getX(), iposition.getY() + 0.1, iposition.getZ());
 				Vec2 rot = TF2Util.getAngleFromFacing(enumfacing);
-				dummyEnt.rotationYawHead = rot.x;
-				dummyEnt.rotationPitch = rot.y;
+				dummyEnt.yHeadRot = rot.x;
+				dummyEnt.setXRot((rot.y));
 				dummyEnt.level = world;
 				dummyEnt.setItemInHand(InteractionHand.MAIN_HAND, weapon);
 				((ItemUsable) weapon.getItem()).use(weapon, dummyEnt, world, InteractionHand.MAIN_HAND, null);
@@ -1070,20 +1070,20 @@ public class TF2weapons {
 			 */
 			@Override
 			protected void playDispenseSound(BlockSource source) {
-				source.getWorld().playEvent(1002, source.getBlockPos(), 0);
+				source.getLevel().levelEvent(1002, source.getBlockPos(), 0);
 			}
 		}
 		;
 		class BehaviorDispenseSelf extends DefaultDispenseItemBehavior {
 			@Override
 			public ItemStack dispenseStack(BlockSource source, ItemStack stack) {
-				Level world = source.getWorld();
+				Level world = source.getLevel();
 				Position iposition = DispenserBlock.getDispensePosition(source);
 				Direction enumfacing = source.getBlockState().getValue(DispenserBlock.FACING);
 				dummyEnt.setPos(iposition.getX(), iposition.getY(), iposition.getZ());
 				Vec2 rot = TF2Util.getAngleFromFacing(enumfacing);
-				dummyEnt.rotationYawHead = rot.x;
-				dummyEnt.rotationPitch = rot.y;
+				dummyEnt.yHeadRot = rot.x;
+				dummyEnt.setXRot((rot.y));
 				dummyEnt.level = world;
 				dummyEnt.setItemInHand(InteractionHand.MAIN_HAND, stack);
 				((ItemUsable) stack.getItem()).use(stack, dummyEnt, world, InteractionHand.MAIN_HAND, null);
@@ -1102,7 +1102,7 @@ public class TF2weapons {
 			 */
 			@Override
 			protected void playDispenseSound(BlockSource source) {
-				source.getWorld().playEvent(1002, source.getBlockPos(), 0);
+				source.getLevel().levelEvent(1002, source.getBlockPos(), 0);
 			}
 		}
 		;
@@ -1525,13 +1525,13 @@ public class TF2weapons {
 	public static void updateMobSpawning() {
 		ArrayList<Biome> biomesList = new ArrayList<>();
 		for (Biome biome : GameRegistry.findRegistry(Biome.class)) {
-			biome.getSpawnableList(EnumCreatureType.MONSTER)
+			biome.getSpawnableList(MobCategory.MONSTER)
 			.removeIf(entry -> TF2ConfigVars.spawnRate.containsKey(entry.entityClass));
 			if (TF2ConfigVars.biomeCheck.equalsIgnoreCase("Default")) {
 				boolean zombie = false;
 				boolean spider = false;
 				boolean creeper = false;
-				for (SpawnListEntry entry : biome.getSpawnableList(EnumCreatureType.MONSTER)) {
+				for (SpawnListEntry entry : biome.getSpawnableList(MobCategory.MONSTER)) {
 					if (entry.entityClass == Zombie.class)
 						zombie = true;
 					else if (entry.entityClass == Spider.class)
@@ -1553,7 +1553,7 @@ public class TF2weapons {
 		if (!TF2ConfigVars.disableSpawn) {
 			Biome[] biomes = biomesList.toArray(new Biome[biomesList.size()]);
 			for (Entry<Class<? extends Mob>, Integer> entry : TF2ConfigVars.spawnRate.entrySet()) {
-				EntityRegistry.addSpawn(entry.getKey(), entry.getValue().intValue(), 1, 3, EnumCreatureType.MONSTER,
+				EntityRegistry.addSpawn(entry.getKey(), entry.getValue().intValue(), 1, 3, MobCategory.MONSTER,
 						biomes);
 			}
 		}

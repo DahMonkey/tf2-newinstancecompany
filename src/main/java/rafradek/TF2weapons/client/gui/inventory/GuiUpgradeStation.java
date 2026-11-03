@@ -38,7 +38,7 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	public int firstIndex;
 	public float scroll;
 	public int tabid;
-	public ItemStack craftingTabStack = new ItemStack(TF2weapons.itemAmmo, 1, 1);
+	public ItemStack craftingTabStack = TF2Util.metaStack(TF2weapons.itemAmmo, 1, 1);
 	public ItemStack chestTabStack = new ItemStack(Blocks.CHEST);
 
 	public TileEntityUpgrades station;
@@ -50,8 +50,8 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 			BlockPos blockPosition) {
 		super(new ContainerUpgrades(Minecraft.getInstance().player, playerv, station, world, blockPosition));
 		this.station = station;
-		xSize = 230;
-		ySize = 225;
+		imageWidth = 230;
+		imageHeight = 225;
 		// this.itemsToRender=new ItemStack[9];
 	}
 
@@ -60,11 +60,11 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 		super.initGui();
 		tooltip.clear();
 		for (int x = 0; x < 2; x++) for (int y = 0; y < 3; y++) {
-			buttonList.add(buttons[x * 2 + y * 4] = new Button(x * 2 + y * 4, guiLeft + 81 + x * 101, guiTop + 47 + y * 30, 12, 12, "+"));
-			buttonList.add(buttons[x * 2 + y * 4 + 1] = new Button(x * 2 + y * 4 + 1, guiLeft + 94 + x * 101, guiTop + 47 + y * 30, 12, 12, "-"));
+			buttonList.add(buttons[x * 2 + y * 4] = new Button(x * 2 + y * 4, leftPos + 81 + x * 101, topPos + 47 + y * 30, 12, 12, "+"));
+			buttonList.add(buttons[x * 2 + y * 4 + 1] = new Button(x * 2 + y * 4 + 1, leftPos + 94 + x * 101, topPos + 47 + y * 30, 12, 12, "-"));
 		}
-		tooltip.add(new GuiTooltip(guiLeft + 128, guiTop + 15, 100, 12, I18n.get("container.upgrades.info"), this));
-		buttonList.add(refund = new Button(12, guiLeft + 123, guiTop + 121, 100, 20, I18n.get("container.upgrades.refund")));
+		tooltip.add(new GuiTooltip(leftPos + 128, topPos + 15, 100, 12, I18n.get("container.upgrades.info"), this));
+		buttonList.add(refund = new Button(12, leftPos + 123, topPos + 121, 100, 20, I18n.get("container.upgrades.refund")));
 		setButtons();
 	}
 
@@ -85,8 +85,8 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
 		boolean flag = Mouse.isButtonDown(0);
-		int i = guiLeft;
-		int j = guiTop;
+		int i = leftPos;
+		int j = topPos;
 		int k = i + 209;
 		int l = j + 30;
 		int i1 = k + 14;
@@ -95,7 +95,7 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 		if (!flag) isScrolling = false;
 		wasClicking = flag;
 		if (isScrolling) {
-			int size = ((ContainerUpgrades) inventorySlots).applicable.size();
+			int size = ((ContainerUpgrades) slots).applicable.size();
 			if (size >= 6) {
 				scroll = (mouseY - l - 7.5F) / (j1 - l - 15.0F);
 				scroll = Mth.clamp(scroll, 0.0F, 1.0F);
@@ -103,8 +103,8 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 				setButtons();
 			}
 		}
-		refund.enabled = !inventorySlots.inventorySlots.get(0).getStack().isEmpty()
-				&& inventorySlots.inventorySlots.get(0).getStack().getTag().getInt("TotalSpent") > 0;
+		refund.enabled = !slots.slots.get(0).getStack().isEmpty()
+				&& slots.slots.get(0).getStack().getTag().getInt("TotalSpent") > 0;
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		renderHoveredToolTip(mouseX, mouseY);
 		for (GuiTooltip tooltip : tooltip) tooltip.drawButton(mc, mouseX, mouseY, partialTicks);
@@ -117,8 +117,8 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 
 	@Override
 	protected void actionPerformed(Button button) throws IOException {
-		if (button.id < 12) mc.playerController.sendEnchantPacket(inventorySlots.windowId, button.id + firstIndex * 2);
-		else if (button.id == 12) mc.playerController.sendEnchantPacket(inventorySlots.windowId, -1);
+		if (button.id < 12) mc.playerController.sendEnchantPacket(slots.windowId, button.id + firstIndex * 2);
+		else if (button.id == 12) mc.playerController.sendEnchantPacket(slots.windowId, -1);
 	}
 
 	/**
@@ -127,16 +127,16 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		int expPoints = ((ContainerUpgrades) inventorySlots).playerCredits;
-		int size = ((ContainerUpgrades) inventorySlots).applicable.size();
-		ItemStack stack = inventorySlots.inventorySlots.get(0).getStack();
+		int expPoints = ((ContainerUpgrades) slots).playerCredits;
+		int size = ((ContainerUpgrades) slots).applicable.size();
+		ItemStack stack = slots.slots.get(0).getStack();
 		for (int i = 0; i < 6; i++) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			mc.RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
 			if (i + firstIndex < size) {
-				TF2Attribute attr = ((ContainerUpgrades) this.inventorySlots).applicable.get(i + firstIndex)
+				TF2Attribute attr = ((ContainerUpgrades) this.slots).applicable.get(i + firstIndex)
 						.getAttributeReplacement(stack);
-				TF2Attribute attrorig = ((ContainerUpgrades) this.inventorySlots).applicable.get(i + firstIndex);
+				TF2Attribute attrorig = ((ContainerUpgrades) this.slots).applicable.get(i + firstIndex);
 				if (attr == null) {
 					continue;
 				}
@@ -181,7 +181,7 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 						new Object[] { String.valueOf(stack.getTag().getInt("TotalSpent")),
 									String.valueOf(TF2Attribute.getMaxExperience(stack, mc.player)) }),
 					128, 15, 4210752);
-		fontRenderer.drawString(I18n.get("container.inventory", new Object[0]), 36, ySize - 96 + 3, 4210752);
+		fontRenderer.drawString(I18n.get("container.inventory", new Object[0]), 36, imageHeight - 96 + 3, 4210752);
 	}
 
 	/**
@@ -191,13 +191,13 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);
 		// this.drawTab(0);
 		// this.drawTab(1);
-		x = guiLeft + 210;
-		y = guiTop + 31;
+		x = leftPos + 210;
+		y = topPos + 31;
 		int k = y + 96;
 		drawTexturedModalRect(x, y + (int) ((k - y - 17) * scroll), 232, 0, 12, 15);
 	}

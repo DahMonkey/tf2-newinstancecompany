@@ -16,7 +16,7 @@ public class TF2BuildingConfigHandler implements IMessageHandler<TF2Message.Buil
 	@Override
 	public IMessage onMessage(final BuildingConfigMessage message, final MessageContext ctx) {
 
-		TF2weapons.server.addScheduledTask(() -> {
+		TF2weapons.server.execute(() -> {
 			Entity ent = ctx.getServerHandler().player.level.getEntity(message.entityid);
 			if (ent != null && ent instanceof EntityBuilding
 					&& ((EntityBuilding) ent).getOwner() == ctx.getServerHandler().player) {

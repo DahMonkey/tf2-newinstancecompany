@@ -38,7 +38,7 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 	}
 
 	@Override
-	public void doRenderLayer(LivingEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount,
+	public void doRenderLayer(LivingEntity entitylivingbaseIn, float limbSwing, float animationSpeed,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 		// System.out.println("Rendering layer");
 		InventoryWearables inventory = entitylivingbaseIn.getCapability(TF2weapons.INVENTORY_CAP).orElse(null);
@@ -46,7 +46,7 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 			for (int i = 0; i < 4; i++) {
 				ItemStack stack = inventory.getStackInSlot(i);
 				if (!stack.isEmpty())
-					renderModel(entitylivingbaseIn, stack, limbSwing, limbSwingAmount, partialTicks, ageInTicks,
+					renderModel(entitylivingbaseIn, stack, limbSwing, animationSpeed, partialTicks, ageInTicks,
 							netHeadYaw, headPitch, scale);
 			}
 		}
@@ -55,17 +55,17 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 			for (int i = 0; i < loadout.getSlots(); i++) {
 				ItemStack stack = loadout.getStackInSlot(i);
 				if (!stack.isEmpty())
-					renderModel(entitylivingbaseIn, stack, limbSwing, limbSwingAmount, partialTicks, ageInTicks,
+					renderModel(entitylivingbaseIn, stack, limbSwing, animationSpeed, partialTicks, ageInTicks,
 							netHeadYaw, headPitch, scale);
 			}
 		}
 		for (ItemStack stack : entitylivingbaseIn.getArmorSlots())
 			if (!stack.isEmpty())
-				renderModel(entitylivingbaseIn, stack, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+				renderModel(entitylivingbaseIn, stack, limbSwing, animationSpeed, partialTicks, ageInTicks, netHeadYaw,
 						headPitch, scale);
 	}
 
-	public void renderModel(LivingEntity living, ItemStack stack, float limbSwing, float limbSwingAmount,
+	public void renderModel(LivingEntity living, ItemStack stack, float limbSwing, float animationSpeed,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 		if (stack.getItem() instanceof ItemFromData) {
 
@@ -104,8 +104,8 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 				this.renderer.bindTexture(this.getArmorResource(living, stack, EquipmentSlot.CHEST, null));
 				EntityModel model = this.modelBig;
 				model.setModelAttributes(this.renderer.getMainModel());
-				model.setLivingAnimations(living, limbSwing, limbSwingAmount, partialTicks);
-				model.render(living, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+				model.setLivingAnimations(living, limbSwing, animationSpeed, partialTicks);
+				model.render(living, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch, scale);
 			}
 			ItemWearable.usedModel = 0;
 		}
@@ -113,8 +113,8 @@ public class LayerWearables implements RenderLayer<LivingEntity> {
 			this.renderer.bindTexture(this.getArmorResource(living, stack, EquipmentSlot.CHEST, null));
 			EntityModel model = this.modelBig;
 			model.setModelAttributes(this.renderer.getMainModel());
-			model.setLivingAnimations(living, limbSwing, limbSwingAmount, partialTicks);
-			model.render(living, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+			model.setLivingAnimations(living, limbSwing, animationSpeed, partialTicks);
+			model.render(living, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch, scale);
 		}
 	}
 

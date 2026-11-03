@@ -167,8 +167,8 @@ public class BlockOverheadDoor extends BaseEntityBlock {
 	}
 
 	@Override
-	public Item getItemDropped(BlockState state, Random rand, int fortune) {
-		return state.getValue(HOLDER) ? super.getItemDropped(state, rand, fortune) : Items.AIR;
+	public Item getItemDropped(BlockState state, RandomSource random, int fortune) {
+		return state.getValue(HOLDER) ? super.getItemDropped(state, random, fortune) : Items.AIR;
 	}
 
 	@Override

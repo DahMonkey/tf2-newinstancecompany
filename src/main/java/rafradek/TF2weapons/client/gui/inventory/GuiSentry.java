@@ -37,19 +37,19 @@ public class GuiSentry extends AbstractContainerScreen {
 		super(new ContainerEnergy(sentry, Minecraft.getInstance().player.inventory));
 		this.sentry = sentry;
 		attackFlags = sentry.getAttackFlags();
-		xSize = 212;
-		ySize = 195;
+		imageWidth = 212;
+		imageHeight = 195;
 	}
 
 	@Override
 	public void initGui() {
 		initGui();
 		buttonList.clear();
-		buttonList.add(attackOnHurtBtn = new Button(1, guiLeft + 181, guiTop + 14, 25, 20, "no"));
-		buttonList.add(attackOtherPlayersBtn = new Button(2, guiLeft + 181, guiTop + 34, 25, 20, "no"));
-		buttonList.add(attackHostileMobsBtn = new Button(3, guiLeft + 181, guiTop + 54, 25, 20, "no"));
-		buttonList.add(attackFriendlyMobsBtn = new Button(4, guiLeft + 181, guiTop + 74, 25, 20, "no"));
-		buttonList.add(grab = new Button(5, guiLeft + 86, guiTop + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
+		buttonList.add(attackOnHurtBtn = new Button(1, leftPos + 181, topPos + 14, 25, 20, "no"));
+		buttonList.add(attackOtherPlayersBtn = new Button(2, leftPos + 181, topPos + 34, 25, 20, "no"));
+		buttonList.add(attackHostileMobsBtn = new Button(3, leftPos + 181, topPos + 54, 25, 20, "no"));
+		buttonList.add(attackFriendlyMobsBtn = new Button(4, leftPos + 181, topPos + 74, 25, 20, "no"));
+		buttonList.add(grab = new Button(5, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
 	}
 
 	@Override
@@ -85,11 +85,11 @@ public class GuiSentry extends AbstractContainerScreen {
 		attackFriendlyMobsBtn.displayString = (attackFlags & 8) == 0 ? "no" : "yes";
 		drawDefaultBackground();
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		if (mouseX >= guiLeft + 7 && mouseX < guiLeft + 23 && mouseY >= guiTop + 15 && mouseY < guiTop + 75) {
+		if (mouseX >= leftPos + 7 && mouseX < leftPos + 23 && mouseY >= topPos + 15 && mouseY < topPos + 75) {
 			if (ClientProxy.buildingsUseEnergy) drawHoveringText("Energy: " + sentry.getInfoEnergy() + "/" + sentry.energy.getMaxEnergyStored(), mouseX, mouseY);
 			else drawHoveringText("Energy use is disabled", mouseX, mouseY);
 		}
-		if (mouseX >= guiLeft + 5 && mouseX < guiLeft + 23 && mouseY >= guiTop + 112 && mouseY < guiTop + 130) {
+		if (mouseX >= leftPos + 5 && mouseX < leftPos + 23 && mouseY >= topPos + 112 && mouseY < topPos + 130) {
 			List<String> list = new ArrayList<>(Arrays.asList(I18n.get("gui.sentry.help", sentry.getLevel() == 1 ? "6.4" : "12.8")
 							.split(Pattern.quote("\\n"))));
 			if (sentry.getLevel() > 2) list.add(I18n.get("gui.sentry.help.rockets"));
@@ -102,10 +102,10 @@ public class GuiSentry extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-		drawGradientRect(guiLeft + 7, guiTop + 75 - (int) (((float) sentry.getInfoEnergy() /
-						(float) sentry.energy.getMaxEnergyStored()) * 60f), guiLeft + 23, guiTop + 75, 0xFFBF0000, 0xFF7F0000);
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);
+		drawGradientRect(leftPos + 7, topPos + 75 - (int) (((float) sentry.getInfoEnergy() /
+						(float) sentry.energy.getMaxEnergyStored()) * 60f), leftPos + 23, topPos + 75, 0xFFBF0000, 0xFF7F0000);
 	}
 }

@@ -28,7 +28,7 @@ public class RecipeToScrap extends IForgeRegistryEntry.Impl<Recipe>
 		ArrayList<ItemStack> stacks = new ArrayList<>();
 
 		HashSet<String> classnames = new HashSet<>();
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() instanceof ItemFromData
@@ -45,22 +45,22 @@ public class RecipeToScrap extends IForgeRegistryEntry.Impl<Recipe>
 	@Override
 	public ItemStack getCraftingResult(CraftingContainer inv) {
 		if (token == -1)
-			return new ItemStack(TF2weapons.itemTF2, 1, 3);
+			return TF2Util.metaStack(TF2weapons.itemTF2, 1, 3);
 		else
-			return new ItemStack(TF2weapons.itemToken, 1, token);
+			return TF2Util.metaStack(TF2weapons.itemToken, 1, token);
 	}
 
 	@Override
 	public ItemStack getRecipeOutput() {
 		if (token == -1)
-			return new ItemStack(TF2weapons.itemTF2, 1, 3);
+			return TF2Util.metaStack(TF2weapons.itemTF2, 1, 3);
 		else
-			return new ItemStack(TF2weapons.itemToken, 1, token);
+			return TF2Util.metaStack(TF2weapons.itemToken, 1, token);
 	}
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
@@ -78,9 +78,9 @@ public class RecipeToScrap extends IForgeRegistryEntry.Impl<Recipe>
 	@Override
 	public ItemStack getSuggestion(int slot) {
 		if (slot < 2 && this.token == -1) {
-			return new ItemStack(TF2weapons.itemTF2, 1, 9);
+			return TF2Util.metaStack(TF2weapons.itemTF2, 1, 9);
 		} else if (slot < 3 && token != -1) {
-			ItemStack stack = new ItemStack(TF2weapons.itemTF2, 1, 9);
+			ItemStack stack = TF2Util.metaStack(TF2weapons.itemTF2, 1, 9);
 			stack.setTag(new CompoundTag());
 			stack.getTag().putByte("Token", (byte) this.token);
 			return stack;

@@ -221,8 +221,8 @@ public class ItemMinigun extends ItemBulletWeapon {
 			if (living.getAttribute(Attributes.MOVEMENT_SPEED).getModifier(slowdownUUID) == null)
 				living.getAttribute(Attributes.MOVEMENT_SPEED).addTransientModifier(slowdown);
 			if (living.isSprinting()) {
-				living.motionX *= 0.6D;
-				living.motionZ *= 0.6D;
+				living.setDeltaMovement(living.getDeltaMovement().x * (0.6D), living.getDeltaMovement().y, living.getDeltaMovement().z);
+				living.setDeltaMovement(living.getDeltaMovement().x, living.getDeltaMovement().y, living.getDeltaMovement().z * (0.6D));
 				living.setSprinting(false);
 			}
 			if (world.isClientSide)

@@ -25,7 +25,7 @@ public class EntityCleaver extends EntityProjectileSimple {
 	public void onHitGround(int x, int y, int z, HitResult mop) {
 		super.onHitGround(x, y, z, mop);
 		if (!this.level.isClientSide && this.damage <= 0 && !this.infinite) {
-			this.entityDropItem(this.usedWeapon, 0f);
+			this.spawnAtLocation(this.usedWeapon, 0f);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class EntityCleaver extends EntityProjectileSimple {
 				if (!entityHit.getPersistentData().contains("Cleavers"))
 					entityHit.getPersistentData().put("Cleavers", list);
 			} else
-				this.entityDropItem(this.usedWeapon, 0f);
+				this.spawnAtLocation(this.usedWeapon, 0f);
 		}
 	}
 

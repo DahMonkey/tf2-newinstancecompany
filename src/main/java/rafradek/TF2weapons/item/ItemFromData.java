@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.ItemMeshDefinition;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonDeserializationContext;
@@ -210,7 +212,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 		return new WeaponData.WeaponDataCapability();
 	}
 
-	public static List<ItemStack> getRandomWeapons(Random random, Predicate<WeaponData> predicate, int count) {
+	public static List<ItemStack> getRandomWeapons(RandomSource random, Predicate<WeaponData> predicate, int count) {
 
 		ArrayList<WeaponData> weapons = new ArrayList<>();
 		for (Entry<String, WeaponData> entry : MapList.nameToData.entrySet())
@@ -226,11 +228,11 @@ public class ItemFromData extends Item implements IItemOverlay {
 		return ret;
 	}
 
-	public static ItemStack getRandomWeapon(Random random, Predicate<WeaponData> predicate) {
+	public static ItemStack getRandomWeapon(RandomSource random, Predicate<WeaponData> predicate) {
 		return Iterables.getFirst(getRandomWeapons(random, predicate, 1), ItemStack.EMPTY);
 	}
 
-	public static ItemStack getRandomWeaponOfType(String type, float chanceOfParent, Random random) {
+	public static ItemStack getRandomWeaponOfType(String type, float chanceOfParent, RandomSource random) {
 		// WeaponData parent=MapList.nameToData.get(type);
 		if (chanceOfParent >= 0 && random.nextFloat() <= chanceOfParent)
 			return getNewStack(type);
@@ -251,7 +253,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 
 	}
 
-	public static ItemStack getRandomWeaponOfType(String name, Random random, boolean showHidden) {
+	public static ItemStack getRandomWeaponOfType(String name, RandomSource random, boolean showHidden) {
 		ArrayList<WeaponData> weapons = new ArrayList<>();
 		for (Entry<String, WeaponData> entry : MapList.nameToData.entrySet())
 			if (!entry.getValue().getBoolean(PropertyType.HIDDEN)
@@ -263,7 +265,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 		return getNewStack(weapons.get(random.nextInt(weapons.size())));
 	}
 
-	public static ItemStack getRandomWeaponOfSlotMob(final TF2Class clazz, final int slot, Random random,
+	public static ItemStack getRandomWeaponOfSlotMob(final TF2Class clazz, final int slot, RandomSource random,
 													 final boolean showHidden, float stockWeight, boolean stockOnly) {
 		Predicate<WeaponData> base = input -> !input.getBoolean(PropertyType.HIDDEN)
 				&& !(input.getInt(PropertyType.ROLL_HIDDEN) > 0 && !showHidden)
@@ -292,7 +294,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 		}
 	}
 
-	public static List<ItemStack> getRandomWeaponsOfSlotMob(final TF2Class clazz, final int slot, Random random,
+	public static List<ItemStack> getRandomWeaponsOfSlotMob(final TF2Class clazz, final int slot, RandomSource random,
 															final boolean showHidden, int count) {
 		return getRandomWeapons(random,
 				input -> !input.getBoolean(PropertyType.HIDDEN)
@@ -316,7 +318,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 		return weapons;
 	}
 
-	public static ItemStack getRandomWeapon(ItemStack stack, Random rand) {
+	public static ItemStack getRandomWeapon(ItemStack stack, RandomSource random) {
 		CompoundTag nbt = stack.getTag();
 		TF2Class clazz = TF2Class.NONE;
 		if (nbt != null && nbt.contains("Token")) clazz = TF2Class.getClass(nbt.getByte("Token"));
@@ -330,7 +332,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 		}
 		if (weapons.isEmpty())
 			return ItemStack.EMPTY;
-		ItemStack result = getNewStack(weapons.get(rand.nextInt(weapons.size())));
+		ItemStack result = getNewStack(weapons.get(random.nextInt(weapons.size())));
 		if (!result.hasTag()) result.setTag(new CompoundTag());
 		if (nbt.contains("Australium") && nbt.getBoolean("Australium")) result.getTag().putBoolean("Australium", true);
 		return result;

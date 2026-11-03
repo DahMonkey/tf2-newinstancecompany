@@ -59,10 +59,10 @@ public class EntityMedic extends EntityTF2Character {
 		this.targetSelector.addGoal(4, new EntityAINearestChecked<>(this, LivingEntity.class, true, false,
 				super::isValidTarget, true, false));
 		// this.ammoLeft = 1;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		this.rotation = 15;
 		// this.tasks.removeTask(attack);
-		this.stepHeight = 1f;
+		this.maxUpStep = 1f;
 		if (par1World != null) {
 			this.goalSelector.addGoal(3, useMedigun);
 			this.friendly = true;
@@ -106,7 +106,7 @@ public class EntityMedic extends EntityTF2Character {
 	protected void addWeapons() {
 		super.addWeapons();
 		if (this.isGiant()) {
-			if (this.getOwnerId() == null) {
+			if (this.getOwnerUUID() == null) {
 				TF2Attribute.setAttribute(this.loadout.getStackInSlot(1), MapList.nameToAttribute.get("HealRateBonus"),
 						10000f);
 				TF2Attribute.setAttribute(this.loadout.getStackInSlot(1), MapList.nameToAttribute.get("OverHealBonus"),
@@ -219,17 +219,17 @@ public class EntityMedic extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("syringegun"), 0);
-		if (this.rand.nextFloat() < 0.08f + p_70628_2_ * 0.03f)
-			this.entityDropItem(ItemFromData.getNewStack("medigun"), 0);
+		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("syringegun"), 0);
+		if (this.random.nextFloat() < 0.08f + p_70628_2_ * 0.03f)
+			this.spawnAtLocation(ItemFromData.getNewStack("medigun"), 0);
 	}
 
 	@Override
 	public float getAttributeModifier(String attribute) {
 		if (TF2ConfigVars.scaleAttributes
 				&& !(this.getTarget() instanceof Player || (this.getTarget() instanceof OwnableEntity
-						&& ((OwnableEntity) this.getTarget()).getOwnerId() != null))) {
+						&& ((OwnableEntity) this.getTarget()).getOwnerUUID() != null))) {
 			if (attribute.equals("Heal"))
 				return this.scaleWithDifficulty(0.75f, 1f);
 			if (attribute.equals("Overheal"))

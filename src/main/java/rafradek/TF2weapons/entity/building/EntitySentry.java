@@ -63,11 +63,11 @@ public class EntitySentry extends EntityBuilding {
 	public float attackRateMult = 1;
 	// public SentryLookHelper lookHelper;
 	private static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.createKey(EntitySentry.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> ROCKET = SynchedEntityData.createKey(EntitySentry.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> KILLS = SynchedEntityData.createKey(EntitySentry.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Boolean> CONTROLLED = SynchedEntityData.createKey(EntitySentry.class,
 			EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Byte> TARGET = SynchedEntityData.createKey(EntitySentry.class,
@@ -75,7 +75,7 @@ public class EntitySentry extends EntityBuilding {
 	private static final EntityDataAccessor<Boolean> MINI = SynchedEntityData.createKey(EntitySentry.class,
 			EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.createKey(EntitySentry.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 
 	private static final AttributeModifier MINI_HEALTH_MODIFIER = new AttributeModifier(
 			UUID.fromString("1184831d-b1dc-40c8-86e6-34fa8f5abada"), "minisentry", -6, 0);
@@ -261,7 +261,7 @@ public class EntitySentry extends EntityBuilding {
 				: this.getTarget().getEyePosition(1).subtract(this.getEyePosition(1))).normalize().scale(60)
 						.add(this.getEyePosition(1));
 		while (this.attackDelay <= 0 && this.getAmmo() > 0 && this.consumeEnergy(this.getMinEnergy())) {
-			if (this.getOwnerId() != null && this.tickCount % 10 == 0)
+			if (this.getOwnerUUID() != null && this.tickCount % 10 == 0)
 				TF2Util.attractMobs(this, this.level);
 			float cooldown = this.getLevel() > 1 ? 2.5f : 5f;
 			// this.attackDelay += this.getLevel() > 1 ? 2.5f : 5f;
@@ -352,10 +352,10 @@ public class EntitySentry extends EntityBuilding {
 									.getValue());
 						if (dist.lengthSqr() > 0f) {
 							bullet.getEntity().push(dist.x, dist.y, dist.z);
-							bullet.getEntity().isAirBorne = bullet.getEntity().getDeltaMovement().y > 0.05;
+							bullet.getEntity().hasImpulse = bullet.getEntity().getDeltaMovement().y > 0.05;
 							if (bullet.getEntity() instanceof ServerPlayer)
 								TF2weapons.network.sendTo(
-										new TF2Message.VelocityAddMessage(dist, bullet.getEntity().isAirBorne),
+										new TF2Message.VelocityAddMessage(dist, bullet.getEntity().hasImpulse),
 										(ServerPlayer) bullet.getEntity());
 
 							if (bullet.getEntity() instanceof LivingEntity) {
@@ -554,7 +554,7 @@ public class EntitySentry extends EntityBuilding {
 
 	@Override
 	public int getMinEnergy() {
-		return this.getOwnerId() != null ? TF2ConfigVars.sentryUseEnergy : 0;
+		return this.getOwnerUUID() != null ? TF2ConfigVars.sentryUseEnergy : 0;
 	}
 
 	@Override

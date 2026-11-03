@@ -67,7 +67,7 @@ public class EntityAIMoveAttack extends Goal {
 		this.attackRangeMin = 3;
 		this.attackRangeMinSquared = 9;
 
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 	}
 
 	public void setRange(float range, float minrange) {
@@ -100,7 +100,7 @@ public class EntityAIMoveAttack extends Goal {
 	 */
 	@Override
 	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.entityHost.getNavigation().noPath();
+		return this.shouldExecute() || !this.entityHost.getNavigation().isDone();
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class EntityAIMoveAttack extends Goal {
 	public void resetTask() {
 		if (this.jump)
 			this.entityHost.jump = false;
-		this.entityHost.getNavigation().clearPath();
+		this.entityHost.getNavigation().stop();
 		this.attackTarget = null;
 		this.comeCloser = 0;
 		this.rangedAttackTime = -1;
@@ -137,7 +137,7 @@ public class EntityAIMoveAttack extends Goal {
 		double d0 = this.entityHost.distanceToSqr(this.attackTarget.getX(), this.attackTarget.getBoundingBox().minY,
 				this.attackTarget.getZ());
 
-		boolean stay = this.entityHost.getEntitySenses().canSee(this.attackTarget)
+		boolean stay = this.entityHost.getSensing().canSee(this.attackTarget)
 				|| (this.projSpeed > 0 && this.attackTarget.getDeltaMovement().y > 0);
 		// this.entityHost.setJumping(true);
 
@@ -152,7 +152,7 @@ public class EntityAIMoveAttack extends Goal {
 
 		if ((d0 <= range && this.comeCloser >= 20) || this.entityHost.getWepCapability().isExpJump()) {
 			if (!this.inRange) {
-				this.entityHost.getNavigation().clearPath();
+				this.entityHost.getNavigation().stop();
 				this.inRange = true;
 				this.backpath = false;
 			}
@@ -180,7 +180,7 @@ public class EntityAIMoveAttack extends Goal {
 			this.entityHost.jump = true;
 		else if (this.jump)
 			this.entityHost.jump = false;
-		boolean nopath = (this.entityHost.getNavigation().noPath() || (this.entityHost.tickCount % 20) == 0);
+		boolean nopath = (this.entityHost.getNavigation().isDone() || (this.entityHost.tickCount % 20) == 0);
 		if (d0 < this.attackRangeMinSquared && (nopath || !backpath)) {
 			for (int i = 0; i < 10; i++) {
 				Vec3 Vec3 = DefaultRandomPos.findRandomTarget(this.entityHost, 0, 0);

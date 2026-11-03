@@ -36,7 +36,7 @@ public class EntitySoldier extends EntityTF2Character {
 			moveAttack.setDodge(true, this.rocketJumper);
 		}
 		// this.ammoLeft = 20;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		// this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND,
 		// ItemUsable.getNewStack("Minigun"));
 		this.goalSelector.addGoal(5, new UseBackpack());
@@ -198,8 +198,8 @@ public class EntitySoldier extends EntityTF2Character {
 	public void onShot() {
 		if (this.rocketJump) {
 			this.jump = true;
-			this.rotationYawHead = this.yHeadRot + 180;
-			this.rotationPitch = 50;
+			this.yHeadRot = this.yHeadRot + 180;
+			this.setXRot((50));
 			this.rocketJump = false;
 			this.airborne = true;
 			// this.getLookHelper().setLookPosition(this.posX,this.posY-1,this.posZ,
@@ -212,7 +212,7 @@ public class EntitySoldier extends EntityTF2Character {
 		super.onEquipItem(slot, stack);
 		this.attack.fireAtFeet = slot == 0 ? TF2Attribute.getModifier("Explosion Radius", stack, 1, this) : 0;
 		this.rocketJumper = !this.isRobot()
-				&& (TF2Attribute.getModifier("Airborne Bonus", stack, 0, this) != 0 || this.rand.nextBoolean());
+				&& (TF2Attribute.getModifier("Airborne Bonus", stack, 0, this) != 0 || this.random.nextBoolean());
 	}
 
 	@Override
@@ -250,10 +250,10 @@ public class EntitySoldier extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("shotgun"), 0);
-		if (this.rand.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
-			this.entityDropItem(ItemFromData.getNewStack("rocketlauncher"), 0);
+		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("shotgun"), 0);
+		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(ItemFromData.getNewStack("rocketlauncher"), 0);
 	}
 
 	public class UseBackpack extends Goal {

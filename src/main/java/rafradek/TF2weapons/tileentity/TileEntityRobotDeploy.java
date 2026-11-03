@@ -160,7 +160,7 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 				if (++progress >= this.maxprogress) {
 					ItemStack stack = this.weapon.extractItem(hasWeapon, 64, false);
 					String weaponName = TF2Util.getWeaponUsedByClass(stack).getName();
-					Direction facing = this.getWorld().getBlockState(pos).getValue(BlockRobotDeploy.FACING);
+					Direction facing = this.getLevel().getBlockState(pos).getValue(BlockRobotDeploy.FACING);
 					EntityTF2Character entity = (EntityTF2Character) EntityList
 							.createEntityByIDFromName(new ResourceLocation(TF2weapons.MOD_ID, weaponName), this.level);
 					BlockPos frontpos = this.pos.move(facing);
@@ -182,7 +182,7 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 					entity.switchSlot(ItemFromData.getSlotForClass(ItemFromData.getData(stack), entity));
 					entity.setOrder(Order.HOLD);
 					entity.setMoneyDrop(this.getCurrencyRequirement());
-					this.getWorld().addFreshEntity(entity);
+					this.getLevel().addFreshEntity(entity);
 					for (int i = 0; i < this.parts.getSlots(); i++) {
 						this.parts.extractItem(i, ItemRobotPart.LEVEL[i] == 2 ? 1 : 2, false);
 					}
@@ -201,7 +201,7 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		if (owner != null) {
 			compound.putUUID("Owner", owner);
@@ -283,7 +283,7 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 
 	@Override
 	public void onLoad() {
-		this.joined = this.getWorld().getBlockState(pos).getValue(BlockRobotDeploy.JOINED);
+		this.joined = this.getLevel().getBlockState(pos).getValue(BlockRobotDeploy.JOINED);
 	}
 
 	@Override
@@ -295,17 +295,17 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 
 	public void dropInventory() {
 		for (int i = 0; i < this.parts.getSlots(); i++) {
-			Containers.spawnItemStack(getWorld(), pos.getX(), pos.getY(), pos.getZ(),
+			Containers.spawnItemStack(getLevel(), pos.getX(), pos.getY(), pos.getZ(),
 					this.parts.extractItem(i, 64, false));
 		}
 
 		for (int i = 0; i < this.weapon.getSlots(); i++) {
-			Containers.spawnItemStack(getWorld(), pos.getX(), pos.getY(), pos.getZ(),
+			Containers.spawnItemStack(getLevel(), pos.getX(), pos.getY(), pos.getZ(),
 					this.weapon.extractItem(i, 64, false));
 		}
 
 		for (int i = 0; i < this.money.getSlots(); i++) {
-			Containers.spawnItemStack(getWorld(), pos.getX(), pos.getY(), pos.getZ(),
+			Containers.spawnItemStack(getLevel(), pos.getX(), pos.getY(), pos.getZ(),
 					this.money.extractItem(i, 64, false));
 		}
 	}

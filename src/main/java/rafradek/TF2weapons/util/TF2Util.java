@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.util;
 
+import rafradek.TF2weapons.message.IMessage;
+import rafradek.TF2weapons.message.TF2NetworkWrapper.TargetPoint;
+
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -137,7 +140,7 @@ public class TF2Util {
 				AABB oldBB = target.getBoundingBox();
 				if (world.isClientSide && TF2EventsClient.moveEntities) {
 					float ticktime = TF2EventsClient.tickTime;
-					target.setEntityBoundingBox(
+					target.setBoundingBox(
 							target.getBoundingBox().move((target.xo - target.getX()) * (1 - ticktime),
 									(target.yo - target.getY()) * (1 - ticktime),
 									(target.zo - target.getZ()) * (1 - ticktime)));
@@ -160,7 +163,7 @@ public class TF2Util {
 						targets.add(TF2Util.getTraceResult(target, var13, size, headshot, var17, var3));
 				}
 
-				target.setEntityBoundingBox(oldBB);
+				target.setBoundingBox(oldBB);
 			}
 		// var4.hitInfo=false;
 		if (!pierce && var5 != null
@@ -220,7 +223,7 @@ public class TF2Util {
 		return head;
 	}
 
-	public static Vec3 radiusRandom2D(float radius, Random random) {
+	public static Vec3 radiusRandom2D(float radius, RandomSource random) {
 		/*
 		 * double x=random.nextDouble()*radius*2-radius; radius -= Math.abs(x); double
 		 * y=random.nextDouble()*radius*2-radius;
@@ -237,7 +240,7 @@ public class TF2Util {
 				Math.max(a, b) * radius * Mth.sin((float) (2f * Math.PI * Math.min(a, b) / Math.max(a, b))), 0);
 	}
 
-	public static Vec3 radiusRandom2D(float radius, Random random, float yaw, float pitch, double dist) {
+	public static Vec3 radiusRandom2D(float radius, RandomSource random, float yaw, float pitch, double dist) {
 		/*
 		 * double x=random.nextDouble()*radius*2-radius; radius -= Math.abs(x); double
 		 * y=random.nextDouble()*radius*2-radius;
@@ -285,7 +288,7 @@ public class TF2Util {
 		if (shielded instanceof LivingEntity && ((LivingEntity) shielded).isActiveItemStackBlocking()) {
 			Vec3 location = source.getDamageLocation();
 			if (location == null)
-				location = source.getImmediateSource().position();
+				location = source.getDirectEntity().position();
 			if (location != null) {
 				Vec3 vec3d1 = shielded.getViewVector(1.0F);
 				Vec3 vec3d2 = location.subtractReverse(shielded.position()).normalize();
@@ -636,10 +639,10 @@ public class TF2Util {
 		double lvelocityX = entity.getDeltaMovement().x;
 		double lvelocityY = entity.getDeltaMovement().y;
 		double lvelocityZ = entity.getDeltaMovement().z;
-		boolean lairborne = entity.isAirBorne;
+		boolean lairborne = entity.hasImpulse;
 		if (entity instanceof MultiPartEntityPart) {
 			Entity parent = (Entity) ((MultiPartEntityPart) entity).parent;
-			lairborne = parent.isAirBorne;
+			lairborne = parent.hasImpulse;
 			lvelocityX = parent.getDeltaMovement().x;
 			lvelocityY = parent.getDeltaMovement().y;
 			lvelocityZ = parent.getDeltaMovement().z;
@@ -679,26 +682,26 @@ public class TF2Util {
 				if (TF2Attribute.getModifier("Silent Kill", stack, 0, living) == 0) {
 					if (critical == 2)
 						TF2Util.playSound(entity, TF2Sounds.MISC_CRIT, 1.5F,
-								1.2F / (world.rand.nextFloat() * 0.2F + 0.9F));
+								1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
 					else if (critical == 1)
 						TF2Util.playSound(entity, TF2Sounds.MISC_MINI_CRIT, 1.5F,
-								1.2F / (world.rand.nextFloat() * 0.2F + 0.9F));
+								1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
 					if (!(entity instanceof EntityBuilding))
 						TF2Util.playSound(entity, TF2Sounds.MISC_PAIN, 1F,
-								1.2F / (world.rand.nextFloat() * 0.2F + 0.9F));
+								1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
 				}
-				livingTarget.isAirBorne = false;
-				livingTarget.motionX = lvelocityX;
-				livingTarget.motionY = lvelocityY;
-				livingTarget.motionZ = lvelocityZ;
+				livingTarget.hasImpulse = false;
+				livingTarget.setDeltaMovement((lvelocityX), livingTarget.getDeltaMovement().y, livingTarget.getDeltaMovement().z);
+				livingTarget.setDeltaMovement(livingTarget.getDeltaMovement().x, (lvelocityY), livingTarget.getDeltaMovement().z);
+				livingTarget.setDeltaMovement(livingTarget.getDeltaMovement().x, livingTarget.getDeltaMovement().y, (lvelocityZ));
 				livingTarget.hurtMarked = false;
 			}
 			if (entity instanceof MultiPartEntityPart) {
 				Entity parent = (Entity) ((MultiPartEntityPart) entity).parent;
-				parent.isAirBorne = lairborne;
-				parent.motionX = lvelocityX;
-				parent.motionY = lvelocityY;
-				parent.motionZ = lvelocityZ;
+				parent.hasImpulse = lairborne;
+				parent.setDeltaMovement((lvelocityX), parent.getDeltaMovement().y, parent.getDeltaMovement().z);
+				parent.setDeltaMovement(parent.getDeltaMovement().x, (lvelocityY), parent.getDeltaMovement().z);
+				parent.setDeltaMovement(parent.getDeltaMovement().x, parent.getDeltaMovement().y, (lvelocityZ));
 				parent.hurtMarked = false;
 			}
 			return true;
@@ -774,7 +777,7 @@ public class TF2Util {
 
 			if (flag) {
 				if (living != null) {
-					world.playEvent(2001, pos, Block.getStateId(state));
+					world.levelEvent(2001, pos, Block.getStateId(state));
 					world.sendBlockBreakProgress(Math.min(Integer.MAX_VALUE, 0xFFFF + entryId), pos, -1);
 				}
 				block.onBlockDestroyedByPlayer(world, pos, state);
@@ -823,14 +826,14 @@ public class TF2Util {
 
 		int big = amount / 81;
 		if (big > 64) {
-			ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(TF2weapons.itemMoney, big - 64, 2));
+			ItemHandlerHelper.giveItemToPlayer(player, TF2Util.metaStack(TF2weapons.itemMoney, big - 64, 2));
 		}
 		int medium = (amount % 81) / 9;
 		int small = amount % 9;
 
-		wearables.setInventorySlotContents(5, new ItemStack(TF2weapons.itemMoney, small, 0));
-		wearables.setInventorySlotContents(6, new ItemStack(TF2weapons.itemMoney, medium, 1));
-		wearables.setInventorySlotContents(7, new ItemStack(TF2weapons.itemMoney, big, 2));
+		wearables.setInventorySlotContents(5, TF2Util.metaStack(TF2weapons.itemMoney, small, 0));
+		wearables.setInventorySlotContents(6, TF2Util.metaStack(TF2weapons.itemMoney, medium, 1));
+		wearables.setInventorySlotContents(7, TF2Util.metaStack(TF2weapons.itemMoney, big, 2));
 	}
 
 	public static double getDistanceSqBox(Entity target, double x, double y, double z, double widthO, double heightO) {
@@ -1055,7 +1058,7 @@ public class TF2Util {
 		return (new DamageSourceDirect(weapon, shooter));
 	}
 
-	public static Vec3 radiusRandom3D(float radius, Random random) {
+	public static Vec3 radiusRandom3D(float radius, RandomSource random) {
 		double x, y, z;
 		double radius2 = radius * radius;
 		do {
@@ -1067,7 +1070,7 @@ public class TF2Util {
 
 	}
 
-	public static Vec3 rangeRandom3D(float radius, Random random) {
+	public static Vec3 rangeRandom3D(float radius, RandomSource random) {
 		float yaw = random.nextFloat() * 2f * (float) Math.PI;
 		float y = random.nextFloat() * 2f - 1f;
 		float x = Mth.cos(yaw) * Mth.cos(asin(y));
@@ -1191,7 +1194,7 @@ public class TF2Util {
 
 	public static ItemStack getFirstItem(AbstractContainerMenu inventory, Predicate<ItemStack> pred) {
 
-		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if (!stack.isEmpty() && pred.apply(stack))
 				return stack;
@@ -1211,7 +1214,7 @@ public class TF2Util {
 
 	public static int getFirstItemSlot(AbstractContainerMenu inventory, Predicate<ItemStack> pred) {
 
-		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if (!stack.isEmpty() && pred.apply(stack))
 				return i;
@@ -1231,7 +1234,7 @@ public class TF2Util {
 
 	public static ItemStack getBestItem(AbstractContainerMenu inventory, Comparator<ItemStack> comp, Predicate<ItemStack> pred) {
 		ItemStack greater = ItemStack.EMPTY;
-		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if ((pred == null || pred.apply(stack)) && comp.compare(stack, greater) > 0)
 				greater = stack;
@@ -1278,7 +1281,7 @@ public class TF2Util {
 		int count = 0;
 		if (amount <= 0)
 			return true;
-		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if (!stack.isEmpty() && pred.apply(stack)) {
 				count += stack.getCount();
@@ -1327,7 +1330,7 @@ public class TF2Util {
 					input -> input.getTarget() == null && input.canChangeDimensions() && TF2Util.isHostile(input))) {
 				mob.getLookControl().setLookPositionWithEntity(living, 60, 30);
 				if (!TF2Util.isAlliedTo(living, mob)) {
-					if (mob.getEntitySenses().canSee(living) || mob.distanceToSqr(living) < 150) {
+					if (mob.getSensing().canSee(living) || mob.distanceToSqr(living) < 150) {
 						mob.setTarget(living);
 						if (mob.getTarget() != null
 								&& mob.getAttribute(Attributes.FOLLOW_RANGE)
@@ -1387,7 +1390,7 @@ public class TF2Util {
 	}
 
 	public static Vec3 getMovementVector(LivingEntity living) {
-		Vec3 moveDir = new Vec3(living.moveForward, living.moveStrafing, 0).normalize();
+		Vec3 moveDir = new Vec3(living.zza, living.xxa, 0).normalize();
 		float cos = Mth.cos(living.getYRot() * 0.017453292F - (float) Math.PI);
 		float sin = Mth.sin(living.getYRot() * 0.017453292F - (float) Math.PI);
 		return new Vec3(-moveDir.y * cos + moveDir.x * sin, -moveDir.x * cos - moveDir.y * sin, 0);
@@ -1403,7 +1406,7 @@ public class TF2Util {
 				if ((l < 1 || i1 < 1 || l > 3 || i1 > 3) && isTeleportFriendlyBlock(toTeleport, i, j, k, l, i1)) {
 					toTeleport.moveTo(i + l + 0.5F, k, j + i1 + 0.5F, toTeleport.getYRot(),
 							toTeleport.getXRot());
-					toTeleport.getNavigation().clearPath();
+					toTeleport.getNavigation().stop();
 					return true;
 				}
 			}
@@ -1417,8 +1420,8 @@ public class TF2Util {
 		BlockPos blockpos = new BlockPos(x + p_192381_4_, y - 1, p_192381_2_ + p_192381_5_);
 		BlockState iblockstate = owner.level.getBlockState(blockpos);
 		return iblockstate.getBlockFaceShape(owner.level, blockpos, Direction.DOWN) == BlockFaceShape.SOLID
-				&& iblockstate.canEntitySpawn(owner) && owner.level.isEmptyBlock(blockpos.up())
-				&& owner.level.isEmptyBlock(blockpos.up(2));
+				&& iblockstate.canEntitySpawn(owner) && owner.level.isEmptyBlock(blockpos.above())
+				&& owner.level.isEmptyBlock(blockpos.above(2));
 	}
 
 	public static float getGravity(LivingEntity living) {
@@ -1598,9 +1601,9 @@ public class TF2Util {
 	}
 
 	public static void setVelocity(Entity entity, double motionX, double motionY, double motionZ) {
-		entity.motionX = motionX;
-		entity.motionY = motionY;
-		entity.motionZ = motionZ;
+		entity.setDeltaMovement((motionX), entity.getDeltaMovement().y, entity.getDeltaMovement().z);
+		entity.setDeltaMovement(entity.getDeltaMovement().x, (motionY), entity.getDeltaMovement().z);
+		entity.setDeltaMovement(entity.getDeltaMovement().x, entity.getDeltaMovement().y, (motionZ));
 		entity.hurtMarked = true;
 		if (entity instanceof ServerPlayer) {
 			((ServerPlayer) entity).connection.sendPacket(new ClientboundSetEntityMotionPacket(entity));
@@ -1726,11 +1729,11 @@ public class TF2Util {
 		int small = amount % 9;
 
 		handler.extractItem(fromSlot, 64, false);
-		handler.insertItem(fromSlot, new ItemStack(TF2weapons.itemMoney, small, 0), false);
+		handler.insertItem(fromSlot, TF2Util.metaStack(TF2weapons.itemMoney, small, 0), false);
 		handler.extractItem(fromSlot + 1, 64, false);
-		handler.insertItem(fromSlot + 1, new ItemStack(TF2weapons.itemMoney, medium, 1), false);
+		handler.insertItem(fromSlot + 1, TF2Util.metaStack(TF2weapons.itemMoney, medium, 1), false);
 		handler.extractItem(fromSlot + 2, 64, false);
-		handler.insertItem(fromSlot + 2, new ItemStack(TF2weapons.itemMoney, big, 2), false);
+		handler.insertItem(fromSlot + 2, TF2Util.metaStack(TF2weapons.itemMoney, big, 2), false);
 	}
 
 	public static IItemHandler getLoadoutItemHandler(LivingEntity living) {
@@ -1755,7 +1758,7 @@ public class TF2Util {
 
 	public static boolean restoreAmmoToWeapons(Player player, float ammo) {
 		boolean restored = false;
-		for (int i = 0; i < player.getInventory().getSizeInventory(); i++) {
+		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
 			ItemStack stack = player.getInventory().getStackInSlot(i);
 			if (stack.getItem() instanceof ItemFromData) {
 				int ammotype = ((ItemFromData) stack.getItem()).getAmmoType(stack);

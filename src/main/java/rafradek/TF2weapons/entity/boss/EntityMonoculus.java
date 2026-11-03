@@ -181,15 +181,15 @@ public class EntityMonoculus extends EntityTF2Boss {
 		if (this.isInWater()) {
 			this.moveRelative(strafe, forward, par3, 0.02F);
 			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.motionX *= 0.800000011920929D;
-			this.motionY *= 0.800000011920929D;
-			this.motionZ *= 0.800000011920929D;
+			this.setDeltaMovement(this.getDeltaMovement().x * (0.800000011920929D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.800000011920929D), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.800000011920929D));
 		} else if (this.isInLava()) {
 			this.moveRelative(strafe, forward, par3, 0.02F);
 			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.motionX *= 0.5D;
-			this.motionY *= 0.5D;
-			this.motionZ *= 0.5D;
+			this.setDeltaMovement(this.getDeltaMovement().x * (0.5D), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.5D), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.5D));
 		} else {
 			float f = 0.91F;
 
@@ -210,12 +210,12 @@ public class EntityMonoculus extends EntityTF2Boss {
 						.getBlock().slipperiness * 0.91F;
 
 			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.motionX *= f;
-			this.motionY *= f;
-			this.motionZ *= f;
+			this.setDeltaMovement(this.getDeltaMovement().x * (f), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (f), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f));
 		}
 
-		this.prevLimbSwingAmount = this.limbSwingAmount;
+		this.animationSpeedOld = this.animationSpeed;
 		double d1 = this.getX() - this.xo;
 		double d0 = this.getZ() - this.zo;
 		float f2 = Mth.sqrt((float)d1 * d1 + d0 * d0) * 4.0F;
@@ -223,8 +223,8 @@ public class EntityMonoculus extends EntityTF2Boss {
 		if (f2 > 1.0F)
 			f2 = 1.0F;
 
-		this.limbSwingAmount += (f2 - this.limbSwingAmount) * 0.4F;
-		this.limbSwing += this.limbSwingAmount;
+		this.animationSpeed += (f2 - this.animationSpeed) * 0.4F;
+		this.limbSwing += this.animationSpeed;
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		super.aiStep();
 		if (this.begin-- > 20 && this.level.isClientSide)
 			for (int i = 0; i < 40; i++) {
-				Vec3 pos = TF2Util.radiusRandom2D(2.7f, this.rand);
+				Vec3 pos = TF2Util.radiusRandom2D(2.7f, this.random);
 				this.level.addParticle(ParticleTypes.REDSTONE, pos.x + this.getX(), this.getY() - 0.5,
 						pos.y + this.getZ(), 0.55, 0.12, 1, new int[0]);
 			}
@@ -260,15 +260,15 @@ public class EntityMonoculus extends EntityTF2Boss {
 		if (!this.level.isClientSide) {
 
 			if (this.begin == 0) {
-				this.setNoAI(false);
+				this.setNoAi(false);
 				this.getAttribute(Attributes.ARMOR).removeModifier(BOSS_ARMOR_SPAWN);
 			}
 			if (this.getTarget() == null) {
 				double f = Mth.sqrt((float)this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z);
-				this.rotationYaw = -((float) Mth.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z)) * (180F / (float) Math.PI);
-				this.rotationPitch = -((float) Mth.atan2(this.getDeltaMovement().y, f)) * (180F / (float) Math.PI);
+				this.setYRot((-((float) Mth.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z)) * (180F / (float) Math.PI)));
+				this.setXRot((-((float) Mth.atan2(this.getDeltaMovement().y, f)) * (180F / (float) Math.PI)));
 				this.yBodyRot = this.getYRot();
-				this.rotationYawHead = this.getYRot();
+				this.yHeadRot = this.getYRot();
 			} else {
 				LivingEntity entitylivingbase = this.getTarget();
 				double d0 = 64.0D;
@@ -286,17 +286,17 @@ public class EntityMonoculus extends EntityTF2Boss {
 					yaw = Mth.clamp(Mth.wrapDegrees(yaw - this.yHeadRot), -clamp, clamp);
 					pitch = Mth.clamp(Mth.wrapDegrees(pitch - this.getXRot()), -clamp * 33,
 							clamp * 33);
-					this.rotationYaw = this.getYRot() + yaw;
+					this.setYRot((this.getYRot() + yaw));
 					this.yBodyRot = this.getYRot();
-					this.rotationPitch = this.getXRot() + pitch;
-					this.rotationYawHead = this.getYRot();
+					this.setXRot((this.getXRot() + pitch));
+					this.yHeadRot = this.getYRot();
 				}
 			}
 
 			if (this.level > 1)
 				this.laserCooldown--;
 
-			if (this.tickCount % 20 == 0 && !this.isAngry() && this.rand.nextInt(20) == 0)
+			if (this.tickCount % 20 == 0 && !this.isAngry() && this.random.nextInt(20) == 0)
 				this.setAngry(100);
 
 			if (this.tickCount % 5 == 0) {
@@ -317,17 +317,17 @@ public class EntityMonoculus extends EntityTF2Boss {
 			if (--this.teleport <= 0 && !this.isLaser())
 				for (int i = 0; i < 10; i++) {
 
-					double x = this.getX() + rand.nextDouble() * 48 - 24;
-					double z = this.getZ() + rand.nextDouble() * 48 - 24;
-					double y = this.getY() + rand.nextDouble() * 48 - 24;
+					double x = this.getX() + random.nextDouble() * 48 - 24;
+					double z = this.getZ() + random.nextDouble() * 48 - 24;
+					double y = this.getY() + random.nextDouble() * 48 - 24;
 					y = Math.min(y, this.level.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY() + 16);
 					if (this.attemptTeleport(x, y, z)) {
 						for (int j = 0; j < 40; j++) {
-							Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.rand);
+							Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.random);
 							this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), pos.y + this.getY(),
 									pos.z + this.getZ(), 0, 0, 0, new int[0]);
 						}
-						this.teleport += 160 + rand.nextInt(80);
+						this.teleport += 160 + random.nextInt(80);
 						break;
 					}
 				}
@@ -357,14 +357,14 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 	@Override
 	public void dropFewItems(boolean hit, int looting) {
-		if (this.rand.nextBoolean()) {
+		if (this.random.nextBoolean()) {
 			ItemStack bomb = ItemFromData.getNewStack("bombinomicon");
 			TF2Attribute.setAttribute(bomb, MapList.nameToAttribute.get("BombEnemy"), 1.45f + this.level * 0.2f);
-			this.entityDropItem(bomb, 0);
+			this.spawnAtLocation(bomb, 0);
 		}
 		ItemStack hat = ItemFromData.getNewStack("monoculus");
 		hat.getTag().putShort("BossLevel", (short) this.level);
-		this.entityDropItem(hat, 0);
+		this.spawnAtLocation(hat, 0);
 	}
 
 	/*
@@ -390,7 +390,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AIFireballAttack(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setMutexBits(4);
+			this.setFlags(TF2Util.mutexFlags(4);
 		}
 
 		/**
@@ -468,7 +468,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AILaserAttack(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setMutexBits(4);
+			this.setFlags(TF2Util.mutexFlags(4);
 		}
 
 		/**
@@ -537,7 +537,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AILookAround(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setMutexBits(2);
+			this.setFlags(TF2Util.mutexFlags(2);
 		}
 
 		/**
@@ -588,7 +588,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AIRandomFly(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setMutexBits(1);
+			this.setFlags(TF2Util.mutexFlags(1);
 		}
 
 		/**
@@ -667,9 +667,9 @@ public class EntityMonoculus extends EntityTF2Boss {
 					d3 = Mth.sqrt((float)d3);
 
 					if (this.isNotColliding(this.getX(), this.getY(), this.getZ(), d3)) {
-						this.parentEntity.motionX += d0 / d3 * speed;
-						this.parentEntity.motionY += d1 / d3 * speed;
-						this.parentEntity.motionZ += d2 / d3 * speed;
+						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x + (d0 / d3 * speed), this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z);
+						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().y + (d1 / d3 * speed), this.parentEntity.getDeltaMovement().z);
+						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z + (d2 / d3 * speed));
 					} else
 						this.action = MoveControl.Action.WAIT;
 				}
@@ -698,6 +698,6 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 	@Override
 	public void returnSpawnItems() {
-		this.entityDropItem(new ItemStack(TF2weapons.itemBossSpawn, 1, 1), 0);
+		this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemBossSpawn, 1, 1), 0);
 	}
 }

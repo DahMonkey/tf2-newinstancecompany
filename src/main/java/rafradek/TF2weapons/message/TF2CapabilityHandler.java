@@ -17,7 +17,7 @@ public class TF2CapabilityHandler implements IMessageHandler<TF2Message.Capabili
 	@Override
 	public IMessage onMessage(final CapabilityMessage message, MessageContext ctx) {
 		if (ctx.side.isClient())
-			Minecraft.getInstance().addScheduledTask(() -> {
+			Minecraft.getInstance().execute(() -> {
 				Entity ent = Minecraft.getInstance().level.getEntity(message.entityID);
 				if (ent != null && ent.getCapability(TF2weapons.WEAPONS_CAP).isPresent()) {
 					WeaponsCapability cap = ent.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);

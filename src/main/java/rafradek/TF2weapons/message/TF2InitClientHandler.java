@@ -10,7 +10,7 @@ public class TF2InitClientHandler implements IMessageHandler<TF2Message.InitClie
 	@Override
 	public IMessage onMessage(TF2Message.InitClientMessage message, MessageContext ctx) {
 		Player player = ctx.getServerHandler().player;
-		((ServerLevel) player.level).addScheduledTask(() -> {
+		((ServerLevel) player.level).execute(() -> {
 			TF2PlayerCapability.get(player).breakBlocks = message.breakBlocks;
 			WeaponsCapability.get(player).sentryTargets = message.sentryTargets;
 			WeaponsCapability.get(player).dispenserPlayer = message.dispenserPlayer;

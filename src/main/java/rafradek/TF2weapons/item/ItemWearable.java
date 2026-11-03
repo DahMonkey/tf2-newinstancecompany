@@ -102,8 +102,8 @@ public class ItemWearable extends ItemFromData {
 		onUpdateWearing(itemStack, world, player);
 	}
 
-	public void applyRandomEffect(ItemStack stack, Random rand) {
-		stack.getTag().putByte("UEffect", (byte) rand.nextInt(11));
+	public void applyRandomEffect(ItemStack stack, RandomSource random) {
+		stack.getTag().putByte("UEffect", (byte) random.nextInt(11));
 	}
 
 	@Override

@@ -134,7 +134,7 @@ public class ItemHuntsman extends ItemProjectileWeapon {
 					|| OreDictionary.itemMatches(new ItemStack(Blocks.TORCH),
 							new ItemStack(par2World.getBlockState(par3Entity.blockPosition()).getBlock()), false)
 					|| OreDictionary.itemMatches(new ItemStack(Blocks.TORCH),
-							new ItemStack(par2World.getBlockState(par3Entity.blockPosition().up()).getBlock()), false))) {
+							new ItemStack(par2World.getBlockState(par3Entity.blockPosition().above()).getBlock()), false))) {
 				par1ItemStack.getTag().putBoolean("ArrowLit", true);
 			}
 		}

@@ -13,7 +13,7 @@ public class TF2NetworkedSoundHandler implements IMessageHandler<TF2Message.Netw
 
 	@Override
 	public IMessage onMessage(final NetworkedSoundMessage message, MessageContext ctx) {
-		Minecraft.getInstance().addScheduledTask(() -> {
+		Minecraft.getInstance().execute(() -> {
 			if (sounds.containsKey(message.id))
 				sounds.remove(message.id);
 			NetworkedSound sound;

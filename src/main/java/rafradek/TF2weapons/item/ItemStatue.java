@@ -34,7 +34,7 @@ public class ItemStatue extends Item {
 			statue.readAdditionalSaveData(stack.getTag().getCompound("Statue"));
 			BlockPos off = pos.move(facing);
 			statue.setPos(off.getX() + 0.5, off.getY(), off.getZ() + 0.5);
-			statue.rotationYaw = player.yHeadRot;
+			statue.setYRot((player.yHeadRot));
 			statue.yBodyRot = player.yHeadRot;
 
 			statue.ticksLeft = -1;

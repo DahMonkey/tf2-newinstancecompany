@@ -45,7 +45,7 @@ public class RenderMerasmus extends HumanoidMobRenderer<EntityMerasmus> {
 		}
 
 		@Override
-		public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
+		public void setRotationAngles(float limbSwing, float animationSpeed, float ageInTicks, float netHeadYaw,
 				float headPitch, float scaleFactor, Entity entityIn) {
 			super.setRotationAngles(limbSwing, 0, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 		}

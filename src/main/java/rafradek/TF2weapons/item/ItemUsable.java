@@ -105,9 +105,9 @@ public abstract class ItemUsable extends ItemFromData {
 			// itemProperties.get(par2World.isRemote).get(par3Entity).setShort("reloadd",
 			// (short) 800);
 
-			if (!par2World.isClientSide && living.getAttributeMap().getAttributeInstance(Attributes.MAX_HEALTH)
+			if (!par2World.isClientSide && living.getAttributes().getAttributeInstance(Attributes.MAX_HEALTH)
 					.getModifier(ItemWeapon.HEALTH_MODIFIER) != null) {
-				float addHealth = (float) living.getAttributeMap()
+				float addHealth = (float) living.getAttributes()
 						.getAttributeInstance(Attributes.MAX_HEALTH)
 						.getModifier(ItemWeapon.HEALTH_MODIFIER).getAmount();
 				living.setHealth((living.getMaxHealth()) / (living.getMaxHealth() - addHealth) * living.getHealth());

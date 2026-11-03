@@ -88,7 +88,7 @@ public class TF2Explosion extends Explosion {
 							d1 /= d3;
 							d2 /= d3;
 							float f = TF2ConfigVars.destTerrain == 2
-									? this.explosionSize * (0.7F + this.level.rand.nextFloat() * 0.6F)
+									? this.explosionSize * (0.7F + this.level.random.nextFloat() * 0.6F)
 									: (this.harvestDamage / 64);
 							double d4 = this.explosionX;
 							double d6 = this.explosionY;
@@ -203,7 +203,7 @@ public class TF2Explosion extends Explosion {
 						this.getKnockbackMap().put(entity, move.scale(d11));
 						// entity.getDataWatcher().updateObject(29,
 						// Byte.valueOf((byte) 1));
-					} else if (!(entity instanceof LivingEntity && ((LivingEntity) entity).getAttributeMap()
+					} else if (!(entity instanceof LivingEntity && ((LivingEntity) entity).getAttributes()
 							.getAttributeInstance(Attributes.KNOCKBACK_RESISTANCE)
 							.getValue() >= 1)) {
 						this.getKnockbackMap().put(entity, move);
@@ -236,9 +236,9 @@ public class TF2Explosion extends Explosion {
 				Block block = iblockstate.getBlock();
 
 				if (spawnParticles) {
-					double d0 = blockpos.getX() + this.level.rand.nextFloat();
-					double d1 = blockpos.getY() + this.level.rand.nextFloat();
-					double d2 = blockpos.getZ() + this.level.rand.nextFloat();
+					double d0 = blockpos.getX() + this.level.random.nextFloat();
+					double d1 = blockpos.getY() + this.level.random.nextFloat();
+					double d2 = blockpos.getZ() + this.level.random.nextFloat();
 					double d3 = d0 - this.explosionX;
 					double d4 = d1 - this.explosionY;
 					double d5 = d2 - this.explosionZ;
@@ -247,7 +247,7 @@ public class TF2Explosion extends Explosion {
 					d4 = d4 / d6;
 					d5 = d5 / d6;
 					double d7 = 0.5D / (d6 / this.explosionSize + 0.1D);
-					d7 = d7 * (this.level.rand.nextFloat() * this.level.rand.nextFloat() + 0.3F);
+					d7 = d7 * (this.level.random.nextFloat() * this.level.random.nextFloat() + 0.3F);
 					d3 = d3 * d7;
 					d4 = d4 * d7;
 					d5 = d5 * d7;
@@ -268,7 +268,7 @@ public class TF2Explosion extends Explosion {
 		if (this.isFlaming)
 			for (BlockPos blockpos1 : this.affectedBlockPositions)
 				if (this.level.getBlockState(blockpos1).getMaterial() == Material.AIR
-						&& this.level.getBlockState(blockpos1.down()).isFullBlock()
+						&& this.level.getBlockState(blockpos1.below()).isFullBlock()
 						&& this.explosionRNG.nextInt(3) == 0)
 					this.level.setBlockAndUpdate(blockpos1, Blocks.FIRE.defaultBlockState());
 	}

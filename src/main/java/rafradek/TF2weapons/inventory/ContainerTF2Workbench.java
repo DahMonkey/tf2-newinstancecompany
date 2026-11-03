@@ -35,12 +35,12 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 		this.player = player;
 		this.level = world;
 		this.pos = posIn;
-		this.addSlotToContainer(
+		this.addSlot(
 				new SlotCraftingTF2(inventory.player, this.craftMatrix, this.craftResult, 0, 148, 41));
 
 		for (int i = 0; i < 3; ++i)
 			for (int j = 0; j < 3; ++j)
-				this.addSlotToContainer(new Slot(this.craftMatrix, j + i * 3, 86 + j * 18, 23 + i * 18) {
+				this.addSlot(new Slot(this.craftMatrix, j + i * 3, 86 + j * 18, 23 + i * 18) {
 
 				});
 
@@ -52,10 +52,10 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 
 		for (int k = 0; k < 3; ++k)
 			for (int i1 = 0; i1 < 9; ++i1)
-				this.addSlotToContainer(new Slot(inventory, i1 + k * 9 + 9, 8 + i1 * 18, 98 + k * 18));
+				this.addSlot(new Slot(inventory, i1 + k * 9 + 9, 8 + i1 * 18, 98 + k * 18));
 
 		for (int l = 0; l < 9; ++l)
-			this.addSlotToContainer(new Slot(inventory, l, 8 + l * 18, 156));
+			this.addSlot(new Slot(inventory, l, 8 + l * 18, 156));
 
 		this.onCraftMatrixChanged(this.craftMatrix);
 	}
@@ -152,9 +152,9 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 	@Override
 	public ItemStack transferStackInSlot(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
+		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getStack();
 
 			if (itemstack1.getItem() == TF2weapons.itemTF2 && itemstack1.getDamageValue() == 9 &! player.level.isClientSide)
@@ -164,23 +164,23 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 			itemstack = itemstack1.copy();
 
 			if (index == 0) {
-				if (!this.mergeItemStack(itemstack1, 10, 46, true))
+				if (!this.moveItemStackTo(itemstack1, 10, 46, true))
 					return ItemStack.EMPTY;
 
 				slot.onSlotChange(itemstack1, itemstack);
 			} else if (index >= 10 && index < 37) {
-				if (!this.mergeItemStack(itemstack1, 37, 46, false))
+				if (!this.moveItemStackTo(itemstack1, 37, 46, false))
 					return ItemStack.EMPTY;
 			} else if (index >= 37 && index < 46) {
-				if (!this.mergeItemStack(itemstack1, 10, 37, false))
+				if (!this.moveItemStackTo(itemstack1, 10, 37, false))
 					return ItemStack.EMPTY;
-			} else if (!this.mergeItemStack(itemstack1, 10, 46, false))
+			} else if (!this.moveItemStackTo(itemstack1, 10, 46, false))
 				return ItemStack.EMPTY;
 
 			if (itemstack1.isEmpty())
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			else
-				slot.onSlotChanged();
+				slot.setChanged();
 
 			if (itemstack1.getCount() == itemstack.getCount())
 				return ItemStack.EMPTY;

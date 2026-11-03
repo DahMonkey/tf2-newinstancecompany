@@ -37,7 +37,7 @@ public class EntityStickybomb extends EntityProjectileBase {
 
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float damage) {
-		if (source.isExplosion() && !TF2Util.isAlliedTo(source.getTrueSource(), this.shootingEntity)) {
+		if (source.isExplosion() && !TF2Util.isAlliedTo(source.getEntity(), this.shootingEntity)) {
 			this.addStickCooldown();
 		}
 		return super.hurt(source, damage);
@@ -130,23 +130,23 @@ public class EntityStickybomb extends EntityProjectileBase {
 
 	@Override
 	public void onHitBlockX() {
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 	}
 
 	@Override
 	public void onHitBlockY(Block block) {
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 	}
 
 	@Override
 	public void onHitBlockZ() {
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 	}
 
 	@Override

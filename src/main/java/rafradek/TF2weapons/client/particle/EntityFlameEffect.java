@@ -18,18 +18,18 @@ public class EntityFlameEffect extends Particle {
 	protected EntityFlameEffect(Level world, double p_i1209_2_, double p_i1209_4_, double p_i1209_6_, double motionX,
 			double motionY, double motionZ, int time) {
 		super(world, p_i1209_2_, p_i1209_4_, p_i1209_6_);
-		this.motionX = motionX;
-		this.motionY = motionY;
-		this.motionZ = motionZ;
+		this.setDeltaMovement((motionX), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (motionY), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (motionZ));
 		// this.noClip=false;
-		this.particleMaxAge = time;
-		if (PyrolandRenderer.INSTANCE.shouldRenderPyrovision() && rand.nextInt(5)>1) {
+		this.lifetime = time;
+		if (PyrolandRenderer.INSTANCE.shouldRenderPyrovision() && random.nextInt(5)>1) {
 			this.setParticleTextureIndex(65);
-			particleRed = rand.nextFloat();
-			particleGreen = rand.nextFloat();
-			particleBlue = rand.nextFloat();
+			rCol = random.nextFloat();
+			gCol = random.nextFloat();
+			bCol = random.nextFloat();
 		} else {
-			this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
+			this.rCol = this.gCol = this.bCol = 1.0F;
 			this.setParticleTextureIndex(48);
 		}
 	}
@@ -37,8 +37,8 @@ public class EntityFlameEffect extends Particle {
 	@Override
 	public void renderParticle(BufferBuilder p_180434_1_, Entity p_180434_2_, float p_180434_3_, float p_180434_4_,
 			float p_180434_5_, float p_180434_6_, float p_180434_7_, float p_180434_8_) {
-		float f6 = (this.particleAge + p_180434_3_) / this.particleMaxAge;
-		this.particleScale = 1.0F + f6 * f6 * 5.5F;
+		float f6 = (this.age + p_180434_3_) / this.lifetime;
+		this.quadSize = 1.0F + f6 * f6 * 5.5F;
 		super.renderParticle(p_180434_1_, p_180434_2_, p_180434_3_, p_180434_4_, p_180434_5_, p_180434_6_, p_180434_7_,
 				p_180434_8_);
 	}
@@ -46,7 +46,7 @@ public class EntityFlameEffect extends Particle {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		this.particleAlpha *= 0.9f;
+		this.alpha *= 0.9f;
 	}
 
 	@Override
@@ -69,12 +69,12 @@ public class EntityFlameEffect extends Particle {
 			float f2 = Mth.sqrt((float)motionX * motionX + motionY * motionY + motionZ * motionZ);
 			float speed = ((ItemProjectileWeapon) living.getMainHandItem().getItem())
 					.getProjectileSpeed(living.getMainHandItem(), living);
-			motionX = (motionX / f2 + world.rand.nextGaussian() * (world.rand.nextBoolean() ? -1 : 1) * 0.045D) * speed
-					+ living.getDeltaMovement().x;
-			motionY = (motionY / f2 + world.rand.nextGaussian() * (world.rand.nextBoolean() ? -1 : 1) * 0.045D) * speed
-					+ living.getDeltaMovement().y;
-			motionZ = (motionZ / f2 + world.rand.nextGaussian() * (world.rand.nextBoolean() ? -1 : 1) * 0.045D) * speed
-					+ living.getDeltaMovement().z;
+			setDeltaMovement(((motionX / f2 + world.random.nextGaussian() * (world.random.nextBoolean() ? -1 : 1) * 0.045D) * speed
+					+ living.getDeltaMovement().x), getDeltaMovement().y, getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, ((motionY / f2 + world.random.nextGaussian() * (world.random.nextBoolean() ? -1 : 1) * 0.045D) * speed
+					+ living.getDeltaMovement().y), getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, ((motionZ / f2 + world.random.nextGaussian() * (world.random.nextBoolean() ? -1 : 1) * 0.045D) * speed
+					+ living.getDeltaMovement().z));
 
 			return new EntityFlameEffect(world, pos.x + motionX * step, pos.y + motionY * step, pos.z + motionZ * step,
 					motionX, motionY, motionZ,
@@ -89,9 +89,9 @@ public class EntityFlameEffect extends Particle {
 			double motionY = (-Mth.sin(2 / 180.0F * (float) Math.PI));
 			float f2 = Mth.sqrt((float)motionX * motionX + motionY * motionY + motionZ * motionZ);
 			float speed = 0.9f;
-			motionX = (motionX / f2 + world.rand.nextGaussian() * (world.rand.nextBoolean() ? -1 : 1) * 0.045D) * speed;
-			motionY = (motionY / f2 + world.rand.nextGaussian() * (world.rand.nextBoolean() ? -1 : 1) * 0.045D) * speed;
-			motionZ = (motionZ / f2 + world.rand.nextGaussian() * (world.rand.nextBoolean() ? -1 : 1) * 0.045D) * speed;
+			setDeltaMovement(((motionX / f2 + world.random.nextGaussian() * (world.random.nextBoolean() ? -1 : 1) * 0.045D) * speed), getDeltaMovement().y, getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, ((motionY / f2 + world.random.nextGaussian() * (world.random.nextBoolean() ? -1 : 1) * 0.045D) * speed), getDeltaMovement().z);
+			setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, ((motionZ / f2 + world.random.nextGaussian() * (world.random.nextBoolean() ? -1 : 1) * 0.045D) * speed));
 
 			return new EntityFlameEffect(world, posX + motionX * step, posY + motionY * step, posZ + motionZ * step,
 					motionX, motionY, motionZ, 5);

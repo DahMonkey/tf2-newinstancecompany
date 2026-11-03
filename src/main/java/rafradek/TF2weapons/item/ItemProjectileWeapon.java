@@ -64,7 +64,7 @@ public class ItemProjectileWeapon extends ItemWeapon {
 		super.onDealDamage(stack, attacker, target, source, amount);
 		if (target instanceof LivingEntity && !(target instanceof EntityBuilding)
 				&& getData(stack).getName().equals("sandmanball")) {
-			EntityBall ball = (EntityBall) source.getImmediateSource();
+			EntityBall ball = (EntityBall) source.getDirectEntity();
 			double reduce = Math.max(0.5, (25
 					- ((LivingEntity) target).getAttribute(Attributes.ARMOR).getValue())
 					/ 25D);

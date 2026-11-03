@@ -51,8 +51,8 @@ public class ItemTF2 extends Item {
 		if (!this.isInCreativeTab(par2CreativeTabs))
 			return;
 		for (int i = 0; i < 8; i++)
-			par3List.add(new ItemStack(this, 1, i));
-		par3List.add(new ItemStack(this, 1, 11));
+			par3List.add(TF2Util.metaStack(this, 1, i));
+		par3List.add(TF2Util.metaStack(this, 1, 11));
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class ItemTF2 extends Item {
 				for (int i = 0; i < ItemRobotPart.LEVEL.length; i++) {
 					if (i != notDropPiece)
 						ItemHandlerHelper.giveItemToPlayer(living,
-								new ItemStack(TF2weapons.itemRobotPart,
+								TF2Util.metaStack(TF2weapons.itemRobotPart,
 										stack.getDamageValue() == 13
 												? TileEntityRobotDeploy.GIANT_REQUIRE[ItemRobotPart.LEVEL[i]]
 												: TileEntityRobotDeploy.NORMAL_REQUIRE[ItemRobotPart.LEVEL[i]],

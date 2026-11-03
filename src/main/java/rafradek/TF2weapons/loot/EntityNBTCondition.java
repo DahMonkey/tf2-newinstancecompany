@@ -29,7 +29,7 @@ public class EntityNBTCondition implements LootItemCondition {
 	}
 
 	@Override
-	public boolean testCondition(Random rand, LootContext context) {
+	public boolean testCondition(RandomSource random, LootContext context) {
 
 		Entity test = context.getEntity(EntityTarget.THIS);
 		CompoundTag tag = test.writeToNBT(new CompoundTag());

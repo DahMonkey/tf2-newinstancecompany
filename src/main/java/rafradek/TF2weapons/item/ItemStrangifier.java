@@ -34,7 +34,7 @@ public class ItemStrangifier extends ItemApplicableEffect {
 	@Override
 	public void onUpdate(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		if (stack.hasTag() && stack.getTag().contains("class")) {
-			ItemStack data = ItemFromData.getRandomWeapon(par2World.rand,
+			ItemStack data = ItemFromData.getRandomWeapon(par2World.random,
 					Predicates.and(ItemFromData.VISIBLE_WEAPON, weapon -> (weapon.getInt(PropertyType.COST) >= 9
 							&& weapon.get(PropertyType.SLOT).containsKey(stack.getTag().getString("class")))));
 			if (!data.isEmpty())

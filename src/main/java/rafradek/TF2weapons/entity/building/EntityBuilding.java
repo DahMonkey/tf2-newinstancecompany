@@ -63,15 +63,15 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	private static final EntityDataAccessor<Byte> SOUND_STATE = SynchedEntityData.createKey(EntityBuilding.class,
 			EntityDataSerializers.BYTE);
 	private static final EntityDataAccessor<Integer> PROGRESS = SynchedEntityData.createKey(EntityBuilding.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> CONSTRUCTING = SynchedEntityData.createKey(EntityBuilding.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.createKey(EntityBuilding.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Byte> SAPPED = SynchedEntityData.createKey(EntityBuilding.class,
 			EntityDataSerializers.BYTE);
 	protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.createKey(EntityBuilding.class,
-			EntityDataSerializers.OPTIONAL_UNIQUE_ID);
+			EntityDataSerializers.OPTIONAL_UUID);
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -166,7 +166,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	@Override
 	public ItemStack getPickedResult(HitResult target) {
-		ItemStack stack = new ItemStack(TF2weapons.itemBuildingBox, 1,
+		ItemStack stack = TF2Util.metaStack(TF2weapons.itemBuildingBox, 1,
 				(this instanceof EntitySentry ? 18 : (this instanceof EntityDispenser ? 20 : 22)) + this.getEntTeam());
 
 		return stack;
@@ -199,7 +199,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 				stack.setTag(new CompoundTag());
 				stack.getTag().put("SavedEntity", new CompoundTag());
 				this.addAdditionalSaveData(stack.getTag().getCompound("SavedEntity"));
-				this.entityDropItem(stack, 0);
+				this.spawnAtLocation(stack, 0);
 			}
 
 			// System.out.println("Saved:
@@ -250,7 +250,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	@Override
 	protected void defineSynchedData() {
 		super.defineSynchedData();
-		this.entityData.define(VIS_TEAM, (byte) this.rand.nextInt(2));
+		this.entityData.define(VIS_TEAM, (byte) this.random.nextInt(2));
 		this.entityData.define(OWNER_UUID, Optional.<UUID>absent());
 		this.entityData.define(LEVEL, (byte) 1);
 		this.entityData.define(SOUND_STATE, (byte) 25);
@@ -278,8 +278,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	public LivingEntity getOwner() {
 		if (this.owner != null && !(this.owner instanceof Player && this.owner.isRemoved()))
 			return this.owner;
-		else if (this.getOwnerId() != null)
-			return this.owner = this.level.getPlayerByUUID(this.getOwnerId());
+		else if (this.getOwnerUUID() != null)
+			return this.owner = this.level.getPlayerByUUID(this.getOwnerUUID());
 		return null;
 	}
 
@@ -288,7 +288,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		if (owner instanceof Player) {
 			this.ownerName = owner.getName();
 			this.entityData.set(OWNER_UUID, Optional.of(owner.getUUID()));
-		} else if (this.getOwnerId() != null)
+		} else if (this.getOwnerUUID() != null)
 			this.entityData.set(OWNER_UUID, Optional.absent());
 		else if (owner != null)
 			this.engMade = true;
@@ -305,7 +305,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	public void clearReferences() {
-		if (this.getOwnerId() != null && this.fromPDA) {
+		if (this.getOwnerUUID() != null && this.fromPDA) {
 			if (this.disposableID == -1)
 				PlayerPersistStorage.get(this.level, getOwnerId()).buildings[this.getBuildingID()] = null;
 			else {
@@ -320,21 +320,21 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	@Override
 	public void onUpdate() {
-		this.motionX = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 		if (this.firstUpdate && !this.level.isClientSide && this.fromPDA
-				&& !PlayerPersistStorage.get(this.level, this.getOwnerId()).allowBuilding(this)) {
+				&& !PlayerPersistStorage.get(this.level, this.getOwnerUUID()).allowBuilding(this)) {
 			this.discard();
 			return;
 		}
 
-		if (!this.level.isClientSide && this.engMade && this.getOwnerId() == null
+		if (!this.level.isClientSide && this.engMade && this.getOwnerUUID() == null
 				&& (this.owner == null || this.owner.isRemoved()) && this.ticksNoOwner++ >= 120)
 			this.setHealth(0);
 		else
 			this.ticksNoOwner = 0;
 		if (this.getDeltaMovement().y > 0)
-			this.motionY = 0;
+			this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 		if (!this.level.isClientSide) {
 
 			if (this.tickCount % 80 == 0) {
@@ -345,7 +345,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 			}
 
 			if (this.fromPDA && this.tickCount % 5 == 0 && this.isAlive()) {
-				PlayerPersistStorage storage = PlayerPersistStorage.get(this.level, this.getOwnerId());
+				PlayerPersistStorage storage = PlayerPersistStorage.get(this.level, this.getOwnerUUID());
 				if (this.disposableID == -1) {
 					if (storage.buildings[this.getBuildingID()] == null
 							|| !storage.buildings[this.getBuildingID()].getFirst().equals(this.getUUID())) {
@@ -378,7 +378,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 						false);
 			}
 			this.setInfoEnergy(this.energy.getEnergyStored());
-			if (this.getOwnerId() != null && shouldUseBlocks())
+			if (this.getOwnerUUID() != null && shouldUseBlocks())
 				for (Direction facing : Direction.VALUES) {
 					BlockPos pos = this.blockPosition().move(facing);
 					BlockEntity ent = this.level.getBlockEntity(pos);
@@ -478,7 +478,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	public Team getTeam() {
 		if (this.getOwner() != null) {
 			return this.getOwner().getTeam();
-		} else if (this.getOwnerId() != null) {
+		} else if (this.getOwnerUUID() != null) {
 			return this.level.getScoreboard().getPlayersTeam(this.ownerName);
 		} else {
 			switch (this.getEntTeam()) {
@@ -579,8 +579,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		par1NBTTagCompound.putByte("DisposableID", (byte) this.disposableID);
 		if (this.getOwner() != null && !(this.getOwner() instanceof Player))
 			par1NBTTagCompound.putUUID("OwnerE", this.getOwner().getUUID());
-		if (this.getOwnerId() != null) {
-			par1NBTTagCompound.putUUID("Owner", this.getOwnerId());
+		if (this.getOwnerUUID() != null) {
+			par1NBTTagCompound.putUUID("Owner", this.getOwnerUUID());
 			par1NBTTagCompound.putString("OwnerName", this.ownerName);
 		}
 		if (this.isDisabled()) {
@@ -654,7 +654,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
 		LivingEntity attacker = this.getAttackingEntity();
-		if (this.fromPDA || (TF2Util.isAlliedTo(attacker, this) && this.getOwnerId() == null))
+		if (this.fromPDA || (TF2Util.isAlliedTo(attacker, this) && this.getOwnerUUID() == null))
 			return;
 		if (!(this.getOwner() instanceof EntityEngineer && ((EntityEngineer) this.getOwner()).buildCount >= 3)) {
 			int count = this.getOwner() instanceof Player ? this.getIronDrop()
@@ -667,7 +667,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	@Override
 	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
 		super.dropEquipment(wasRecentlyHit, lootingModifier);
-		this.entityDropItem(this.charge.getStackInSlot(0), 0);
+		this.spawnAtLocation(this.charge.getStackInSlot(0), 0);
 	}
 
 	public int getIronDrop() {
@@ -676,7 +676,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	@Override
 	protected boolean canDespawn() {
-		return this.getOwnerId() == null && (this.getOwner() == null || !this.getOwner().isAlive());
+		return this.getOwnerUUID() == null && (this.getOwner() == null || !this.getOwner().isAlive());
 	}
 
 	@OnlyIn(Dist.CLIENT)

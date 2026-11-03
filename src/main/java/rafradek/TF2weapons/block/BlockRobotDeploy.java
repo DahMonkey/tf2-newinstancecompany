@@ -117,8 +117,8 @@ public class BlockRobotDeploy extends BaseEntityBlock {
 					world.setBlock(pos, state);
 					world.setBlockAndUpdate(offpos,
 							world.getBlockState(offpos).setValue(FACING, placefacing).setValue(JOINED, true));
-					if (world.getBlockState(offpos.up()).getBlock() == this)
-						world.setBlockAndUpdate(offpos.up(), world.getBlockState(offpos.up())
+					if (world.getBlockState(offpos.above()).getBlock() == this)
+						world.setBlockAndUpdate(offpos.above(), world.getBlockState(offpos.above())
 								.setValue(FACING, placefacing).setValue(JOINED, true));
 					break;
 				}
@@ -146,30 +146,30 @@ public class BlockRobotDeploy extends BaseEntityBlock {
 			if (ent instanceof TileEntityRobotDeploy)
 				((TileEntityRobotDeploy) ent).setOwner(placer.getName(), placer.getUUID());
 		}
-		if (world.isEmptyBlock(pos.up()))
-			world.setBlock(pos.up(), state.setValue(HOLDER, false), 2);
+		if (world.isEmptyBlock(pos.above()))
+			world.setBlock(pos.above(), state.setValue(HOLDER, false), 2);
 	}
 
 	@Override
 	public void breakBlock(Level world, BlockPos pos, BlockState state) {
 
 		if (state.getValue(HOLDER)) {
-			if (world.getBlockState(pos.up()).getBlock() == this) {
-				world.setBlockToAir(pos.up());
+			if (world.getBlockState(pos.above()).getBlock() == this) {
+				world.setBlockToAir(pos.above());
 			}
 		} else {
-			if (world.getBlockState(pos.down()).getBlock() == this) {
-				world.setBlockToAir(pos.down());
+			if (world.getBlockState(pos.below()).getBlock() == this) {
+				world.setBlockToAir(pos.below());
 			}
-			if (world.getBlockState(pos.up()).getBlock() == this
-					&& !world.getBlockState(pos.up()).getValue(HOLDER)) {
-				world.setBlockToAir(pos.up());
+			if (world.getBlockState(pos.above()).getBlock() == this
+					&& !world.getBlockState(pos.above()).getValue(HOLDER)) {
+				world.setBlockToAir(pos.above());
 			}
 		}
 
 		if (state.getValue(JOINED)) {
-			if (state.getValue(HOLDER) || (world.getBlockState(pos.down()).getBlock() == this
-					&& world.getBlockState(pos.down()).getValue(HOLDER)))
+			if (state.getValue(HOLDER) || (world.getBlockState(pos.below()).getBlock() == this
+					&& world.getBlockState(pos.below()).getValue(HOLDER)))
 				world.destroyBlock(pos.move(state.getValue(FACING).getClockWise()), true);
 			else
 				world.destroyBlock(pos.move(state.getValue(FACING).getCounterClockWise()), true);
@@ -184,7 +184,7 @@ public class BlockRobotDeploy extends BaseEntityBlock {
 	@Override
 	public boolean canPlaceBlockAt(Level world, BlockPos pos) {
 		return super.canPlaceBlockAt(world, pos)
-				&& world.getBlockState(pos.up()).getBlock().isReplaceable(world, pos.up());
+				&& world.getBlockState(pos.above()).getBlock().isReplaceable(world, pos.above());
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public class BlockRobotDeploy extends BaseEntityBlock {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		list.add(new ItemStack(this, 1, 4));
+		list.add(TF2Util.metaStack(this, 1, 4));
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	public static final EntityDataAccessor<Float> INVASION_ATTACK_DIR = new EntityDataAccessor<>(5, EntityDataSerializers.FLOAT);
 	public static final EntityDataAccessor<Boolean> USE_CLASS_TEXTURE = new EntityDataAccessor<>(0,
 			EntityDataSerializers.BOOLEAN);
-	public static final EntityDataAccessor<Integer> RESPAWN_TIME = new EntityDataAccessor<>(1, EntityDataSerializers.VARINT);
+	public static final EntityDataAccessor<Integer> RESPAWN_TIME = new EntityDataAccessor<>(1, EntityDataSerializers.INT);
 
 	@SuppressWarnings("unchecked")
 	public Multimap<String, AttributeModifier>[] wearablesAttrib = new Multimap[5];
@@ -240,7 +240,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 					ArrayList<EntityTF2Character> list = new ArrayList<>();
 					this.owner.level.getChunkFromBlockCoords(pos).getEntitiesOfTypeWithinAABB(EntityTF2Character.class,
 							new AABB(pos), list, test -> {
-								return test.getOrder() == Order.FOLLOW && owner.getUUID().equals(test.getOwnerId());
+								return test.getOrder() == Order.FOLLOW && owner.getUUID().equals(test.getOwnerUUID());
 							});
 					boolean success = false;
 					for (EntityTF2Character living : list) {
@@ -355,7 +355,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 				TF2Util.sendTracking(new TF2Message.PlayerCapabilityMessage(this.owner, false, true), this.owner);
 			}
 		} else if (this.owner == Minecraft.getInstance().player) {
-			((LocalPlayer) this.owner).connection.sendPacket(new CPacketInput(owner.moveStrafing, owner.moveForward,
+			((LocalPlayer) this.owner).connection.sendPacket(new CPacketInput(owner.xxa, owner.zza,
 					((LocalPlayer) this.owner).movementInput.jump,
 					((LocalPlayer) this.owner).movementInput.sneak));
 		}

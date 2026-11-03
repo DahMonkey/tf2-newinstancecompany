@@ -18,7 +18,7 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 		boolean key = false;
 		ItemStack crate = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 7) {
@@ -39,7 +39,7 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 	public ItemStack getCraftingResult(CraftingContainer inv) {
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (!(stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 7))
@@ -58,12 +58,12 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 	public ItemStack getRecipeOutput() {
 		// ItemStack stack=ItemFromData.getNewStack("crate1");
 		// stack.getTagCompound().setBoolean("Open", true);
-		return new ItemStack(TF2weapons.itemTF2, 1, 8);
+		return TF2Util.metaStack(TF2weapons.itemTF2, 1, 8);
 	}
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
@@ -80,7 +80,7 @@ public class OpenCrateRecipe extends IForgeRegistryEntry.Impl<Recipe>
 
 	@Override
 	public ItemStack getSuggestion(int slot) {
-		return slot == 0 ? new ItemStack(TF2weapons.itemTF2, 1, 7)
+		return slot == 0 ? TF2Util.metaStack(TF2weapons.itemTF2, 1, 7)
 				: (slot == 1 ? ItemFromData.getNewStack("crate1") : ItemStack.EMPTY);
 	}
 

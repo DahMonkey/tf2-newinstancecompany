@@ -19,7 +19,7 @@ public class ContainerRecover extends AbstractContainerMenu {
 
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new SlotItemHandler(dispenserInventoryIn, j + i * 9, 8 + j * 18, 18 + i * 18) {
+				this.addSlot(new SlotItemHandler(dispenserInventoryIn, j + i * 9, 8 + j * 18, 18 + i * 18) {
 					@Override
 					public boolean isItemValid(@Nullable ItemStack stack) {
 						return false;
@@ -30,18 +30,18 @@ public class ContainerRecover extends AbstractContainerMenu {
 
 		for (int k = 0; k < 3; ++k) {
 			for (int i1 = 0; i1 < 9; ++i1) {
-				this.addSlotToContainer(new Slot(inventory, i1 + k * 9 + 27, 8 + i1 * 18, 85 + k * 18));
+				this.addSlot(new Slot(inventory, i1 + k * 9 + 27, 8 + i1 * 18, 85 + k * 18));
 			}
 		}
 
 		for (int l = 0; l < 9; ++l) {
-			this.addSlotToContainer(new Slot(inventory, l, 8 + l * 18, 143));
+			this.addSlot(new Slot(inventory, l, 8 + l * 18, 143));
 		}
 	}
 
 	public static int getAustraliumCount(Player player) {
 		int count = 0;
-		for (int i = 0; i < player.getInventory().getSizeInventory(); i++) {
+		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
 			ItemStack stack = player.getInventory().getStackInSlot(i);
 			if (!stack.isEmpty()) {
 				if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 6)
@@ -70,24 +70,24 @@ public class ContainerRecover extends AbstractContainerMenu {
 	@Nullable
 	public ItemStack transferStackInSlot(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
+		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
 			if (index < 27) {
-				if (!this.mergeItemStack(itemstack1, 27, 63, true)) {
+				if (!this.moveItemStackTo(itemstack1, 27, 63, true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
+			} else if (!this.moveItemStackTo(itemstack1, 0, 27, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.getCount() == 0) {
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.onSlotChanged();
+				slot.setChanged();
 			}
 
 			if (itemstack1.getCount() == itemstack.getCount()) {

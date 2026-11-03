@@ -66,16 +66,16 @@ public class BlockAmmoFurnace extends BaseEntityBlock {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	@SuppressWarnings("incomplete-switch")
-	public void randomDisplayTick(BlockState stateIn, Level world, BlockPos pos, Random rand) {
+	public void randomDisplayTick(BlockState stateIn, Level world, BlockPos pos, RandomSource random) {
 		if (stateIn.getValue(BURNING)) {
 			Direction enumfacing = stateIn.getValue(FACING);
 			double d0 = pos.getX() + 0.5D;
-			double d1 = pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
+			double d1 = pos.getY() + random.nextDouble() * 6.0D / 16.0D;
 			double d2 = pos.getZ() + 0.5D;
 			double d3 = 0.52D;
-			double d4 = rand.nextDouble() * 0.6D - 0.3D;
+			double d4 = random.nextDouble() * 0.6D - 0.3D;
 
-			if (rand.nextDouble() < 0.1D)
+			if (random.nextDouble() < 0.1D)
 				world.playSound(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
 						SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F, false);
 

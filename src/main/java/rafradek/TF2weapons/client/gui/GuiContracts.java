@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public class GuiContracts extends Screen {
 
-	private int guiLeft;
-	private int guiTop;
+	private int leftPos;
+	private int topPos;
 
 	public Contract selectedContract;
 	public int selectedId = -1;
@@ -29,11 +29,11 @@ public class GuiContracts extends Screen {
 		mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newContracts = false;
 		mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = false;
 		super.initGui();
-		guiLeft = width / 2 - 128;
-		guiTop = height / 2 - 108;
-		buttonList.add(new Button(0, guiLeft + 7, guiTop + 189, 100, 20, I18n.get("gui.contracts.accept")));
-		buttonList.add(new Button(1, guiLeft + 107, guiTop + 189, 71, 20, I18n.get("gui.contracts.reject")));
-		buttonList.add(new Button(2, guiLeft + 178, guiTop + 189, 71, 20, I18n.get("gui.done")));
+		leftPos = width / 2 - 128;
+		topPos = height / 2 - 108;
+		buttonList.add(new Button(0, leftPos + 7, topPos + 189, 100, 20, I18n.get("gui.contracts.accept")));
+		buttonList.add(new Button(1, leftPos + 107, topPos + 189, 71, 20, I18n.get("gui.contracts.reject")));
+		buttonList.add(new Button(2, leftPos + 178, topPos + 189, 71, 20, I18n.get("gui.done")));
 		if (selectedContract != null) {
 			buttonList.get(1).enabled = true;
 			buttonList.get(0).enabled = !selectedContract.active || selectedContract.rewards > 0;
@@ -45,7 +45,7 @@ public class GuiContracts extends Screen {
 		}
 		for (int i = 0; i < mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.size(); i++) {
 			Contract contract = mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.get(i);
-			buttonList.add(new Button(i + 3, this.guiLeft + 7, this.guiTop + 16 + i * 20, 74, 20,
+			buttonList.add(new Button(i + 3, this.leftPos + 7, this.topPos + 16 + i * 20, 74, 20,
 					I18n.get("gui.contracts." + contract.className, new Object[0]) + ": " + contract.progress + " CP"));
 		}
 	}
@@ -103,31 +103,31 @@ public class GuiContracts extends Screen {
 		drawDefaultBackground();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, CONTRACTS_GUI_TEXTURES);
-		drawTexturedModalRect(guiLeft, guiTop, 0, 0, 256, 216);
+		drawTexturedModalRect(leftPos, topPos, 0, 0, 256, 216);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		int contractDay = mc.player.getStatFileWriter().readStat(TF2Achievements.CONTRACT_DAY);
-		fontRenderer.drawString(I18n.get("gui.contracts", new Object[0]), guiLeft + 8, guiTop + 5, 4210752);
+		fontRenderer.drawString(I18n.get("gui.contracts", new Object[0]), leftPos + 8, topPos + 5, 4210752);
 		if (contractDay != 0) {
 			String str = I18n.get("gui.contracts.contractDay", contractDay - mc.level.getDayTime() / 24000);
-			fontRenderer.drawString(str, guiLeft + 251 - fontRenderer.width(str), guiTop + 5, 4210752);
+			fontRenderer.drawString(str, leftPos + 251 - fontRenderer.width(str), topPos + 5, 4210752);
 		}
 		if (selectedContract != null) {
-			fontRenderer.drawString(I18n.get("gui.contracts." + selectedContract.className, new Object[0]), guiLeft + 83, guiTop + 18, 0xFFFFFF);
-			this.font.drawString(I18n.get("gui.contracts.objectives"), guiLeft + 83, guiTop + 35, 0xFFFFFF);
+			fontRenderer.drawString(I18n.get("gui.contracts." + selectedContract.className, new Object[0]), leftPos + 83, topPos + 18, 0xFFFFFF);
+			this.font.drawString(I18n.get("gui.contracts.objectives"), leftPos + 83, topPos + 35, 0xFFFFFF);
 			if (!selectedContract.className.equals("kill")) fontRenderer.drawString(I18n.get("gui.contracts.objectives_t",
-							I18n.get("entity." + selectedContract.className + ".name")), guiLeft + 83, guiTop + 47, 0xFFFFFF);
+							I18n.get("entity." + selectedContract.className + ".name")), leftPos + 83, topPos + 47, 0xFFFFFF);
 			for (int i = 0; i < selectedContract.objectives.length; i++) {
 				String str = I18n.get("objective." + selectedContract.objectives[i].toString().toLowerCase());
 				if (selectedContract.objectives[i].advanced) str = I18n.get("objective.advanced") + " " + str;
 				str += " (" + selectedContract.objectives[i].getPoints() + " CP)";
-				fontRenderer.drawSplitString(str, guiLeft + 83, guiTop + 67 + i * 20, 164, 0xFFFFFF);
+				fontRenderer.drawSplitString(str, leftPos + 83, topPos + 67 + i * 20, 164, 0xFFFFFF);
 			}
-			fontRenderer.drawString(I18n.get("gui.contracts.rewards"), guiLeft + 9, guiTop + 135, 0xFFFFFF);
-			fontRenderer.drawString(I18n.get("gui.contracts.reward1"), guiLeft + 9, guiTop + 148, 0xFFFFFF);
-			fontRenderer.drawString(I18n.get("gui.contracts.reward1m"), guiLeft + 9, guiTop + 157, 0xFFFFFF);
-			fontRenderer.drawString(I18n.get("gui.contracts.reward2"), guiLeft + 9, guiTop + 170, 0xFFFFFF);
-			fontRenderer.drawString(I18n.get("gui.contracts.reward2m"), guiLeft + 9, guiTop + 179, 0xFFFFFF);
+			fontRenderer.drawString(I18n.get("gui.contracts.rewards"), leftPos + 9, topPos + 135, 0xFFFFFF);
+			fontRenderer.drawString(I18n.get("gui.contracts.reward1"), leftPos + 9, topPos + 148, 0xFFFFFF);
+			fontRenderer.drawString(I18n.get("gui.contracts.reward1m"), leftPos + 9, topPos + 157, 0xFFFFFF);
+			fontRenderer.drawString(I18n.get("gui.contracts.reward2"), leftPos + 9, topPos + 170, 0xFFFFFF);
+			fontRenderer.drawString(I18n.get("gui.contracts.reward2m"), leftPos + 9, topPos + 179, 0xFFFFFF);
 		} else if (contractDay == 0) fontRenderer.drawSplitString(I18n.get("gui.contracts.require"),
-				guiLeft + 83, guiTop + 18, 164, 0xFFFFFF);
+				leftPos + 83, topPos + 18, 164, 0xFFFFFF);
 	}
 }

@@ -62,14 +62,14 @@ public class EntityJar extends EntityProjectileBase {
 			if (!this.isGasExploded()) {
 				this.playSound(ItemUsable.getSound(usedWeapon, PropertyType.EXPLOSION_SOUND), 1f, 1f);
 				// this.playSound(TF2Sounds.JAR_EXPLODE, 1.5f, 1f);
-				this.level.playEvent(2002, new BlockPos(this),
+				this.level.levelEvent(2002, new BlockPos(this),
 						MobEffect.getPotionFromResourceLocation(
 								ItemFromData.getData(this.usedWeapon).getString(PropertyType.EFFECT_TYPE))
 								.getLiquidColor());
 			}
 			if (this.isGas()) {
-				this.motionX = 0.;
-				this.motionZ = 0.;
+				this.setDeltaMovement((0.), this.getDeltaMovement().y, this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0.));
 				this.setType(2);
 			} else
 				this.discard();
@@ -82,12 +82,12 @@ public class EntityJar extends EntityProjectileBase {
 				mop.getLocation().y + mop.getDirection().getStepY() * 0.05,
 				mop.getLocation().z + mop.getDirection().getStepZ() * 0.05, null, 1f);
 		if (this.isGas()) {
-			this.motionX = 0;
-			this.motionY = 0;
-			this.motionZ = 0;
-			this.posX = mop.getLocation().x;
-			this.posY = mop.getLocation().y;
-			this.posZ = mop.getLocation().z;
+			this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
+			this.setPos((mop.getLocation().x), this.getY(), this.getZ());
+			this.setPos(this.getX(), (mop.getLocation().y), this.getZ());
+			this.setPos(this.getX(), this.getY(), (mop.getLocation().z));
 			if (mop.getDirection() == Direction.UP) {
 				this.setSticked(true);
 			}
@@ -125,7 +125,7 @@ public class EntityJar extends EntityProjectileBase {
 			this.level.addParticle(ParticleTypes.WATER_BUBBLE, x, y, z, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
 		if (this.isGasExploded()) {
 			for (int i = 0; i < 8; ++i) {
-				Vec3 pos = TF2Util.radiusRandom2D(5f, this.rand);
+				Vec3 pos = TF2Util.radiusRandom2D(5f, this.random);
 				double xa = this.getX() + pos.x;
 				double ya = this.getY() + 0.5;
 				double za = this.getZ() + pos.y;

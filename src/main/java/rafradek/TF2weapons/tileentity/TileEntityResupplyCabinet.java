@@ -41,10 +41,10 @@ public class TileEntityResupplyCabinet extends BlockEntity implements BlockEntit
 
 	public void setEnabled(boolean enable) {
 
-		this.level.addBlockEvent(this.pos, this.getBlockType(), 0, enabled ? 1 : 0);
+		this.level.addBlockEvent(this.pos, this.getBlockState().getBlock(), 0, enabled ? 1 : 0);
 		if (this.enabled != enable) {
 			this.enabled = enable;
-			this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+			this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock(), false);
 		}
 
 	}
@@ -79,7 +79,7 @@ public class TileEntityResupplyCabinet extends BlockEntity implements BlockEntit
 					} else if (living instanceof Player) {
 						Player player = ((Player) living);
 						player.getFoodStats().addStats(20, 20);
-						for (int i = 0; i < player.getInventory().getSizeInventory(); i++) {
+						for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
 							ItemStack stack = player.getInventory().getStackInSlot(i);
 							if (stack.getItem() instanceof ItemFromData) {
 								int ammotype = ((ItemFromData) stack.getItem()).getAmmoType(stack);
@@ -98,17 +98,17 @@ public class TileEntityResupplyCabinet extends BlockEntity implements BlockEntit
 					}
 					this.activateOutput("OnResupply");
 					cooldownUse.put(living, 50);
-					this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+					this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock(), false);
 				}
 			if (playersold > 0 && cooldownUse.size() == 0) {
 				this.activateOutput("OnResupplyLeave");
-				this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+				this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock(), false);
 			}
 		}
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		compound.put("Config", this.getOutputManager().writeConfig(new CompoundTag()));
 		compound.putBoolean("Enabled", this.enabled);

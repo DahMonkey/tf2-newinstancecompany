@@ -192,9 +192,9 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 					((EntityDispenser) entity).setRange(TF2Attribute.getModifier("Dispenser Range", stack, 1, entity));
 				}
 
-				entity.rotationYaw = player.yHeadRot;
+				entity.setYRot((player.yHeadRot));
 				entity.yBodyRot = player.yHeadRot;
-				entity.rotationYawHead = player.yHeadRot;
+				entity.yHeadRot = player.yHeadRot;
 				entity.fromPDA = true;
 				if (stack.getTag().getByte("Building") == 5 && entity.getDisposableID() == -1)
 					entity.setDisposableID(PlayerPersistStorage.get(player).disposableBuildings.size());

@@ -39,7 +39,7 @@ public class ItemParachute extends ItemBackpack implements ISpecialArmor {
 	@Override
 	public void onArmorTickAny(Level world, final LivingEntity player, ItemStack itemStack) {
 		if (itemStack.getTag().getBoolean("Deployed")) {
-			player.motionY = Math.max(-0.1f, player.getDeltaMovement().y);
+			player.setDeltaMovement(player.getDeltaMovement().x, (Math.max(-0.1f, player.getDeltaMovement().y)), player.getDeltaMovement().z);
 			player.fallDistance = 0f;
 			/*
 			 * if (player.ticksExisted % 30 == 0) { itemStack.damageItem(1, player); }

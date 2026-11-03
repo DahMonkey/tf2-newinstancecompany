@@ -70,11 +70,11 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 		if (minBounds == null)
 			minBounds = this.pos;
 		if (minBounds != null) {
-			BlockState state = this.level.getBlockState(minBounds.down());
-			if (state.getBlock().isAir(state, world, minBounds.down()))
-				this.minBounds = minBounds.down();
-			else if (this.level.getBlockState(this.minBounds.down()).getBlock() instanceof BlockOverheadDoor) {
-				this.minBounds = minBounds.down();
+			BlockState state = this.level.getBlockState(minBounds.below());
+			if (state.getBlock().isAir(state, world, minBounds.below()))
+				this.minBounds = minBounds.below();
+			else if (this.level.getBlockState(this.minBounds.below()).getBlock() instanceof BlockOverheadDoor) {
+				this.minBounds = minBounds.below();
 				this.amountScrolled += 1;
 			} else if (!(this.level.getBlockState(this.minBounds).getBlock() instanceof BlockOverheadDoor
 					|| world.isEmptyBlock(this.minBounds))) {
@@ -111,13 +111,13 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 
 		}
 		if (lastIsEntity != isEntity) {
-			this.level.addBlockEvent(this.pos, this.getBlockType(), 1, isEntity ? 1 : 0);
+			this.level.addBlockEvent(this.pos, this.getBlockState().getBlock(), 1, isEntity ? 1 : 0);
 			if (!entitySome) {
 				this.updateAmountScrolled(15, true);
 			}
 		}
 
-		boolean isClosed = this.level.getBlockState(this.minBounds).getBlock() == this.getBlockType();
+		boolean isClosed = this.level.getBlockState(this.minBounds).getBlock() == this.getBlockState().getBlock();
 		// this.world.setBlockState(pos,
 		// this.world.getBlockState(pos).withProperty(BlockOverheadDoor.SLIDING,
 		// !isClosed));
@@ -126,7 +126,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 				for (int y = pos.getY() - 1; y >= this.minBounds.getY(); y--) {
 					// IBlockState state = this.world.getBlockState(pos);
 					BlockPos doorpos = new BlockPos(pos.getX(), y, pos.getZ());
-					if (this.level.getBlockState(doorpos).getBlock() == this.getBlockType())
+					if (this.level.getBlockState(doorpos).getBlock() == this.getBlockState().getBlock())
 						this.level.removeBlock(doorpos, false);
 				}
 				this.level.setBlockAndUpdate(pos,
@@ -175,7 +175,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 					if (!updateEvents)
 						((TileEntityOverheadDoor) ent).entitySome = true;
 					else
-						this.level.addBlockEvent(pos, this.getBlockType(), 1,
+						this.level.addBlockEvent(pos, this.getBlockState().getBlock(), 1,
 								((TileEntityOverheadDoor) ent).isPowered() ? 1 : 0);
 				}
 			} else
@@ -189,7 +189,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 					if (!updateEvents)
 						((TileEntityOverheadDoor) ent).entitySome = true;
 					else
-						this.level.addBlockEvent(pos, this.getBlockType(), 1,
+						this.level.addBlockEvent(pos, this.getBlockState().getBlock(), 1,
 								((TileEntityOverheadDoor) ent).isPowered() ? 1 : 0);
 				}
 			} else
@@ -274,7 +274,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		// compound.setBoolean("Master", this.master);
 		if (team != null)
@@ -322,8 +322,8 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 			else if (this.team != null && team.getName().equals("BLU"))
 				meta = 3;
 		}
-		this.getWorld().addFreshEntity(new ItemEntity(this.level, this.pos.getX(), this.pos.getY(), this.pos.getZ(),
-				new ItemStack(TF2weapons.itemDoorController, 1, meta)));
+		this.getLevel().addFreshEntity(new ItemEntity(this.level, this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+				TF2Util.metaStack(TF2weapons.itemDoorController, 1, meta)));
 	}
 
 	@Override

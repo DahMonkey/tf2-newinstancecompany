@@ -69,9 +69,9 @@ public class ItemJetpack extends ItemBackpack {
 					Vec3 vel = player.getViewVector(1);
 					vel = vel.scale(TF2Attribute.getModifier("Self Push Force", itemStack, 1, player));
 					WeaponsCapability.get(player).setExpJump(true);
-					player.motionX = vel.x;
-					player.motionY = vel.y + (player instanceof Player ? 0.1 : 0.25);
-					player.motionZ = vel.z;
+					player.setDeltaMovement((vel.x), player.getDeltaMovement().y, player.getDeltaMovement().z);
+					player.setDeltaMovement(player.getDeltaMovement().x, (vel.y + (player instanceof Player ? 0.1 : 0.25)), player.getDeltaMovement().z);
+					player.setDeltaMovement(player.getDeltaMovement().x, player.getDeltaMovement().y, (vel.z));
 					TF2Util.playSound(player, getSound(itemStack, PropertyType.FIRE_SOUND), 1f, 1f);
 					itemStack.getTag().putBoolean("Active", true);
 					if (player instanceof ServerPlayer)
@@ -116,8 +116,8 @@ public class ItemJetpack extends ItemBackpack {
 	}
 
 	public void activateJetpack(ItemStack stack, LivingEntity player, boolean setTimer) {
-		player.motionY = Math.max(player.getDeltaMovement().y, 0) + 0.5;
-		player.isAirBorne = true;
+		player.setDeltaMovement(player.getDeltaMovement().x, (Math.max(player.getDeltaMovement().y, 0) + 0.5), player.getDeltaMovement().z);
+		player.hasImpulse = true;
 		player.fallDistance = 0;
 		if (!player.level.isClientSide) {
 			TF2Util.playSound(player, getSound(stack, PropertyType.CHARGE_SOUND), 1f, 1f);

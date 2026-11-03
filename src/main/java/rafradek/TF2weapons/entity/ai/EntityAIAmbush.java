@@ -19,7 +19,7 @@ public class EntityAIAmbush extends Goal {
 
 	public EntityAIAmbush(EntitySpy entitySpy) {
 		this.host = entitySpy;
-		this.setMutexBits(3);
+		this.setFlags(TF2Util.mutexFlags(3);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class EntityAIAmbush extends Goal {
 				&& this.host.tickCount - this.host.getRevengeTimer() < 45;
 		boolean enemyLooking = !this.host.getWepCapability().isDisguised()
 				&& !this.host.loadout.getStackInSlot(3).getTag().getBoolean("Active")
-				&& this.host.getEntitySenses().canSee(target)
+				&& this.host.getSensing().canSee(target)
 				&& TF2Util.lookingAtFast(target, dist > 400 ? 50 : 105, this.host.getX(), this.host.getY(), this.host.getZ());
 		boolean isAtEnemy = dist < 9
 				&& !TF2Util.lookingAtFast(target, 105, this.host.getX(), this.host.getY(), this.host.getZ());
@@ -45,7 +45,7 @@ public class EntityAIAmbush extends Goal {
 	@Override
 	public void resetTask() {
 		// System.out.println("Stop");
-		this.host.getNavigation().clearPath();
+		this.host.getNavigation().stop();
 		if (this.host.loadout.getStackInSlot(3).getTag().getBoolean("Active"))
 			((ItemCloak) this.host.loadout.getStackInSlot(3).getItem()).setCloak(false,
 					this.host.loadout.getStackInSlot(3), this.host, this.host.level);
@@ -76,7 +76,7 @@ public class EntityAIAmbush extends Goal {
 		ItemStack cloak = this.host.loadout.getStackInSlot(3);
 		double dist = target.distanceToSqr(this.host);
 		boolean enemyLooking = !cloak.getTag().getBoolean("Active")
-				&& this.host.getEntitySenses().canSee(target)
+				&& this.host.getSensing().canSee(target)
 				&& TF2Util.lookingAtFast(target, 105, this.host.getX(), this.host.getY(), this.host.getZ());
 
 		if (cloak.getDamageValue() < cloak.getMaxDamage() - 72 && !cloak.getTag().getBoolean("Active")

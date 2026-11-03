@@ -53,6 +53,6 @@ public class ItemEventMaker extends Item {
 		if (!this.isInCreativeTab(par2CreativeTabs))
 			return;
 		for (int i = 0; i < InvasionEvent.DIFFICULTY.length; i++)
-			par3List.add(new ItemStack(this, 1, i));
+			par3List.add(TF2Util.metaStack(this, 1, i));
 	}
 }

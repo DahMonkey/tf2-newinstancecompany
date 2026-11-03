@@ -30,13 +30,13 @@ public class EntityPickup extends Entity {
 			EntityDataSerializers.BYTE);
 
 	public enum Type {
-		AMMO_SMALL(0, 0.2f, new ItemStack(TF2weapons.itemPickup, 1, 0), true),
-		AMMO_NORMAL(0, 0.5f, new ItemStack(TF2weapons.itemPickup, 1, 1), true),
-		AMMO_BIG(0, 1f, new ItemStack(TF2weapons.itemPickup, 1, 2), true),
-		HEALTH_SMALL(0.205f, 0f, new ItemStack(TF2weapons.itemPickup, 1, 3), true),
-		HEALTH_MEDIUM(0.5f, 0f, new ItemStack(TF2weapons.itemPickup, 1, 4), true),
-		HEALTH_BIG(1f, 0f, new ItemStack(TF2weapons.itemPickup, 1, 5), true),
-		SANDVICH(0.5f, 0f, new ItemStack(TF2weapons.itemSandvich, 1, 2), false);
+		AMMO_SMALL(0, 0.2f, TF2Util.metaStack(TF2weapons.itemPickup, 1, 0), true),
+		AMMO_NORMAL(0, 0.5f, TF2Util.metaStack(TF2weapons.itemPickup, 1, 1), true),
+		AMMO_BIG(0, 1f, TF2Util.metaStack(TF2weapons.itemPickup, 1, 2), true),
+		HEALTH_SMALL(0.205f, 0f, TF2Util.metaStack(TF2weapons.itemPickup, 1, 3), true),
+		HEALTH_MEDIUM(0.5f, 0f, TF2Util.metaStack(TF2weapons.itemPickup, 1, 4), true),
+		HEALTH_BIG(1f, 0f, TF2Util.metaStack(TF2weapons.itemPickup, 1, 5), true),
+		SANDVICH(0.5f, 0f, TF2Util.metaStack(TF2weapons.itemSandvich, 1, 2), false);
 
 		float healthRegen;
 		float ammoRegen;
@@ -100,7 +100,7 @@ public class EntityPickup extends Entity {
 		double d2 = this.getDeltaMovement().z;
 
 		if (!this.hasNoGravity()) {
-			this.motionY -= 0.03999999910593033D;
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (0.03999999910593033D), this.getDeltaMovement().z);
 		}
 
 		if (this.level.isClientSide) {
@@ -116,10 +116,10 @@ public class EntityPickup extends Entity {
 
 		if (flag || this.tickCount % 25 == 0) {
 			if (this.level.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA) {
-				this.motionY = 0.20000000298023224D;
-				this.motionX = (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F;
-				this.motionZ = (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F;
-				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
+				this.setDeltaMovement(this.getDeltaMovement().x, (0.20000000298023224D), this.getDeltaMovement().z);
+				this.setDeltaMovement(((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), this.getDeltaMovement().y, this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F));
+				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
 		}
 
@@ -132,12 +132,12 @@ public class EntityPickup extends Entity {
 			f = underState.getBlock().getSlipperiness(underState, this.level, underPos, this) * 0.98F;
 		}
 
-		this.motionX *= f;
-		this.motionY *= 0.9800000190734863D;
-		this.motionZ *= f;
+		this.setDeltaMovement(this.getDeltaMovement().x * (f), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.9800000190734863D), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f));
 
 		if (this.onGround) {
-			this.motionY *= -0.5D;
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (-0.5D), this.getDeltaMovement().z);
 		}
 
 		if (this.age != -32768) {
@@ -153,7 +153,7 @@ public class EntityPickup extends Entity {
 			double d6 = d3 * d3 + d4 * d4 + d5 * d5;
 
 			if (d6 > 0.01D) {
-				this.isAirBorne = true;
+				this.hasImpulse = true;
 			}
 			if (this.age > this.lifespan && !this.rematerialize)
 				this.discard();

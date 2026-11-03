@@ -76,7 +76,7 @@ public class ItemMonsterPlacerPlus extends Item {
 
 			if (entity != null) {
 				if (entity instanceof LivingEntity && stack.hasCustomHoverName())
-					entity.setCustomNameTag(stack.getHoverName());
+					entity.setCustomName(stack.getHoverName());
 
 				if (!player.getAbilities().instabuild)
 					stack.shrink(1);
@@ -87,9 +87,9 @@ public class ItemMonsterPlacerPlus extends Item {
 						((EntityBuilding) entity).setConstructing(true);
 						((EntityBuilding) entity).redeploy = true;
 					}
-					entity.rotationYaw = player.yHeadRot;
+					entity.setYRot((player.yHeadRot));
 					entity.yBodyRot = player.yHeadRot;
-					entity.rotationYawHead = player.yHeadRot;
+					entity.yHeadRot = player.yHeadRot;
 					if (entity instanceof EntityTeleporter)
 						((EntityTeleporter) entity).setExit(stack.getDamageValue() > 23);
 				}
@@ -131,7 +131,7 @@ public class ItemMonsterPlacerPlus extends Item {
 						return new InteractionResultHolder<>(InteractionResult.PASS, itemStackIn);
 					else {
 						if (entity instanceof LivingEntity && itemStackIn.hasCustomHoverName())
-							entity.setCustomNameTag(itemStackIn.getHoverName());
+							entity.setCustomName(itemStackIn.getHoverName());
 
 						if (!player.getAbilities().instabuild)
 							itemStackIn.shrink(1);
@@ -146,9 +146,9 @@ public class ItemMonsterPlacerPlus extends Item {
 									&& itemStackIn.getTag().getBoolean("Mini"))
 								((EntitySentry) entity).setMini(true);
 
-							entity.rotationYaw = player.yHeadRot;
+							entity.setYRot((player.yHeadRot));
 							entity.yBodyRot = player.yHeadRot;
-							entity.rotationYawHead = player.yHeadRot;
+							entity.yHeadRot = player.yHeadRot;
 
 							/*
 							 * if(entity instanceof EntityTeleporter){ ((EntityTeleporter)
@@ -224,8 +224,8 @@ public class ItemMonsterPlacerPlus extends Item {
 					entityliving.readFromNBT(nbtdata);
 				// System.out.println("read");
 				entity.moveTo(par2, par4, par6,
-						Mth.wrapDegrees(par0World.rand.nextFloat() * 360.0F), 0.0F);
-				entityliving.rotationYawHead = entityliving.getYRot();
+						Mth.wrapDegrees(par0World.random.nextFloat() * 360.0F), 0.0F);
+				entityliving.yHeadRot = entityliving.getYRot();
 				entityliving.yBodyRot = entityliving.getYRot();
 				entityliving.enablePersistence();
 				TF2CharacterAdditionalData data = new TF2CharacterAdditionalData();
@@ -261,14 +261,14 @@ public class ItemMonsterPlacerPlus extends Item {
 		if (!this.isInCreativeTab(par2CreativeTabs))
 			return;
 		for (int i = 0; i < 18; i++)
-			par3List.add(new ItemStack(this, 1, i));
+			par3List.add(TF2Util.metaStack(this, 1, i));
 		for (int i = 36; i < 45; i++)
-			par3List.add(new ItemStack(this, 1, i));
-		par3List.add(new ItemStack(this, 1, 26));
-		par3List.add(new ItemStack(this, 1, 27));
-		par3List.add(new ItemStack(this, 1, 28));
-		par3List.add(new ItemStack(this, 1, 29));
-		par3List.add(new ItemStack(this, 1, 30));
+			par3List.add(TF2Util.metaStack(this, 1, i));
+		par3List.add(TF2Util.metaStack(this, 1, 26));
+		par3List.add(TF2Util.metaStack(this, 1, 27));
+		par3List.add(TF2Util.metaStack(this, 1, 28));
+		par3List.add(TF2Util.metaStack(this, 1, 29));
+		par3List.add(TF2Util.metaStack(this, 1, 30));
 
 	}
 

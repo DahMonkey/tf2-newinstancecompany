@@ -21,7 +21,7 @@ public class TF2ProjectileHandler implements IMessageHandler<TF2Message.Predicti
 	public IMessage onMessage(final PredictionMessage message, MessageContext ctx) {
 		final Player shooter = ctx.getServerHandler().player;
 		// ItemStack stack=shooter.getHeldItem(EnumHand.MAIN_HAND);
-		((ServerLevel) shooter.level).addScheduledTask(() -> {
+		((ServerLevel) shooter.level).execute(() -> {
 			// shooter.getCapability(TF2weapons.WEAPONS_CAP, null).predictionList.poll();
 			message.target = new ArrayList<>();
 			if (message.readData != null)

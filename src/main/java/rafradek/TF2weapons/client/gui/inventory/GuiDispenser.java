@@ -29,15 +29,15 @@ public class GuiDispenser extends AbstractContainerScreen {
 	public GuiDispenser(EntityDispenser dispenser) {
 		super(new ContainerDispenser(dispenser, Minecraft.getInstance().player.inventory));
 		this.dispenser = dispenser;
-		xSize = 212;
-		ySize = 195;
+		imageWidth = 212;
+		imageHeight = 195;
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(this.grab = new Button(0, this.guiLeft + 86, this.guiTop + 90, 40, 20,
+		buttonList.add(this.grab = new Button(0, this.leftPos + 86, this.topPos + 90, 40, 20,
 				I18n.get("gui.teleporter.drop", new Object[0])));
 	}
 
@@ -60,12 +60,12 @@ public class GuiDispenser extends AbstractContainerScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		if (mouseX >= guiLeft + 7 && mouseX < guiLeft + 23 && mouseY >= guiTop + 15 && mouseY < guiTop + 75) {
+		if (mouseX >= leftPos + 7 && mouseX < leftPos + 23 && mouseY >= topPos + 15 && mouseY < topPos + 75) {
 			if (ClientProxy.buildingsUseEnergy) drawHoveringText("Energy: " + dispenser.getInfoEnergy() + "/"
 							+ dispenser.energy.getMaxEnergyStored(), mouseX, mouseY);
 			else drawHoveringText("Energy use is disabled", mouseX, mouseY);
 		}
-		if (mouseX >= guiLeft + 5 && mouseX < guiLeft + 23 && mouseY >= guiTop + 112 && mouseY < guiTop + 130)
+		if (mouseX >= leftPos + 5 && mouseX < leftPos + 23 && mouseY >= topPos + 112 && mouseY < topPos + 130)
 			drawHoveringText(Arrays.asList(I18n.get("gui.dispenser.help", new Object[0]).split(Pattern.quote("\\n"))), mouseX, mouseY);
 		renderHoveredToolTip(mouseX, mouseY);
 	}
@@ -74,11 +74,11 @@ public class GuiDispenser extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);
 		drawTexturedModalRect(x + 79, y + 14, 0, 202, 54, 54);
-		drawGradientRect(guiLeft + 7, guiTop + 75 - (int) (((float) dispenser.getInfoEnergy() /
-				(float) dispenser.energy.getMaxEnergyStored()) * 60f), guiLeft + 23, guiTop + 75, 0xFFBF0000, 0xFF7F0000);
+		drawGradientRect(leftPos + 7, topPos + 75 - (int) (((float) dispenser.getInfoEnergy() /
+				(float) dispenser.energy.getMaxEnergyStored()) * 60f), leftPos + 23, topPos + 75, 0xFFBF0000, 0xFF7F0000);
 	}
 }

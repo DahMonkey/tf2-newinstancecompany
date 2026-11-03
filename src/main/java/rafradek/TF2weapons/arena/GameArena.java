@@ -57,9 +57,9 @@ public class GameArena implements INBTSerializable<CompoundTag> {
 
 	public static final EntityDataAccessor<String> PLAYER_NAME = new EntityDataAccessor<>(0, EntityDataSerializers.STRING);
 	public static final EntityDataAccessor<Optional<UUID>> PLAYER_UUID = new EntityDataAccessor<>(1,
-			EntityDataSerializers.OPTIONAL_UNIQUE_ID);
-	public static final EntityDataAccessor<Integer> TEAM = new EntityDataAccessor<>(2, EntityDataSerializers.VARINT);
-	public static final EntityDataAccessor<Integer> POINTS = new EntityDataAccessor<>(3, EntityDataSerializers.VARINT);
+			EntityDataSerializers.OPTIONAL_UUID);
+	public static final EntityDataAccessor<Integer> TEAM = new EntityDataAccessor<>(2, EntityDataSerializers.INT);
+	public static final EntityDataAccessor<Integer> POINTS = new EntityDataAccessor<>(3, EntityDataSerializers.INT);
 
 	private CompoundTag joinTeamDataCache;
 	private CompoundTag joinClassDataCache;
@@ -158,7 +158,7 @@ public class GameArena implements INBTSerializable<CompoundTag> {
 
 				if (this.defaultClass != -1 && !cap.forcedClass) {
 					((ItemToken) TF2weapons.itemToken)
-							.updateAttributes(new ItemStack(TF2weapons.itemToken, 1, this.defaultClass), player);
+							.updateAttributes(TF2Util.metaStack(TF2weapons.itemToken, 1, this.defaultClass), player);
 					WeaponsCapability.get(player).forcedClass = true;
 				}
 

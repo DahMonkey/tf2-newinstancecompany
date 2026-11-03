@@ -51,9 +51,9 @@ public class EntityTeleporter extends EntityBuilding {
 	public long timestamp;
 
 	private static final EntityDataAccessor<Integer> TELEPORTS = SynchedEntityData.createKey(EntityTeleporter.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> TPPROGRESS = SynchedEntityData.createKey(EntityTeleporter.class,
-			EntityDataSerializers.VARINT);
+			EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Byte> CHANNEL = SynchedEntityData.createKey(EntityTeleporter.class,
 			EntityDataSerializers.BYTE);
 	private static final EntityDataAccessor<Boolean> EXIT = SynchedEntityData.createKey(EntityTeleporter.class,
@@ -91,7 +91,7 @@ public class EntityTeleporter extends EntityBuilding {
 										new TeleporterDim((ServerLevel) this.level, exit));
 
 							} else {
-								Level destworld = this.level.getServer().getWorld(exit.dimension);
+								Level destworld = this.level.getServer().getLevel(exit.dimension);
 								Entity newent = EntityList.newEntity(entityIn.getClass(), destworld);
 								if (newent != null) {
 									CompoundTag data = entityIn.writeToNBT(new CompoundTag());
@@ -173,12 +173,12 @@ public class EntityTeleporter extends EntityBuilding {
 				 * targetList.get(0).setPositionAndUpdate(exit.getX()+0.5, exit.getY()+0.23,
 				 * exit.getZ()+0.5); } } } }
 				 */
-			} else if (teleporters.get(this.getOwnerId())[this.getID()] == null
-					|| teleporters.get(this.getOwnerId())[this.getID()].id != this.tpID) {
+			} else if (teleporters.get(this.getOwnerUUID())[this.getID()] == null
+					|| teleporters.get(this.getOwnerUUID())[this.getID()].id != this.tpID) {
 				this.setExit(false);
 				this.updateTeleportersData(true);
-			} else if (teleporters.get(this.getOwnerId())[this.getID()].id == this.tpID
-					&& !this.blockPosition().equals(teleporters.get(this.getOwnerId())[this.getID()]))
+			} else if (teleporters.get(this.getOwnerUUID())[this.getID()].id == this.tpID
+					&& !this.blockPosition().equals(teleporters.get(this.getOwnerUUID())[this.getID()]))
 				this.updateTeleportersData(false);
 		} else if (this.getSoundState() == 1)
 			this.spin += (float) Math.PI * (this.getLevel() == 1 ? 0.25f : (this.getLevel() == 2 ? 0.325f : 0.4f));
@@ -187,8 +187,8 @@ public class EntityTeleporter extends EntityBuilding {
 	}
 
 	public TeleporterData getTeleportExit() {
-		UUID uuid = this.getOwnerId();
-		if (this.getOwnerId() != null && teleporters.get(uuid) != null) {
+		UUID uuid = this.getOwnerUUID();
+		if (this.getOwnerUUID() != null && teleporters.get(uuid) != null) {
 			final TeleporterData data = teleporters.get(uuid)[this.getID()];
 			List<EntityTeleporter> list = world.getEntities(EntityTeleporter.class, input -> data != null && data.id == input.tpID);
 			if (!list.isEmpty())
@@ -254,7 +254,7 @@ public class EntityTeleporter extends EntityBuilding {
 			this.tpID = tpCount;
 		}
 		this.entityData.set(EXIT, exit);
-		if (this.getOwnerId() != null)
+		if (this.getOwnerUUID() != null)
 			this.updateTeleportersData(false);
 	}
 
@@ -267,11 +267,11 @@ public class EntityTeleporter extends EntityBuilding {
 											 * ||teleporters.get(UUID.fromString( this.getOwnerId()))[id]!=null
 											 */)
 			return;
-		if (this.getOwnerId() != null)
+		if (this.getOwnerUUID() != null)
 			this.updateTeleportersData(true);
 		this.entityData.set(CHANNEL, (byte) id);
 		;
-		if (this.getOwnerId() != null)
+		if (this.getOwnerUUID() != null)
 			this.updateTeleportersData(false);
 	}
 
@@ -335,7 +335,7 @@ public class EntityTeleporter extends EntityBuilding {
 		super.notifyDataManagerChange(key);
 		if (!this.level.isClientSide)
 			if (OWNER_UUID.equals(key)) {
-				UUID id = this.getOwnerId();
+				UUID id = this.getOwnerUUID();
 				if (!teleporters.containsKey(id))
 					teleporters.put(id, new TeleporterData[TP_PER_PLAYER]);
 			}
@@ -345,7 +345,7 @@ public class EntityTeleporter extends EntityBuilding {
 		if (this.level.isClientSide)
 			return;
 
-		UUID id = this.getOwnerId();
+		UUID id = this.getOwnerUUID();
 		if (!forceremove && this.isExit()/* &&teleporters.get(id)[this.getID()]==null */)
 			teleporters.get(id)[this.getID()] = new TeleporterData(this.blockPosition(), this.tpID, this.dimension);
 		else if (teleporters.get(id)[this.getID()] != null && teleporters.get(id)[this.getID()].id == this.tpID) {
@@ -381,7 +381,7 @@ public class EntityTeleporter extends EntityBuilding {
 
 	@Override
 	public int getMinEnergy() {
-		return this.getOwnerId() != null ? TF2ConfigVars.teleporterUseEnergy : 0;
+		return this.getOwnerUUID() != null ? TF2ConfigVars.teleporterUseEnergy : 0;
 	}
 
 	@Override
@@ -407,8 +407,8 @@ public class EntityTeleporter extends EntityBuilding {
 		this.tpID = par1NBTTagCompound.getInt("TeleID");
 		this.setTeleports(par1NBTTagCompound.getShort("Teleports"));
 		this.getEntityData().set(CHANNEL, par1NBTTagCompound.getByte("TeleExitID"));
-		if (!this.level.isClientSide && ((teleporters.get(this.getOwnerId())[this.getID()] == null
-				|| teleporters.get(this.getOwnerId())[this.getID()].id == this.tpID)))
+		if (!this.level.isClientSide && ((teleporters.get(this.getOwnerUUID())[this.getID()] == null
+				|| teleporters.get(this.getOwnerUUID())[this.getID()].id == this.tpID)))
 			// this.setID(par1NBTTagCompound.getByte("TeleExitID"));
 			this.setExit(par1NBTTagCompound.getBoolean("TeleExit"));
 		if (this.level.isClientSide)

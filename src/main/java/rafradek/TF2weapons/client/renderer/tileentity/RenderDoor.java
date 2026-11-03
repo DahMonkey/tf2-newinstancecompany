@@ -19,10 +19,10 @@ public class RenderDoor extends BlockEntityRenderer<TileEntityOverheadDoor> {
 	public void render(TileEntityOverheadDoor te, double x, double y, double z, float partialTicks, int destroyStage,
 			float alpha) {
 		BlockPos orig = te.getBlockPos();
-		if (!te.getWorld().isEmptyBlock(new BlockPos(orig.getX(), te.minBounds.getY(), orig.getZ()))
-				|| te.getWorld().getBlockState(orig).getBlock() != TF2weapons.blockOverheadDoor)
+		if (!te.getLevel().isEmptyBlock(new BlockPos(orig.getX(), te.minBounds.getY(), orig.getZ()))
+				|| te.getLevel().getBlockState(orig).getBlock() != TF2weapons.blockOverheadDoor)
 			return;
-		BlockState state = te.getWorld().getBlockState(orig).setValue(BlockOverheadDoor.HOLDER, false)
+		BlockState state = te.getLevel().getBlockState(orig).setValue(BlockOverheadDoor.HOLDER, false)
 				.setValue(BlockOverheadDoor.SLIDING, false);
 		this.bindTexture(TextureAtlas.LOCATION_BLOCKS_TEXTURE);
 		float amountScrolled = te.amountScrolled - te.motion + partialTicks * te.motion;
@@ -32,7 +32,7 @@ public class RenderDoor extends BlockEntityRenderer<TileEntityOverheadDoor> {
 			GlStateManager.disableLighting();
 			Tesselator tessellator = Tesselator.getInstance();
 			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			BlockPos blockpos = orig.down(i);
+			BlockPos blockpos = orig.below(i);
 			// GlStateManager.translate(-blockpos.getX(), -blockpos.getY(),
 			// -blockpos.getZ());
 
@@ -46,7 +46,7 @@ public class RenderDoor extends BlockEntityRenderer<TileEntityOverheadDoor> {
 
 			bufferbuilder.setTranslation(-blockpos.getX(), -blockpos.getY(), -blockpos.getZ());
 			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
-			blockrendererdispatcher.getBlockModelRenderer().renderModel(te.getWorld(),
+			blockrendererdispatcher.getBlockModelRenderer().renderModel(te.getLevel(),
 					blockrendererdispatcher.getModelForState(state), state, blockpos, bufferbuilder, false,
 					Mth.getPositionRandom(blockpos));
 			tessellator.draw();

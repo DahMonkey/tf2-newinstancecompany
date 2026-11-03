@@ -167,7 +167,7 @@ public class BlockCapturePoint extends BaseEntityBlock {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		list.add(new ItemStack(this, 1, 4));
+		list.add(TF2Util.metaStack(this, 1, 4));
 	}
 
 	@Override

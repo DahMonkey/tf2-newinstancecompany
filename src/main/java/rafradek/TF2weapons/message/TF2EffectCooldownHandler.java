@@ -10,7 +10,7 @@ public class TF2EffectCooldownHandler implements IMessageHandler<TF2Message.Effe
 	@Override
 	public IMessage onMessage(final EffectCooldownMessage message, MessageContext ctx) {
 		if (ctx.side.isClient())
-			Minecraft.getInstance().addScheduledTask(() -> {
+			Minecraft.getInstance().execute(() -> {
 				WeaponsCapability cap = Minecraft.getInstance().player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
 				cap.effectsCool.put(message.name, message.time);
 				// cap.critTime = message.critTime;

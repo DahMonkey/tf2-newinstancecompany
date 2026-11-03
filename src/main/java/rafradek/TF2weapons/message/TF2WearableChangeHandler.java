@@ -10,7 +10,7 @@ public class TF2WearableChangeHandler implements IMessageHandler<TF2Message.Wear
 
 	@Override
 	public IMessage onMessage(final WearableChangeMessage message, MessageContext ctx) {
-		Minecraft.getInstance().addScheduledTask(() -> {
+		Minecraft.getInstance().execute(() -> {
 			Entity entity = Minecraft.getInstance().level.getEntity(message.entityID);
 			if (entity != null) {
 				if (message.slot < 20)

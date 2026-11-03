@@ -33,10 +33,10 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 
 	public void setEnabled(boolean enable) {
 
-		this.level.addBlockEvent(this.pos, this.getBlockType(), 0, enabled ? 1 : 0);
+		this.level.addBlockEvent(this.pos, this.getBlockState().getBlock(), 0, enabled ? 1 : 0);
 		if (this.enabled != enable) {
 			this.enabled = enable;
-			this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+			this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock(), false);
 		}
 
 	}
@@ -84,7 +84,7 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 					delta = -0.01f;
 				}
 				if (++this.updateTicks % 5 == 0) {
-					this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+					this.level.notifyNeighborsOfStateChange(this.pos, this.getBlockState().getBlock(), false);
 					this.activateOutput("Capture progress", this.captureProgress, 5);
 				}
 				captureProgress += delta;
@@ -108,7 +108,7 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		compound.put("Config", this.getOutputManager().writeConfig(new CompoundTag()));
 		compound.putBoolean("Enabled", this.enabled);

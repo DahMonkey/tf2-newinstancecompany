@@ -37,8 +37,8 @@ public class GuiAmmoFurnace extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		String s = tileFurnace.getHoverName().getString();
-		fontRenderer.drawString(s, this.xSize / 2 - this.font.width(s) / 2, 6, 4210752);
-		fontRenderer.drawString(this.getInventory().getHoverName().getString(), 8, this.ySize - 96 + 2, 4210752);
+		fontRenderer.drawString(s, this.imageWidth / 2 - this.font.width(s) / 2, 6, 4210752);
+		fontRenderer.drawString(this.getInventory().getHoverName().getString(), 8, this.imageHeight - 96 + 2, 4210752);
 	}
 
 	/**
@@ -48,9 +48,9 @@ public class GuiAmmoFurnace extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, FURNACE_GUI_TEXTURES);
-		int i = (this.getBbWidth() - this.xSize) / 2;
-		int j = (this.getBbHeight() - this.ySize) / 2;
-		drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
+		int i = (this.getBbWidth() - this.imageWidth) / 2;
+		int j = (this.getBbHeight() - this.imageHeight) / 2;
+		drawTexturedModalRect(i, j, 0, 0, this.imageWidth, this.imageHeight);
 		if (TileEntityAmmoFurnace.isBurning(this.tileFurnace)) {
 			int k = this.getBurnLeftScaled(13);
 			drawTexturedModalRect(i + 64, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);

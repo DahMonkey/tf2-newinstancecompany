@@ -47,10 +47,10 @@ public class ContainerUpgrades extends AbstractContainerMenu {
 		this.applicable = new ArrayList<>();
 		transactions = new int[0];
 		transactionsCost = new int[0];
-		this.addSlotToContainer(new Slot(upgradedItem, 0, 108, 8) {
+		this.addSlot(new Slot(upgradedItem, 0, 108, 8) {
 			@Override
 			public void onSlotChanged() {
-				super.onSlotChanged();
+				super.setChanged();
 				refreshData();
 				transactions = new int[applicable.size()];
 				transactionsCost = new int[applicable.size()];
@@ -75,10 +75,10 @@ public class ContainerUpgrades extends AbstractContainerMenu {
 
 		for (int k = 0; k < 3; ++k)
 			for (int i1 = 0; i1 < 9; ++i1)
-				this.addSlotToContainer(new Slot(inventory, i1 + k * 9 + 9, 36 + i1 * 18, 143 + k * 18));
+				this.addSlot(new Slot(inventory, i1 + k * 9 + 9, 36 + i1 * 18, 143 + k * 18));
 
 		for (int l = 0; l < 9; ++l)
-			this.addSlotToContainer(new Slot(inventory, l, 36 + l * 18, 201));
+			this.addSlot(new Slot(inventory, l, 36 + l * 18, 201));
 	}
 
 	public void refreshData() {
@@ -136,27 +136,27 @@ public class ContainerUpgrades extends AbstractContainerMenu {
 	@Nullable
 	public ItemStack transferStackInSlot(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
+		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
 			if (index == 0) {
-				if (!this.mergeItemStack(itemstack1, 1, 28, true))
+				if (!this.moveItemStackTo(itemstack1, 1, 28, true))
 					return ItemStack.EMPTY;
 
 				slot.onSlotChange(itemstack1, itemstack);
 			} else if (index >= 1 && index < 28) {
-				if (!this.mergeItemStack(itemstack1, 0, 1, false))
+				if (!this.moveItemStackTo(itemstack1, 0, 1, false))
 					return ItemStack.EMPTY;
-			} else if (!this.mergeItemStack(itemstack1, 1, 28, false))
+			} else if (!this.moveItemStackTo(itemstack1, 1, 28, false))
 				return ItemStack.EMPTY;
 
 			if (itemstack1.isEmpty())
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			else
-				slot.onSlotChanged();
+				slot.setChanged();
 
 			if (itemstack1.getCount() == itemstack.getCount())
 				return ItemStack.EMPTY;

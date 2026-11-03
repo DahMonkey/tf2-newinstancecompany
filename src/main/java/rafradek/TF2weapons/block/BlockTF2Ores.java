@@ -19,7 +19,7 @@ public class BlockTF2Ores extends DropExperienceBlock {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		for (EnumOreType type : EnumOreType.values()) list.add(new ItemStack(this, 1, type.ordinal()));
+		for (EnumOreType type : EnumOreType.values()) list.add(TF2Util.metaStack(this, 1, type.ordinal()));
 	}
 
 	@Override

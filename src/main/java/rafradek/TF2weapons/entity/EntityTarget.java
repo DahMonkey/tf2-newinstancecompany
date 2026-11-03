@@ -87,10 +87,10 @@ public class EntityTarget extends ArmorStand {
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (!this.level.isClientSide && !this.isRemoved()) {
-			if (DamageSource.OUT_OF_WORLD.equals(source) || (source.getTrueSource() instanceof LivingEntity
-					&& source.getDamageType().equals("player") && source.getTrueSource().isShiftKeyDown())) {
+			if (DamageSource.OUT_OF_WORLD.equals(source) || (source.getEntity() instanceof LivingEntity
+					&& source.getDamageType().equals("player") && source.getEntity().isShiftKeyDown())) {
 				source.setExplosion();
-				Block.spawnAsEntity(world, getPosition().up(), new ItemStack(TF2weapons.itemTarget));
+				Block.spawnAsEntity(world, getPosition().above(), new ItemStack(TF2weapons.itemTarget));
 				super.hurt(source, amount);
 				return false;
 			} else {

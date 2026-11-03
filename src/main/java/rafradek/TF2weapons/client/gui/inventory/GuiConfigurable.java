@@ -43,8 +43,8 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	public GuiConfigurable(Inventory playerv, IEntityConfigurable station, Level world,
 			BlockPos blockPosition) {
 		super(new ContainerConfigurable(Minecraft.getInstance().player, playerv, station, world, blockPosition));
-		this.xSize = 230;
-		this.ySize = 225;
+		this.imageWidth = 230;
+		this.imageHeight = 225;
 		this.pos = blockPosition;
 		// this.itemsToRender=new ItemStack[9];
 	}
@@ -63,7 +63,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 				int type = tag.getTag(key).getId();
 				types[i] = type;
 				if (type == 8) {
-					fields[i] = new EditBox(5, fontRenderer, this.guiLeft + 10, this.guiTop + 10 + i * 20, 120,
+					fields[i] = new EditBox(5, fontRenderer, this.leftPos + 10, this.topPos + 10 + i * 20, 120,
 							20);
 					((EditBox) fields[i]).setText(tag.getString(key));
 				}
@@ -100,8 +100,8 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
 		boolean flag = Mouse.isButtonDown(0);
-		int i = guiLeft;
-		int j = guiTop;
+		int i = leftPos;
+		int j = topPos;
 		int k = i + 209;
 		int l = j + 30;
 		int i1 = k + 14;
@@ -138,8 +138,8 @@ public class GuiConfigurable extends AbstractContainerScreen {
 
 	@Override
 	protected void actionPerformed(Button button) throws IOException {
-		if (button.id < 12) mc.playerController.sendEnchantPacket(inventorySlots.windowId, button.id + firstIndex * 2);
-		else if (button.id == 12) mc.playerController.sendEnchantPacket(inventorySlots.windowId, -1);
+		if (button.id < 12) mc.playerController.sendEnchantPacket(slots.windowId, button.id + firstIndex * 2);
+		else if (button.id == 12) mc.playerController.sendEnchantPacket(slots.windowId, -1);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 		for (int t = 0; t < this.keys.length; t++) if (fields[t] instanceof EditBox)
 			entered |= ((EditBox) fields[t]).textboxKeyTyped(typedChar, keyCode);
 		if (!entered) {
-			if (keyCode == 1 || this.mc.options.keyBindInventory.isActiveAndMatches(keyCode)) sendChanges();
+			if (keyCode == 1 || this.minecraft.options.keyBindInventory.isActiveAndMatches(keyCode)) sendChanges();
 			super.keyTyped(typedChar, keyCode);
 		}
 		// this.teleportField.setText(Integer.toString(channel));
@@ -178,7 +178,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		fontRenderer.drawString(I18n.get("container.inventory", new Object[0]), 36, ySize - 96 + 3, 4210752);
+		fontRenderer.drawString(I18n.get("container.inventory", new Object[0]), 36, imageHeight - 96 + 3, 4210752);
 	}
 
 	/**
@@ -188,13 +188,13 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);
 		// this.drawTab(0);
 		// this.drawTab(1);
-		x = guiLeft + 210;
-		y = guiTop + 31;
+		x = leftPos + 210;
+		y = topPos + 31;
 		int k = y + 96;
 		drawTexturedModalRect(x, y + (int) ((k - y - 17) * scroll), 232, 0, 12, 15);
 	}

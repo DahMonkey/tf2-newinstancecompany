@@ -47,7 +47,7 @@ public class ItemPickup extends Item {
 			return;
 		for (int i = 0; i < EntityPickup.Type.values().length; i++) {
 			if (EntityPickup.Type.values()[i].visible)
-				par3List.add(new ItemStack(this, 1, i));
+				par3List.add(TF2Util.metaStack(this, 1, i));
 		}
 	}
 }

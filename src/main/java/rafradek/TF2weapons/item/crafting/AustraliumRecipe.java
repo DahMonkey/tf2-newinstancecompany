@@ -27,7 +27,7 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 		int australium = 0;
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 2) {
@@ -51,7 +51,7 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 	public ItemStack getCraftingResult(CraftingContainer inv) {
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (!(stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 2))
@@ -76,7 +76,7 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
@@ -108,7 +108,7 @@ public class AustraliumRecipe implements Recipe, IRecipeTF2 {
 
 	@Override
 	public ItemStack getSuggestion(int slot) {
-		return slot == 4 ? new ItemStack(TF2weapons.itemTF2, 1, 9) : new ItemStack(TF2weapons.itemTF2, 1, 2);
+		return slot == 4 ? TF2Util.metaStack(TF2weapons.itemTF2, 1, 9) : TF2Util.metaStack(TF2weapons.itemTF2, 1, 2);
 	}
 
 }

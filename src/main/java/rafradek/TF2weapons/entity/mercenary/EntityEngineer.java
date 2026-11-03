@@ -37,7 +37,7 @@ public class EntityEngineer extends EntityTF2Character {
 	public EntityEngineer(Level p_i1738_1_) {
 		super(p_i1738_1_);
 		// this.ammoLeft = 24;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		this.rotation = 15;
 		this.goalSelector.addGoal(2, new EntityAIUseWrangler(this, 1, 50f));
 		this.goalSelector.addGoal(3, new EntityAIRepair(this, 1, 2f));
@@ -145,7 +145,7 @@ public class EntityEngineer extends EntityTF2Character {
 	public void aiStep() {
 		if (!this.level.isClientSide && this.tickCount == 2) {
 			for (EntityBuilding building : this.level.getEntitiesOfClass(EntityBuilding.class,
-					this.getBoundingBox().inflate(32), building -> (building.getOwnerId() == null
+					this.getBoundingBox().inflate(32), building -> (building.getOwnerUUID() == null
 							&& building.getOwner() == null && this.getUUID().equals(building.ownerEntityID)))) {
 				if (building instanceof EntitySentry && this.sentry == null) {
 					this.sentry = (EntitySentry) building;
@@ -189,14 +189,14 @@ public class EntityEngineer extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.10f + p_70628_2_ * 0.05f)
-			this.entityDropItem(ItemFromData.getNewStack("pistol"), 0);
-		if (this.rand.nextFloat() < 0.10f + p_70628_2_ * 0.05f)
-			this.entityDropItem(ItemFromData.getNewStack("shotgun"), 0);
-		if (this.rand.nextFloat() < 0.10f + p_70628_2_ * 0.05f)
-			this.entityDropItem(ItemFromData.getNewStack("wrench"), 0);
-		this.entityDropItem(
-				new ItemStack(TF2weapons.itemBuildingBox, 1, 18 + this.rand.nextInt(3) * 2 + this.getEntTeam()), 0);
+		if (this.random.nextFloat() < 0.10f + p_70628_2_ * 0.05f)
+			this.spawnAtLocation(ItemFromData.getNewStack("pistol"), 0);
+		if (this.random.nextFloat() < 0.10f + p_70628_2_ * 0.05f)
+			this.spawnAtLocation(ItemFromData.getNewStack("shotgun"), 0);
+		if (this.random.nextFloat() < 0.10f + p_70628_2_ * 0.05f)
+			this.spawnAtLocation(ItemFromData.getNewStack("wrench"), 0);
+		this.spawnAtLocation(
+				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 18 + this.random.nextInt(3) * 2 + this.getEntTeam()), 0);
 	}
 
 	@Override

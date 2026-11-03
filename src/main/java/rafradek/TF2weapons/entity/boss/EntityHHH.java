@@ -69,8 +69,8 @@ public class EntityHHH extends EntityTF2Boss {
 	public EntityHHH(Level world) {
 		super(world);
 		this.setSize(0.9f, 2.85f);
-		this.stepHeight = 1.05f;
-		this.setNoAI(true);
+		this.maxUpStep = 1.05f;
+		this.setNoAi(true);
 		this.setPathPriority(BlockPathTypes.LAVA, 8.0F);
 		this.setItemInHand(InteractionHand.MAIN_HAND, ItemFromData.getNewStack("headtaker"));
 		this.getMainHandItem().addEnchantment(Enchantments.KNOCKBACK, 10);
@@ -137,8 +137,8 @@ public class EntityHHH extends EntityTF2Boss {
 
 	@Override
 	public void dropFewItems(boolean hit, int looting) {
-		if (this.rand.nextBoolean() || this.level == 1)
-			this.entityDropItem(ItemFromData.getNewStack("headtaker"), 0);
+		if (this.random.nextBoolean() || this.level == 1)
+			this.spawnAtLocation(ItemFromData.getNewStack("headtaker"), 0);
 		// ItemStack hat=ItemFromData.getNewStack("monoculus");
 		// hat.getTagCompound().setShort("BossLevel",(short)this.level);
 		// this.entityDropItem(hat, 0);
@@ -153,18 +153,18 @@ public class EntityHHH extends EntityTF2Boss {
 		super.aiStep();
 		if (this.begin-- > 20 && this.level.isClientSide)
 			for (int i = 0; i < 40; i++) {
-				Vec3 pos = TF2Util.radiusRandom2D(2.2f, this.rand);
+				Vec3 pos = TF2Util.radiusRandom2D(2.2f, this.random);
 				this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), this.getY() - 0.5,
 						pos.y + this.getZ(), 0, 0, 0, new int[0]);
 			}
 
 		if (!world.isClientSide && this.begin <= 0) {
-			if (this.rand.nextInt(20) == 0) {
+			if (this.random.nextInt(20) == 0) {
 				TF2Util.addModifierSafe(this, Attributes.MOVEMENT_SPEED, new AttributeModifier(fasterSpeed,
 						"fastspeed", TF2Util.lerp(0.2f, 0.0f, this.getHealth() / this.getMaxHealth()), 2), false);
 			}
 			if (this.begin == 0) {
-				this.setNoAI(false);
+				this.setNoAi(false);
 				this.getAttribute(Attributes.ARMOR).removeModifier(BOSS_ARMOR_SPAWN);
 			}
 			if (this.getTarget() != null && !(this.getTarget() instanceof EntitySentry)
@@ -220,9 +220,9 @@ public class EntityHHH extends EntityTF2Boss {
 					}
 					if (this.dashTick-- > 0) {
 						if (this.dashTick < 20) {
-							this.motionX += dashMotion.x;
-							this.motionY += dashMotion.y;
-							this.motionZ += dashMotion.z;
+							this.setDeltaMovement(this.getDeltaMovement().x + (dashMotion.x), this.getDeltaMovement().y, this.getDeltaMovement().z);
+							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + (dashMotion.y), this.getDeltaMovement().z);
+							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z + (dashMotion.z));
 						}
 						if (this.dashTick < 12
 								&& this.distanceToSqr(this.getTarget()) < this.getTarget().distanceToSqr(
@@ -253,7 +253,7 @@ public class EntityHHH extends EntityTF2Boss {
 				if (shouldTeleport) {
 					this.toTeleportTime = 40;
 					this.teleportTime = 250;
-					this.setNoAI(true);
+					this.setNoAi(true);
 					this.setShiftKeyDown(true);
 				}
 			}
@@ -272,7 +272,7 @@ public class EntityHHH extends EntityTF2Boss {
 				}
 				if (--this.toTeleportTime == 0) {
 					this.setShiftKeyDown(false);
-					this.setNoAI(false);
+					this.setNoAi(false);
 					Vec3 pos = null;
 					if (this.getTarget() != null)
 						pos = new Vec3(this.getTarget().getX(), this.getTarget().getY(),
@@ -283,7 +283,7 @@ public class EntityHHH extends EntityTF2Boss {
 					if (pos != null && this.attemptTeleportForce(pos.x, pos.y, pos.z)) {
 						this.addEffect(new MobEffectInstance(TF2weapons.stun, 30, 3));
 						for (int i = 0; i < 40; i++) {
-							Vec3 partpos = TF2Util.radiusRandom2D(2.7f, this.rand);
+							Vec3 partpos = TF2Util.radiusRandom2D(2.7f, this.random);
 							this.level.addParticle(ParticleTypes.PORTAL, partpos.x + this.getX(), this.getY() - 0.5,
 									partpos.y + this.getZ(), 0, 0, 0, new int[0]);
 						}
@@ -314,13 +314,13 @@ public class EntityHHH extends EntityTF2Boss {
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 
 		if (super.hurt(source, amount)) {
-			if (this.getTarget() == null || this.getNavigation().noPath()) {
+			if (this.getTarget() == null || this.getNavigation().isDone()) {
 				this.damageTakenNoPath += amount;
 				if (this.damageTakenNoPath >= 20 && this.teleportTime <= 50) {
 					this.damageTakenNoPath = 0;
 					this.toTeleportTime = 40;
 					this.teleportTime = 250;
-					this.setNoAI(true);
+					this.setNoAi(true);
 					this.setShiftKeyDown(true);
 				}
 			}
@@ -406,7 +406,7 @@ public class EntityHHH extends EntityTF2Boss {
 			 */
 			this.targetTime = 300;
 			ent.addEffect(new MobEffectInstance(TF2weapons.it, 600));
-			if (ent != this.getTarget() && this.rand.nextBoolean()) {
+			if (ent != this.getTarget() && this.random.nextBoolean()) {
 
 			}
 		}
@@ -454,7 +454,7 @@ public class EntityHHH extends EntityTF2Boss {
 
 	@Override
 	public void returnSpawnItems() {
-		this.entityDropItem(new ItemStack(TF2weapons.itemBossSpawn, 1, 0), 0);
+		this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemBossSpawn, 1, 0), 0);
 	}
 
 	public class EntityAIAirAttack extends Goal {
@@ -482,7 +482,7 @@ public class EntityHHH extends EntityTF2Boss {
 				this.ticksInAir--;
 
 			if (--this.attackTime > 0) {
-				this.setMutexBits(3);
+				this.setFlags(TF2Util.mutexFlags(3);
 				this.ticksInAir = 0;
 				EntityHHH.this.faceEntity(target, 45, 90);
 				EntityHHH.this.getLookControl().setLookPositionWithEntity(target, 90, 90);
@@ -506,7 +506,7 @@ public class EntityHHH extends EntityTF2Boss {
 					}
 				}
 			} else
-				this.setMutexBits(0);
+				this.setFlags(TF2Util.mutexFlags(0);
 		}
 
 	}

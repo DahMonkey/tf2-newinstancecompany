@@ -19,7 +19,7 @@ public class GuiRobotDeploy extends AbstractContainerScreen {
 		super(new ContainerRobotDeploy(player, tileEntity));
 		this.tileEntity = tileEntity;
 		this.player = player;
-		ySize = 193;
+		imageHeight = 193;
 	}
 
 	@Override
@@ -32,10 +32,10 @@ public class GuiRobotDeploy extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		mc.RenderSystem.setShaderTexture(0, ROBOT_DEPLOY_TEXTURE);
-		int i = (width - xSize) / 2;
-		int j = (height - ySize) / 2;
-		drawTexturedModalRect(i, j, 0, 0, xSize, ySize);
-		float pr = (float) ((ContainerRobotDeploy) inventorySlots).progress / ((ContainerRobotDeploy) inventorySlots).maxprogress;
+		int i = (width - imageWidth) / 2;
+		int j = (height - imageHeight) / 2;
+		drawTexturedModalRect(i, j, 0, 0, imageWidth, imageHeight);
+		float pr = (float) ((ContainerRobotDeploy) slots).progress / ((ContainerRobotDeploy) slots).maxprogress;
 		if (tileEntity.produceGiant()) {
 			drawTexturedModalRect(i + 142, j + 23, 192, 31, 24, 48);
 			drawTexturedModalRect(i + 142, j + 23 + (int) (48 * (1 - pr)), 216, 31 + (int) (48 * (1 - pr)), 24, (int) (48 * pr));
@@ -45,8 +45,8 @@ public class GuiRobotDeploy extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		String s = "container.robotdeploy";
-		fontRenderer.drawString(s, xSize / 2 - fontRenderer.width(s) / 2, 6, 4210752);
-		fontRenderer.drawString(player.getHoverName().getString(), 8, ySize - 96 + 2,
+		fontRenderer.drawString(s, imageWidth / 2 - fontRenderer.width(s) / 2, 6, 4210752);
+		fontRenderer.drawString(player.getHoverName().getString(), 8, imageHeight - 96 + 2,
 				4210752);
 		fontRenderer.drawString("x" + tileEntity.getRequirement(0), 64, 18, 4210752);
 		fontRenderer.drawString("x" + tileEntity.getRequirement(1), 46, 39, 4210752);

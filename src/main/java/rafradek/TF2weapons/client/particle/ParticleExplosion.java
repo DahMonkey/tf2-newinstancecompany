@@ -28,7 +28,7 @@ public class ParticleExplosion extends Particle {
 		float scale = ((float) timeSinceStart / (float) this.maximumTime) * size;
 		float count = 0.33f * scale * size * scale;
 		for (int i = 0; i < count; ++i) {
-			Vec3 pos = TF2Util.rangeRandom3D(scale, this.rand);
+			Vec3 pos = TF2Util.rangeRandom3D(scale, this.random);
 			double d0 = this.getX() + pos.x;
 			double d1 = this.getY() + pos.y;
 			double d2 = this.getZ() + pos.z;

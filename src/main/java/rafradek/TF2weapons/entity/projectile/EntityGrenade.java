@@ -40,11 +40,11 @@ public class EntityGrenade extends EntityProjectileBase {
 		if (weaponmode == 1) {
 			this.setBomb(1);
 			this.setSize(0.7f, 0.7f);
-			this.fuse = 26 + this.rand.nextInt(20);
-			double motion = 0.8f + this.rand.nextDouble() * 0.55;
-			this.motionX *= motion;
-			this.motionY *= motion;
-			this.motionZ *= motion;
+			this.fuse = 26 + this.random.nextInt(20);
+			double motion = 0.8f + this.random.nextDouble() * 0.55;
+			this.setDeltaMovement(this.getDeltaMovement().x * (motion), this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (motion), this.getDeltaMovement().z);
+			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (motion));
 		} else if (weaponmode == 2) {
 			this.setBomb(2);
 			this.fuse = (int) (20 - ((ItemWeapon) weapon.getItem()).getCharge(shooter, weapon) * 20);
@@ -110,11 +110,11 @@ public class EntityGrenade extends EntityProjectileBase {
 				EntityGrenade burst = new EntityGrenade(world);
 				burst.initProjectile(this.shootingEntity, InteractionHand.MAIN_HAND, usedWeaponOrig);
 				burst.setPos(x, y, z);
-				double motionmult = 1D + (this.rand.nextDouble() * 0.3 * grenadeSpecialist) - 0.15 * grenadeSpecialist;
+				double motionmult = 1D + (this.random.nextDouble() * 0.3 * grenadeSpecialist) - 0.15 * grenadeSpecialist;
 				if (direct == null)
-					motionmult += 0.25D + (this.rand.nextDouble() * 0.1 * grenadeSpecialist);
-				burst.shoot(-this.getDeltaMovement().x * motionmult * 0.07 + this.rand.nextDouble() * rndSpread * 2 - rndSpread, 0.2,
-						-this.getDeltaMovement().z * motionmult * 0.07 + this.rand.nextDouble() * rndSpread * 2 - rndSpread,
+					motionmult += 0.25D + (this.random.nextDouble() * 0.1 * grenadeSpecialist);
+				burst.shoot(-this.getDeltaMovement().x * motionmult * 0.07 + this.random.nextDouble() * rndSpread * 2 - rndSpread, 0.2,
+						-this.getDeltaMovement().z * motionmult * 0.07 + this.random.nextDouble() * rndSpread * 2 - rndSpread,
 						(float) motionmult * 0.3f, 0f);
 				burst.setBurst(true);
 				burst.damageModifier = this.damageModifier * 0.5f;
@@ -143,9 +143,9 @@ public class EntityGrenade extends EntityProjectileBase {
 				 * mop.sideHit==EnumFacing.SOUTH) this.onHitBlockZ(); else
 				 * this.onHitBlockY(null);
 				 */
-				this.motionX *= 0.6;
-				this.motionY *= 0.65;
-				this.motionZ *= 0.6;
+				this.setDeltaMovement(this.getDeltaMovement().x * (0.6), this.getDeltaMovement().y, this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.65), this.getDeltaMovement().z);
+				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.6));
 			}
 		}
 	}
@@ -194,23 +194,23 @@ public class EntityGrenade extends EntityProjectileBase {
 
 	@Override
 	public void onHitBlockX() {
-		this.motionX = -this.getDeltaMovement().x * 0.18;
-		this.motionY = this.getDeltaMovement().y * 0.8;
-		this.motionZ = this.getDeltaMovement().z * 0.8;
+		this.setDeltaMovement((-this.getDeltaMovement().x * 0.18), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (this.getDeltaMovement().y * 0.8), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (this.getDeltaMovement().z * 0.8));
 	}
 
 	@Override
 	public void onHitBlockY(Block block) {
-		this.motionX = this.getDeltaMovement().x * 0.8;
-		this.motionY = -this.getDeltaMovement().y * 0.18;
-		this.motionZ = this.getDeltaMovement().z * 0.8;
+		this.setDeltaMovement((this.getDeltaMovement().x * 0.8), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (-this.getDeltaMovement().y * 0.18), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (this.getDeltaMovement().z * 0.8));
 	}
 
 	@Override
 	public void onHitBlockZ() {
-		this.motionX = this.getDeltaMovement().x * 0.8;
-		this.motionY = this.getDeltaMovement().y * 0.8;
-		this.motionZ = -this.getDeltaMovement().z * 0.18;
+		this.setDeltaMovement((this.getDeltaMovement().x * 0.8), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (this.getDeltaMovement().y * 0.8), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (-this.getDeltaMovement().z * 0.18));
 	}
 
 	@Override

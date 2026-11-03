@@ -155,8 +155,8 @@ public class TF2EventsClient {
 					float speedmult = minecraft.player.getAIMoveSpeed() * (minecraft.player.isSprinting() ? 2 : 1);
 					Vec3 moveDir = TF2Util.getMovementVector(minecraft.player);
 					minecraft.player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).airJumps += 1;
-					minecraft.player.motionX = moveDir.x * speedmult;
-					minecraft.player.motionZ = moveDir.y * speedmult;
+					minecraft.player.setDeltaMovement((moveDir.x * speedmult), minecraft.player.getDeltaMovement().y, minecraft.player.getDeltaMovement().z);
+					minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().x, minecraft.player.getDeltaMovement().y, (moveDir.y * speedmult));
 					TF2weapons.network.sendToServer(new TF2Message.ActionMessage(23));
 				} else if (WeaponsCapability.get(minecraft.player).isGrappled()) {
 					minecraft.player.jump();
@@ -1026,16 +1026,16 @@ public class TF2EventsClient {
 
 	@SubscribeEvent
 	public void renderPlayer(RenderPlayerEvent.Pre event) {
-		if (event.getEntityPlayer().getEffect(TF2weapons.bombmrs) != null) {
+		if (event.getEntity().getEffect(TF2weapons.bombmrs) != null) {
 			ModelBomb modelBomb = new ModelBomb();
 			GlStateManager.pushMatrix();
-			GL11.glTranslatef(0, event.getEntityPlayer().eyeHeight, 0);
-			GL11.glRotatef(event.getEntityPlayer().yRotO
-					+ (event.getEntityPlayer().getYRot() - event.getEntityPlayer().yRotO)
+			GL11.glTranslatef(0, event.getEntity().eyeHeight, 0);
+			GL11.glRotatef(event.getEntity().yRotO
+					+ (event.getEntity().getYRot() - event.getEntity().yRotO)
 							* event.getPartialRenderTick(),
 					0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(event.getEntityPlayer().xRotO
-					+ (event.getEntityPlayer().getXRot() - event.getEntityPlayer().xRotO)
+			GL11.glRotatef(event.getEntity().xRotO
+					+ (event.getEntity().getXRot() - event.getEntity().xRotO)
 							* event.getPartialRenderTick(),
 					1.0F, 0.0F, 0.0F);
 			GL11.glScalef(1.1f, 1.1f, 1.1f);
@@ -1043,8 +1043,8 @@ public class TF2EventsClient {
 			modelBomb.render(event.getEntity(), 0F, 0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 		}
-		if (event.getEntityPlayer() != Minecraft.getInstance().player) {
-			renderBeam(event.getEntityPlayer(), event.getPartialRenderTick(), 0.04f);
+		if (event.getEntity() != Minecraft.getInstance().player) {
+			renderBeam(event.getEntity(), event.getPartialRenderTick(), 0.04f);
 		}
 	}
 
@@ -1082,8 +1082,8 @@ public class TF2EventsClient {
 	@SubscribeEvent
 	public void renderSpecificHand(RenderSpecificHandEvent event) {
 		Player player = Minecraft.getInstance().player;
-		if ((event.getItemStack().getItem() instanceof ItemCloak && !WeaponsCapability.get(player).isFeign()
-				&& ((ItemCloak) event.getItemStack().getItem()).isFeignDeath(event.getItemStack(), player))) {
+		if ((event.getItem().getItem() instanceof ItemCloak && !WeaponsCapability.get(player).isFeign()
+				&& ((ItemCloak) event.getItem().getItem()).isFeignDeath(event.getItem(), player))) {
 			event.setCanceled(true);
 		}
 	}
@@ -1183,7 +1183,7 @@ public class TF2EventsClient {
 					&& minecraft.player.getMainHandItem() != null)
 				if (minecraft.player.getMainHandItem().getItem() instanceof ItemUsable) {
 					Mouse.poll();
-					minecraft.player.rotationYawHead = minecraft.player.getYRot();
+					minecraft.player.yHeadRot = minecraft.player.getYRot();
 					moveEntities = true;
 					keyPressUpdate(Mouse.isButtonDown(minecraft.options.keyBindAttack.getKeyCode() + 100),
 							Mouse.isButtonDown(minecraft.options.keyBindUseItem.getKeyCode() + 100));
@@ -1206,21 +1206,21 @@ public class TF2EventsClient {
 
 	@SubscribeEvent
 	public void playerName(PlayerEvent.NameFormat event) {
-		if (Minecraft.getInstance().player != null && WeaponsCapability.get(event.getEntityPlayer()).isDisguised()) {
+		if (Minecraft.getInstance().player != null && WeaponsCapability.get(event.getEntity()).isDisguised()) {
 
-			String username = WeaponsCapability.get(event.getEntityPlayer()).getDisguiseType().substring(2);
-			if (TF2Util.isAlliedTo(Minecraft.getInstance().player, event.getEntityPlayer())) {
+			String username = WeaponsCapability.get(event.getEntity()).getDisguiseType().substring(2);
+			if (TF2Util.isAlliedTo(Minecraft.getInstance().player, event.getEntity())) {
 				event.setDisplayname(event.getDisplayname() + " [" + username + "]");
 			} else {
-				if (WeaponsCapability.get(event.getEntityPlayer()).getDisguiseType().startsWith("M:")) {
-					if (event.getEntityPlayer().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).entityDisguise != null) {
+				if (WeaponsCapability.get(event.getEntity()).getDisguiseType().startsWith("M:")) {
+					if (event.getEntity().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).entityDisguise != null) {
 						event.setDisplayname(ChatFormatting.RESET
-								+ event.getEntityPlayer().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).entityDisguise
+								+ event.getEntity().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).entityDisguise
 										.getHoverName().getString());
 					} else
 						event.setDisplayname(ChatFormatting.RESET + I18n.get("entity." + username + ".name"));
 
-				} else if (WeaponsCapability.get(event.getEntityPlayer()).getDisguiseType().startsWith("P:")) {
+				} else if (WeaponsCapability.get(event.getEntity()).getDisguiseType().startsWith("P:")) {
 					event.setDisplayname(PlayerTeam.formatPlayerName(
 							Minecraft.getInstance().level.getScoreboard().getPlayersTeam(username), username));
 				} else {
@@ -1255,7 +1255,7 @@ public class TF2EventsClient {
 
 		if (event.getEntity().getCapability(TF2weapons.INVENTORY_CAP).isPresent()) {
 			InventoryWearables cap = event.getEntity().getCapability(TF2weapons.INVENTORY_CAP).orElse(null);
-			for (int i = 0; i < cap.getSizeInventory(); i++) {
+			for (int i = 0; i < cap.getContainerSize(); i++) {
 				ItemStack hat = cap.getStackInSlot(i);
 				if (hat.getItem() instanceof ItemFromData
 						&& (((ItemFromData) hat.getItem()).getVisibilityFlags(hat, event.getEntity()) & 1) == 1) {
@@ -1420,15 +1420,15 @@ public class TF2EventsClient {
 							event.getEntity().getZ(), event.getEntity().getYRot(), event.getEntity().getXRot(), 0,
 							true);
 					entToRender.yBodyRotO = event.getEntity().yBodyRotO;
-					entToRender.rotationPitch = event.getEntity().getXRot();
+					entToRender.setXRot((event.getEntity().getXRot()));
 					entToRender.xRotO = event.getEntity().xRotO;
 					entToRender.yRotO = event.getEntity().yRotO;
-					entToRender.rotationYawHead = event.getEntity().yHeadRot;
+					entToRender.yHeadRot = event.getEntity().yHeadRot;
 					entToRender.yHeadRotO = event.getEntity().yHeadRotO;
 					entToRender.yBodyRot = event.getEntity().yBodyRot;
 					entToRender.limbSwing = event.getEntity().limbSwing;
-					entToRender.limbSwingAmount = event.getEntity().limbSwingAmount;
-					entToRender.prevLimbSwingAmount = event.getEntity().prevLimbSwingAmount;
+					entToRender.animationSpeed = event.getEntity().animationSpeed;
+					entToRender.animationSpeedOld = event.getEntity().animationSpeedOld;
 					entToRender.tickCount = event.getEntity().tickCount;
 					entToRender.hurtTime = event.getEntity().hurtTime;
 
@@ -1617,30 +1617,30 @@ public class TF2EventsClient {
 
 	@SubscribeEvent
 	public void addTooltip(ItemTooltipEvent event) {
-		if (event.getItemStack().getItem() == TF2weapons.itemTF2) return;
-		if (event.getItemStack().hasTag() && event.getItemStack().getTag().getBoolean("Australium")
-				&& !(event.getItemStack().getItem() instanceof ItemFromData)
-				&& !event.getItemStack().hasCustomHoverName()) {
+		if (event.getItem().getItem() == TF2weapons.itemTF2) return;
+		if (event.getItem().hasTag() && event.getItem().getTag().getBoolean("Australium")
+				&& !(event.getItem().getItem() instanceof ItemFromData)
+				&& !event.getItem().hasCustomHoverName()) {
 			event.getToolTip().set(0, "Australium " + event.getToolTip().get(0));
 		}
-		if (event.getItemStack().hasTag() && event.getItemStack().getTag().getBoolean("Strange")) {
-			if (!(event.getItemStack().getItem() instanceof ItemFromData) && !event.getItemStack().hasCustomHoverName()) {
+		if (event.getItem().hasTag() && event.getItem().getTag().getBoolean("Strange")) {
+			if (!(event.getItem().getItem() instanceof ItemFromData) && !event.getItem().hasCustomHoverName()) {
 				event.getToolTip().set(0,
-						TF2EventsCommon.STRANGE_TITLES[event.getItemStack().getTag().getInt("StrangeLevel")]
+						TF2EventsCommon.STRANGE_TITLES[event.getItem().getTag().getInt("StrangeLevel")]
 								+ " " + event.getToolTip().get(0));
 			}
 
 			event.getToolTip().add("");
-			if (event.getItemStack().getItem() instanceof ItemMedigun) {
+			if (event.getItem().getItem() instanceof ItemMedigun) {
 				event.getToolTip()
-						.add("Ubercharges: " + event.getItemStack().getTag().getInt("Ubercharges"));
-			} else if (event.getItemStack().getItem() instanceof ItemCloak) {
+						.add("Ubercharges: " + event.getItem().getTag().getInt("Ubercharges"));
+			} else if (event.getItem().getItem() instanceof ItemCloak) {
 				event.getToolTip()
-						.add("Seconds cloaked: " + event.getItemStack().getTag().getInt("CloakTicks") / 20);
+						.add("Seconds cloaked: " + event.getItem().getTag().getInt("CloakTicks") / 20);
 			} else {
-				event.getToolTip().add("Mob kills: " + event.getItemStack().getTag().getInt("Kills"));
+				event.getToolTip().add("Mob kills: " + event.getItem().getTag().getInt("Kills"));
 				event.getToolTip()
-						.add("Player kills: " + event.getItemStack().getTag().getShort("PlayerKills"));
+						.add("Player kills: " + event.getItem().getTag().getShort("PlayerKills"));
 			}
 		}
 

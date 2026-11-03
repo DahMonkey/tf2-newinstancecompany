@@ -24,8 +24,8 @@ public class EntityOfClassFunction extends LootItemFunction {
 	}
 
 	@Override
-	public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
-		stack = ItemFromData.getRandomWeaponOfType(weaponClass, rand, true);
+	public ItemStack apply(ItemStack stack, RandomSource random, LootContext context) {
+		stack = ItemFromData.getRandomWeaponOfType(weaponClass, random, true);
 		if (! stack.hasTag()) stack.setTag(new CompoundTag());
 		stack.getTag().putBoolean("DropFrom", true);
 		return stack;

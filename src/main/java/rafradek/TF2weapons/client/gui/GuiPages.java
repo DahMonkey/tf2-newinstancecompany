@@ -21,8 +21,8 @@ public class GuiPages extends Screen {
 
 	private static final ResourceLocation CRAFTING_TABLE_GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/cabinet.png");
 
-	private int guiLeft;
-	private int guiTop;
+	private int leftPos;
+	private int topPos;
 	public GuiButtonToggleItem[] buttonsItem;
 	public NonNullList<ItemStack> itemsToRender;
 	public int firstIndex;
@@ -35,8 +35,8 @@ public class GuiPages extends Screen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		guiLeft = width / 2 - 146;
-		guiTop = height / 2 - 120;
+		leftPos = width / 2 - 146;
+		topPos = height / 2 - 120;
 		buttonsItem = new GuiButtonToggleItem[16 * 6];
 		itemsToRender = NonNullList.<ItemStack>create();
 		TF2weapons.tabweapontf2.displayAllRelevantItems(itemsToRender);
@@ -44,10 +44,10 @@ public class GuiPages extends Screen {
 		TF2weapons.tabsurvivaltf2.displayAllRelevantItems(itemsToRender);
 		for (int x = 0; x < 16; x++) for (int y = 0; y < 6; y++) if (x + y * 16 < itemsToRender.size()) {
 					GuiButtonToggleItem button = buttonsItem[x + y * 16] = new GuiButtonToggleItem(x + y * 16,
-							guiLeft + 4 + x * 18, guiTop + 34 + y * 18, 18, 18);
+							leftPos + 4 + x * 18, topPos + 34 + y * 18, 18, 18);
 					buttonList.add(button);
 				}
-		buttonList.add(new Button(96, guiLeft + 200, guiTop + 14, "Back"));
+		buttonList.add(new Button(96, leftPos + 200, topPos + 14, "Back"));
 		// this.buttonList.get(96).visible=false;
 		setButtons();
 
@@ -58,8 +58,8 @@ public class GuiPages extends Screen {
 		drawDefaultBackground();
 		if (selectedIndex == -1) {
 			boolean flag = Mouse.isButtonDown(0);
-			int i = guiLeft;
-			int j = guiTop;
+			int i = leftPos;
+			int j = topPos;
 			int k = i + 292;
 			int l = j + 34;
 			int i1 = k + 14;
@@ -75,8 +75,8 @@ public class GuiPages extends Screen {
 				setButtons();
 			}
 			mc.RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
-			k = guiLeft + 293;
-			l = guiTop + 35;
+			k = leftPos + 293;
+			l = topPos + 35;
 			i = l + 108;
 			drawTexturedModalRect(k, l + (int) ((i - l - 17) * scroll), 232, 0, 12, 15);
 		} else displayItem(itemsToRender.get(selectedIndex));
@@ -110,9 +110,9 @@ public class GuiPages extends Screen {
 		ArrayList<String> list = new ArrayList<>();
 		list.add(stack.getHoverName());
 		stack.getItem().appendHoverText(stack, Minecraft.getInstance().level, list, TooltipFlag.TooltipFlags.NORMAL);
-		for (int i = 0; i < list.size(); i++) fontRenderer.drawStringWithShadow(list.get(i), guiLeft + 70, guiTop + 34 + 10 * i, 0xFFFFFF);
-		int yStart = guiTop + 36 + Math.max(64, list.size() * 10);
-		this.drawHorizontalLine(guiLeft + 4, guiLeft + 292, yStart, 0xFFFFFF);
+		for (int i = 0; i < list.size(); i++) fontRenderer.drawStringWithShadow(list.get(i), leftPos + 70, topPos + 34 + 10 * i, 0xFFFFFF);
+		int yStart = topPos + 36 + Math.max(64, list.size() * 10);
+		this.drawHorizontalLine(leftPos + 4, leftPos + 292, yStart, 0xFFFFFF);
 		list.clear();
 		list.add("Tips:");
 		if (stack.getItem() instanceof ItemSniperRifle) {
@@ -175,12 +175,12 @@ public class GuiPages extends Screen {
 				list.add("Reload time: " + format.format(((ItemWeapon) stack.getItem()).getWeaponReloadTime(stack, null) * 0.001f) + "s");
 			}
 		}
-		for (int i = 0; i < list.size(); i++) fontRenderer.drawStringWithShadow(list.get(i), guiLeft + 4, yStart + 14 + i * 10, 0xFFFFFF);
+		for (int i = 0; i < list.size(); i++) fontRenderer.drawStringWithShadow(list.get(i), leftPos + 4, yStart + 14 + i * 10, 0xFFFFFF);
 		GlStateManager.enableLighting();
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scale(4, 4, 4);
-		mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, (guiLeft + 4) / 4, (guiTop + 36) / 4);
-		mc.getItemRenderer().renderItemOverlays(mc.font, stack, guiLeft + 4, guiTop + 36);
+		mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, (leftPos + 4) / 4, (topPos + 36) / 4);
+		mc.getItemRenderer().renderItemOverlays(mc.font, stack, leftPos + 4, topPos + 36);
 		GlStateManager.scale(0.25, 0.25, 0.25);
 		GlStateManager.disableLighting();
 		RenderHelper.disableStandardItemLighting();

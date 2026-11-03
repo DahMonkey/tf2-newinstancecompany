@@ -63,7 +63,7 @@ public class InventoryWearables extends SimpleContainer implements ICapabilityPr
 	@Override
 	public ListTag serializeNBT() {
 		ListTag list = new ListTag();
-		for (int i = 0; i < this.getSizeInventory(); i++) {
+		for (int i = 0; i < this.getContainerSize(); i++) {
 			ItemStack itemstack = this.getStackInSlot(i);
 
 			if (!itemstack.isEmpty()) {

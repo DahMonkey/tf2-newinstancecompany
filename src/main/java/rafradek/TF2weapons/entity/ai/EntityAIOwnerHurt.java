@@ -17,49 +17,49 @@ public class EntityAIOwnerHurt extends TargetGoal {
 
 	@Override
 	public boolean shouldExecute() {
-		Player owner=(Player) ((EntityTF2Character) this.taskOwner).getOwner();
+		Player owner=(Player) ((EntityTF2Character) this.mob).getOwner();
 		return owner != null && (owner.getLastHurtByMob() != null || owner.getLastHurtMob() != null);
 	}
 
 	public void startExecuting()
     {
-		Player owner=(Player) ((EntityTF2Character) this.taskOwner).getOwner();
+		Player owner=(Player) ((EntityTF2Character) this.mob).getOwner();
 		if(owner.getLastHurtByMob() != null && this.isSuitableTarget(owner.getLastHurtByMob(), false))
-			this.taskOwner.setTarget(owner.getLastHurtByMob());
+			this.mob.setTarget(owner.getLastHurtByMob());
 		else if(owner.getLastHurtMob() != null && this.isSuitableTarget(owner.getLastHurtMob(), false))
-			this.taskOwner.setTarget(owner.getLastHurtMob());
+			this.mob.setTarget(owner.getLastHurtMob());
     }
 	
 	@Override
 	protected boolean isSuitableTarget(LivingEntity target, boolean includeInvincibles) {
 		if (target == null)
 			return false;
-		else if (target == this.taskOwner)
+		else if (target == this.mob)
 			return false;
 		else if (!target.isAlive())
 			return false;
-		else if (!this.taskOwner.canAttackClass(target.getClass()))
+		else if (!this.mob.canAttackClass(target.getClass()))
 			return false;
 		else {
-			Team team = this.taskOwner.getTeam();
+			Team team = this.mob.getTeam();
 			Team team1 = target.getTeam();
 
-			if ((team != null && team1 == team) && !(this.taskOwner instanceof EntityMedic))
+			if ((team != null && team1 == team) && !(this.mob instanceof EntityMedic))
 				return false;
 			else {
-				if (this.taskOwner instanceof OwnableEntity
-						&& ((OwnableEntity) this.taskOwner).getOwnerId() != null) {
-					if (target instanceof OwnableEntity && ((OwnableEntity) this.taskOwner).getOwnerId()
-							.equals(((OwnableEntity) target).getOwnerId()))
+				if (this.mob instanceof OwnableEntity
+						&& ((OwnableEntity) this.mob).getOwnerUUID() != null) {
+					if (target instanceof OwnableEntity && ((OwnableEntity) this.mob).getOwnerUUID()
+							.equals(((OwnableEntity) target).getOwnerUUID()))
 						return false;
 
-					if (target == ((OwnableEntity) this.taskOwner).getOwner())
+					if (target == ((OwnableEntity) this.mob).getOwner())
 						return false;
 				} else if (target instanceof Player && !includeInvincibles
 						&& ((Player) target).getAbilities().disableDamage)
 					return false;
 
-				return !this.shouldCheckSight || this.taskOwner.getEntitySenses().canSee(target);
+				return !this.shouldCheckSight || this.mob.getSensing().canSee(target);
 			}
 		}
 	}

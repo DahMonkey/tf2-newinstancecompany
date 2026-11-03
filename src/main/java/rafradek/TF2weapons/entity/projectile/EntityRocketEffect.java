@@ -13,17 +13,17 @@ public class EntityRocketEffect extends Particle {
 		super(par1World, rocket.getX(), rocket.getY(), rocket.getZ());
 		// this.noClip=true;
 		this.rocket = rocket;
-		this.particleScale = 1;
-		this.particleMaxAge = 200;
+		this.quadSize = 1;
+		this.lifetime = 200;
 		this.setSize(0.1f, 0.1f);
 		this.setParticleTextureIndex(163);
-		this.particleAlpha = 0.75f;
+		this.alpha = 0.75f;
 		// this.setParticleIcon(TF2EventBusListener.pelletIcon);
 		// this.setParticleTextureIndex(81);
 		this.multipleParticleScaleBy(2);
-		this.setRBGColorF(1f, 0.5f, 0f);
-		this.particleTextureJitterX = this.rand.nextFloat();
-		this.particleTextureJitterY = this.rand.nextFloat();
+		this.setColor(1f, 0.5f, 0f);
+		this.particleTextureJitterX = this.random.nextFloat();
+		this.particleTextureJitterY = this.random.nextFloat();
 	}
 
 	@Override
@@ -34,9 +34,9 @@ public class EntityRocketEffect extends Particle {
 		}
 		this.setPos(rocket.xo - rocket.getDeltaMovement().x * 0.5f, rocket.yo - rocket.getDeltaMovement().y * 0.5f,
 				rocket.zo - rocket.getDeltaMovement().z * 0.5f);
-		this.motionX = rocket.getDeltaMovement().x;
-		this.motionY = rocket.getDeltaMovement().y;
-		this.motionZ = rocket.getDeltaMovement().z;
+		this.setDeltaMovement((rocket.getDeltaMovement().x), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (rocket.getDeltaMovement().y), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (rocket.getDeltaMovement().z));
 		super.onUpdate();
 	}
 

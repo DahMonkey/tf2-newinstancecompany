@@ -19,7 +19,7 @@ public class Contract {
 	public final static int REWARD_LOW = 40;
 	public final static int REWARD_HIGH = 135;
 
-	public Contract(String className, int expireDay, Random rand) {
+	public Contract(String className, int expireDay, RandomSource random) {
 		this.className = className;
 		this.expireDay = expireDay;
 		this.objectives = new Objective[3];
@@ -45,10 +45,10 @@ public class Contract {
 		// for(int i=0;i<2;i++) {
 		// int toAdd=rand.nextInt(applicableNormal.size());
 		this.objectives[0] = Objective.KILL;
-		this.objectives[1] = applicableNormal.remove(rand.nextInt(applicableNormal.size()));
+		this.objectives[1] = applicableNormal.remove(random.nextInt(applicableNormal.size()));
 		// }
 
-		this.objectives[2] = applicableAdvanced.remove(rand.nextInt(applicableAdvanced.size()));
+		this.objectives[2] = applicableAdvanced.remove(random.nextInt(applicableAdvanced.size()));
 	}
 
 	public Contract(String className, int expireDay, Objective[] objectives) {
@@ -59,7 +59,7 @@ public class Contract {
 
 	public void completeContract(Player player) {
 		if ((this.rewards & 1) == 1) {
-			ItemStack reward = player.getRandom().nextBoolean() ? new ItemStack(TF2weapons.itemTF2, 1, 2)
+			ItemStack reward = player.getRandom().nextBoolean() ? TF2Util.metaStack(TF2weapons.itemTF2, 1, 2)
 					: ItemFromData.getRandomWeapon(player.getRandom(), ItemFromData.VISIBLE_WEAPON);
 			if (!player.getInventory().addItemStackToInventory(reward))
 				player.dropItem(reward, true);
@@ -67,8 +67,8 @@ public class Contract {
 			TF2Util.setExperiencePoints(player, TF2Util.getExperiencePoints(player) + 240);
 		}
 		if ((this.rewards & 2) == 2) {
-			ItemStack reward = player.getRandom().nextBoolean() ? new ItemStack(TF2weapons.itemTF2, 4, 2)
-					: new ItemStack(TF2weapons.itemTF2, 1, 7);
+			ItemStack reward = player.getRandom().nextBoolean() ? TF2Util.metaStack(TF2weapons.itemTF2, 4, 2)
+					: TF2Util.metaStack(TF2weapons.itemTF2, 1, 7);
 			if (!player.getInventory().addItemStackToInventory(reward))
 				player.dropItem(reward, true);
 			player.addExperience(600);

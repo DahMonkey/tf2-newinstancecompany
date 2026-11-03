@@ -20,7 +20,7 @@ public class EntitySniper extends EntityTF2Character {
 	public EntitySniper(Level par1World) {
 		super(par1World);
 		// this.ammoLeft = 18;
-		this.experienceValue = 15;
+		this.xpReward = 15;
 		this.rotation = 3;
 		if (this.attack != null) {
 			attack.setRange(50);
@@ -144,10 +144,10 @@ public class EntitySniper extends EntityTF2Character {
 	 */
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		if (this.rand.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
-			this.entityDropItem(ItemFromData.getNewStack("smg"), 0);
-		if (this.rand.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
-			this.entityDropItem(ItemFromData.getNewStack("sniperrifle"), 0);
+		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
+			this.spawnAtLocation(ItemFromData.getNewStack("smg"), 0);
+		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)
+			this.spawnAtLocation(ItemFromData.getNewStack("sniperrifle"), 0);
 	}
 
 	@Override

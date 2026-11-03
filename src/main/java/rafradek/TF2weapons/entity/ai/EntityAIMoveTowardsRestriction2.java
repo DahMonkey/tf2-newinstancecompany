@@ -17,7 +17,7 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 	public EntityAIMoveTowardsRestriction2(PathfinderMob creatureIn, double speedIn) {
 		this.creature = creatureIn;
 		this.movementSpeed = speedIn;
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 	 */
 	@Override
 	public boolean shouldContinueExecuting() {
-		return !this.creature.getNavigation().noPath();
+		return !this.creature.getNavigation().isDone();
 	}
 
 	/**

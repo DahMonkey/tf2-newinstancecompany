@@ -108,12 +108,12 @@ public class BlockUpgradeStation extends BaseEntityBlock {
 			world.setBlock(pos.move(dirop), statehelp);
 		if (world.isEmptyBlock(pos.move(dirop, -1)))
 			world.setBlock(pos.move(dirop, -1), statehelp);
-		if (world.isEmptyBlock(pos.move(dirop, -1).up()))
-			world.setBlock(pos.move(dirop, -1).up(), statehelp);
-		if (world.isEmptyBlock(pos.up()))
-			world.setBlock(pos.up(), statehelp);
-		if (world.isEmptyBlock(pos.move(dirop).up()))
-			world.setBlock(pos.move(dirop).up(), statehelp);
+		if (world.isEmptyBlock(pos.move(dirop, -1).above()))
+			world.setBlock(pos.move(dirop, -1).above(), statehelp);
+		if (world.isEmptyBlock(pos.above()))
+			world.setBlock(pos.above(), statehelp);
+		if (world.isEmptyBlock(pos.move(dirop).above()))
+			world.setBlock(pos.move(dirop).above(), statehelp);
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class BlockUpgradeStation extends BaseEntityBlock {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
-		list.add(new ItemStack(this, 1, 8));
+		list.add(TF2Util.metaStack(this, 1, 8));
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class BlockUpgradeStation extends BaseEntityBlock {
 	}
 
 	@Override
-	public Item getItemDropped(BlockState state, Random rand, int fortune) {
+	public Item getItemDropped(BlockState state, RandomSource random, int fortune) {
 		return null;
 	}
 }

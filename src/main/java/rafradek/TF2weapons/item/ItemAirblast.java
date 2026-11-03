@@ -120,9 +120,9 @@ public class ItemAirblast extends ItemProjectileWeapon {
 						? 1 - ((LivingEntity) entity)
 								.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getValue()
 						: 0.2) + TF2Attribute.getModifier("Flame Range", stack, 0.8f, living);
-				entity.motionX = lookVec.x * 0.6 * mult;
-				entity.motionY = (lookVec.y * 0.2 + 0.36) * mult;
-				entity.motionZ = lookVec.z * 0.6 * mult;
+				entity.setDeltaMovement((lookVec.x * 0.6 * mult), entity.getDeltaMovement().y, entity.getDeltaMovement().z);
+				entity.setDeltaMovement(entity.getDeltaMovement().x, ((lookVec.y * 0.2 + 0.36) * mult), entity.getDeltaMovement().z);
+				entity.setDeltaMovement(entity.getDeltaMovement().x, entity.getDeltaMovement().y, (lookVec.z * 0.6 * mult));
 			}
 			if (entity instanceof EntityProjectileBase) {
 				((EntityProjectileBase) entity).reflected = true;

@@ -37,8 +37,8 @@ public class GuiTeleporter extends AbstractContainerScreen {
 		this.teleporter = teleporter;
 		exit = teleporter.isExit();
 		channel = teleporter.getID();
-		xSize = 212;
-		ySize = 195;
+		imageWidth = 212;
+		imageHeight = 195;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class GuiTeleporter extends AbstractContainerScreen {
 		buttonList.add(teleportUpBtn = new Button(1, width / 2 - 60, height / 2 - 40, 20, 20, "+"));
 		buttonList.add(teleportDownBtn = new Button(2, width / 2 - 10, height / 2 - 40, 20, 20, "-"));
 		buttonList.add(exitToggle = new Button(3, width / 2 + 10, height / 2 - 40, 50, 20, "Exit"));
-		buttonList.add(grab = new Button(4, guiLeft + 86, guiTop + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
+		buttonList.add(grab = new Button(4, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
 		if (channel == 127) {
 			teleportField.setEnabled(false);
 			teleportUpBtn.enabled = false;
@@ -119,11 +119,11 @@ public class GuiTeleporter extends AbstractContainerScreen {
 		exitToggle.displayString = exit ? "Exit" : "Entry";
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		teleportField.drawTextBox();
-		if (mouseX >= guiLeft + 7 && mouseX < guiLeft + 23 && mouseY >= guiTop + 15 && mouseY < guiTop + 75) {
+		if (mouseX >= leftPos + 7 && mouseX < leftPos + 23 && mouseY >= topPos + 15 && mouseY < topPos + 75) {
 			if (ClientProxy.buildingsUseEnergy) drawHoveringText("Energy: " + teleporter.getInfoEnergy() + "/" + teleporter.energy.getMaxEnergyStored(), mouseX, mouseY);
 			else drawHoveringText("Energy use is disabled", mouseX, mouseY);
 		}
-		if (mouseX >= guiLeft + 5 && mouseX < guiLeft + 23 && mouseY >=guiTop + 112 && mouseY < guiTop + 130) drawHoveringText(
+		if (mouseX >= leftPos + 5 && mouseX < leftPos + 23 && mouseY >=topPos + 112 && mouseY < topPos + 130) drawHoveringText(
 					Arrays.asList(I18n.get("gui.teleporter.help", new Object[0]).split(Pattern.quote("\\n"))), mouseX, mouseY);
 		// System.out.println("dfs");
 		renderHoveredToolTip(mouseX, mouseY);
@@ -139,10 +139,10 @@ public class GuiTeleporter extends AbstractContainerScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-		this.drawGradientRect(guiLeft + 7, guiTop + 75 - (int) (((float) teleporter.getInfoEnergy() /
-						(float) teleporter.energy.getMaxEnergyStored()) * 60f), guiLeft + 23, guiTop + 75, 0xFFBF0000, 0xFF7F0000);
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);
+		this.drawGradientRect(leftPos + 7, topPos + 75 - (int) (((float) teleporter.getInfoEnergy() /
+						(float) teleporter.energy.getMaxEnergyStored()) * 60f), leftPos + 23, topPos + 75, 0xFFBF0000, 0xFF7F0000);
 	}
 }

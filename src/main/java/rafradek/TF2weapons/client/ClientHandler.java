@@ -41,7 +41,7 @@ public class ClientHandler {
 	}
 
 	public static void createConfigGui(GuiConfigMessage message) {
-		Minecraft.getInstance().addScheduledTask(() -> Minecraft.getInstance().setScreen(GuiConfigurable2.create(message.getTag(), message.getBlockPos())));
+		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(GuiConfigurable2.create(message.getTag(), message.getBlockPos())));
 	}
 
 	public static void createGui(ShowGuiMessage message) {
@@ -53,7 +53,7 @@ public class ClientHandler {
 		for (int i = 0; i < allowed.length; i++) {
 			allowed[i] = allowedbyte[i] == 1;
 		}
-		Minecraft.getInstance().addScheduledTask(
+		Minecraft.getInstance().execute(
 				() -> Minecraft.getInstance().setScreen(new GuiTeamSelect(teams, counts, allowed)));
 	}
 

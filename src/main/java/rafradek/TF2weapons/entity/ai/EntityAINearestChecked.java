@@ -31,7 +31,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 		super(p_i1665_1_, p_i1665_4_, p_i1665_5_);
 		this.targetClass = p_i1665_2_;
 		this.theNearestAttackableTargetSorter = new NearestAttackableTargetGoal.Sorter(p_i1665_1_);
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 		this.targetLock = targetLock;
 		this.targetEntitySelector = target -> {
 			if (p_i1665_6_ != null && !p_i1665_6_.apply(target))
@@ -55,12 +55,12 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 					}
 					if (target.getCapability(TF2weapons.WEAPONS_CAP).isPresent()
 							&& (target.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).invisTicks >= 20
-									|| ItemDisguiseKit.isDisguised(target, taskOwner)))
+									|| ItemDisguiseKit.isDisguised(target, mob)))
 						d0 = 1;
 					boolean fastCheck = allowBehind || (!(target instanceof Player)
-							&& (TF2ConfigVars.naturalCheck.equals("Fast") && taskOwner instanceof EntityTF2Character
-									&& ((EntityTF2Character) taskOwner).natural));
-					if (target.distanceTo(taskOwner) > d0 || (!fastCheck && !TF2Util.lookingAtFast(taskOwner, 86,
+							&& (TF2ConfigVars.naturalCheck.equals("Fast") && mob instanceof EntityTF2Character
+									&& ((EntityTF2Character) mob).natural));
+					if (target.distanceTo(mob) > d0 || (!fastCheck && !TF2Util.lookingAtFast(mob, 86,
 							target.getX(), target.getY() + target.getEyeHeight(), target.getZ())))
 						return false;
 
@@ -74,17 +74,17 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 	@Override
 	public boolean shouldExecute() {
 		double d0 = this.getTargetDistance() / 2;
-		if (((this.taskOwner.getTarget() == null)
-				|| this.taskOwner.getTarget().distanceToSqr(taskOwner) > d0 * d0))
+		if (((this.mob.getTarget() == null)
+				|| this.mob.getTarget().distanceToSqr(mob) > d0 * d0))
 			this.targetChoosen++;
-		if (((this.taskOwner.getTarget() == null) && this.targetChoosen > 1) || this.targetChoosen > 5
+		if (((this.mob.getTarget() == null) && this.targetChoosen > 1) || this.targetChoosen > 5
 				|| !this.targetLock) {
 			// System.out.println("executing
 			// "+this.taskOwner.getClass().getName());
 			this.targetChoosen = 0;
 			double d1 = this.getTargetDistance();
-			List<? extends LivingEntity> list = this.taskOwner.level.getEntitiesOfClass(this.targetClass,
-					this.taskOwner.getBoundingBox().inflate(d1, d0, d1), this.targetEntitySelector);
+			List<? extends LivingEntity> list = this.mob.level.getEntitiesOfClass(this.targetClass,
+					this.mob.getBoundingBox().inflate(d1, d0, d1), this.targetEntitySelector);
 			Collections.sort(list, this.theNearestAttackableTargetSorter);
 
 			if (list.isEmpty())
@@ -101,9 +101,9 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 
 	@Override
 	public void startExecuting() {
-		this.taskOwner.setTarget(this.targetEntity);
-		if (this.taskOwner instanceof EntityTF2Character && this.taskOwner.getTarget() != null) {
-			EntityTF2Character shooter = ((EntityTF2Character) this.taskOwner);
+		this.mob.setTarget(this.targetEntity);
+		if (this.mob instanceof EntityTF2Character && this.mob.getTarget() != null) {
+			EntityTF2Character shooter = ((EntityTF2Character) this.mob);
 			shooter.targetPrevPos[0] = shooter.getTarget().getX();
 			shooter.targetPrevPos[2] = shooter.getTarget().getY();
 			shooter.targetPrevPos[4] = shooter.getTarget().getZ();
@@ -117,28 +117,28 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 	 */
 	@Override
 	public boolean shouldContinueExecuting() {
-		LivingEntity entitylivingbase = this.taskOwner.getTarget();
+		LivingEntity entitylivingbase = this.mob.getTarget();
 
 		if (entitylivingbase == null)
 			return false;
 		else if (!entitylivingbase.isAlive())
 			return false;
-		else if (!this.targetLock && this.taskOwner.tickCount % 13 == 0)
+		else if (!this.targetLock && this.mob.tickCount % 13 == 0)
 			return this.shouldExecute();
 		else {
-			Team team = this.taskOwner.getTeam();
+			Team team = this.mob.getTeam();
 			Team team1 = entitylivingbase.getTeam();
 
-			if ((team != null && team1 == team) && !(this.taskOwner instanceof EntityMedic))
+			if ((team != null && team1 == team) && !(this.mob instanceof EntityMedic))
 				return false;
 			else {
 				double d0 = this.getTargetDistance();
 
-				if (this.taskOwner.distanceToSqr(entitylivingbase) > d0 * d0)
+				if (this.mob.distanceToSqr(entitylivingbase) > d0 * d0)
 					return false;
 				else {
 					if (this.shouldCheckSight)
-						if (this.taskOwner.getEntitySenses().canSee(entitylivingbase))
+						if (this.mob.getSensing().canSee(entitylivingbase))
 							this.targetUnseenTicks = 0;
 						else if (++this.targetUnseenTicks > 60)
 							return false;
@@ -154,33 +154,33 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 	protected boolean isSuitableTarget(LivingEntity target, boolean includeInvincibles) {
 		if (target == null)
 			return false;
-		else if (target == this.taskOwner)
+		else if (target == this.mob)
 			return false;
 		else if (!target.isAlive())
 			return false;
-		else if (!this.taskOwner.canAttackClass(target.getClass()))
+		else if (!this.mob.canAttackClass(target.getClass()))
 			return false;
 		else {
-			Team team = this.taskOwner.getTeam();
+			Team team = this.mob.getTeam();
 			Team team1 = target.getTeam();
-			boolean medic = (this.taskOwner instanceof EntityMedic);
+			boolean medic = (this.mob instanceof EntityMedic);
 			if ((team != null && team1 == team) && !medic)
 				return false;
 			else {
-				if (!medic && this.taskOwner instanceof OwnableEntity
-						&& ((OwnableEntity) this.taskOwner).getOwnerId() != null) {
-					if (target instanceof OwnableEntity && ((OwnableEntity) this.taskOwner).getOwnerId()
-							.equals(((OwnableEntity) target).getOwnerId()))
+				if (!medic && this.mob instanceof OwnableEntity
+						&& ((OwnableEntity) this.mob).getOwnerUUID() != null) {
+					if (target instanceof OwnableEntity && ((OwnableEntity) this.mob).getOwnerUUID()
+							.equals(((OwnableEntity) target).getOwnerUUID()))
 						return false;
 
-					if (target == ((OwnableEntity) this.taskOwner).getOwner())
+					if (target == ((OwnableEntity) this.mob).getOwner())
 						return false;
 				}
 				if (target instanceof Player && !includeInvincibles
 						&& ((Player) target).getAbilities().disableDamage)
 					return false;
 
-				return !this.shouldCheckSight || this.taskOwner.getEntitySenses().canSee(target);
+				return !this.shouldCheckSight || this.mob.getSensing().canSee(target);
 			}
 		}
 	}

@@ -46,7 +46,7 @@ public class EntityAIStickybomb extends Goal {
 		this.entityMoveSpeed = par2;
 		this.attackRangeSquared = par5 * par5;
 
-		this.setMutexBits(3);
+		this.setFlags(TF2Util.mutexFlags(3);
 	}
 
 	public void setRange(float range) {
@@ -70,7 +70,7 @@ public class EntityAIStickybomb extends Goal {
 	 */
 	@Override
 	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.entityHost.getNavigation().noPath();
+		return this.shouldExecute() || !this.entityHost.getNavigation().isDone();
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class EntityAIStickybomb extends Goal {
 			this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state = 0;
 			TF2Util.sendTracking(new TF2Message.ActionMessage(0, entityHost), entityHost);
 		}
-		this.entityHost.getNavigation().clearPath();
+		this.entityHost.getNavigation().stop();
 		this.attackTarget = null;
 		this.entityHost.switchSlot(0);
 	}
@@ -113,7 +113,7 @@ public class EntityAIStickybomb extends Goal {
 
 		if (d0 <= this.attackRangeSquared) {
 			if (!this.dodging) {
-				this.entityHost.getNavigation().clearPath();
+				this.entityHost.getNavigation().stop();
 				this.dodging = true;
 			}
 		} else {

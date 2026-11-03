@@ -149,11 +149,11 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 	private static final EntityDataAccessor<Boolean> DISGUISED = new EntityDataAccessor<>(8, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Boolean> INVIS = new EntityDataAccessor<>(9, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Boolean> FEIGN = new EntityDataAccessor<>(10, EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Integer> CRIT_TIME = new EntityDataAccessor<>(0, EntityDataSerializers.VARINT);
-	private static final EntityDataAccessor<Integer> HEADS = new EntityDataAccessor<>(1, EntityDataSerializers.VARINT);
-	private static final EntityDataAccessor<Integer> HEAL_TARGET = new EntityDataAccessor<>(2, EntityDataSerializers.VARINT);
-	private static final EntityDataAccessor<Integer> METAL = new EntityDataAccessor<>(3, EntityDataSerializers.VARINT);
-	private static final EntityDataAccessor<Integer> TOKEN_USED = new EntityDataAccessor<>(12, EntityDataSerializers.VARINT);
+	private static final EntityDataAccessor<Integer> CRIT_TIME = new EntityDataAccessor<>(0, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> HEADS = new EntityDataAccessor<>(1, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> HEAL_TARGET = new EntityDataAccessor<>(2, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> METAL = new EntityDataAccessor<>(3, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> TOKEN_USED = new EntityDataAccessor<>(12, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Byte> CAN_FIRE = new EntityDataAccessor<>(13, EntityDataSerializers.BYTE);
 	private static final EntityDataAccessor<Float> UBER_VIEW = new EntityDataAccessor<>(14, EntityDataSerializers.FLOAT);
 	private static final EntityDataAccessor<Boolean> GRAPPLING = new EntityDataAccessor<>(15, EntityDataSerializers.BOOLEAN);
@@ -487,8 +487,8 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 
 		if (this.owner.isSprinting() && this.getUsedToken() >= 0) {
 			if (this.owner.onGround) {
-				owner.motionX *= 0.82D;
-				owner.motionZ *= 0.82D;
+				owner.setDeltaMovement(owner.getDeltaMovement().x * (0.82D), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (0.82D));
 			}
 			// owner.setSprinting(false);
 		}
@@ -558,10 +558,10 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 						this.grapplingHook.getZ() - this.owner.getZ());
 				if (motionVec.lengthSqr() > 0.77 * 0.77)
 					motionVec = motionVec.normalize().scale(0.77);
-				this.owner.motionX = motionVec.x;
-				this.owner.motionY = motionVec.y;
-				this.owner.motionZ = motionVec.z;
-				this.owner.isAirBorne = true;
+				this.owner.setDeltaMovement((motionVec.x), this.owner.getDeltaMovement().y, this.owner.getDeltaMovement().z);
+				this.owner.setDeltaMovement(this.owner.getDeltaMovement().x, (motionVec.y), this.owner.getDeltaMovement().z);
+				this.owner.setDeltaMovement(this.owner.getDeltaMovement().x, this.owner.getDeltaMovement().y, (motionVec.z));
+				this.owner.hasImpulse = true;
 				this.owner.onGround = false;
 				this.owner.hurtMarked = true;
 				this.setGrappled(true);
@@ -765,32 +765,32 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 					&& !owner.getItemBySlot(EquipmentSlot.FEET).getItem().getRegistryName().toString()
 							.equals("tconstruct:slime_boots");
 			if (owner.onGround) {
-				BlockPos pos = owner.blockPosition().down();
+				BlockPos pos = owner.blockPosition().below();
 				BlockState block = owner.level.getBlockState(pos);
-				owner.motionX *= block.getBlock().getSlipperiness(block, owner.level, pos, owner);
-				owner.motionZ *= block.getBlock().getSlipperiness(block, owner.level, pos, owner);
+				owner.setDeltaMovement(owner.getDeltaMovement().x * (block.getBlock().getSlipperiness(block, owner.level, pos, owner)), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (block.getBlock().getSlipperiness(block, owner.level, pos, owner)));
 			}
 
 			if (this.expJumpGround > 0) {
 				this.expJumpGround--;
 				owner.onGround = false;
-				owner.isAirBorne = true;
+				owner.hasImpulse = true;
 			} else if (owner.onGround || owner.isInWater()) {
 				this.killsAirborne = 0;
 				this.setExpJump(false);
 				if (enchanted && this.oldFactor != 0) {
-					owner.jumpMovementFactor = this.oldFactor;
+					owner.flyingSpeed = this.oldFactor;
 					enchanted = false;
 				}
 			}
 
-			if (!enchanted && owner.jumpMovementFactor == 0 && this.oldFactor != 0) {
-				owner.jumpMovementFactor = this.oldFactor;
+			if (!enchanted && owner.flyingSpeed == 0 && this.oldFactor != 0) {
+				owner.flyingSpeed = this.oldFactor;
 			}
 			if (enchanted) {
-				if (owner.jumpMovementFactor != 0) {
-					this.oldFactor = owner.jumpMovementFactor;
-					owner.jumpMovementFactor = 0;
+				if (owner.flyingSpeed != 0) {
+					this.oldFactor = owner.flyingSpeed;
+					owner.flyingSpeed = 0;
 				}
 				// System.out.println(""+owner.motionX+ " " + owner.motionY +" "+ owner.motionZ
 				// + " "+ (owner.posX - this.lastPosX));
@@ -803,8 +803,8 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				 */
 				if (owner.level.isClientSide && owner instanceof Player
 						&& !owner.level.getChunkFromBlockCoords(owner.blockPosition()).isLoaded()) {
-					owner.motionX *= 0.99;
-					owner.motionZ *= 0.99;
+					owner.setDeltaMovement(owner.getDeltaMovement().x * (0.99), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+					owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (0.99));
 				}
 				if ((!owner.level.isClientSide || owner instanceof Player)
 						&& !(TF2weapons.squakeLoaded && owner instanceof Player)) {
@@ -823,22 +823,22 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 						accel = combSpeed;
 
 					if (accel > 0) {
-						owner.motionX += moveDir.x * accel;
-						owner.motionZ += moveDir.y * accel;
+						owner.setDeltaMovement(owner.getDeltaMovement().x + (moveDir.x * accel), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+						owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z + (moveDir.y * accel));
 					}
-					owner.motionX /= 0.91;
-					owner.motionZ /= 0.91;
+					owner.setDeltaMovement(owner.getDeltaMovement().x / (0.91), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+					owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z / (0.91));
 
 				}
-				owner.motionY /= 0.98;
-				owner.motionY += 0.08 - TF2ConfigVars.explosiveJumpGravity;
+				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y / (0.98), owner.getDeltaMovement().z);
+				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y + (0.08 - TF2ConfigVars.explosiveJumpGravity), owner.getDeltaMovement().z);
 
 			}
 			owner.getBoundingBox();
 			// owner.motionX += owner.motionX -livin
 			// owner.motionZ = owner.motionZ * 1.035;
 		} else if (this.oldFactor != 0) {
-			owner.jumpMovementFactor = this.oldFactor;
+			owner.flyingSpeed = this.oldFactor;
 			this.oldFactor = 0;
 		}
 
@@ -860,21 +860,21 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 					pos = rayTrace.getBlockPos().move(rayTrace.getDirection());
 					// System.out.println(rayTrace.getBlockPos());
 				}
-				if (owner.level.isBlockFullCube(pos.down())) {
+				if (owner.level.isBlockFullCube(pos.below())) {
 					Vec3 step = TF2Util.getHeightVec(owner.level, pos);
 					Vec3 normal = step.normalize();
 					if (normal.y != 1D && normal.dot(vecOff) < 0 && !(charging != null && normal.y > 0.75)) {
 						double backoff = vec.dot(normal);
 						vec = new Vec3(vec.x - normal.x * backoff, vec.y - normal.y * backoff,
 								vec.z - normal.z * backoff);
-						owner.motionX = vec.x;
-						owner.motionY = vec.y;
-						owner.motionZ = vec.z;
+						owner.setDeltaMovement((vec.x), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+						owner.setDeltaMovement(owner.getDeltaMovement().x, (vec.y), owner.getDeltaMovement().z);
+						owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, (vec.z));
 						if (charging != null) {
 							double mult = motion / vec.length();
-							owner.motionX *= mult;
-							owner.motionY *= mult;
-							owner.motionZ *= mult;
+							owner.setDeltaMovement(owner.getDeltaMovement().x * (mult), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+							owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y * (mult), owner.getDeltaMovement().z);
+							owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (mult));
 						}
 						rayTrace = owner.level.rayTraceBlocks(vecOff.add(entPos), vecOff.add(entPos).add(vec));
 						if (rayTrace != null) {
@@ -925,8 +925,8 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				else
 					TF2Util.playSound(owner, TF2Sounds.WEAPON_SHIELD_HIT, 0.8F, 1F);
 				this.ticksBash = 20;
-				owner.motionX = 0;
-				owner.motionZ = 0;
+				owner.setDeltaMovement((0), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, (0));
 				owner.removeEffect(TF2weapons.charging);
 
 			}
@@ -1146,11 +1146,11 @@ if (typeIn == Type.SKIN) {
 				TF2weapons.network.sendToServer(message);
 			}
 
-			player.posX = oldX;
-			player.posY = oldY;
-			player.posZ = oldZ;
-			player.rotationYawHead = oldYaw;
-			player.rotationPitch = oldPitch;
+			player.setPos((oldX), player.getY(), player.getZ());
+			player.setPos(player.getX(), (oldY), player.getZ());
+			player.setPos(player.getX(), player.getY(), (oldZ));
+			player.yHeadRot = oldYaw;
+			player.setXRot((oldPitch));
 
 			this.lastFire = 1250;
 			this.fireCoolReduced = false;
@@ -1192,11 +1192,11 @@ if (typeIn == Type.SKIN) {
 				TF2weapons.network.sendToServer(new TF2Message.PredictionMessage(player.getX(), player.getY(), player.getZ(),
 						player.getXRot(), player.yHeadRot, 2, InteractionHand.MAIN_HAND));
 
-			player.posX = oldX;
-			player.posY = oldY;
-			player.posZ = oldZ;
-			player.rotationYawHead = oldYaw;
-			player.rotationPitch = oldPitch;
+			player.setPos((oldX), player.getY(), player.getZ());
+			player.setPos(player.getX(), (oldY), player.getZ());
+			player.setPos(player.getX(), player.getY(), (oldZ));
+			player.yHeadRot = oldYaw;
+			player.setXRot((oldPitch));
 
 			if (!player.level.isClientSide)
 				ItemUsable.sps++;
@@ -1215,11 +1215,11 @@ if (typeIn == Type.SKIN) {
 	}
 
 	public void preparePlayerPrediction(LivingEntity player, TF2Message.PredictionMessage message) {
-		player.posX = message.x;
-		player.posY = message.y;
-		player.posZ = message.z;
-		player.rotationYawHead = message.yaw;
-		player.rotationPitch = message.pitch;
+		player.setPos((message.x), player.getY(), player.getZ());
+		player.setPos(player.getX(), (message.y), player.getZ());
+		player.setPos(player.getX(), player.getY(), (message.z));
+		player.yHeadRot = message.yaw;
+		player.setXRot((message.pitch));
 		this.mainHand = message.hand == InteractionHand.MAIN_HAND;
 	}
 

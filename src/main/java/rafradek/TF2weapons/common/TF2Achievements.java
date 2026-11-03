@@ -10,7 +10,7 @@ public class TF2Achievements {
 	 * Achievement("achievement.joinTeam", "joinTeam", 0, 0, TF2weapons.itemHorn,
 	 * null).initIndependentStat()); public static final Achievement FIRST_ENCOUNTER
 	 * = addAchievement(new Achievement("achievement.firstEncounter",
-	 * "firstEncounter", 2, -1, new ItemStack(TF2weapons.itemAmmo, 1, 6),
+	 * "firstEncounter", 2, -1, TF2Util.metaStack(TF2weapons.itemAmmo, 1, 6),
 	 * JOIN_TEAM)); public static final Achievement WEAPON_CRAFTING =
 	 * addAchievement(new Achievement("achievement.weaponCrafting",
 	 * "weaponCrafting", 4, -1, TF2weapons.blockCabinet, FIRST_ENCOUNTER)); public

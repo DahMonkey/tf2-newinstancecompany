@@ -28,14 +28,14 @@ public class InventoryLoadout extends ItemStackHandler {
 		ItemStack old = this.getStackInSlot(slot);
 		super.setStackInSlot(slot, stack);
 		if (!old.isEmpty())
-			living.getAttributeMap()
+			living.getAttributes()
 					.removeAttributeModifiers(old.getAttributeModifiers(old.getItem().getEquipmentSlot(old)));
 		if (!stack.isEmpty()) {
 			Multimap<String, AttributeModifier> modifiers = stack
 					.getAttributeModifiers(stack.getItem().getEquipmentSlot(stack));
 			modifiers.removeAll(Attributes.ARMOR.getName());
 			modifiers.removeAll(Attributes.ARMOR_TOUGHNESS.getName());
-			living.getAttributeMap().applyAttributeModifiers(modifiers);
+			living.getAttributes().applyAttributeModifiers(modifiers);
 		}
 	}
 

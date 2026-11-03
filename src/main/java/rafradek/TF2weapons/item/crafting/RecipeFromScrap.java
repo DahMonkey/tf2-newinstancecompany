@@ -26,7 +26,7 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 		ArrayList<ItemStack> stacks = new ArrayList<>();
 
 		int tokens = 0;
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (stack.getItem() instanceof ItemTF2 && stack.getDamageValue() == 3)
@@ -42,8 +42,8 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 
 	@Override
 	public ItemStack getCraftingResult(CraftingContainer inv) {
-		ItemStack result = new ItemStack(TF2weapons.itemTF2, 1, 9);
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		ItemStack result = TF2Util.metaStack(TF2weapons.itemTF2, 1, 9);
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (stack.getItem() instanceof ItemToken) {
 				result.setTag(new CompoundTag());
@@ -55,12 +55,12 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 
 	@Override
 	public ItemStack getRecipeOutput() {
-		return new ItemStack(TF2weapons.itemTF2, 1, 9);
+		return TF2Util.metaStack(TF2weapons.itemTF2, 1, 9);
 	}
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < nonnulllist.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
@@ -79,11 +79,11 @@ public class RecipeFromScrap extends IForgeRegistryEntry.Impl<Recipe>
 	public ItemStack getSuggestion(int slot) {
 		switch (slot) {
 		case 0:
-			return new ItemStack(TF2weapons.itemTF2, 1, 3);
+			return TF2Util.metaStack(TF2weapons.itemTF2, 1, 3);
 		case 1:
-			return new ItemStack(TF2weapons.itemTF2, 1, 3);
+			return TF2Util.metaStack(TF2weapons.itemTF2, 1, 3);
 		case 2:
-			return new ItemStack(TF2weapons.itemToken, 1, 0);
+			return TF2Util.metaStack(TF2weapons.itemToken, 1, 0);
 		default:
 			return ItemStack.EMPTY;
 		}

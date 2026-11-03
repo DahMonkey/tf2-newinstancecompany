@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.mixin;
 
+import rafradek.TF2weapons.client.ItemMeshDefinition;
+
 import rafradek.TF2weapons.client.PyrolandRenderer;
 import rafradek.TF2weapons.item.ItemFromData;
 import java.util.Map;

@@ -22,7 +22,7 @@ public class KilledByTeam implements LootItemCondition {
 	}
 
 	@Override
-	public boolean testCondition(Random rand, LootContext context) {
+	public boolean testCondition(RandomSource random, LootContext context) {
 
 		Entity player = this.team ? context.getKiller() : context.getKillerPlayer();
 		if (player instanceof OwnableEntity && ((OwnableEntity) player).getOwner() instanceof Player)

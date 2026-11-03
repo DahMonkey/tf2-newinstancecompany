@@ -30,7 +30,7 @@ public class CustomAustraliumRecipeWrapper extends TF2CrafterRecipeWrapper {
 						weapons.add(new ItemStack(item));
 				inputs.add(weapons);
 			} else
-				inputs.add(Lists.newArrayList(new ItemStack(TF2weapons.itemTF2, 1, 2)));
+				inputs.add(Lists.newArrayList(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2)));
 		}
 		List<ItemStack> outputs = Lists.newArrayList();
 		for (ItemStack stack : inputs.get(upgradeInputSlot)) {

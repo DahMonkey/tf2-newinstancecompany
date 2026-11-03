@@ -16,21 +16,21 @@ public class ParticleBulletHole extends Particle {
 				result.getLocation().y + result.getDirection().getStepY() * 0.012,
 				result.getLocation().z + result.getDirection().getStepZ() * 0.012);
 		this.block = result;
-		this.particleRed = 0.05F;
-		this.particleGreen = 0.05F;
-		this.particleBlue = 0.05F;
-		this.particleAlpha = 1f;
-		this.particleMaxAge = 280;
-		this.particleScale *= 0.9F;
+		this.rCol = 0.05F;
+		this.gCol = 0.05F;
+		this.bCol = 0.05F;
+		this.alpha = 1f;
+		this.lifetime = 280;
+		this.quadSize *= 0.9F;
 		this.setSize(0.1F, 0.1F);
 		this.setParticleTextureIndex(0);
 	}
 
 	@Override
 	public void onUpdate() {
-		this.motionX = 0;
-		this.motionY = 0;
-		this.motionZ = 0;
+		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
+		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 		this.xo = this.getX();
 		this.yo = this.getY();
 		this.zo = this.getZ();
@@ -41,7 +41,7 @@ public class ParticleBulletHole extends Particle {
 			this.setExpired();
 		}
 
-		if (this.particleMaxAge-- <= 0) {
+		if (this.lifetime-- <= 0) {
 			this.setExpired();
 		}
 	}

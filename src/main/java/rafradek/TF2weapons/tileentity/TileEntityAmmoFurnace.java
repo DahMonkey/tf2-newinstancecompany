@@ -47,7 +47,7 @@ public class TileEntityAmmoFurnace extends TileEntityAbstractAmmoFurnace {
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag saveAdditional(CompoundTag compound) {
 		super.writeToNBT(compound);
 		compound.putInt("BurnTime", this.furnaceBurnTime);
 		ContainerHelper.saveAllItems(compound, furnaceItemStacks);

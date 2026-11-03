@@ -29,7 +29,7 @@ public class RecipeApplyEffect implements Recipe, IRecipeTF2 {
 		ItemStack effect = ItemStack.EMPTY;
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (effect.isEmpty() && stack.getItem() == type) {
@@ -49,7 +49,7 @@ public class RecipeApplyEffect implements Recipe, IRecipeTF2 {
 		ItemStack effect = ItemStack.EMPTY;
 		ItemStack stack2 = ItemStack.EMPTY;
 
-		for (int x = 0; x < inv.getSizeInventory(); x++) {
+		for (int x = 0; x < inv.getContainerSize(); x++) {
 			ItemStack stack = inv.getStackInSlot(x);
 			if (!stack.isEmpty())
 				if (effect.isEmpty() && stack.getItem() == type) {
@@ -80,7 +80,7 @@ public class RecipeApplyEffect implements Recipe, IRecipeTF2 {
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);

@@ -22,7 +22,7 @@ public class EntityAIFindDispenser extends Goal {
 		this.host = host;
 		this.range = range;
 		this.rangeSq = range * range;
-		this.setMutexBits(1);
+		this.setFlags(TF2Util.mutexFlags(1);
 	}
 
 	@Override
@@ -61,6 +61,6 @@ public class EntityAIFindDispenser extends Goal {
 			if (this.host.getTarget() == null)
 				this.host.getLookControl().setLookPositionWithEntity(this.target, 30, 15);
 		} else
-			this.host.getNavigation().clearPath();
+			this.host.getNavigation().stop();
 	}
 }

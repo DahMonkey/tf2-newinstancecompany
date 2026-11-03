@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client;
 
+import rafradek.TF2weapons.message.MessageContext;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.logging.log4j.LogManager;
@@ -581,7 +583,7 @@ public class ClientProxy extends CommonProxy {
 				&& Minecraft.getInstance().effectRenderer != null) {
 			int i = Minecraft.getInstance().options.particleSetting;
 
-			if (i == 1 && world.rand.nextInt(3) == 0)
+			if (i == 1 && world.random.nextInt(3) == 0)
 				i = 2;
 			if (i > 1) {
 				entity.setExpired();
@@ -718,7 +720,7 @@ public class ClientProxy extends CommonProxy {
 	public static class MovementInputCharging extends Input {
 		public MovementInputCharging() {
 			this.moveStrafe = 0.0F;
-			this.moveForward = 1.0F;
+			this.zza = 1.0F;
 		}
 
 	}

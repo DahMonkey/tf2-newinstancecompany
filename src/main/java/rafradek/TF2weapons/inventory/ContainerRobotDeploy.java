@@ -39,7 +39,7 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 		this.tileEntity = tileEntity;
 		for (int i = 0; i < 9; i++) {
 			boolean first = i == 0;
-			this.addSlotToContainer(new SlotItemHandler(tileEntity.weapon, i, 80 + (i % 3) * 18, 17 + (i / 3) * 18) {
+			this.addSlot(new SlotItemHandler(tileEntity.weapon, i, 80 + (i % 3) * 18, 17 + (i / 3) * 18) {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
@@ -50,7 +50,7 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 		}
 
 		for (int i = 0; i < 3; i++) {
-			this.addSlotToContainer(new SlotItemHandler(tileEntity.parts, i + 0, 9 + i * 18, 17) {
+			this.addSlot(new SlotItemHandler(tileEntity.parts, i + 0, 9 + i * 18, 17) {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
@@ -60,7 +60,7 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 			});
 		}
 		for (int i = 0; i < 2; i++) {
-			this.addSlotToContainer(new SlotItemHandler(tileEntity.parts, i + 3, 9 + i * 18, 38) {
+			this.addSlot(new SlotItemHandler(tileEntity.parts, i + 3, 9 + i * 18, 38) {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
@@ -70,7 +70,7 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 			});
 		}
 		for (int i = 0; i < 2; i++) {
-			this.addSlotToContainer(new SlotItemHandler(tileEntity.parts, i + 5, 9 + i * 18, 59) {
+			this.addSlot(new SlotItemHandler(tileEntity.parts, i + 5, 9 + i * 18, 59) {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
@@ -81,7 +81,7 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 		}
 
 		for (int i = 0; i < 3; i++) {
-			this.addSlotToContainer(new SlotItemHandler(tileEntity.money, i, 9 + i * 18, 80) {
+			this.addSlot(new SlotItemHandler(tileEntity.money, i, 9 + i * 18, 80) {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
@@ -93,10 +93,10 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 
 		for (int i = 0; i < 3; ++i)
 			for (int j = 0; j < 9; ++j)
-				this.addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 111 + i * 18));
+				this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 111 + i * 18));
 
 		for (int k = 0; k < 9; ++k)
-			this.addSlotToContainer(new Slot(inventory, k, 8 + k * 18, 169));
+			this.addSlot(new Slot(inventory, k, 8 + k * 18, 169));
 	}
 
 	@Override
@@ -127,33 +127,33 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 	@Nullable
 	public ItemStack transferStackInSlot(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
+		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
 			if (index < 19) {
-				if (!this.mergeItemStack(itemstack1, 19, 55, true))
+				if (!this.moveItemStackTo(itemstack1, 19, 55, true))
 					return ItemStack.EMPTY;
 
 				slot.onSlotChange(itemstack1, itemstack);
 			} else {
 				if (itemstack1.getItem() instanceof ItemRobotPart) {
 					if (!this.getSlot(9 + itemstack1.getDamageValue()).isItemValid(itemstack1)
-							|| !this.mergeItemStack(itemstack1, itemstack1.getDamageValue() + 9,
+							|| !this.moveItemStackTo(itemstack1, itemstack1.getDamageValue() + 9,
 									itemstack1.getDamageValue() + 10, false))
 						return ItemStack.EMPTY;
 				} else if (itemstack1.getItem() instanceof ItemMoney) {
 					if (!this.getSlot(16 + itemstack1.getDamageValue()).isItemValid(itemstack1)
-							|| !this.mergeItemStack(itemstack1, itemstack1.getDamageValue() + 16,
+							|| !this.moveItemStackTo(itemstack1, itemstack1.getDamageValue() + 16,
 									itemstack1.getDamageValue() + 17, false))
 						return ItemStack.EMPTY;
 				} else if (TF2Util.getWeaponUsedByClass(itemstack1) != null) {
 					boolean merged = false;
 					for (int i = 0; i < 9; i++) {
 						if (this.getSlot(i).isItemValid(itemstack1)
-								&& this.mergeItemStack(itemstack1, i, i + 1, false)) {
+								&& this.moveItemStackTo(itemstack1, i, i + 1, false)) {
 							merged = true;
 							break;
 						}
@@ -161,17 +161,17 @@ public class ContainerRobotDeploy extends AbstractContainerMenu {
 					if (!merged)
 						return ItemStack.EMPTY;
 				} else if (index >= 19 && index < 46) {
-					if (!this.mergeItemStack(itemstack1, 46, 55, false))
+					if (!this.moveItemStackTo(itemstack1, 46, 55, false))
 						return ItemStack.EMPTY;
-				} else if (index >= 46 && index < 55 && !this.mergeItemStack(itemstack1, 19, 46, false)) {
+				} else if (index >= 46 && index < 55 && !this.moveItemStackTo(itemstack1, 19, 46, false)) {
 					return ItemStack.EMPTY;
 				}
 			}
 
 			if (itemstack1.isEmpty())
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			else
-				slot.onSlotChanged();
+				slot.setChanged();
 
 			if (itemstack1.getCount() == itemstack.getCount())
 				return ItemStack.EMPTY;

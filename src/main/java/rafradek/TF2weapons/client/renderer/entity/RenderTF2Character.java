@@ -46,7 +46,7 @@ public class RenderTF2Character extends HumanoidMobRenderer<EntityTF2Character> 
 		boolean disguised = WeaponsCapability.get(entity).isDisguised() &! TF2Util.isAlliedTo(Minecraft.getInstance().player, entity);
 		if (entity.isRobot()) {
 			texture.append("robot");
-			if (entity.getOwnerId() != null) texture.append("_" + (entity.getTeam().getName().equals("BLU") ? "blu" : "red"));
+			if (entity.getOwnerUUID() != null) texture.append("_" + (entity.getTeam().getName().equals("BLU") ? "blu" : "red"));
 		} else texture.append((entity.getEntTeam() + (disguised ? 1 : 0)) % 2 == 0 ? "red" : "blu");
 		texture.append("/");
 		if (disguised && WeaponsCapability.get(entity).getDisguiseType().startsWith("T:"))

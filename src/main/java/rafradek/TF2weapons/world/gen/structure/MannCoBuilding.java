@@ -24,7 +24,7 @@ public class MannCoBuilding extends StructureComponent {
 
 	}
 
-	public MannCoBuilding(int p5, Random random, StructureBoundingBox structureboundingbox, Direction facing) {
+	public MannCoBuilding(int p5, RandomSource random, StructureBoundingBox structureboundingbox, Direction facing) {
 		super(p5);
 		this.setCoordBaseMode(facing);
 		this.boundingBox = structureboundingbox;
@@ -51,7 +51,7 @@ public class MannCoBuilding extends StructureComponent {
 	 * Spawners, it closes Mineshafts at the end, it adds Fences...
 	 */
 	@Override
-	public boolean addComponentParts(Level world, Random randomIn, StructureBoundingBox structureBoundingBoxIn) {
+	public boolean addComponentParts(Level world, RandomSource randomIn, StructureBoundingBox structureBoundingBoxIn) {
 		if (this.averageGroundLvl < 0) {
 			this.averageGroundLvl = this.getAverageGroundLevel(world, structureBoundingBoxIn);
 
@@ -154,11 +154,11 @@ public class MannCoBuilding extends StructureComponent {
 	public static class Start extends StructureStart {
 		public Start() {}
 
-		public Start(Level world, Random random, int chunkX, int chunkZ) {
+		public Start(Level world, RandomSource random, int chunkX, int chunkZ) {
 			this(world, random, chunkX, chunkZ, world.getBiome(new BlockPos(chunkX * 16 + 8, 0, chunkZ * 16 + 8)));
 		}
 
-		public Start(Level world, Random random, int chunkX, int chunkZ, Biome biomeIn) {
+		public Start(Level world, RandomSource random, int chunkX, int chunkZ, Biome biomeIn) {
 			super(chunkX, chunkZ);
 			Direction facing = Direction.Plane.HORIZONTAL.random(random);
 			StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(chunkX * 16,
@@ -243,7 +243,7 @@ public class MannCoBuilding extends StructureComponent {
 
 		@Override
 		protected StructureStart getStructureStart(int chunkX, int chunkZ) {
-			return new Start(this.level, this.rand, chunkX, chunkZ);
+			return new Start(this.level, this.random, chunkX, chunkZ);
 		}
 	}
 }

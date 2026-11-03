@@ -32,23 +32,23 @@ public class RandomWeaponFunction extends LootItemFunction {
 	}
 
 	@Override
-	public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
+	public ItemStack apply(ItemStack stack, RandomSource random, LootContext context) {
 		//loottweaker support
-		if (rand == null && context == null) {
+		if (random == null && context == null) {
 			CompoundTag nbt = stack.getTag();
-			stack = new ItemStack(TF2weapons.itemTF2, 1, stack.getItem() instanceof ItemWearable ? 10 : 9);
+			stack = TF2Util.metaStack(TF2weapons.itemTF2, 1, stack.getItem() instanceof ItemWearable ? 10 : 9);
 		 	stack.setTag(nbt);
 			return stack;
 		}
-		if (this.valveWepChance * 0.35f < rand.nextFloat()) {
-			stack = ItemFromData.getRandomWeapon(rand,
+		if (this.valveWepChance * 0.35f < random.nextFloat()) {
+			stack = ItemFromData.getRandomWeapon(random,
 					input -> (!input.getBoolean(PropertyType.HIDDEN) && input.getInt(PropertyType.ROLL_HIDDEN) == 0
 							&& !input.getString(PropertyType.CLASS).equals("cosmetic")
 							&& !input.getString(PropertyType.CLASS).equals("crate")));
 		} else {
-			stack = ItemFromData.getRandomWeapon(rand, input -> (input.getInt(PropertyType.ROLL_HIDDEN) == 2));
+			stack = ItemFromData.getRandomWeapon(random, input -> (input.getInt(PropertyType.ROLL_HIDDEN) == 2));
 		}
-		if (!stack.isEmpty() && stack.getItem() instanceof ItemWeapon && this.valveWepChance >= rand.nextFloat()) {
+		if (!stack.isEmpty() && stack.getItem() instanceof ItemWeapon && this.valveWepChance >= random.nextFloat()) {
 			stack.getTag().putBoolean("Valve", true);
 			TF2Attribute.setAttribute(stack, TF2Attribute.attributes[0], 1.15f);
 			TF2Attribute.setAttribute(stack, TF2Attribute.attributes[2], 2.5f);
@@ -61,7 +61,7 @@ public class RandomWeaponFunction extends LootItemFunction {
 			TF2Attribute.setAttribute(stack, TF2Attribute.attributes[46], 1.15f);
 		}
 		if (upgradeRange.getMax() > 0)
-			TF2Attribute.upgradeItemStack(stack, this.upgradeRange.generateInt(rand), rand);
+			TF2Attribute.upgradeItemStack(stack, this.upgradeRange.generateInt(random), random);
 		return stack;
 	}
 

@@ -34,7 +34,7 @@ public class EntityAISentryBuster extends Goal {
 
 	public EntityAISentryBuster(EntityDemoman creature) {
 		this.attacker = creature;
-		this.setMutexBits(3);
+		this.setFlags(TF2Util.mutexFlags(3);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class EntityAISentryBuster extends Goal {
 			this.attacker.setTarget((LivingEntity) null);
 		}
 
-		this.attacker.getNavigation().clearPath();
+		this.attacker.getNavigation().stop();
 	}
 
 	/**

@@ -531,7 +531,7 @@ public class TF2Attribute {
 		}
 	}
 
-	public static void upgradeItemStack(ItemStack stack, int value, Random rand) {
+	public static void upgradeItemStack(ItemStack stack, int value, RandomSource random) {
 		if (WeaponData.getCapability(stack) == null)
 			return;
 		List<TF2Attribute> list = new ArrayList<>();
@@ -548,7 +548,7 @@ public class TF2Attribute {
 			CompoundTag tag = stack.getTag().getCompound("Attributes");
 			while (i < maxCount && value >= lowestCost) {
 				i++;
-				TF2Attribute attr = list.get(rand.nextInt(list.size()));
+				TF2Attribute attr = list.get(random.nextInt(list.size()));
 				if (attr.cost <= value && attr.calculateCurrLevel(stack) <= attr.numLevels) {
 					value -= attr.cost;
 

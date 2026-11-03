@@ -19,7 +19,7 @@ public class TF2PropertyHandler implements IMessageHandler<TF2Message.PropertyMe
 	public IMessage onMessage(final PropertyMessage message, MessageContext ctx) {
 
 		if (ctx.side.isClient())
-			Minecraft.getInstance().addScheduledTask(() -> {
+			Minecraft.getInstance().execute(() -> {
 				if (Minecraft.getInstance().level == null)
 					return;
 				Entity ent = Minecraft.getInstance().level.getEntity(message.entityID);

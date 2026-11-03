@@ -10,9 +10,9 @@ public class ModelTF2Character extends HumanoidModel {
 		super(0.0f, 0.0f, 64, 64);
 	}
 	
-	public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+	public void render(Entity entityIn, float limbSwing, float animationSpeed, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
-        setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+        setRotationAngles(limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         GlStateManager.pushMatrix();
 
         if (isChild)

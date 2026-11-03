@@ -25,7 +25,7 @@ public enum TF2Class {
     SPY("spy", EntitySpy.class),
     NONE("", null);
 
-    private static Random rand = new Random();
+    private static Random random = new Random();
 
     protected final String name;
     protected final Class<? extends EntityTF2Character> clazz;
@@ -60,7 +60,7 @@ public enum TF2Class {
     }
 
     public static TF2Class getRandomClass() {
-        return values()[rand.nextInt(values().length - 1)];
+        return values()[random.nextInt(values().length - 1)];
     }
 
     public static TF2Class getRandomClass(Predicate<TF2Class> predicate) {

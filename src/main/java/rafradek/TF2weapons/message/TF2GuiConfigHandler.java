@@ -19,7 +19,7 @@ public class TF2GuiConfigHandler implements IMessageHandler<TF2Message.GuiConfig
 
 		if (ctx.side == Dist.SERVER) {
 			final ServerPlayer player = ctx.getServerHandler().player;
-			((ServerLevel) player.level).addScheduledTask(() -> {
+			((ServerLevel) player.level).execute(() -> {
 				BlockEntity ent = player.level.getBlockEntity(message.getBlockPos());
 				if (ent instanceof IEntityConfigurable) {
 					((IEntityConfigurable) ent).readConfig(message.getTag());

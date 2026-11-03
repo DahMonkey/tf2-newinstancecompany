@@ -23,7 +23,7 @@ public class GuiWearables extends InventoryEffectRenderer {
 	public GuiWearables(ContainerWearables container) {
 		super(container);
 		allowUserInput = true;
-		xSize = 199;
+		imageWidth = 199;
 	}
 
 	/**
@@ -71,9 +71,9 @@ public class GuiWearables extends InventoryEffectRenderer {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.RenderSystem.setShaderTexture(0, WEARABLES_TEXTURE);
-		int i = guiLeft;
-		int j = guiTop;
-		drawTexturedModalRect(i, j, 0, 0, xSize, ySize);
+		int i = leftPos;
+		int j = topPos;
+		drawTexturedModalRect(i, j, 0, 0, imageWidth, imageHeight);
 		drawEntityOnScreen(i + 51, j + 75, 30, i + 51 - oldMouseX, j + 75 - 50 - oldMouseY, mc.player);
 	}
 
@@ -96,9 +96,9 @@ public class GuiWearables extends InventoryEffectRenderer {
 		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotate(-((float) Math.atan(mouseY / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
 		ent.yBodyRot = (float) Math.atan(mouseX / 40.0F) * 20.0F;
-		ent.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
-		ent.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
-		ent.rotationYawHead = ent.getYRot();
+		ent.setYRot(((float) Math.atan(mouseX / 40.0F) * 40.0F));
+		ent.setXRot((-((float) Math.atan(mouseY / 40.0F)) * 20.0F));
+		ent.yHeadRot = ent.getYRot();
 		ent.yHeadRotO = ent.getYRot();
 		GlStateManager.translate(0.0F, 0.0F, 0.0F);
 		EntityRenderDispatcher rendermanager = Minecraft.getInstance().getEntityRenderDispatcher();
@@ -107,10 +107,10 @@ public class GuiWearables extends InventoryEffectRenderer {
 		rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
 		rendermanager.setRenderShadow(true);
 		ent.yBodyRot = f;
-		ent.rotationYaw = f1;
-		ent.rotationPitch = f2;
+		ent.setYRot((f1));
+		ent.setXRot((f2));
 		ent.yHeadRotO = f3;
-		ent.rotationYawHead = f4;
+		ent.yHeadRot = f4;
 		GlStateManager.popMatrix();
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.disableRescaleNormal();

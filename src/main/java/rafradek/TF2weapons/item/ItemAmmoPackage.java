@@ -29,7 +29,7 @@ public class ItemAmmoPackage extends Item {
 	public void fillItemCategory(CreativeModeTab par2CreativeTabs, NonNullList<ItemStack> par3List) {
 		if (!this.isInCreativeTab(par2CreativeTabs))
 			return;
-		par3List.add(new ItemStack(this, 1, 1));
+		par3List.add(TF2Util.metaStack(this, 1, 1));
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ItemAmmoPackage extends Item {
 			out = TF2Util.mergeStackByDamage(
 					player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null), out);
 			if (!player.getInventory().addItemStackToInventory(out))
-				player.entityDropItem(out, 0);
+				player.spawnAtLocation(out, 0);
 			itemStackIn.shrink(1);
 		}
 		return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);

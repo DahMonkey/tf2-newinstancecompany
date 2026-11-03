@@ -60,7 +60,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 		this.attackRange = par5;
 		this.attackRangeSquared = par5 * par5;
 
-		this.setMutexBits(2);
+		this.setFlags(TF2Util.mutexFlags(2);
 	}
 
 	public void setRange(float range) {
@@ -221,7 +221,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 		boolean charged = weapon.holdingMode(item, entityHost) > 0
 				&& weapon.getCharge(entityHost, item) >= this.releaseAt;
 		// System.out.println("charge: "+weapon.getCharge(entityHost, item));
-		boolean stay = this.entityHost.getEntitySenses().canSee(this.attackTarget)
+		boolean stay = this.entityHost.getSensing().canSee(this.attackTarget)
 				|| (this.projSpeed > 0 && this.attackTarget.getDeltaMovement().y > 0);
 
 		boolean fire = stay && this.entityHost.getEffect(TF2weapons.stun) == null && shouldFireProj

@@ -80,7 +80,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		if (source == DamageSource.DROWN || source == DamageSource.LAVA || source == DamageSource.ON_FIRE)
 			return false;
 		if (source instanceof TF2DamageSource) {
-			if (source.getTrueSource() == this)
+			if (source.getEntity() == this)
 				return false;
 			if (((TF2DamageSource) source).getCritical() > 0) {
 				amount *= 0.7f;
@@ -89,17 +89,17 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 					&& ((TF2DamageSource) source).getWeapon().getItem() instanceof ItemMinigun)
 				amount *= 0.36f;
 		}
-		if (source.getImmediateSource() instanceof EntitySentry
-				&& !((EntitySentry) source.getImmediateSource()).fromPDA) {
+		if (source.getDirectEntity() instanceof EntitySentry
+				&& !((EntitySentry) source.getDirectEntity()).fromPDA) {
 			amount *= 0.3f;
 		}
-		if (source.getTrueSource() == null || WeaponsCapability.get(source.getTrueSource()) == null) {
+		if (source.getEntity() == null || WeaponsCapability.get(source.getEntity()) == null) {
 			amount *= 0.5f;
 		}
 		if (super.hurt(source, amount * (this.getMaxHealth() / this.desiredHealth))) {
-			if (source.getTrueSource() != null && source.getTrueSource() instanceof Player)
-				this.attackers.add((Player) source.getTrueSource());
-			if (!(source.getTrueSource() instanceof LivingEntity))
+			if (source.getEntity() != null && source.getEntity() instanceof Player)
+				this.attackers.add((Player) source.getEntity());
+			if (!(source.getEntity() instanceof LivingEntity))
 				this.envDamage += amount;
 			return true;
 		}
@@ -135,13 +135,13 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		for (int i = 0; i < count; i++) {
 			if (i > 0)
 				this.dropFewItems(wasRecentlyHit, lootingModifier);
-			this.entityDropItem(new ItemStack(TF2weapons.itemTF2, this.level / 2 + Mth.log2(this.level) + 2, 2),
+			this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemTF2, this.level / 2 + Mth.log2(this.level) + 2, 2),
 					0);
-			ItemStack weapon = ItemFromData.getRandomWeapon(this.rand, ItemFromData.VISIBLE_WEAPON);
+			ItemStack weapon = ItemFromData.getRandomWeapon(this.random, ItemFromData.VISIBLE_WEAPON);
 			if (this.level > 1)
 				TF2Attribute.upgradeItemStack(weapon, 40 + (this.level - 2) * 55 + Mth.log2(this.level) * 40,
-						rand);
-			this.entityDropItem(weapon, 0);
+						random);
+			this.spawnAtLocation(weapon, 0);
 		}
 	}
 
@@ -224,7 +224,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 				}
 
 		if (flag)
-			this.level.playEvent((Player) null, 1022, new BlockPos(this), 0);
+			this.level.levelEvent((Player) null, 1022, new BlockPos(this), 0);
 		return flag;
 	}
 
@@ -267,9 +267,9 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		double d0 = this.getX();
 		double d1 = this.getY();
 		double d2 = this.getZ();
-		this.posX = x;
-		this.posY = y;
-		this.posZ = z;
+		this.setPos((x), this.getY(), this.getZ());
+		this.setPos(this.getX(), (y), this.getZ());
+		this.setPos(this.getX(), this.getY(), (z));
 		boolean flag = false;
 		BlockPos blockpos = new BlockPos(this);
 		Level world = this.level;
@@ -279,7 +279,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 			boolean flag1 = false;
 
 			while (!flag1 && blockpos.getY() > 0) {
-				BlockPos blockpos1 = blockpos.down();
+				BlockPos blockpos1 = blockpos.below();
 				BlockState iblockstate = world.getBlockState(blockpos1);
 
 				if (iblockstate.getMaterial().blocksMovement()) {
@@ -318,7 +318,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 			}
 
 			if (this instanceof PathfinderMob) {
-				((PathfinderMob) this).getNavigation().clearPath();
+				((PathfinderMob) this).getNavigation().stop();
 			}
 
 			return true;
@@ -365,7 +365,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		this.setHealth(this.getMaxHealth());
 		TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[19],
 				1 * (0.7f + highestLevel * 0.3f));
-		this.experienceValue = (int) (200 * (0.5f + players * 0.5f) * (0.35f + highestLevel * 0.65f));
+		this.xpReward = (int) (200 * (0.5f + players * 0.5f) * (0.35f + highestLevel * 0.65f));
 		this.playersAttacked = players;
 		this.playSound(this.getAppearSound(), 4F, 1);
 		this.getAttribute(Attributes.ARMOR)

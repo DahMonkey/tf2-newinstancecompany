@@ -42,7 +42,7 @@ public class CommandForceClass extends CommandBase {
 				notifyCommandListener(sender, this, "commands.forceclass.success2", new Object[] { player.getName() });
 			} else {
 				TF2Class clazz = TF2Class.getClass(args[0]);
-				((ItemToken) TF2weapons.itemToken).updateAttributes(new ItemStack(TF2weapons.itemToken, 1, clazz.get3DDataValue()),
+				((ItemToken) TF2weapons.itemToken).updateAttributes(TF2Util.metaStack(TF2weapons.itemToken, 1, clazz.get3DDataValue()),
 						player);
 				WeaponsCapability.get(player).forcedClass = true;
 				notifyCommandListener(sender, this, "commands.forceclass.success",
