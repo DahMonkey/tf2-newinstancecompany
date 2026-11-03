@@ -29,17 +29,17 @@ import net.minecraft.world.phys.Vec3;
 public class RenderSentry extends RenderLiving<EntitySentry> {
 
 	private static final ResourceLocation SENTRY_RED = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/red/Sentry.png");
+			"textures/entity/tf2/red/sentry.png");
 	private static final ResourceLocation SENTRY_MINI_RED = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/red/Sentrymini.png");
+			"textures/entity/tf2/red/sentrymini.png");
 	private static final ResourceLocation SENTRY_BLU = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/blu/Sentry.png");
+			"textures/entity/tf2/blu/sentry.png");
 	private static final ResourceLocation SENTRY_MINI_BLU = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/blu/Sentrymini.png");
+			"textures/entity/tf2/blu/sentrymini.png");
 	private static final ResourceLocation SENTRY_ROBOT = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/robot/Sentry.png");
+			"textures/entity/tf2/robot/sentry.png");
 	private static final ResourceLocation SENTRY_MINI_ROBOT = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/robot/Sentrymini.png");
+			"textures/entity/tf2/robot/sentrymini.png");
 	private static final ResourceLocation BOX_RED = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/red/box.png");
 	private static final ResourceLocation BOX_BLU = new ResourceLocation(TF2weapons.MOD_ID,

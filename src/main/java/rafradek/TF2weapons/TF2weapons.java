@@ -342,7 +342,8 @@ public class TF2weapons {
 		forgeBus.addListener(this::serverStopping);
 		forgeBus.addListener(this::registerCommands);
 
-		proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+		proxy = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() ? ClientProxyFactory.create()
+				: new CommonProxy();
 		proxy.construct(modBus);
 
 		createTabs();
@@ -1067,5 +1068,12 @@ public class TF2weapons {
 	private void serverStopping(ServerStoppingEvent event) {
 		EntityTeleporter.saveTeleporters(event.getServer());
 		server = null;
+	}
+
+	/** Keeps ClientProxy out of the dedicated server's class loading. */
+	private static class ClientProxyFactory {
+		static CommonProxy create() {
+			return new ClientProxy();
+		}
 	}
 }

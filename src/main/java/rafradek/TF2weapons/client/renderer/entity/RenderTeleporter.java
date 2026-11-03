@@ -24,11 +24,11 @@ import net.minecraft.world.item.DyeColor;
 public class RenderTeleporter extends RenderLiving<EntityTeleporter> {
 
 	private static final ResourceLocation TELEPORTER_RED = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/red/Teleporter.png");
+			"textures/entity/tf2/red/teleporter.png");
 	private static final ResourceLocation TELEPORTER_BLU = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/blu/Teleporter.png");
+			"textures/entity/tf2/blu/teleporter.png");
 	private static final ResourceLocation TELEPORTER_ROBOT = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/robot/Teleporter.png");
+			"textures/entity/tf2/robot/teleporter.png");
 	private static final ResourceLocation BOX_RED = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/red/box.png");
 	private static final ResourceLocation BOX_BLU = new ResourceLocation(TF2weapons.MOD_ID,

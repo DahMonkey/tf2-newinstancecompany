@@ -28,11 +28,11 @@ import net.minecraft.world.entity.LivingEntity;
 public class RenderDispenser extends RenderLiving<EntityDispenser> {
 
 	private static final ResourceLocation DISPENSER_RED = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/red/Dispenser.png");
+			"textures/entity/tf2/red/dispenser.png");
 	private static final ResourceLocation DISPENSER_BLU = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/blu/Dispenser.png");
+			"textures/entity/tf2/blu/dispenser.png");
 	private static final ResourceLocation DISPENSER_ROBOT = new ResourceLocation(TF2weapons.MOD_ID,
-			"textures/entity/tf2/robot/Dispenser.png");
+			"textures/entity/tf2/robot/dispenser.png");
 	private static final ResourceLocation BOX_RED = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/entity/tf2/red/box.png");
 	private static final ResourceLocation BOX_BLU = new ResourceLocation(TF2weapons.MOD_ID,

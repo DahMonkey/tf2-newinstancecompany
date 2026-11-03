@@ -2,7 +2,7 @@
   "credit": "Made by Wolfkann with Blockbench",
   "textures": {
     "0": "rafradek_tf2_weapons:items/gunslinger",
-    "1": "rafradek_tf2_weapons:items/Extratextures"
+    "1": "rafradek_tf2_weapons:items/extratextures"
   },
   "elements": [
     {
