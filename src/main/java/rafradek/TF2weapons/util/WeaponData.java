@@ -22,7 +22,6 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -74,7 +73,7 @@ public class WeaponData implements ICapabilityProvider {
 	}
 
 	public void addCapabilities(Map<ResourceLocation, ICapabilityProvider> map) {
-		this.capabilities = new CapabilityDispatcher(map);
+		this.capabilities = new CapabilityDispatcher(map, java.util.Collections.emptyList());
 	}
 
 	public int getInt(PropertyType<Integer> propType) {
@@ -190,12 +189,12 @@ public class WeaponData implements ICapabilityProvider {
 								if (!cachedAttrAdd.containsKey(attribute.effect))
 									cachedAttrAdd.put(attribute.effect, 0f);
 								cachedAttrAdd.put(attribute.effect,
-										cachedAttrAdd.get(attribute.effect) + ((FloatTag) tag).getFloat());
+										cachedAttrAdd.get(attribute.effect) + ((FloatTag) tag).getAsFloat());
 							} else {
 								if (!cachedAttrMult.containsKey(attribute.effect))
 									cachedAttrMult.put(attribute.effect, 1f);
 								cachedAttrMult.put(attribute.effect,
-										cachedAttrMult.get(attribute.effect) * ((FloatTag) tag).getFloat());
+										cachedAttrMult.get(attribute.effect) * ((FloatTag) tag).getAsFloat());
 							}
 						}
 					}
@@ -210,12 +209,12 @@ public class WeaponData implements ICapabilityProvider {
 								if (!cachedAttrAdd.containsKey(attribute.effect))
 									cachedAttrAdd.put(attribute.effect, 0f);
 								cachedAttrAdd.put(attribute.effect,
-										cachedAttrAdd.get(attribute.effect) + ((FloatTag) tag).getFloat());
+										cachedAttrAdd.get(attribute.effect) + ((FloatTag) tag).getAsFloat());
 							} else {
 								if (!cachedAttrMult.containsKey(attribute.effect))
 									cachedAttrMult.put(attribute.effect, 1f);
 								cachedAttrMult.put(attribute.effect,
-										cachedAttrMult.get(attribute.effect) * ((FloatTag) tag).getFloat());
+										cachedAttrMult.get(attribute.effect) * ((FloatTag) tag).getAsFloat());
 							}
 
 						}
@@ -275,17 +274,9 @@ public class WeaponData implements ICapabilityProvider {
 		return stack.getCapability(TF2weapons.WEAPONS_DATA_CAP).orElse(null);
 	}
 
-	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
-		return capabilities.hasCapability(capability, facing);
-	}
-
 	@Override
 	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
-		T value = this.getCapabilityLegacy(capability, facing);
-		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
-	}
-
-	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
-		return capabilities.getCapability(capability, facing);
+		return capabilities == null ? net.minecraftforge.common.util.LazyOptional.empty()
+				: capabilities.getCapability(capability, facing);
 	}
 }

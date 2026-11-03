@@ -94,7 +94,7 @@ public abstract class ItemFabricator extends LegacyItem {
 		}
 
 		@Override
-		public boolean apply(ItemStack input) {
+		public boolean test(ItemStack input) {
 			return ItemHandlerHelper.canItemStacksStack(input, test);
 		}
 
@@ -124,7 +124,7 @@ public abstract class ItemFabricator extends LegacyItem {
 		}
 
 		@Override
-		public boolean apply(ItemStack input) {
+		public boolean test(ItemStack input) {
 			return test.test(input);
 		}
 

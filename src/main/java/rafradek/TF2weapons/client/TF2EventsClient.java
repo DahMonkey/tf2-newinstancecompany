@@ -608,7 +608,7 @@ public class TF2EventsClient {
 				GlStateManager.bindTexture(ClientProxy.WIDGETS_TEXTURE_MC);
 				int mid = width / 2;
 
-				Minecraft.getInstance().LegacyGui.drawTexturedModalRect(mid + 91 + 29, height - 23, 24, 22, 29, 24);
+				LegacyGui.drawTexturedModalRect(mid + 91 + 29, height - 23, 24, 22, 29, 24);
 
 				RenderHelper.enableGUIStandardItemLighting();
 

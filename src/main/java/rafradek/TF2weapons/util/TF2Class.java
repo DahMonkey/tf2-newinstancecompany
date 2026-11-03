@@ -80,7 +80,7 @@ public enum TF2Class {
     }
 
     public static List<TF2Class> getClasses() {
-        return  Arrays.stream(values()).filter(clazz -> clazz.get3DDataValue() >= 0).collect(Collectors.toList());
+        return  Arrays.stream(values()).filter(clazz -> clazz.getIndex() >= 0).collect(Collectors.toList());
     }
 
     public static String[] getClassNames() {

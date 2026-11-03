@@ -93,21 +93,21 @@ public class PlayerPersistStorage implements INBTSerializable<CompoundTag> {
 		for (String key : nbt.getCompound("MercsLost").getAllKeys()) {
 			ListTag list = nbt.getList(key, 11);
 			for (int i = 0; i < list.size(); i++) {
-				int[] pos = list.getIntArrayAt(i);
+				int[] pos = list.getIntArray(i);
 				lostMercPos.add(new BlockPos(pos[0], pos[1], pos[2]));
 			}
 		}
 		for (String key : nbt.getCompound("MercsMedic").getAllKeys()) {
 			ListTag list = nbt.getList(key, 11);
 			for (int i = 0; i < list.size(); i++) {
-				int[] pos = list.getIntArrayAt(i);
+				int[] pos = list.getIntArray(i);
 				medicMercPos.add(new BlockPos(pos[0], pos[1], pos[2]));
 			}
 		}
 		for (String key : nbt.getCompound("MercsRest").getAllKeys()) {
 			ListTag list = nbt.getList(key, 11);
 			for (int i = 0; i < list.size(); i++) {
-				int[] pos = list.getIntArrayAt(i);
+				int[] pos = list.getIntArray(i);
 				restMercPos.add(new BlockPos(pos[0], pos[1], pos[2]));
 			}
 		}

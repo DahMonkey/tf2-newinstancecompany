@@ -229,15 +229,15 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 		/*
 		 * if(attacker instanceof EntityPlayerMP && target instanceof EntityLivingBase
 		 * && !target.isEntityAlive() && TF2weapons.isEnemy(attacker, (EntityLivingBase)
-		 * target)){ if(!attacker.getCapability(TF2weapons.WEAPONS_CAP, null).charging){
+		 * target)){ if(!attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).charging){
 		 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.KILLED_NOSCOPE);
 		 * if(((EntityPlayerMP)
 		 * attacker).getStatFile().readStat(TF2Achievements.KILLED_NOSCOPE)>=10)
 		 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.NO_SCOPE); }
 		 * if(((TF2DamageSource)source).getCritical()==2){
-		 * if(++attacker.getCapability(TF2weapons.PLAYER_CAP, null).headshotsRow>=3)
+		 * if(++attacker.getCapability(TF2weapons.PLAYER_CAP).orElse(null).headshotsRow>=3)
 		 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.EFFICIENT_SNIPER); } else
-		 * attacker.getCapability(TF2weapons.PLAYER_CAP, null).headshotsRow=0; }
+		 * attacker.getCapability(TF2weapons.PLAYER_CAP).orElse(null).headshotsRow=0; }
 		 */
 	}
 

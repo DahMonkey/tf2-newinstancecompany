@@ -169,7 +169,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 			for (int i = 0; i < 40; i++) {
 				Vec3 pos = TF2Util.radiusRandom2D(2.2f, this.random);
 				this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), this.getY() - 0.5,
-						pos.y + this.getZ(), 0, 0, 0, new int[0]);
+						pos.y + this.getZ(), 0, 0, 0);
 			}
 
 		if (!this.level.isClientSide) {
@@ -286,7 +286,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 				for (int j = 0; j < 40; j++) {
 					Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.random);
 					this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), pos.y + this.getY(),
-							pos.z + this.getZ(), 0, 0, 0, new int[0]);
+							pos.z + this.getZ(), 0, 0, 0);
 				}
 				this.teleportCooldown += 200 + random.nextInt(80);
 				break;
@@ -382,7 +382,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 			this.hiddenBlock = new BlockPos(pos[0], pos[1], pos[2]);
 			ListTag list = nbt.getList("Props", 11);
 			for (int i = 0; i < list.size(); i++) {
-				int[] arr = list.getIntArrayAt(i);
+				int[] arr = list.getIntArray(i);
 				this.usedPos.add(new BlockPos(arr[0], arr[1], arr[2]));
 			}
 		}

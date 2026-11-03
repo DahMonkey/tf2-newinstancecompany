@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Material;
 
-public class ItemParachute extends ItemBackpack implements ISpecialArmor {
+public class ItemParachute extends ItemBackpack {
 
 	public ItemParachute() {
 		this.setMaxDamage(1000);
@@ -21,19 +21,9 @@ public class ItemParachute extends ItemBackpack implements ISpecialArmor {
 	}
 
 	@Override
-	public ArmorProperties getProperties(LivingEntity player, ItemStack armor, DamageSource source, double damage,
-			int slot) {
-		return new ArmorProperties(0, 0, Integer.MAX_VALUE);
-	}
-
-	@Override
-	public int getArmorDisplay(Player player, ItemStack armor, int slot) {
-		return 0;
-	}
-
-	@Override
-	public void damageArmor(LivingEntity entity, ItemStack stack, DamageSource source, int damage, int slot) {
-		stack.hurtAndBreak(damage * (stack.getTag().getBoolean("Deployed") ? 8 : 1), entity, broken -> {});
+	public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity,
+			java.util.function.Consumer<T> onBroken) {
+		return amount * (stack.hasTag() && stack.getTag().getBoolean("Deployed") ? 8 : 1);
 	}
 
 	@Override

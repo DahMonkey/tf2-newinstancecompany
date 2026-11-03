@@ -69,10 +69,8 @@ public class ItemStatue extends LegacyItem {
 		if (!stack.hasTag())
 			return Component.literal(super.getName(stack).getString());
 		if (!stack.getTag().getCompound("Statue").getBoolean("Player"))
-			return Component.literal(TF2Util.translate("entity."
-					+ EntityList.getTranslationName(new ResourceLocation(
-							stack.getTag().getCompound("Statue").getCompound("Entity").getString("id")))
-					+ ".name") + " " + TF2Util.translate(this.getDescriptionId() + ".name"));
+			return Component.literal(net.minecraft.world.entity.EntityType.byString(stack.getTag().getCompound("Statue").getCompound("Entity").getString("id"))
+							.map(type -> type.getDescription().getString()).orElse("?") + " " + TF2Util.translate(this.getDescriptionId() + ".name"));
 		else
 			return Component.literal(TF2Util.translate(this.getDescriptionId() + ".player.name"));
 	}

@@ -28,7 +28,7 @@ public class ItemStickyLauncher extends ItemProjectileWeapon {
 	/*
 	 * @Override public boolean use(ItemStack stack, EntityLivingBase living, World
 	 * world, EnumHand hand, PredictionMessage message) { WeaponsCapability cap =
-	 * living.getCapability(TF2weapons.WEAPONS_CAP, null); if (cap.charging) //
+	 * living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null); if (cap.charging) //
 	 * System.out.println("Firing"); super.use(stack, living, world, hand, message);
 	 * else { // System.out.println("Start charging"); cap.charging = true;
 	 * cap.chargeTicks = 0; if (world.isRemote) ClientProxy.playWeaponSound(living,
@@ -71,7 +71,7 @@ public class ItemStickyLauncher extends ItemProjectileWeapon {
 	/*
 	 * @Override public boolean endUse(ItemStack stack, EntityLivingBase living,
 	 * World world, int action, int newState) { WeaponsCapability cap =
-	 * living.getCapability(TF2weapons.WEAPONS_CAP, null); if ((newState & 1) == 0
+	 * living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null); if ((newState & 1) == 0
 	 * && cap.charging) { // System.out.println("stop charging "+newState);
 	 * 
 	 * cap.fire1Cool = this.getFiringSpeed(stack, living);
@@ -88,7 +88,7 @@ public class ItemStickyLauncher extends ItemProjectileWeapon {
 	/*
 	 * @Override public boolean fireTick(ItemStack stack, EntityLivingBase living,
 	 * World world) { WeaponsCapability cap =
-	 * living.getCapability(TF2weapons.WEAPONS_CAP, null); if (cap.charging) //
+	 * living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null); if (cap.charging) //
 	 * System.out.println("charging "+tag.getShort("chargeticks")); if
 	 * (cap.chargeTicks < 80) cap.chargeTicks += living instanceof EntityPlayer?1:4;
 	 * else this.endUse(stack, living, world, 1, 0); return false; }

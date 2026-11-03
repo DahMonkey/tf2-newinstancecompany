@@ -53,7 +53,7 @@ public class ItemJar extends ItemProjectileWeapon {
 
 	@Override
 	public Component getName(ItemStack stack) {
-		String string = super.getName(stack);
+		String string = super.getName(stack).getString();
 		if (stack.hasTag() && stack.getTag().getBoolean("IsEmpty"))
 			string = "Empty Jar - ".concat(string);
 		return Component.literal(string);
@@ -84,7 +84,7 @@ public class ItemJar extends ItemProjectileWeapon {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public boolean showDurabilityBar(ItemStack stack) {
+	public boolean isBarVisible(ItemStack stack) {
 		Integer value = Minecraft.getInstance().player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).effectsCool
 				.get(getData(stack).getName());
 		return stack.getTag().getBoolean("IsEmpty") && value != null && value > 0;
@@ -92,7 +92,12 @@ public class ItemJar extends ItemProjectileWeapon {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public double getDurabilityForDisplay(ItemStack stack) {
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
+	}
+
+	public double getDurabilityForDisplayLegacy(ItemStack stack) {
 		Integer value = Minecraft.getInstance().player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).effectsCool
 				.get(getData(stack).getName());
 		return (double) (value != null ? value : 0) / (double) 1600;

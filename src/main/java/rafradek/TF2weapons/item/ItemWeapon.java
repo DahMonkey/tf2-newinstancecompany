@@ -175,7 +175,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		if (living instanceof Player && hand == InteractionHand.MAIN_HAND)
 			((Player) living).resetAttackStrengthTicker();
 		else if (world.isClientSide && Minecraft.getInstance().player == living)
-			Minecraft.getInstance().getItemRenderer().resetEquippedProgress(InteractionHand.OFF_HAND);
+			Minecraft.getInstance().gameRenderer.itemInHandRenderer.itemUsed(InteractionHand.OFF_HAND);
 
 		int thisCritical = TF2Util.calculateCritPre(stack, living);
 
@@ -335,9 +335,9 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		int heads = Math.min((int) TF2Attribute.getModifier("Kill Count", stack, 0, null),
 				stack.getTag().getInt("Heads"));
 		multimap.put(Attributes.ATTACK_DAMAGE,
-				new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier",
+				new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier",
 						this.getWeaponDamage(stack, null, null) * this.getWeaponPelletCount(stack, null) - 1, AttributeModifier.Operation.fromValue(0)));
-		multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(ATTACK_SPEED_MODIFIER,
+		multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID,
 				"Weapon modifier", -4 + (1000D / this.getFiringSpeed(stack, null)), AttributeModifier.Operation.fromValue(0)));
 		float addHealth = TF2Attribute.getModifier("Health", stack, 0, null)
 				+ heads * TF2Attribute.getModifier("Max Health Kill", stack, 0, null);
@@ -371,8 +371,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		return false;
 	}
 
-	@Override
-	public boolean isFull3D() {
+		public boolean isFull3D() {
 		return true;
 	}
 
@@ -453,7 +452,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			if (living != null && living.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
 				// System.out.println("Pre "+damage);
 				damage = (float) calculateModifiers(living.getAttribute(Attributes.ATTACK_DAMAGE),
-						ATTACK_DAMAGE_MODIFIER, damage, 1D / 9D);
+						BASE_ATTACK_DAMAGE_UUID, damage, 1D / 9D);
 				// System.out.println("Post "+damage);
 			}
 
@@ -520,7 +519,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		if (living != null && living.getAttribute(Attributes.ATTACK_SPEED) != null) {
 			double orig = living.getAttribute(Attributes.ATTACK_SPEED).getBaseValue();
 			double modifiers = (calculateModifiers(living.getAttribute(Attributes.ATTACK_SPEED),
-					ATTACK_SPEED_MODIFIER, orig, 1.4) - orig) * 2 + orig;
+					BASE_ATTACK_SPEED_UUID, orig, 1.4) - orig) * 2 + orig;
 			speed = (float) ((living instanceof Player ? 4 : orig) / modifiers);
 		}
 		return (int) (TF2Attribute.getModifier("Reload Time", stack,
@@ -532,7 +531,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		if (living != null && living.getAttribute(Attributes.ATTACK_SPEED) != null) {
 			double orig = living.getAttribute(Attributes.ATTACK_SPEED).getBaseValue();
 			double modifiers = (calculateModifiers(living.getAttribute(Attributes.ATTACK_SPEED),
-					ATTACK_SPEED_MODIFIER, orig, 1.4) - orig) * 2 + orig;
+					BASE_ATTACK_SPEED_UUID, orig, 1.4) - orig) * 2 + orig;
 			speed = (float) ((living instanceof Player ? 4 : orig) / modifiers);
 		}
 		return (int) (TF2Attribute.getModifier("Reload Time", stack,
@@ -585,7 +584,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
 		if (TF2PlayerCapability.get(player).breakBlocks && !(this instanceof ItemMeleeWeapon)) {
 			player.getAttribute(Attributes.ATTACK_DAMAGE)
-					.removeModifier(Item.ATTACK_DAMAGE_MODIFIER);
+					.removeModifier(Item.BASE_ATTACK_DAMAGE_UUID);
 			return false;
 		} else
 			return true;
@@ -741,7 +740,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			if (TF2Attribute.getModifier("Uber Hit Remove", stack, 0f, attacker) > 0f) {
 				ItemStack medigun = ItemStack.EMPTY;
 				if (target instanceof Player) {
-					medigun = TF2Util.getFirstItem(((Player) target).inventory,
+					medigun = TF2Util.getFirstItem(((Player) target).getInventory(),
 							stackm -> stackm.getItem() instanceof ItemMedigun
 									&& stackm.getTag().getFloat("ubercharge") > 0);
 				} else if (target instanceof EntityTF2Character) {
@@ -758,7 +757,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			if (TF2Attribute.getModifier("Cloak Hit Remove", stack, 0f, attacker) > 0f) {
 				ItemStack cloak = ItemStack.EMPTY;
 				if (target instanceof Player) {
-					cloak = TF2Util.getFirstItem(((Player) target).inventory,
+					cloak = TF2Util.getFirstItem(((Player) target).getInventory(),
 							stackm -> stackm.getItem() instanceof ItemCloak
 									&& stackm.getDamageValue() < stackm.getMaxDamage());
 				} else if (target instanceof EntityTF2Character) {
@@ -920,7 +919,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 	@Override
 	public boolean isFoil(ItemStack stack) {
-		return super.hasEffect(stack) || (stack.hasTag() && this.hasKillstreak(stack, 2)
+		return super.isFoil(stack) || (stack.hasTag() && this.hasKillstreak(stack, 2)
 				&& stack.getTag().getInt(NBTLiterals.STREAK_KILLS) > 0);
 	}
 
@@ -989,17 +988,21 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public boolean showDurabilityBar(ItemStack stack) {
+	public boolean isBarVisible(ItemStack stack) {
 		return (this.hasClip(stack)
 				&& this.getClip(stack) != this.getWeaponClipSize(stack, Minecraft.getInstance().player))
-				|| super.showDurabilityBar(stack);
+				|| super.isBarVisible(stack);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public double getDurabilityForDisplay(ItemStack stack) {
-		if (super.showDurabilityBar(stack))
-			return super.getDurabilityForDisplay(stack);
+	public int getBarWidth(ItemStack stack) {
+		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
+	}
+
+	public double getDurabilityForDisplayLegacy(ItemStack stack) {
+		if (super.isBarVisible(stack))
+			return (1d - super.getBarWidth(stack) / 13d);
 		else if (stack == Minecraft.getInstance().player.getMainHandItem() && this.IsReloadingFullClip(stack)) {
 			WeaponsCapability cap = WeaponsCapability.get(Minecraft.getInstance().player);
 			if (cap.reloadingHand != null && cap.reloadCool > 0) {
@@ -1045,7 +1048,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			buffer.pos(30, resolution.getScaledHeight() - 21, 0.0D).tex(0.0D, 0.99D).endVertex();
 			tessellator.draw();
 
-			GuiComponent.drawModalRectWithCustomSizedTexture(28, resolution.getScaledHeight() - 18, 83, 68, 45, 40, 128, 128);
+			LegacyGui.drawModalRectWithCustomSizedTexture(28, resolution.getScaledHeight() - 18, 83, 68, 45, 40, 128, 128);
 
 			LegacyGui.drawCenteredString(Minecraft.getInstance().font,
 					Integer.toString(stack.getTag().getInt(NBTLiterals.STREAK_KILLS)), 50,

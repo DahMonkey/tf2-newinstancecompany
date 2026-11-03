@@ -87,11 +87,11 @@ public class ItemFireAmmo extends ItemAmmo {
 			 * null).getStackInSlot(3).isEmpty()){ IItemHandlerModifiable invAmmo =
 			 * (IItemHandlerModifiable) living.getCapability(TF2weapons.INVENTORY_CAP,
 			 * null).getStackInSlot(3)
-			 * .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null); for (int
+			 * .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null); for (int
 			 * i = 0; i < invAmmo.getSlots(); i++) { ItemStack stackInv =
 			 * invAmmo.getStackInSlot(i); if (stack == stackInv) { invAmmo.setStackInSlot(i,
 			 * ItemStack.EMPTY); return; } } } ((EntityPlayer)
-			 * living).inventory.deleteStack(stack);
+			 * living).inventory.removeItem(stack);
 			 * 
 			 * }
 			 */

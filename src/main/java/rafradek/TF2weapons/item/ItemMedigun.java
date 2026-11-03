@@ -25,7 +25,6 @@ import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.message.TF2Message.PredictionMessage;
 import rafradek.TF2weapons.util.Contract.Objective;
 import rafradek.TF2weapons.util.PropertyType;
-import rafradek.TF2weapons.util.ReflectionAccess;
 import rafradek.TF2weapons.util.TF2Util;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,7 +204,7 @@ public class ItemMedigun extends ItemUsable {
 		endZ = (endZ / var9) * range;
 		List<HitResult> list = TF2Util.pierce(world, living, startX, startY, startZ, startX + endX, startY + endY,
 				startZ + endZ, false, 0.2f, false);
-		return !list.isEmpty() && list.get(0).getEntity() != null ? list.get(0) : null;
+		return !list.isEmpty() && TF2Util.hitEntity(list.get(0)) != null ? list.get(0) : null;
 
 	}
 
@@ -407,8 +406,7 @@ public class ItemMedigun extends ItemUsable {
 				ItemFromData.getData(stack).getFloat(PropertyType.MAX_OVERHEAL), living);
 	}
 
-	@Override
-	@OnlyIn(Dist.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 	public boolean isFull3D() {
 		return true;
 	}
@@ -520,7 +518,7 @@ public class ItemMedigun extends ItemUsable {
 			text = "UBERCHARGE: " + Math.round(uber * 100f) + "%";
 		else
 			text = "UBERCHARGES: " + Mth.floor(uber / (1f / this.getUbers(stack, player)));
-		Minecraft.getInstance().LegacyGui.drawString(Minecraft.getInstance().Minecraft.getInstance().font, text,
+		LegacyGui.drawString(Minecraft.getInstance().font, text,
 				resolution.getScaledWidth() - 130, resolution.getScaledHeight() - 48, 16777215);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.33F);
@@ -565,7 +563,7 @@ public class ItemMedigun extends ItemUsable {
 				offset += 0f;
 				break;
 			}
-			GuiComponent.drawModalRectWithCustomSizedTexture(resolution.getScaledWidth() - 95, resolution.getScaledHeight() - 90,
+			LegacyGui.drawModalRectWithCustomSizedTexture(resolution.getScaledWidth() - 95, resolution.getScaledHeight() - 90,
 					offset, 0, 32, 32, 256, 32);
 		}
 	}

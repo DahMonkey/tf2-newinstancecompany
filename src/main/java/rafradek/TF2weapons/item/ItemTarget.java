@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.TF2weapons;
@@ -45,7 +46,7 @@ public class ItemTarget extends LegacyItem {
 		if (facing == Direction.DOWN) {
 			return InteractionResult.FAIL;
 		} else {
-			boolean flag = world.getBlockState(pos).getBlock().isReplaceable(world, pos);
+			boolean flag = world.getBlockState(pos).getMaterial().isReplaceable();
 			BlockPos blockpos = flag ? pos : pos.relative(facing);
 			ItemStack itemstack = player.getItemInHand(hand);
 
@@ -54,9 +55,9 @@ public class ItemTarget extends LegacyItem {
 			} else {
 				BlockPos blockpos1 = blockpos.above();
 				boolean flag1 = !world.isEmptyBlock(blockpos)
-						&& !world.getBlockState(blockpos).getBlock().isReplaceable(world, blockpos);
+						&& !world.getBlockState(blockpos).getMaterial().isReplaceable();
 				flag1 = flag1 | (!world.isEmptyBlock(blockpos1)
-						&& !world.getBlockState(blockpos1).getBlock().isReplaceable(world, blockpos1));
+						&& !world.getBlockState(blockpos1).getMaterial().isReplaceable());
 
 				if (flag1) {
 					return InteractionResult.FAIL;
@@ -79,10 +80,10 @@ public class ItemTarget extends LegacyItem {
 									(Mth.wrapDegrees(player.getYRot() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
 							entityarmorstand.moveTo(d0 + 0.5D, d1, d2 + 0.5D, f, 0.0F);
 							this.applyRandomRotations(entityarmorstand, world.random);
-							SpawnEggItem.applyItemEntityDataToEntity(world, player, itemstack, entityarmorstand);
+							EntityType.updateCustomEntityTag(world, player, entityarmorstand, itemstack.getTag());
 							world.addFreshEntity(entityarmorstand);
 							world.playSound((Player) null, entityarmorstand.getX(), entityarmorstand.getY(),
-									entityarmorstand.getZ(), SoundEvents.ENTITY_ARMORSTAND_PLACE, SoundSource.BLOCKS,
+									entityarmorstand.getZ(), SoundEvents.ARMOR_STAND_PLACE, SoundSource.BLOCKS,
 									0.75F, 0.8F);
 						}
 
@@ -95,15 +96,15 @@ public class ItemTarget extends LegacyItem {
 	}
 
 	private void applyRandomRotations(ArmorStand armorStand, RandomSource random) {
-		Rotations rotations = armorStand.getHeadRotation();
+		Rotations rotations = armorStand.getHeadPose();
 		float f = random.nextFloat() * 5.0F;
 		float f1 = random.nextFloat() * 20.0F - 10.0F;
 		Rotations rotations1 = new Rotations(rotations.getX() + f, rotations.getY() + f1, rotations.getZ());
-		armorStand.setHeadRotation(rotations1);
-		rotations = armorStand.getBodyRotation();
+		armorStand.setHeadPose(rotations1);
+		rotations = armorStand.getBodyPose();
 		f = random.nextFloat() * 10.0F - 5.0F;
 		rotations1 = new Rotations(rotations.getX(), rotations.getY() + f, rotations.getZ());
-		armorStand.setBodyRotation(rotations1);
+		armorStand.setBodyPose(rotations1);
 	}
 
 }

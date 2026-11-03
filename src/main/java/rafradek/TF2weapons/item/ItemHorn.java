@@ -68,7 +68,7 @@ public class ItemHorn extends LegacyItem implements IBackpackItem {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public boolean showDurabilityBar(ItemStack stack) {
+	public boolean isBarVisible(ItemStack stack) {
 		if (!(ItemBackpack.getBackpack(Minecraft.getInstance().player).getItem() instanceof ItemSoldierBackpack))
 			return false;
 		return WeaponsCapability.get(Minecraft.getInstance().player).getRage(RageType.BANNER) != 1f;
@@ -76,7 +76,12 @@ public class ItemHorn extends LegacyItem implements IBackpackItem {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public double getDurabilityForDisplay(ItemStack stack) {
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
+	}
+
+	public double getDurabilityForDisplayLegacy(ItemStack stack) {
 		if (!(ItemBackpack.getBackpack(Minecraft.getInstance().player).getItem() instanceof ItemSoldierBackpack))
 			return 0;
 		return 1 - WeaponsCapability.get(Minecraft.getInstance().player).getRage(RageType.BANNER);

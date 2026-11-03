@@ -458,9 +458,9 @@ public class TF2Attribute {
 				TF2Attribute attribute = attributes[Integer.parseInt(name)];
 				if (attribute != null && attribute.effect.equals(effect))
 					if (attribute.typeOfValue == Type.ADDITIVE)
-						value += ((FloatTag) tag).getFloat();
+						value += ((FloatTag) tag).getAsFloat();
 					else
-						value *= ((FloatTag) tag).getFloat();
+						value *= ((FloatTag) tag).getAsFloat();
 			}
 		}
 		return value;

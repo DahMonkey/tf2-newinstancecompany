@@ -40,7 +40,7 @@ public class ItemSapper extends ItemBulletWeapon {
 			if (!TF2ConfigVars.freeUseItems)
 				stack.shrink(1);
 			if (stack.getCount() <= 0 && attacker instanceof Player)
-				((Player) attacker).getInventory().deleteStack(stack);
+				((Player) attacker).getInventory().removeItem(stack);
 		} else if (target instanceof EntityTF2Character && !TF2Util.isAlliedTo(attacker, target)
 				&& ((EntityTF2Character) target).isRobot()
 				&& ((EntityTF2Character) target).getEffect(TF2weapons.sapped) == null) {
@@ -61,7 +61,7 @@ public class ItemSapper extends ItemBulletWeapon {
 			if (attacker instanceof Player)
 				((Player) attacker).getCooldowns().addCooldown(this, 300);
 			if (stack.getCount() <= 0 && attacker instanceof Player)
-				((Player) attacker).getInventory().deleteStack(stack);
+				((Player) attacker).getInventory().removeItem(stack);
 		}
 		return false;
 	}

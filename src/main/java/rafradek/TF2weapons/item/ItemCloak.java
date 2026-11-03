@@ -10,7 +10,6 @@ import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.entity.mercenary.EntitySpy;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.util.PropertyType;
-import rafradek.TF2weapons.util.ReflectionAccess;
 import rafradek.TF2weapons.util.TF2Class;
 import javax.annotation.Nullable;
 import java.util.List;

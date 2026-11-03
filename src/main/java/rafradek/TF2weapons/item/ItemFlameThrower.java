@@ -76,7 +76,7 @@ public class ItemFlameThrower extends ItemAirblast {
 						.add(look.scale(0.5));
 				world.addParticle(ParticleTypes.BUBBLE, pos.x,
 						pos.y, pos.z, living.getDeltaMovement().x, 0.2D + living.getDeltaMovement().y,
-						living.getDeltaMovement().z, new int[0]);
+						living.getDeltaMovement().z);
 			} else {
 				ClientProxy.spawnFlameParticle(world, living, 0f, false);
 				ClientProxy.spawnFlameParticle(world, living, 0.5f, false);
@@ -202,7 +202,7 @@ public class ItemFlameThrower extends ItemAirblast {
 		ItemStack itemStackIn = player.getItemInHand(hand);
 		/*
 		 * if (TF2Attribute.getModifier("Rage Crit", itemStackIn, 0, player)!=0
-		 * &&player.getCapability(TF2weapons.WEAPONS_CAP, null).getPhlogRage()>=20f) {
+		 * &&player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getPhlogRage()>=20f) {
 		 * player.setActiveHand(hand); player.addPotionEffect(new
 		 * PotionEffect(TF2weapons.stun,40,1)); TF2Util.addAndSendEffect(player, new
 		 * PotionEffect(TF2weapons.uber,40,0)); player.addPotionEffect(new

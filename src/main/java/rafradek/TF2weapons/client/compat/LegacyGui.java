@@ -56,4 +56,10 @@ public final class LegacyGui {
 	public static void renderItemOverlays(Font font, ItemStack stack, int x, int y) {
 		Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(font, stack, x, y);
 	}
+
+	public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, int width, int height,
+			float textureWidth, float textureHeight) {
+		GuiComponent.blit(LegacyRender.pose(), (int) x, (int) y, u, v, width, height, (int) textureWidth,
+				(int) textureHeight);
+	}
 }

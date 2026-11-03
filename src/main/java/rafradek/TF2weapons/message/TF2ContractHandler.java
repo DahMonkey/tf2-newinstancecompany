@@ -15,8 +15,7 @@ public class TF2ContractHandler implements IMessageHandler<TF2Message.ContractMe
 
 		if (Minecraft.getInstance().player == null)
 			return null;
-		ArrayList<Contract> contracts = Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP,
-				null).contracts;
+		ArrayList<Contract> contracts = Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts;
 		if (message.id == -1) {
 			contracts.add(message.contract);
 			Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newContracts = true;
@@ -37,7 +36,7 @@ public class TF2ContractHandler implements IMessageHandler<TF2Message.ContractMe
 		 * @Override public void run() { //System.out.println("Wep drop "+message.name);
 		 * ItemStack stack=ItemFromData.getNewStack(message);
 		 * ((ItemUsable)stack.getItem()).holster(Minecraft.getMinecraft().player.
-		 * getCapability(TF2weapons.WEAPONS_CAP, null), stack,
+		 * getCapability(TF2weapons.WEAPONS_CAP).orElse(null), stack,
 		 * Minecraft.getMinecraft().player, Minecraft.getMinecraft().world);
 		 * 
 		 * }

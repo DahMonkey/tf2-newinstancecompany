@@ -25,7 +25,7 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 	}
 
 	@Override
-	public boolean isDifficultyScaled() {
+	public boolean scalesWithDifficulty() {
 		return false;
 	}
 
@@ -63,15 +63,15 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 		// ((EntityLivingBase)this.damageSourceEntity).getHeldItem(EnumHand.MAIN_HAND)
 		// : null;
 		if (this.getEntity() == TF2weapons.dummyEnt)
-			return Component.translatable("death.attack.explosion", p_151519_1_.getHoverName());
+			return Component.translatable("death.attack.explosion", p_151519_1_.getDisplayName());
 		String s = "death.attack." + this.msgId;
 		String s1 = s + ".item";
 		return weapon != null && TF2Util.canTranslate(s1)
 				? Component.translatable(s1,
-						new Object[] { p_151519_1_.getHoverName(), this.getEntity().getHoverName(),
+						new Object[] { p_151519_1_.getDisplayName(), this.getEntity().getDisplayName(),
 								weapon.getHoverName() })
 				: Component.translatable(s,
-						new Object[] { p_151519_1_.getHoverName(), this.getEntity().getHoverName() });
+						new Object[] { p_151519_1_.getDisplayName(), this.getEntity().getDisplayName() });
 	}
 
 	/*
@@ -82,8 +82,8 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 	 * StatCollector.translateToLocal(this.weapon)}); }
 	 */
 	@Override
-	public Vec3 getDamageLocation() {
-		return this.isExplosion() ? null : this.damageSourceEntity.position();
+	public Vec3 getSourcePosition() {
+		return this.isExplosion() ? null : this.entity.position();
 	}
 
 	public void removeProjecileStatus() {
@@ -96,7 +96,7 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 	}
 
 	@Override
-	public Entity getTrueSource() {
+	public Entity getEntity() {
 		return selfdmg ? TF2weapons.dummyEnt : super.getEntity();
 	}
 

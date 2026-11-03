@@ -119,7 +119,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 						(byte) ((byte) TF2PlayerCapability.get((Player) entityIn).carryingType + 1));
 			} else if (stack.getTag().getByte("Building") > 0) {
 				int metal = EntityBuilding.getCost(stack.getTag().getByte("Building") - 1, TF2Util.getFirstItem(
-						((Player) entityIn).inventory, stackL -> stackL.getItem() instanceof ItemWrench));
+						((Player) entityIn).getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
 				if (!WeaponsCapability.get(entityIn).hasMetal(metal)
 						|| storage.hasBuilding(stack.getTag().getByte("Building") - 1))
 					stack.getTag().putByte("Building", (byte) 0);
@@ -191,7 +191,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 							.isEmpty()) {
 						((EntitySentry) entity).setMini(true);
 						if (entity.getLevel() > 1)
-							entity.onDeath(DamageSource.GENERIC);
+							entity.die(DamageSource.GENERIC);
 					}
 				}
 				if (TF2PlayerCapability.get(player).carrying != null) {
@@ -273,7 +273,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			for (int i = 0; i < buildCount; i++) {
 				int cost = EntityBuilding.getCost(i,
 						TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
-				if (hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).getSize() != 0) {
+				if (hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).size() != 0) {
 					LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
 							resolution.getScaledHeight() / 2, 0, 64, 64, 64);
 					LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 132 + i * 72,
@@ -304,8 +304,8 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 						resolution.getScaledWidth() / 2 - 140 + i * 72, resolution.getScaledHeight() / 2 - 18,
 						0xFFFFFFFF);
 				if (WeaponsCapability.get(player).getMetal() < cost
-						&& !(hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).getSize() != 0)) {
-					Minecraft.getInstance().font.drawSplitString(I18n.get("gui.build.nometal"),
+						&& !(hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).size() != 0)) {
+					Minecraft.getInstance().font.drawWordWrap(net.minecraft.network.chat.FormattedText.of(I18n.get("gui.build.nometal")),
 							resolution.getScaledWidth() / 2 - 140 + i * 72, resolution.getScaledHeight() / 2 + 20, 80,
 							0xFFF00F0F);
 				}

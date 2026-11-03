@@ -257,7 +257,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 			for (int i = 0; i < 40; i++) {
 				Vec3 pos = TF2Util.radiusRandom2D(2.7f, this.random);
 				this.level.addParticle(DustParticleOptions.REDSTONE, pos.x + this.getX(), this.getY() - 0.5,
-						pos.y + this.getZ(), 0.55, 0.12, 1, new int[0]);
+						pos.y + this.getZ(), 0.55, 0.12, 1);
 			}
 		if (this.tickCount == 1) {
 
@@ -336,7 +336,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 						for (int j = 0; j < 40; j++) {
 							Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.random);
 							this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), pos.y + this.getY(),
-									pos.z + this.getZ(), 0, 0, 0, new int[0]);
+									pos.z + this.getZ(), 0, 0, 0);
 						}
 						this.teleport += 160 + random.nextInt(80);
 						break;

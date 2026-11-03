@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.level.GameRules;
@@ -904,8 +905,8 @@ public class TF2Util {
 		// System.out.println("ticks: "+this.ticksExisted);
 		explosion.isFlaming = false;
 		explosion.isSmoking = true;
-		explosion.doExplosionA();
-		explosion.doExplosionB(true);
+		explosion.explode();
+		explosion.finalizeExplosion(true);
 		int killedInRow = 0;
 
 		for (Entry<Entity, Float> entry : explosion.affectedEntities.entrySet()) {
@@ -1990,5 +1991,20 @@ public class TF2Util {
 		return result instanceof net.minecraft.world.phys.EntityHitResult
 				? ((net.minecraft.world.phys.EntityHitResult) result).getEntity()
 				: null;
+	}
+
+	/** Matches an item, and its metadata (damage) unless meta is negative. */
+	public static java.util.function.Predicate<ItemStack> itemMeta(net.minecraft.world.level.ItemLike item, int meta) {
+		return stack -> stack.is(item.asItem()) && (meta < 0 || stack.getDamageValue() == meta);
+	}
+
+	/** The modifiers of one operation (1.12's getModifiersByOperation). */
+	public static java.util.List<AttributeModifier> modifiersByOperation(
+			net.minecraft.world.entity.ai.attributes.AttributeInstance attribute, int operation) {
+		java.util.List<AttributeModifier> list = new java.util.ArrayList<>();
+		for (AttributeModifier modifier : attribute.getModifiers())
+			if (modifier.getOperation().toValue() == operation)
+				list.add(modifier);
+		return list;
 	}
 }

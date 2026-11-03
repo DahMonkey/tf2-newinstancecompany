@@ -111,7 +111,7 @@ public class ContainerMercenary extends MerchantMenu {
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
 				public String getSlotTexture() {
-					return ArmorItem.EMPTY_SLOT_NAMES[entityequipmentslot.get3DDataValue()];
+					return ArmorItem.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
 				}
 			});
 		}
@@ -249,13 +249,13 @@ public class ContainerMercenary extends MerchantMenu {
 				this.mercenary.setOwner(null);
 			} else if (mercenary.getOwnerUUID() == null
 					&& player.getInventory().contains(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2))) {
-				player.getInventory().clearMatchingItems(TF2weapons.itemTF2, 2, 1, null);
+				player.getInventory().clearOrCountMatchingItems(TF2Util.itemMeta(TF2weapons.itemTF2, 2), 1, new net.minecraft.world.SimpleContainer(0));
 				this.mercenary.setOwner(player);
 			}
 			this.mercenary.applySpeed();
 		} else if (id == 1 && !mercenary.isRobot()) {
 			if (mercenary.getOwner() == player) {
-				player.getInventory().clearMatchingItems(TF2weapons.itemTF2, 2, 1, null);
+				player.getInventory().clearOrCountMatchingItems(TF2Util.itemMeta(TF2weapons.itemTF2, 2), 1, new net.minecraft.world.SimpleContainer(0));
 				this.mercenary.setSharing(true);
 			}
 		} else if (id >= 10 && id < 20 && mercenary.getOwner() == player) {

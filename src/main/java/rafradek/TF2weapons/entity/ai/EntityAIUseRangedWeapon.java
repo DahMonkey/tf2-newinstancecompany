@@ -213,7 +213,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 			/*
 			 * RayTraceResult ray = this.entityHost.rayTrace(128d, 1f); if (ray != null)
 			 * ((WorldServer)this.entityHost.world).spawnParticle(EnumParticleTypes.CRIT,
-			 * ray.hitVec.x, ray.hitVec.y, ray.hitVec.z,1,0, 0, 0, 0, new int[0]);
+			 * ray.hitVec.x, ray.hitVec.y, ray.hitVec.z,1,0, 0, 0, 0);
 			 */
 		}
 

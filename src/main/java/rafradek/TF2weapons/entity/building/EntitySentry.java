@@ -31,7 +31,6 @@ import rafradek.TF2weapons.item.ItemPDA;
 import rafradek.TF2weapons.message.TF2Message;
 import rafradek.TF2weapons.util.Contract.Objective;
 import rafradek.TF2weapons.util.PropertyType;
-import rafradek.TF2weapons.util.ReflectionAccess;
 import rafradek.TF2weapons.util.TF2DamageSource;
 import rafradek.TF2weapons.util.TF2Util;
 import java.util.List;

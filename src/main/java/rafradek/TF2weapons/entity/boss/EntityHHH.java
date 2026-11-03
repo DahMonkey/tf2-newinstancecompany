@@ -162,7 +162,7 @@ public class EntityHHH extends EntityTF2Boss {
 			for (int i = 0; i < 40; i++) {
 				Vec3 pos = TF2Util.radiusRandom2D(2.2f, this.random);
 				this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), this.getY() - 0.5,
-						pos.y + this.getZ(), 0, 0, 0, new int[0]);
+						pos.y + this.getZ(), 0, 0, 0);
 			}
 
 		if (!this.level.isClientSide && this.begin <= 0) {
@@ -275,7 +275,7 @@ public class EntityHHH extends EntityTF2Boss {
 				if (this.level instanceof ServerLevel) {
 					ServerLevel world = (ServerLevel) this.level;
 					world.addParticle(ParticleTypes.PORTAL, this.getX(), this.getY() - 0.5, this.getZ(), 8, 2.7, 0, 2.7,
-							0, new int[0]);
+							0);
 				}
 				if (--this.toTeleportTime == 0) {
 					this.setShiftKeyDown(false);
@@ -292,7 +292,7 @@ public class EntityHHH extends EntityTF2Boss {
 						for (int i = 0; i < 40; i++) {
 							Vec3 partpos = TF2Util.radiusRandom2D(2.7f, this.random);
 							this.level.addParticle(ParticleTypes.PORTAL, partpos.x + this.getX(), this.getY() - 0.5,
-									partpos.y + this.getZ(), 0, 0, 0, new int[0]);
+									partpos.y + this.getZ(), 0, 0, 0);
 						}
 					}
 				}

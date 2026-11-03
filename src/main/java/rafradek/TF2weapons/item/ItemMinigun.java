@@ -237,8 +237,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 
 	@Override
 	public boolean canFire(Level world, LivingEntity living, ItemStack stack) {
-		return super.canFire(world, living, stack) && ((living.getCapability(TF2weapons.WEAPONS_CAP,
-				null).chargeTicks >= (int) TF2Attribute.getModifier("Minigun Spinup", stack, 18, living))
+		return super.canFire(world, living, stack) && ((living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).chargeTicks >= (int) TF2Attribute.getModifier("Minigun Spinup", stack, 18, living))
 				|| (living instanceof Player && ((Player) living).isCreative()));
 	}
 
@@ -256,7 +255,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 				&& TF2Util.isEnemy(attacker, (LivingEntity) target)) {
 			attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).killsSpinning++;
 			/*
-			 * if(attacker.getCapability(TF2weapons.WEAPONS_CAP, null).killsSpinning>=8)
+			 * if(attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).killsSpinning>=8)
 			 * ((EntityPlayer)attacker).awardStat(TF2Achievements.REVOLUTION);
 			 */
 		}

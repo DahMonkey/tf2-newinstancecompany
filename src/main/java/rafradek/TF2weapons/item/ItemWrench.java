@@ -125,7 +125,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 				// System.out.println("metal: "+TF2weapons.getMetal(attacker)+"
 				// used: "+metalLeft);
 				if (useIgnot && metalLeft != 50)
-					((Player) attacker).getInventory().clearMatchingItems(Items.IRON_INGOT, 0, 1, null);
+					((Player) attacker).getInventory().clearOrCountMatchingItems(TF2Util.itemMeta(Items.IRON_INGOT, 0), 1, new net.minecraft.world.SimpleContainer(0));
 
 				if (!(attacker instanceof Player && ((Player) attacker).getAbilities().instabuild))
 					attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).setMetal(metalLeft);
@@ -137,7 +137,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 				&& ((EntityTF2Character) target).isRobot()) {
 			EntityTF2Character robot = (EntityTF2Character) target;
 			if (robot.getEffect(TF2weapons.sapped) != null)
-				robot.removeActivePotionEffect(TF2weapons.sapped);
+				robot.removeEffect(TF2weapons.sapped);
 			else {
 				boolean useIgnot = false;
 				int metalLeft = attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getMetal();
@@ -163,7 +163,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 				}
 
 				if (useIgnot && metalLeft != 50)
-					((Player) attacker).getInventory().clearMatchingItems(Items.IRON_INGOT, 0, 1, null);
+					((Player) attacker).getInventory().clearOrCountMatchingItems(TF2Util.itemMeta(Items.IRON_INGOT, 0), 1, new net.minecraft.world.SimpleContainer(0));
 
 				robot.playSound(ItemFromData.getSound(stack,
 						metalLeft != attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getMetal()
@@ -225,20 +225,20 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 	@Override
 	public void onSlotSelection(ItemStack stack, Player player, int slot) {
 		if (!player.level.isClientSide && player.getUseItem().getItem() instanceof ItemWrench) {
-			int dimension = 0;
+			ServerPlayer splayer = (ServerPlayer) player;
+			net.minecraft.resources.ResourceKey<Level> dimension = Level.OVERWORLD;
 			BlockPos pos = null;
 			if (slot == 8) {
-				dimension = player.dimension;
-				pos = player.getBedLocation(player.dimension);
+				dimension = splayer.getRespawnDimension();
+				pos = splayer.getRespawnPosition();
+				ServerLevel spawnLevel = splayer.server.getLevel(dimension);
+				if (pos != null && spawnLevel != null)
+					pos = Player.findRespawnPositionAndUseSpawnBlock(spawnLevel, pos, splayer.getRespawnAngle(),
+							splayer.isRespawnForced(), true).map(BlockPos::new).orElse(null);
 				if (pos == null) {
-					pos = player.getBedLocation(0);
-					dimension = 0;
+					dimension = Level.OVERWORLD;
+					pos = splayer.server.overworld().getSharedSpawnPos();
 				}
-				if (pos != null)
-					pos = Player.getBedSpawnLocation(TF2weapons.server.getWorld(dimension), pos,
-							player.isSpawnForced(dimension));
-				else
-					pos = TF2weapons.server.getWorld(0).provider.getRandomizedSpawnPoint();
 			} else if (EntityTeleporter.teleporters.containsKey(player.getUUID())) {
 				TeleporterData[] data = EntityTeleporter.teleporters.get(player.getUUID());
 				if (data[slot] != null) {
@@ -247,9 +247,10 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 				}
 			}
 			if (pos != null) {
-				if (dimension != player.dimension)
-					player.level.getServer().getPlayerList().transferPlayerToDimension((ServerPlayer) player,
-							dimension, new EntityTeleporter.TeleporterDim((ServerLevel) player.level, pos));
+				ServerLevel target = splayer.server.getLevel(dimension);
+				if (target != null && target != player.level)
+					splayer.teleportTo(target, pos.getX() + 0.5, pos.getY() + 0.23, pos.getZ() + 0.5, player.getYRot(),
+							player.getXRot());
 				player.teleportTo(pos.getX() + 0.5, pos.getY() + 0.23, pos.getZ() + 0.5);
 				player.getCooldowns().addCooldown(MapList.weaponClasses.get("wrench"), 200);
 				TF2Util.playSound(player, TF2Sounds.MOB_TELEPORTER_SEND, 1.0F, 1.0F);
@@ -270,9 +271,9 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 			GuiComponent gui = Minecraft.getInstance().gui;
-			Minecraft.getInstance().LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 80,
+			LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 80,
 					resolution.getScaledHeight() / 2 - 32, 64, 192, 64, 64);
-			Minecraft.getInstance().LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 + 16,
+			LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 + 16,
 					resolution.getScaledHeight() / 2 - 32, 0, 192, 64, 64);
 
 			LegacyGui.drawCenteredString(Minecraft.getInstance().font, "(1-8)", resolution.getScaledWidth() / 2 - 48,

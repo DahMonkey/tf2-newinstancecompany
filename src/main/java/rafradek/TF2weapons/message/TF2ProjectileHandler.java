@@ -23,7 +23,7 @@ public class TF2ProjectileHandler implements IMessageHandler<TF2Message.Predicti
 		final Player shooter = ctx.getServerHandler().player;
 		// ItemStack stack=shooter.getHeldItem(EnumHand.MAIN_HAND);
 		((ServerLevel) shooter.level).execute(() -> {
-			// shooter.getCapability(TF2weapons.WEAPONS_CAP, null).predictionList.poll();
+			// shooter.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).predictionList.poll();
 			message.target = new ArrayList<>();
 			if (message.readData != null)
 				for (Object[] obj : message.readData) {
@@ -44,8 +44,7 @@ public class TF2ProjectileHandler implements IMessageHandler<TF2Message.Predicti
 					}
 					message.target.add(result);
 				}
-			Deque<PredictionMessage> deque = shooter.getCapability(TF2weapons.WEAPONS_CAP,
-					null).predictionList[(message.state == 1 ? 0 : 2) + message.hand.ordinal()];
+			Deque<PredictionMessage> deque = shooter.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).predictionList[(message.state == 1 ? 0 : 2) + message.hand.ordinal()];
 			deque.addLast(message);
 			message.time = shooter.level.getGameTime();
 		});

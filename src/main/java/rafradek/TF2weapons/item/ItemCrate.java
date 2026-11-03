@@ -88,7 +88,7 @@ public class ItemCrate extends ItemFromData {
 		if (!world.isClientSide && !itemStackIn.getTag().getBoolean("Open")) {
 			if (player.getInventory().contains(TF2Util.metaStack(TF2weapons.itemTF2, 1, 7))) {
 				itemStackIn.getTag().putBoolean("Open", true);
-				player.getInventory().clearMatchingItems(TF2weapons.itemTF2, 7, 1, null);
+				player.getInventory().clearOrCountMatchingItems(TF2Util.itemMeta(TF2weapons.itemTF2, 7), 1, new net.minecraft.world.SimpleContainer(0));
 			}
 		}
 		if (!world.isClientSide && itemStackIn.getTag().getBoolean("Open")) {
@@ -158,7 +158,7 @@ public class ItemCrate extends ItemFromData {
 	}
 
 	@Override
-	public int getItemBurnTime(ItemStack itemStack) {
+	public int getBurnTime(ItemStack itemStack, @javax.annotation.Nullable net.minecraft.world.item.crafting.RecipeType<?> recipeType) {
 		return 2400;
 	}
 }

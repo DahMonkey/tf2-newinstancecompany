@@ -45,7 +45,7 @@ public class ItemAirblast extends ItemProjectileWeapon {
 		return !(target instanceof EntityBuilding)
 				&& !(target instanceof EntityProjectileBase && !((EntityProjectileBase) target).isPushable())
 				&& !(target instanceof AbstractArrow && target.isOnGround())
-				&& !(target instanceof Projectile && ((Projectile) target).getThrower() == living)
+				&& !(target instanceof Projectile && ((Projectile) target).getOwner() == living)
 				&& !TF2Util.isAlliedTo(living, target);
 	}
 
@@ -92,12 +92,12 @@ public class ItemAirblast extends ItemProjectileWeapon {
 					|| !TF2Util.lookingAt(living, 60, entity.getX(), entity.getY() + entity.getBbHeight() / 2, entity.getZ()))
 				continue;
 			if (entity instanceof Projectile && !(entity instanceof EntityStickybomb))
-				((Projectile) entity).setThrower(living);
+				((Projectile) entity).setOwner(living);
 			else if (entity instanceof EntityStickybomb)
 				((EntityStickybomb) entity).addStickCooldown();
 			else if (entity instanceof AbstractArrow) {
-				((AbstractArrow) entity).shootingEntity = living;
-				((AbstractArrow) entity).setDamage(((AbstractArrow) entity).getDamage() * 1.35);
+				((AbstractArrow) entity).setOwner(living);
+				((AbstractArrow) entity).setBaseDamage(((AbstractArrow) entity).getBaseDamage() * 1.35);
 			}
 			if (entity instanceof Projectile) {
 				Projectile proj = (Projectile) entity;
@@ -145,9 +145,8 @@ public class ItemAirblast extends ItemProjectileWeapon {
 				 * ((EntityPlayerMP)living).awardStat(TF2Achievements.HOT_POTATO); }
 				 */
 			}
-			EntityTracker tracker = ((ServerLevel) world).getEntityTracker();
-			tracker.sendToTrackingAndSelf(entity, new ClientboundSetEntityMotionPacket(entity));
-			tracker.sendToTrackingAndSelf(entity, new ClientboundTeleportEntityPacket(entity));
+			((ServerLevel) world).getChunkSource().broadcastAndSend(entity, new ClientboundSetEntityMotionPacket(entity));
+			((ServerLevel) world).getChunkSource().broadcastAndSend(entity, new ClientboundTeleportEntityPacket(entity));
 		}
 	}
 }

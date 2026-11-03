@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.util;
 
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -53,7 +55,7 @@ public class TF2Explosion extends Explosion {
 
 	public TF2Explosion(Level world, Entity exploder, double x, double y, double z, float size, Entity direct,
 			float harvestDamage, float pushScale, SoundEvent sound) {
-		super(world, exploder, x, y, z, size, false, true);
+		super(world, exploder, null, null, x, y, z, size, false, Explosion.BlockInteraction.DESTROY);
 		this.explosionRNG = new Random();
 		this.affectedBlockPositions = Lists.newArrayList();
 		this.knockbackMap = Maps.newHashMap();
@@ -63,7 +65,7 @@ public class TF2Explosion extends Explosion {
 		this.explosionY = y;
 		this.explosionZ = z;
 		this.position = new Vec3(explosionX, explosionY, explosionZ);
-		this.level = world;
+		this.world = world;
 		this.directHit = direct;
 		this.harvestDamage = harvestDamage;
 		this.pushScale = pushScale;
@@ -71,7 +73,7 @@ public class TF2Explosion extends Explosion {
 	}
 
 	@Override
-	public void doExplosionA() {
+	public void explode() {
 		HashSet<BlockPos> hashset = Sets.newHashSet();
 		int j;
 		int k;
@@ -88,7 +90,7 @@ public class TF2Explosion extends Explosion {
 							d1 /= d3;
 							d2 /= d3;
 							float f = TF2ConfigVars.destTerrain == 2
-									? this.explosionSize * (0.7F + this.level.random.nextFloat() * 0.6F)
+									? this.explosionSize * (0.7F + this.world.random.nextFloat() * 0.6F)
 									: (this.harvestDamage / 64);
 							double d4 = this.explosionX;
 							double d6 = this.explosionY;
@@ -97,19 +99,15 @@ public class TF2Explosion extends Explosion {
 							if (TF2ConfigVars.destTerrain == 2)
 								for (; f > 0.0F; f -= 0.22500001F) {
 									BlockPos blockpos = new BlockPos(d4, d6, d8);
-									BlockState iblockstate = this.level.getBlockState(blockpos);
+									BlockState iblockstate = this.world.getBlockState(blockpos);
 
-									if (iblockstate.getMaterial() != Material.AIR) {
-										float f2 = this.exploder != null
-												? this.exploder.getExplosionResistance(this, this.level, blockpos,
-														iblockstate)
-												: iblockstate.getBlock().getExplosionResistance(world, blockpos,
-														(Entity) null, this);
+									if (!iblockstate.isAir()) {
+										float f2 = iblockstate.getExplosionResistance(world, blockpos, this);
 										f -= (f2 + 0.3F) * 0.3F;
 									}
 
 									if (f > 0.0F && (this.exploder == null || this.exploder
-											.canExplosionDestroyBlock(this, this.level, blockpos, iblockstate, f)))
+											.shouldBlockExplode(this, this.world, blockpos, iblockstate, f)))
 										hashset.add(blockpos);
 
 									d4 += d0 * 0.30000001192092896D;
@@ -119,9 +117,9 @@ public class TF2Explosion extends Explosion {
 							else
 								for (; f > 0.0F; f -= 0.015F) {
 									BlockPos blockpos = new BlockPos(d4, d6, d8);
-									BlockState iblockstate = this.level.getBlockState(blockpos);
+									BlockState iblockstate = this.world.getBlockState(blockpos);
 
-									if (iblockstate.getMaterial() != Material.AIR)
+									if (!iblockstate.isAir())
 										f = TF2Util.damageBlock(blockpos, (LivingEntity) null, world,
 												ItemStack.EMPTY, 0, f, null, this);
 
@@ -138,11 +136,11 @@ public class TF2Explosion extends Explosion {
 		int l = Mth.floor(this.explosionY + f3 + 1.0D);
 		int k1 = Mth.floor(this.explosionZ - f3 - 1.0D);
 		int i1 = Mth.floor(this.explosionZ + f3 + 1.0D);
-		List<Entity> list = this.level.getEntitiesOfClass(Entity.class, new AABB(j, j1, k1, k, l, i1),
-				input -> input != exploder && !input.isImmuneToExplosions()
-						&& (input.canBeAttackedWithItem() || TF2ConfigVars.destTerrain == 2)
-						&& TF2Util.canHit(getExplosivePlacedBy(), input));
-		ForgeEventFactory.onExplosionDetonate(this.level, this, list, f3);
+		List<Entity> list = this.world.getEntitiesOfClass(Entity.class, new AABB(j, j1, k1, k, l, i1),
+				input -> input != exploder && !input.ignoreExplosion()
+						&& (input.isAttackable() || TF2ConfigVars.destTerrain == 2)
+						&& TF2Util.canHit(getSourceMob(), input));
+		ForgeEventFactory.onExplosionDetonate(this.world, this, list, f3);
 		Vec3 Vec3 = new Vec3(this.explosionX, this.explosionY, this.explosionZ);
 		int livingEntities = 0;
 		for (Object obj : list)
@@ -154,7 +152,7 @@ public class TF2Explosion extends Explosion {
 					/ this.getExplosionSize(entity) * 0.5;
 
 			if (d4 <= 0.5D) {
-				boolean isExploder = this.getExplosivePlacedBy() == entity;
+				boolean isExploder = this.getSourceMob() == entity;
 				boolean expJump = isExploder && this.directHit == null;
 				// System.out.println("jump: "+expJump);
 				double d5 = entity.getX() - this.explosionX;
@@ -217,28 +215,28 @@ public class TF2Explosion extends Explosion {
 	 * Does the second part of the explosion (sound, particles, drop spawn)
 	 */
 	@Override
-	public void doExplosionB(boolean spawnParticles) {
+	public void finalizeExplosion(boolean spawnParticles) {
 		if (sound != null) {
-			this.level.playSound((Player) null, this.explosionX, this.explosionY, this.explosionZ, sound,
-					SoundSource.BLOCKS, this.getExplosivePlacedBy() instanceof Player ? 4.0F : 1.0F, 1.0F);
+			this.world.playSound((Player) null, this.explosionX, this.explosionY, this.explosionZ, sound,
+					SoundSource.BLOCKS, this.getSourceMob() instanceof Player ? 4.0F : 1.0F, 1.0F);
 		}
 
 		if (this.isSmoking)
 			TF2Util.sendParticle(EnumTF2Particles.EXPLOSION, world, this.explosionX, this.explosionY, this.explosionZ,
 					this.explosionSize, 0, 0, 1);
 		else
-			this.level.addParticle(ParticleTypes.EXPLOSION, this.explosionX, this.explosionY,
-					this.explosionZ, 1.0D, 0.0D, 0.0D, new int[0]);
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.explosionX, this.explosionY,
+					this.explosionZ, 1.0D, 0.0D, 0.0D);
 
 		if (this.isSmoking && TF2ConfigVars.destTerrain == 2)
 			for (BlockPos blockpos : this.affectedBlockPositions) {
-				BlockState iblockstate = this.level.getBlockState(blockpos);
+				BlockState iblockstate = this.world.getBlockState(blockpos);
 				Block block = iblockstate.getBlock();
 
 				if (spawnParticles) {
-					double d0 = blockpos.getX() + this.level.random.nextFloat();
-					double d1 = blockpos.getY() + this.level.random.nextFloat();
-					double d2 = blockpos.getZ() + this.level.random.nextFloat();
+					double d0 = blockpos.getX() + this.world.random.nextFloat();
+					double d1 = blockpos.getY() + this.world.random.nextFloat();
+					double d2 = blockpos.getZ() + this.world.random.nextFloat();
 					double d3 = d0 - this.explosionX;
 					double d4 = d1 - this.explosionY;
 					double d5 = d2 - this.explosionZ;
@@ -247,30 +245,29 @@ public class TF2Explosion extends Explosion {
 					d4 = d4 / d6;
 					d5 = d5 / d6;
 					double d7 = 0.5D / (d6 / this.explosionSize + 0.1D);
-					d7 = d7 * (this.level.random.nextFloat() * this.level.random.nextFloat() + 0.3F);
+					d7 = d7 * (this.world.random.nextFloat() * this.world.random.nextFloat() + 0.3F);
 					d3 = d3 * d7;
 					d4 = d4 * d7;
 					d5 = d5 * d7;
-					this.level.addParticle(ParticleTypes.POOF, (d0 + this.explosionX) / 2.0D,
-							(d1 + this.explosionY) / 2.0D, (d2 + this.explosionZ) / 2.0D, d3, d4, d5, new int[0]);
-					this.level.addParticle(ParticleTypes.SMOKE, d0, d1, d2, d3, d4, d5, new int[0]);
+					this.world.addParticle(ParticleTypes.POOF, (d0 + this.explosionX) / 2.0D,
+							(d1 + this.explosionY) / 2.0D, (d2 + this.explosionZ) / 2.0D, d3, d4, d5);
+					this.world.addParticle(ParticleTypes.SMOKE, d0, d1, d2, d3, d4, d5);
 				}
 
-				if (iblockstate.getMaterial() != Material.AIR) {
-					if (block.canDropFromExplosion(this))
-						block.dropBlockAsItemWithChance(this.level, blockpos, this.level.getBlockState(blockpos),
-								1.0F / this.explosionSize, 0);
+				if (!iblockstate.isAir()) {
+					if (iblockstate.canDropFromExplosion(this.world, blockpos, this) && this.world instanceof ServerLevel)
+						Block.dropResources(iblockstate, this.world, blockpos, this.world.getBlockEntity(blockpos));
 
-					block.onBlockExploded(this.level, blockpos, this);
+					iblockstate.onBlockExploded(this.world, blockpos, this);
 				}
 			}
 
 		if (this.isFlaming)
 			for (BlockPos blockpos1 : this.affectedBlockPositions)
-				if (this.level.getBlockState(blockpos1).getMaterial() == Material.AIR
-						&& this.level.getBlockState(blockpos1.below()).isFullBlock()
+				if (this.world.getBlockState(blockpos1).isAir()
+						&& this.world.getBlockState(blockpos1.below()).isSolidRender(this.world, blockpos1.below())
 						&& this.explosionRNG.nextInt(3) == 0)
-					this.level.setBlockAndUpdate(blockpos1, Blocks.FIRE.defaultBlockState());
+					this.world.setBlockAndUpdate(blockpos1, Blocks.FIRE.defaultBlockState());
 	}
 
 	/*
@@ -299,7 +296,9 @@ public class TF2Explosion extends Explosion {
 		double d0 = 1.0D / ((p_72842_2_.maxX - p_72842_2_.minX) * 2.0D + 1.0D);
 		double d1 = 1.0D / ((p_72842_2_.maxY - p_72842_2_.minY) * 2.0D + 1.0D);
 		double d2 = 1.0D / ((p_72842_2_.maxZ - p_72842_2_.minZ) * 2.0D + 1.0D);
-		List<AABB> collisionBoxes = this.level.getCollisionBoxes(null, p_72842_2_.inflate(1, 1, 1));
+		List<AABB> collisionBoxes = new ArrayList<>();
+		for (net.minecraft.world.phys.shapes.VoxelShape shape : this.world.getBlockCollisions(null, p_72842_2_.inflate(1, 1, 1)))
+			collisionBoxes.addAll(shape.toAabbs());
 		if (d0 >= 0.0D && d1 >= 0.0D && d2 >= 0.0D) {
 			int i = 0;
 			int j = 0;
@@ -313,7 +312,7 @@ public class TF2Explosion extends Explosion {
 						Vec3 start = new Vec3(d3, d4, d5);
 						boolean free = true;
 						for (AABB box : collisionBoxes)
-							if (box.clip(start, origin) != null) {
+							if (box.clip(start, origin).isPresent()) {
 								free = false;
 								break;
 							}
@@ -335,7 +334,7 @@ public class TF2Explosion extends Explosion {
 	}
 
 	public float getExplosionSize(Entity target) {
-		return target == getExplosivePlacedBy() && this.exploder instanceof EntityProjectileBase
+		return target == getSourceMob() && this.exploder instanceof EntityProjectileBase
 				? ((EntityProjectileBase) this.exploder).getExplosionSize()
 				: this.explosionSize;
 	}
@@ -345,7 +344,7 @@ public class TF2Explosion extends Explosion {
 	 * caused the explosion or null.
 	 */
 	@Override
-	public LivingEntity getExplosivePlacedBy() {
+	public LivingEntity getSourceMob() {
 		if (this.exploder instanceof EntityProjectileBase) {
 			return ((EntityProjectileBase) this.exploder).shootingEntity;
 		}

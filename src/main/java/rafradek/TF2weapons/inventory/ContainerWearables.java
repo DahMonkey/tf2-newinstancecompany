@@ -85,7 +85,7 @@ public class ContainerWearables extends LegacyContainer {
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
 				public String getSlotTexture() {
-					return ArmorItem.EMPTY_SLOT_NAMES[entityequipmentslot.get3DDataValue()];
+					return ArmorItem.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
 				}
 			});
 		}
@@ -136,7 +136,7 @@ public class ContainerWearables extends LegacyContainer {
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
 				public String getSlotTexture() {
-					return ArmorItem.EMPTY_SLOT_NAMES[EquipmentSlot.HEAD.get3DDataValue()];
+					return ArmorItem.EMPTY_SLOT_NAMES[EquipmentSlot.HEAD.getIndex()];
 				}
 			});
 		}
@@ -156,7 +156,7 @@ public class ContainerWearables extends LegacyContainer {
 			@Nullable
 			@OnlyIn(Dist.CLIENT)
 			public String getSlotTexture() {
-				return ArmorItem.EMPTY_SLOT_NAMES[EquipmentSlot.CHEST.get3DDataValue()];
+				return ArmorItem.EMPTY_SLOT_NAMES[EquipmentSlot.CHEST.getIndex()];
 			}
 
 			@Override
@@ -329,8 +329,7 @@ public class ContainerWearables extends LegacyContainer {
 		ammoBelt = false;
 		if (!this.wearables.getStackInSlot(3).isEmpty() && this.wearables.getStackInSlot(3)
 				.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-			handler = this.wearables.getStackInSlot(3).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
-					null);
+			handler = this.wearables.getStackInSlot(3).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
 			ammoBelt = true;
 		}
 		for (int i = 0; i < 3; ++i)

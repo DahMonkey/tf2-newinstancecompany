@@ -112,7 +112,7 @@ public class ItemWearable extends ItemFromData {
 
 	@Override
 	public Component getName(ItemStack stack) {
-		String name = super.getName(stack);
+		String name = super.getName(stack).getString();
 		if (stack.hasTag() && stack.getTag().contains("UEffect"))
 			name = ChatFormatting.DARK_PURPLE + "Unusual " + name;
 		return Component.literal(name);
@@ -149,12 +149,12 @@ public class ItemWearable extends ItemFromData {
 		if (!living.level.isClientSide && living.deathTime == 18
 				&& TF2Attribute.getModifier("Explode Death", stack, 0, living) != 0) {
 			TF2Explosion explosion = new TF2Explosion(living.level, living, living.getX(), living.getY() + 0.5, living.getZ(),
-					5, null, 0, 3, SoundEvents.ENTITY_GENERIC_EXPLODE);
+					5, null, 0, 3, SoundEvents.GENERIC_EXPLODE);
 			// System.out.println("ticks: "+this.ticksExisted);
 			explosion.isFlaming = false;
 			explosion.isSmoking = true;
-			explosion.doExplosionA();
-			explosion.doExplosionB(true);
+			explosion.explode();
+			explosion.finalizeExplosion(true);
 			Iterator<Entity> affectedIterator = explosion.affectedEntities.keySet().iterator();
 			while (affectedIterator.hasNext()) {
 				Entity ent = affectedIterator.next();
@@ -162,7 +162,7 @@ public class ItemWearable extends ItemFromData {
 						explosion.affectedEntities.get(ent) * 26,
 						TF2Util.causeDirectDamage(stack, living).setCritical(2).setExplosion());
 			}
-			Iterator<Player> iterator = living.level.players().iterator();
+			Iterator<? extends Player> iterator = living.level.players().iterator();
 
 			while (iterator.hasNext()) {
 				Player entityplayer = iterator.next();
@@ -187,7 +187,7 @@ public class ItemWearable extends ItemFromData {
 										.getEntitiesOfClass(Mob.class,
 												living.getBoundingBox().inflate(11),
 												ent -> ent.getTarget() == living
-														&& TargetGoal.isSuitableTarget(ent, living, false, true)),
+														&& net.minecraft.world.entity.ai.targeting.TargetingConditions.forCombat().test(ent, living)),
 								null);
 			}
 			if (target != null && living.hasLineOfSight(target) && target.isAlive()
@@ -219,9 +219,9 @@ public class ItemWearable extends ItemFromData {
 		}
 		if (living.level.isClientSide
 				&& (living != ClientProxy.getLocalPlayer()
-						|| Minecraft.getInstance().options.thirdPersonView != 0)
+						|| Minecraft.getInstance().options.getCameraType() != net.minecraft.client.CameraType.FIRST_PERSON)
 				&& stack.getTag().contains("UEffect")) {
-			ParticleTypes type;
+			net.minecraft.core.particles.ParticleOptions type;
 			switch (stack.getTag().getByte("UEffect")) {
 			case 0:
 				type = ParticleTypes.FLAME;
@@ -269,11 +269,11 @@ public class ItemWearable extends ItemFromData {
 				type = ParticleTypes.END_ROD;
 				break;
 			}
-			par2World.spawnParticle(type,
+			par2World.addParticle(type,
 					living.getX() + living.getRandom().nextDouble() * living.getBbWidth() - (living.getBbWidth() / 2),
 					living.getY() + living.getBbHeight() + living.getRandom().nextDouble() * 0.2,
 					living.getZ() + living.getRandom().nextDouble() * living.getBbWidth() - (living.getBbWidth() / 2), living.getDeltaMovement().x,
-					living.getRandom().nextDouble() * 0.02, living.getDeltaMovement().z, new int[0]);
+					living.getRandom().nextDouble() * 0.02, living.getDeltaMovement().z);
 		}
 	}
 }

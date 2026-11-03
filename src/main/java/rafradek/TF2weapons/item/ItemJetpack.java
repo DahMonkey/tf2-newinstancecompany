@@ -23,12 +23,16 @@ public class ItemJetpack extends ItemBackpack {
 	public static ItemStack trigger = ItemStack.EMPTY;
 
 	@Override
-	public boolean showDurabilityBar(ItemStack stack) {
+	public boolean isBarVisible(ItemStack stack) {
 		return stack.getTag().getShort("Charge") > 0;
 	}
 
 	@Override
-	public double getDurabilityForDisplay(ItemStack stack) {
+	public int getBarWidth(ItemStack stack) {
+		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
+	}
+
+	public double getDurabilityForDisplayLegacy(ItemStack stack) {
 		return (double) (stack.getTag().getShort("Charge")) / this.getCooldown(stack, null);
 	}
 

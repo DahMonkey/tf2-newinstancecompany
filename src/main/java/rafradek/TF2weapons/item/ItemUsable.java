@@ -139,17 +139,17 @@ public abstract class ItemUsable extends ItemFromData {
 	public static double calculateModifiers(AttributeInstance attribute, UUID except, double initial,
 			double additionToMult) {
 		double initialO = initial;
-		for (AttributeModifier modifier : attribute.getModifiersByOperation(0)) {
+		for (AttributeModifier modifier : TF2Util.modifiersByOperation(attribute, 0)) {
 			if (!modifier.getId().equals(except)) {
 				initial += initialO * modifier.getAmount() * additionToMult;
 			}
 		}
-		for (AttributeModifier modifier : attribute.getModifiersByOperation(1)) {
+		for (AttributeModifier modifier : TF2Util.modifiersByOperation(attribute, 1)) {
 			if (!modifier.getId().equals(except)) {
 				initial += initialO * modifier.getAmount();
 			}
 		}
-		for (AttributeModifier modifier : attribute.getModifiersByOperation(2)) {
+		for (AttributeModifier modifier : TF2Util.modifiersByOperation(attribute, 2)) {
 			if (!modifier.getId().equals(except)) {
 				initial *= 1 + modifier.getAmount();
 			}
@@ -161,11 +161,11 @@ public abstract class ItemUsable extends ItemFromData {
 	public boolean onDroppedByPlayer(ItemStack item, Player player) {
 		/*
 		 * item.getTagCompound().removeTag("active");
-		 * player.getCapability(TF2weapons.WEAPONS_CAP, null).state = 0;
+		 * player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state = 0;
 		 * if(!player.world.isRemote) TF2weapons.network.sendTo(new
 		 * TF2Message.WeaponDroppedMessage(ItemFromData.getData(item).getName()),
 		 * (EntityPlayerMP) player);
-		 * this.holster(player.getCapability(TF2weapons.WEAPONS_CAP, null), item,
+		 * this.holster(player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null), item,
 		 * player, player.world);
 		 */
 		return true;
@@ -227,7 +227,7 @@ public abstract class ItemUsable extends ItemFromData {
 			// System.out.println("Pre speed "+speed+"
 			// "+living.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getBaseValue());
 			double modifiers = calculateModifiers(living.getAttribute(Attributes.ATTACK_SPEED),
-					ATTACK_SPEED_MODIFIER,
+					BASE_ATTACK_SPEED_UUID,
 					living.getAttribute(Attributes.ATTACK_SPEED).getBaseValue(), 1.4);
 			speed *= (living instanceof Player ? 4
 					: living.getAttribute(Attributes.ATTACK_SPEED).getBaseValue()) / modifiers;

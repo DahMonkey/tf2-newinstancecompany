@@ -80,14 +80,14 @@ public class ItemAmmo extends LegacyItem {
 			/*
 			 * if (stack.isEmpty() && living instanceof EntityPlayer) {
 			 *
-			 * if (living.getCapability(TF2weapons.INVENTORY_CAP, null).getStackInSlot(3) !=
+			 * if (living.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3) !=
 			 * null){ IItemHandlerModifiable invAmmo = (IItemHandlerModifiable)
-			 * living.getCapability(TF2weapons.INVENTORY_CAP, null).getStackInSlot(3)
-			 * .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+			 * living.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)
+			 * .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
 			 *
 			 * for (int i = 0; i < invAmmo.getSlots(); i++) { ItemStack stackInv =
 			 * invAmmo.getStackInSlot(i); if (stack == stackInv) { invAmmo.setStackInSlot(i,
-			 * null); return; } } } ((EntityPlayer) living).inventory.deleteStack(stack); }
+			 * null); return; } } } ((EntityPlayer) living).inventory.removeItem(stack); }
 			 */
 		}
 		return 0;

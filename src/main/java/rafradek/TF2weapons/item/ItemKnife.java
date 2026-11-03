@@ -150,7 +150,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 			 * if(((EntityPlayerMP)
 			 * attacker).getStatFile().readStat(TF2Achievements.KILLED_BACKSTAB)>=400)
 			 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.SPYMASTER);
-			 * if(attacker.getCapability(TF2weapons.PLAYER_CAP, null).sapperTime>0 &&
+			 * if(attacker.getCapability(TF2weapons.PLAYER_CAP).orElse(null).sapperTime>0 &&
 			 * attacker.getCapability(TF2weapons.PLAYER_CAP,
 			 * null).buildingOwnerKill==target) ((EntityPlayerMP)
 			 * attacker).awardStat(TF2Achievements.SAP_STAB);
