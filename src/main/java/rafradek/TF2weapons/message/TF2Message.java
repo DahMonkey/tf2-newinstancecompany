@@ -10,7 +10,6 @@ import io.netty.buffer.ByteBuf;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
-import rafradek.TF2weapons.arena.GameArena;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.util.Contract;
 import rafradek.TF2weapons.util.Contract.Objective;
@@ -353,55 +352,6 @@ public abstract class TF2Message implements IMessage {
 			buf.writeLong(totalTime);
 			SynchedEntityData.pack(entries, new FriendlyByteBuf(buf));
 
-		}
-
-	}
-
-	public static class GameArenaMessage extends TF2Message {
-		Map<UUID, List<SynchedEntityData.DataItem<?>>> playerfoUUID = new HashMap<>();
-		int arenaId;
-		Type type;
-
-		enum Type {
-			ADD, UPDATE, REMOVE
-		}
-
-		public GameArenaMessage() {}
-
-		public GameArenaMessage(GameArena arena, Type type) {
-			this.type = type;
-			this.arenaId = arena.networkId;
-			if (type != Type.REMOVE) {
-				for (Entry<UUID, SynchedEntityData> entry : arena.playerInfoUUID.entrySet()) {
-					if (type == Type.ADD) {
-						playerfoUUID.put(entry.getKey(), entry.getValue().getAll());
-					} else {
-						playerfoUUID.put(entry.getKey(), entry.getValue().packDirty());
-					}
-				}
-			}
-		}
-
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			this.type = Type.values()[buf.readByte()];
-			this.arenaId = buf.readInt();
-			while (buf.readableBytes() > 0) {
-									UUID uuid = new FriendlyByteBuf(buf).readUUID();
-					playerfoUUID.put(uuid, SynchedEntityData.unpack(new FriendlyByteBuf(buf)));
-
-			}
-		}
-
-		@Override
-		public void toBytes(ByteBuf buf) {
-			buf.writeByte(this.type.ordinal());
-			buf.writeInt(this.arenaId);
-			for (Entry<UUID, List<SynchedEntityData.DataItem<?>>> entry : playerfoUUID.entrySet()) {
-				new FriendlyByteBuf(buf).writeUUID(entry.getKey());
-				SynchedEntityData.pack(entry.getValue(), new FriendlyByteBuf(buf));
-
-			}
 		}
 
 	}

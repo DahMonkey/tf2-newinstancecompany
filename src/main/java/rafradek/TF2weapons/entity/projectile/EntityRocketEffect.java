@@ -1,56 +1,33 @@
 package rafradek.TF2weapons.entity.projectile;
 
-import net.minecraft.client.particle.Particle;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import rafradek.TF2weapons.client.particle.LegacyParticle;
 
-public class EntityRocketEffect extends Particle {
+/** Rocket exhaust spark that follows its rocket. Client only. */
+public class EntityRocketEffect extends LegacyParticle {
 	public EntityRocket rocket;
-	private boolean nextDead;
 
-	public EntityRocketEffect(Level par1World, EntityRocket rocket) {
-		super(par1World, rocket.getX(), rocket.getY(), rocket.getZ());
-		// this.noClip=true;
+	public EntityRocketEffect(Level world, EntityRocket rocket) {
+		super(world, rocket.getX(), rocket.getY(), rocket.getZ());
 		this.rocket = rocket;
-		this.quadSize = 1;
+		this.quadSize = 0.2f;
 		this.lifetime = 200;
-		this.setSize(0.1f, 0.1f);
+		this.gravity = 0;
 		this.setParticleTextureIndex(163);
 		this.alpha = 0.75f;
-		// this.setParticleIcon(TF2EventBusListener.pelletIcon);
-		// this.setParticleTextureIndex(81);
-		this.multipleParticleScaleBy(2);
 		this.setColor(1f, 0.5f, 0f);
-		this.particleTextureJitterX = this.random.nextFloat();
-		this.particleTextureJitterY = this.random.nextFloat();
 	}
 
 	@Override
 	public void tick() {
-		if (rocket.isRemoved()) {
-			this.setExpired();
+		if (this.rocket.isRemoved()) {
+			this.remove();
 			return;
 		}
-		this.setPos(rocket.xo - rocket.getDeltaMovement().x * 0.5f, rocket.yo - rocket.getDeltaMovement().y * 0.5f,
-				rocket.zo - rocket.getDeltaMovement().z * 0.5f);
-		this.setDeltaMovement((rocket.getDeltaMovement().x), this.getDeltaMovement().y, this.getDeltaMovement().z);
-		this.setDeltaMovement(this.getDeltaMovement().x, (rocket.getDeltaMovement().y), this.getDeltaMovement().z);
-		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (rocket.getDeltaMovement().z));
+		this.setPos(this.rocket.xo - this.rocket.getDeltaMovement().x * 0.5f,
+				this.rocket.yo - this.rocket.getDeltaMovement().y * 0.5f,
+				this.rocket.zo - this.rocket.getDeltaMovement().z * 0.5f);
+		this.xd = this.yd = this.zd = 0;
 		super.tick();
-	}
-
-	/*
-	 * public int getFXLayer() { return 2; }
-	 */
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public int getBrightnessForRender(float p_70070_1_) {
-		return 15728880;
-	}
-
-	public float getBrightness(float p_70013_1_) {
-		return 1.0F;
 	}
 }

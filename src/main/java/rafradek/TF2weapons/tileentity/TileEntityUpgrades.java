@@ -1,7 +1,6 @@
 package rafradek.TF2weapons.tileentity;
 
 import net.minecraft.util.RandomSource;
-import rafradek.TF2weapons.block.BlockOverheadDoor;
 import rafradek.TF2weapons.common.TF2Attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,7 +98,7 @@ public class TileEntityUpgrades extends BlockEntity {
 
 	@Override
 	public boolean shouldRefresh(Level world, BlockPos pos, BlockState oldState, BlockState newSate) {
-		return oldState.getBlock() != newSate.getBlock() || !newSate.getValue(BlockOverheadDoor.HOLDER);
+		return oldState.getBlock() != newSate.getBlock();
 	}
 
 	@Override

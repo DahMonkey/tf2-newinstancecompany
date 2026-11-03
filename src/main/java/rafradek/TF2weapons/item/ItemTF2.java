@@ -4,7 +4,6 @@ import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2weapons;
-import rafradek.TF2weapons.tileentity.TileEntityRobotDeploy;
 import rafradek.TF2weapons.util.TF2Class;
 import java.util.List;
 import net.minecraft.core.NonNullList;
@@ -79,8 +78,8 @@ public class ItemTF2 extends LegacyItem {
 						ItemHandlerHelper.giveItemToPlayer(living,
 								TF2Util.metaStack(TF2weapons.itemRobotPart,
 										stack.getDamageValue() == 13
-												? TileEntityRobotDeploy.GIANT_REQUIRE[ItemRobotPart.LEVEL[i]]
-												: TileEntityRobotDeploy.NORMAL_REQUIRE[ItemRobotPart.LEVEL[i]],
+												? new int[] { 4, 5, 3 }[ItemRobotPart.LEVEL[i]]
+												: new int[] { 2, 2, 1 }[ItemRobotPart.LEVEL[i]],
 										i),
 								0);
 				}

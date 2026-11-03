@@ -79,7 +79,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import rafradek.TF2weapons.arena.GameArena;
 import rafradek.TF2weapons.block.*;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -261,11 +260,7 @@ public class TF2weapons {
 	/* Block entity types */
 	public static BlockEntityType<TileEntityUpgrades> TILE_UPGRADES;
 	public static BlockEntityType<TileEntityAmmoFurnace> TILE_AMMO_FURNACE;
-	public static BlockEntityType<TileEntityOverheadDoor> TILE_OVERHEAD_DOOR;
-	public static BlockEntityType<TileEntityRobotDeploy> TILE_ROBOT_DEPLOY;
 	public static BlockEntityType<TileEntityResupplyCabinet> TILE_RESUPPLY_CABINET;
-	public static BlockEntityType<TileEntityCapturePoint> TILE_CAPTURE_POINT;
-	public static BlockEntityType<TileEntityGameConfigure> TILE_GAME_CONFIGURE;
 
 	/** Menus, indexed by the 1.12 GUI id (see {@link TF2GuiHandler}). */
 	public static final MenuType<?>[] MENU_TYPES = new MenuType<?>[8];
@@ -309,7 +304,6 @@ public class TF2weapons {
 	public static boolean squakeLoaded;
 	public static boolean corrupted;
 
-	public static Map<String, GameArena> gameArenas = new HashMap<>();
 
 	public static int getCurrentWeaponVersion() {
 		return 50;
@@ -613,15 +607,7 @@ public class TF2weapons {
 		helper.register(id("australium_block"), blockAustralium = new Block(
 				blockProps(Material.METAL, MaterialColor.GOLD, 9f, 20f).requiresCorrectToolForDrops()
 						.sound(SoundType.METAL)));
-		helper.register(id("overhead_door"), blockOverheadDoor = new BlockOverheadDoor(
-				blockProps(Material.METAL, MaterialColor.METAL, 3f, 5f).noOcclusion()));
-		helper.register(id("robot_deploy"), blockRobotDeploy = new BlockRobotDeploy(
-				blockProps(Material.METAL, MaterialColor.METAL, 3f, 5f)));
 		helper.register(id("resupply_cabinet"), blockResupplyCabinet = new BlockResupplyCabinet(
-				blockProps(Material.METAL, MaterialColor.METAL, -1f, 6000000f).noLootTable()));
-		helper.register(id("capture_point"), blockCapturePoint = new BlockCapturePoint(
-				blockProps(Material.METAL, MaterialColor.METAL, -1f, 6000000f).noLootTable()));
-		helper.register(id("game_configure"), blockConfigure = new BlockGameConfigure(
 				blockProps(Material.METAL, MaterialColor.METAL, -1f, 6000000f).noLootTable()));
 		helper.register(id("prop_block"), blockProp = new BlockProp(
 				blockProps(Material.WOOD, MaterialColor.GOLD, 0.75f, 2f).noLootTable()));
@@ -665,7 +651,6 @@ public class TF2weapons {
 		helper.register(id("killstreakfabricator"), itemKillstreakFabricator = new ItemKillstreakFabricator());
 		helper.register(id("eventmaker"), itemEventMaker = new ItemEventMaker());
 		helper.register(id("boss_spawner"), itemBossSpawn = new ItemBossSpawner());
-		helper.register(id("door_controller"), itemDoorController = new ItemDoorController());
 		helper.register(id("money"), itemMoney = new ItemMoney());
 		helper.register(id("configurator"), itemConfigurator = new ItemConfigure());
 		helper.register(id("pickup"), itemPickup = new ItemPickup());
@@ -679,10 +664,8 @@ public class TF2weapons {
 				helper.register(id(entry.getKey().toLowerCase(Locale.ROOT)), entry.getValue());
 
 		for (Block block : new Block[] { blockCabinet, blockAmmoFurnace, blockUpgradeStation, blockCopperOre,
-				blockLeadOre, blockAustraliumOre, blockAustralium, blockOverheadDoor, blockRobotDeploy,
-				blockResupplyCabinet, blockCapturePoint, blockConfigure }) {
-			CreativeModeTab tab = block == blockResupplyCabinet || block == blockCapturePoint
-					|| block == blockConfigure ? tabarenatf2 : tabsurvivaltf2;
+				blockLeadOre, blockAustraliumOre, blockAustralium, blockResupplyCabinet }) {
+			CreativeModeTab tab = block == blockResupplyCabinet ? tabarenatf2 : tabsurvivaltf2;
 			helper.register(ForgeRegistries.BLOCKS.getKey(block), new BlockItem(block, props(tab)));
 		}
 	}
@@ -895,11 +878,7 @@ public class TF2weapons {
 	private static void registerTileEntities(RegisterEvent.RegisterHelper<BlockEntityType<?>> helper) {
 		TILE_UPGRADES = tile(helper, "upgrade_station", TileEntityUpgrades::new, blockUpgradeStation);
 		TILE_AMMO_FURNACE = tile(helper, "ammo_furnace", TileEntityAmmoFurnace::new, blockAmmoFurnace);
-		TILE_OVERHEAD_DOOR = tile(helper, "overhead_door", TileEntityOverheadDoor::new, blockOverheadDoor);
-		TILE_ROBOT_DEPLOY = tile(helper, "robot_deploy", TileEntityRobotDeploy::new, blockRobotDeploy);
 		TILE_RESUPPLY_CABINET = tile(helper, "resupply_cabinet", TileEntityResupplyCabinet::new, blockResupplyCabinet);
-		TILE_CAPTURE_POINT = tile(helper, "capture_point", TileEntityCapturePoint::new, blockCapturePoint);
-		TILE_GAME_CONFIGURE = tile(helper, "game_configure", TileEntityGameConfigure::new, blockConfigure);
 	}
 
 	private void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -1084,7 +1063,6 @@ public class TF2weapons {
 
 	private void serverStopping(ServerStoppingEvent event) {
 		EntityTeleporter.saveTeleporters(event.getServer());
-		gameArenas.clear();
 		server = null;
 	}
 }

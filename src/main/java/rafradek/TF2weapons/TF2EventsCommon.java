@@ -22,7 +22,6 @@ import rafradek.TF2weapons.common.TF2Achievements;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import io.netty.buffer.Unpooled;
-import rafradek.TF2weapons.arena.GameArena;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -296,13 +295,6 @@ public class TF2EventsCommon {
 				entry.getValue().tick();
 				if (entry.getValue().finished)
 					ite.remove();
-			}
-			Iterator<Entry<String, GameArena>> iteGame = events.gameArenas.entrySet().iterator();
-			while (iteGame.hasNext()) {
-				Entry<String, GameArena> entry = iteGame.next();
-				entry.getValue().tick();
-				if (entry.getValue().markDelete)
-					iteGame.remove();
 			}
 			if (event.level.dimension() == Level.OVERWORLD) {
 				int dayTime = (int) (worldTime % 24000);
@@ -1917,7 +1909,6 @@ public class TF2EventsCommon {
 		private HashMap<UUID, PlayerPersistStorage> playerStorage = new HashMap<>();
 		public Map<UUID, InvasionEvent> invasions = new HashMap<>();
 		public ArrayList<DestroyBlockEntry> destroyProgress = new ArrayList<>();
-		public HashMap<String, GameArena> gameArenas = new HashMap<>();
 		public boolean silent;
 
 		/*
@@ -2003,10 +1994,6 @@ public class TF2EventsCommon {
 			CompoundTag invTag = nbt.getCompound("Invasions");
 			for (String key : invTag.getAllKeys()) {
 				invasions.put(UUID.fromString(key), new InvasionEvent(world, invTag.getCompound(key)));
-			}
-			CompoundTag gameTag = nbt.getCompound("Invasions");
-			for (String key : gameTag.getAllKeys()) {
-				gameArenas.put(key, new GameArena(world, gameTag.getCompound(key)));
 			}
 		}
 

@@ -17,7 +17,6 @@ import rafradek.TF2weapons.entity.building.EntityDispenser;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.tileentity.IEntityConfigurable;
 import rafradek.TF2weapons.tileentity.TileEntityAmmoFurnace;
-import rafradek.TF2weapons.tileentity.TileEntityRobotDeploy;
 import rafradek.TF2weapons.tileentity.TileEntityUpgrades;
 
 /**
@@ -82,8 +81,6 @@ public class TF2GuiHandler {
 			break;
 		}
 		case 6:
-			if (tile instanceof TileEntityRobotDeploy)
-				return new ContainerRobotDeploy(player.getInventory(), (TileEntityRobotDeploy) tile);
 			break;
 		case 7:
 			if (tile instanceof IEntityConfigurable)

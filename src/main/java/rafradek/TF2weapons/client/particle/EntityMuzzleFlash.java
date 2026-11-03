@@ -1,34 +1,29 @@
 package rafradek.TF2weapons.client.particle;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class EntityMuzzleFlash extends Particle {
+public class EntityMuzzleFlash extends LegacyParticle {
 
-	private int duration;
-	private boolean nextDead;
-	private LivingEntity owner;
-	private InteractionHand hand;
+	private final LivingEntity owner;
+	private final InteractionHand hand;
 
-	public EntityMuzzleFlash(Level par1World, LivingEntity shooter, InteractionHand hand) {
-		super(par1World, 0, 0, 0);
+	public EntityMuzzleFlash(Level world, LivingEntity shooter, InteractionHand hand) {
+		super(world, shooter.getX(), shooter.getY(), shooter.getZ());
 		this.lifetime = 5;
 		this.hand = hand;
-		this.setSize(0.025f, 0.025f);
-		// this.setParticleIcon(Item.itemsList[2498+256].getIconFromDamage(0));
-		this.setParticleTextureIndex(65);
-		// this.setParticleTextureIndex(81);
-		this.multipleParticleScaleBy(1);
 		this.owner = shooter;
-		this.setPos();
+		this.gravity = 0;
+		this.setParticleTextureIndex(65);
+		this.quadSize = 0.1f;
 		this.setColor(0.97f, 0.76f, 0.51f);
-		// S/ystem.out.println("Crits: "+crits);e
+		this.followOwner();
+		this.xo = this.x;
+		this.yo = this.y;
+		this.zo = this.z;
 	}
 
 	@Override
@@ -36,32 +31,18 @@ public class EntityMuzzleFlash extends Particle {
 		super.tick();
 		this.quadSize *= 0.92f;
 		this.alpha *= 0.8f;
-		this.setPos();
-
+		this.followOwner();
 	}
 
-	public void setPosition() {
+	private void followOwner() {
 		float move = Minecraft.getInstance().player == this.owner ? 0.48f : 0.24f;
-		this.setPos((owner.getX() - Mth.cos(owner.yHeadRot / 180.0F * (float) Math.PI) * move
-				* (hand == InteractionHand.MAIN_HAND ? 1 : -1)), this.getY(), this.getZ());
-		this.setPos(this.getX(), (owner.getY() + owner.getEyeHeight() - move * 0.45f), this.getZ());
-		this.setPos(this.getX(), this.getY(), (owner.getZ() - Mth.sin(owner.yHeadRot / 180.0F * (float) Math.PI) * move
-				* (hand == InteractionHand.MAIN_HAND ? 1 : -1)));
-
-		this.setPos(this.getX() + (-Mth.sin(owner.yHeadRot / 180.0F * (float) Math.PI)
-				* Mth.cos(owner.getXRot() / 180.0F * (float) Math.PI)), this.getY(), this.getZ());
-		this.setPos(this.getX(), this.getY(), this.getZ() + (Mth.cos(owner.yHeadRot / 180.0F * (float) Math.PI)
-				* Mth.cos(owner.getXRot() / 180.0F * (float) Math.PI)));
-		this.setPos(this.getX(), this.getY() + ((-Mth.sin(owner.getXRot() / 180.0F * (float) Math.PI))), this.getZ());
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public int getBrightnessForRender(float p_70070_1_) {
-		return 15728880;
-	}
-
-	public float getBrightness(float p_70013_1_) {
-		return 1.0F;
+		float side = this.hand == InteractionHand.MAIN_HAND ? 1 : -1;
+		float yaw = this.owner.yHeadRot / 180.0F * (float) Math.PI;
+		float pitch = this.owner.getXRot() / 180.0F * (float) Math.PI;
+		double px = this.owner.getX() - Mth.cos(yaw) * move * side - Mth.sin(yaw) * Mth.cos(pitch);
+		double py = this.owner.getY() + this.owner.getEyeHeight() - move * 0.45f - Mth.sin(pitch);
+		double pz = this.owner.getZ() - Mth.sin(yaw) * move * side + Mth.cos(yaw) * Mth.cos(pitch);
+		this.setPos(px, py, pz);
+		this.xd = this.yd = this.zd = 0;
 	}
 }

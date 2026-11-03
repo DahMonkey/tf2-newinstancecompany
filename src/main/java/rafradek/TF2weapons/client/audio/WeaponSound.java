@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.client.audio;
 
+import net.minecraft.client.resources.sounds.SoundInstance;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.item.ItemFromData;
@@ -20,7 +21,7 @@ public class WeaponSound extends AbstractTickableSoundInstance {
 	public WeaponSound playOnEnd;
 
 	public WeaponSound(SoundEvent sound, LivingEntity entity, int type, WeaponData conf) {
-		super(sound, SoundSource.NEUTRAL);
+		super(sound, SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
 		this.type = type;
 		this.entity = entity;
 		this.conf = conf;
@@ -28,11 +29,11 @@ public class WeaponSound extends AbstractTickableSoundInstance {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (endsnextTick) setDone();
-		xPosF = (float) entity.getX();
-		yPosF = (float) entity.getY();
-		zPosF = (float) entity.getZ();
+		x = (float) entity.getX();
+		y = (float) entity.getY();
+		z = (float) entity.getZ();
 		if (/*
 			 * !(entity instanceof EntityPlayer &&
 			 * ((EntityPlayer)entity).inventory.currentItem != slot)
@@ -42,9 +43,9 @@ public class WeaponSound extends AbstractTickableSoundInstance {
 	public void setDone() {
 		ClientProxy.fireSounds.remove(entity);
 		if (playOnEnd != null) {
-			Minecraft.getInstance().getSoundManager().playSound(playOnEnd);
+			Minecraft.getInstance().getSoundManager().play(playOnEnd);
 			ClientProxy.fireSounds.put(entity, playOnEnd);
 		}
-		donePlaying = true;
+		this.stop();
 	}
 }

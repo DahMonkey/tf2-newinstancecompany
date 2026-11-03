@@ -3,7 +3,6 @@ package rafradek.TF2weapons.block;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.tileentity.TileEntityResupplyCabinet;
-import rafradek.TF2weapons.tileentity.TileEntityRobotDeploy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -98,7 +97,6 @@ public class BlockResupplyCabinet extends BaseEntityBlock {
 			if (world.getBlockState(pos.above()).getBlock() == this && !world.getBlockState(pos.above()).getValue(HOLDER)) world.setBlockToAir(pos.above());
 		}
 		BlockEntity ent = world.getBlockEntity(pos);
-		if (ent instanceof TileEntityRobotDeploy) ((TileEntityRobotDeploy) ent).dropInventory();
 	}
 
 	@Override

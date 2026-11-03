@@ -179,8 +179,6 @@ public class ClientProxy extends CommonProxy {
 				Component t) -> new GuiAmmoFurnace((ContainerAmmoFurnace) m));
 		MenuScreens.register(menu(5), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
 				Component t) -> GuiBuildingFactory.create(m));
-		MenuScreens.register(menu(6), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new GuiRobotDeploy((ContainerRobotDeploy) m));
 		MenuScreens.register(menu(7), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
 				Component t) -> new GuiConfigurable((ContainerConfigurable) m));
 	}
@@ -383,10 +381,6 @@ public class ClientProxy extends CommonProxy {
 		String[] tokens = { "scout", "soldier", "pyro", "demoman", "heavy", "engineer", "medic", "sniper", "spy" };
 		for (int i = 0; i < tokens.length; i++)
 			ModelLoader.setCustomModelResourceLocation(TF2weapons.itemToken, i, model("token_" + tokens[i]));
-		String[] doors = { "player", "entity", "red", "blu" };
-		for (int i = 0; i < doors.length; i++)
-			ModelLoader.setCustomModelResourceLocation(TF2weapons.itemDoorController, i,
-					model("door_controller_" + doors[i]));
 		String[] bosses = { "hhh", "monoculus", "merasmus" };
 		for (int i = 0; i < bosses.length; i++)
 			ModelLoader.setCustomModelResourceLocation(TF2weapons.itemBossSpawn, i, model("boss_" + bosses[i]));

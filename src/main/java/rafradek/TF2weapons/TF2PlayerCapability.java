@@ -7,7 +7,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
 import com.google.common.collect.Multimap;
-import rafradek.TF2weapons.arena.GameArena;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.entity.boss.EntityHHH;
@@ -112,7 +111,6 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	private float totalLastDamage;
 	private boolean backpackItemEquipped;
 
-	private GameArena gameArena;
 	public SynchedEntityData entityData;
 	public SynchedEntityData dataManagerGlobal;
 	private static final CompoundTag EMPTY = new CompoundTag();
@@ -173,7 +171,6 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 		this.setForceClassTexture(cap.isForceClassTexture());
 		this.setRespawnTime(cap.getRespawnTime());
 		this.lostItems = cap.lostItems;
-		this.gameArena = cap.gameArena;
 		this.lastDayInvasion = cap.lastDayInvasion;
 		this.hhhSummonedDay = cap.hhhSummonedDay;
 		this.merasmusSummonedDay = cap.merasmusSummonedDay;
@@ -678,11 +675,4 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 
 	}
 
-	public GameArena getGameArena() {
-		return gameArena;
-	}
-
-	public void setGameArena(GameArena gameArena) {
-		this.gameArena = gameArena;
-	}
 }
