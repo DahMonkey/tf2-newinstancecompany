@@ -58,12 +58,12 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 		ItemStack stack = player.getItemInHand(hand);
 		if (world.isClientSide)
 			return InteractionResult.SUCCESS;
-		else if (!player.canPlayerEdit(pos.move(facing), facing, stack))
+		else if (!player.canPlayerEdit(pos.relative(facing), facing, stack))
 			return InteractionResult.FAIL;
 		else {
 			BlockState iblockstate = world.getBlockState(pos);
 
-			pos = pos.move(facing);
+			pos = pos.relative(facing);
 			double d0 = 0.0D;
 
 			if (facing == Direction.UP && iblockstate.getBlock() instanceof FenceBlock)
@@ -156,7 +156,7 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 							 * entity).setExit(itemStackIn.getItemDamage()>23); }
 							 */
 						}
-						player.addStat(StatList.getObjectUseStats(this));
+						player.awardStat(StatList.getObjectUseStats(this));
 						return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
 					}
 				} else

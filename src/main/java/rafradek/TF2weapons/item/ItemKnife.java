@@ -133,7 +133,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 
 		if (attacker instanceof ServerPlayer && isBackstab && target instanceof LivingEntity
 				&& !target.isAlive() && TF2Util.isEnemy(attacker, (LivingEntity) target)) {
-			((ServerPlayer) attacker).addStat(TF2Achievements.KILLED_BACKSTAB);
+			((ServerPlayer) attacker).awardStat(TF2Achievements.KILLED_BACKSTAB);
 			if (TF2Attribute.getModifier("Disguise Backstab", stack, 0, attacker) != 0) {
 
 				WeaponsCapability.get(attacker).stabbedDisguise = true;
@@ -149,11 +149,11 @@ public class ItemKnife extends ItemMeleeWeapon {
 			/*
 			 * if(((EntityPlayerMP)
 			 * attacker).getStatFile().readStat(TF2Achievements.KILLED_BACKSTAB)>=400)
-			 * ((EntityPlayerMP) attacker).addStat(TF2Achievements.SPYMASTER);
+			 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.SPYMASTER);
 			 * if(attacker.getCapability(TF2weapons.PLAYER_CAP, null).sapperTime>0 &&
 			 * attacker.getCapability(TF2weapons.PLAYER_CAP,
 			 * null).buildingOwnerKill==target) ((EntityPlayerMP)
-			 * attacker).addStat(TF2Achievements.SAP_STAB);
+			 * attacker).awardStat(TF2Achievements.SAP_STAB);
 			 */
 		}
 	}

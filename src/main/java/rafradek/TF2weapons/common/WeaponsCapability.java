@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.common;
 
+import rafradek.TF2weapons.util.TF2HitResult;
+import net.minecraft.world.phys.BlockHitResult;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -237,7 +239,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 
 	public boolean hasMetal(int metal) {
 		boolean hasIngot = this.owner instanceof Player && TF2Util.hasEnoughItem(
-				((Player) this.owner).inventory, stackL -> stackL.getItem() == Items.IRON_INGOT,
+				((Player) this.owner).getInventory(), stackL -> stackL.getItem() == Items.IRON_INGOT,
 				Mth.ceil((metal - this.getMetal()) / 50f));
 		return hasIngot || this.getMetal() >= metal;
 	}
@@ -249,7 +251,8 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			ItemStack ingot = new ItemStack(Items.IRON_INGOT);
 			while (((allowPartial && this.getMetal() == 0) || (!allowPartial && this.getMetal() < metal))
 					&& ((Player) this.owner).getInventory().contains(ingot)) {
-				((Player) this.owner).getInventory().clearMatchingItems(Items.IRON_INGOT, 0, 1, null);
+				((Player) this.owner).getInventory().clearOrCountMatchingItems(s -> s.is(Items.IRON_INGOT), 1,
+						((Player) this.owner).inventoryMenu.getCraftSlots());
 				this.setMetal(this.getMetal() + 50);
 			}
 		}
@@ -505,16 +508,8 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			}
 		}
 
-		if (this.owner.level.isClientSide && this.owner == Minecraft.getInstance().player) {
-			if (this.owner.getMainHandItem().getItem() instanceof ItemSniperRifle && this.isCharging()
-					&& !this.appliedMouseSlow) {
-				Minecraft.getInstance().options.mouseSensitivity *= 0.4f;
-				this.appliedMouseSlow = true;
-			} else if (!this.isCharging() && this.appliedMouseSlow) {
-				Minecraft.getInstance().options.mouseSensitivity *= 2.5f;
-				this.appliedMouseSlow = false;
-			}
-		}
+		if (this.owner.level.isClientSide)
+			TF2weapons.proxy.updateSniperMouseSlow(this);
 
 		if (this.owner.tickCount % 2 == 0)
 			for (RageType type : RageType.values()) {
@@ -532,7 +527,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 
 		if (!this.owner.level.isClientSide && this.owner instanceof Player && this.owner.tickCount % 20 == 0) {
 			this.maxmetal = TF2Attribute.getModifier("Max Metal",
-					TF2Util.getBestItem(((Player) this.owner).inventory, (stack1,
+					TF2Util.getBestItem(((Player) this.owner).getInventory(), (stack1,
 							stack2) -> (int) Math.signum(TF2Attribute.getModifier("Max Metal", stack1, 1, this.owner)
 									- TF2Attribute.getModifier("Max Metal", stack2, 1, this.owner)),
 							stackl -> TF2Attribute.getModifier("Max Metal", stackl, 1, this.owner) != 1),
@@ -562,7 +557,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				this.owner.setDeltaMovement(this.owner.getDeltaMovement().x, (motionVec.y), this.owner.getDeltaMovement().z);
 				this.owner.setDeltaMovement(this.owner.getDeltaMovement().x, this.owner.getDeltaMovement().y, (motionVec.z));
 				this.owner.hasImpulse = true;
-				this.owner.onGround = false;
+				this.owner.setOnGround(false);
 				this.owner.hurtMarked = true;
 				this.setGrappled(true);
 				// }
@@ -598,7 +593,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 
 				if (!(this.owner instanceof Player)
 						|| (this.owner.level.isClientSide && this.owner != ClientProxy.getLocalPlayer()))
-					item.onUpdate(stack, owner.level, owner, 0, true);
+					item.inventoryTick(stack, owner.level, owner, 0, true);
 				WeaponData.WeaponDataCapability stackcap = stack.getCapability(TF2weapons.WEAPONS_DATA_CAP).orElse(null);
 				if (TF2Attribute.getModifier("Focus", stack, 0, owner) != 0) {
 					this.focusShotTicks += this.owner.isSprinting() ? 1 : 2;
@@ -624,7 +619,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 					this.stackActive.put(hand, stack);
 				}
 				if (owner.level.isClientSide)
-					stack.setAnimationsToGo(0);
+					stack.setPopTime(0);
 				if (owner instanceof EntityTF2Character) {
 					EntityTF2Character shooter = ((EntityTF2Character) owner);
 					if (shooter.getTarget() != null) {
@@ -762,18 +757,18 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		if (this.isExpJump() && this.canExpJump()) {
 			boolean enchanted = TF2ConfigVars.enchantedExplosion && !owner.isFallFlying() && !this.isUsingParachute()
 					&& !(owner instanceof Player && ((Player) owner).getAbilities().flying)
-					&& !owner.getItemBySlot(EquipmentSlot.FEET).getItem().getRegistryName().toString()
+					&& !owner.getItemBySlot(EquipmentSlot.FEET).getItem().builtInRegistryHolder().key().location().toString()
 							.equals("tconstruct:slime_boots");
 			if (owner.isOnGround()) {
 				BlockPos pos = owner.blockPosition().below();
 				BlockState block = owner.level.getBlockState(pos);
-				owner.setDeltaMovement(owner.getDeltaMovement().x * (block.getBlock().getSlipperiness(block, owner.level, pos, owner)), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
-				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (block.getBlock().getSlipperiness(block, owner.level, pos, owner)));
+				owner.setDeltaMovement(owner.getDeltaMovement().x * (block.getFriction(owner.level, pos, owner)), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
+				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (block.getFriction(owner.level, pos, owner)));
 			}
 
 			if (this.expJumpGround > 0) {
 				this.expJumpGround--;
-				owner.onGround = false;
+				owner.setOnGround(false);
 				owner.hasImpulse = true;
 			} else if (owner.isOnGround() || owner.isInWater()) {
 				this.killsAirborne = 0;
@@ -802,7 +797,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				 * 5; owner.motionZ = loaded ? 50 : 5; }
 				 */
 				if (owner.level.isClientSide && owner instanceof Player
-						&& !owner.level.getChunkAt(owner.blockPosition()).isLoaded()) {
+						&& !owner.level.hasChunkAt(owner.blockPosition())) {
 					owner.setDeltaMovement(owner.getDeltaMovement().x * (0.99), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
 					owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (0.99));
 				}
@@ -850,17 +845,17 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			double motion = vec.length();
 			// double motiona = vec2.lengthVector();
 			if (motion >= 0.375 && (TF2ConfigVars.allowTrimp == 2 || (TF2ConfigVars.allowTrimp == 1 && Direction
-					.getFacingFromVector((float) vec.x, (float) vec.y, (float) vec.z) != Direction.DOWN))) {
+					.getNearest((float) vec.x, (float) vec.y, (float) vec.z) != Direction.DOWN))) {
 				vec2 = vec2.normalize();
 				Vec3 entPos = owner.position();
 				Vec3 vecOff = vec.add(vec2.scale(owner.getBbWidth() * 1.5));
-				HitResult rayTrace = owner.level.rayTraceBlocks(entPos, entPos.add(vecOff));
+				BlockHitResult rayTrace = TF2Util.rayTraceBlocks(owner.level, entPos, entPos.add(vecOff));
 				BlockPos pos = new BlockPos(vecOff.add(entPos));
 				if (rayTrace != null) {
-					pos = rayTrace.getBlockPos().move(rayTrace.getDirection());
+					pos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
 					// System.out.println(rayTrace.getBlockPos());
 				}
-				if (owner.level.isBlockFullCube(pos.below())) {
+				if (owner.level.getBlockState(pos.below()).isCollisionShapeFullBlock(owner.level, pos.below())) {
 					Vec3 step = TF2Util.getHeightVec(owner.level, pos);
 					Vec3 normal = step.normalize();
 					if (normal.y != 1D && normal.dot(vecOff) < 0 && !(charging != null && normal.y > 0.75)) {
@@ -876,7 +871,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 							owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y * (mult), owner.getDeltaMovement().z);
 							owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (mult));
 						}
-						rayTrace = owner.level.rayTraceBlocks(vecOff.add(entPos), vecOff.add(entPos).add(vec));
+						rayTrace = TF2Util.rayTraceBlocks(owner.level, vecOff.add(entPos), vecOff.add(entPos).add(vec));
 						if (rayTrace != null) {
 							owner.setPos(owner.getX(),
 									owner.getY() + 1 - rayTrace.getLocation().y + rayTrace.getBlockPos().getY(), owner.getZ());
@@ -891,8 +886,8 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			if (++this.disguiseTicks >= 40) {
 				this.disguise();
 			} else if (this.invisTicks < 20) {
-				((ServerLevel) owner.level).addParticle(ParticleTypes.SMOKE_LARGE, owner.getX(), owner.getY(),
-						owner.getZ(), 2, 0.2, 1, 0.2, 0.04f, new int[0]);
+				((ServerLevel) owner.level).sendParticles(ParticleTypes.LARGE_SMOKE, owner.getX(), owner.getY(),
+						owner.getZ(), 2, 0.2, 1, 0.2, 0.04f);
 			}
 		}
 
@@ -910,12 +905,13 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			HitResult result = TF2Util
 					.pierce(owner.level, owner, start.x, start.y, start.z, end.x, end.y, end.z, false, 0.5f, false)
 					.get(0);
-			if (result.getEntity() != null) {
+			Entity bashed = TF2HitResult.getEntity(result);
+			if (bashed != null) {
 				float damage = 5;
 				if (charging.getDuration() > 30) {
 					damage *= 0.5f;
 				}
-				TF2Util.dealDamage(result.getEntity(), result.getEntity().level, owner,
+				TF2Util.dealDamage(bashed, bashed.level, owner,
 						ItemChargingTarge.getChargingShield(owner), 0, damage,
 						TF2Util.causeDirectDamage(ItemChargingTarge.getChargingShield(owner), owner));
 
@@ -946,35 +942,14 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			this.lastDisguiseValue = disguisetype;
 			if (this.getDisguiseType().startsWith("P:")) {
 				this.skinDisguise = null;
-				Player playerDisguise = this.owner.level.getPlayerEntityByName(getDisguiseType().substring(2));
+				Player playerDisguise = TF2Util.getPlayerByName(this.owner.level, getDisguiseType().substring(2));
 				if (playerDisguise != null && TF2PlayerCapability.get(playerDisguise).isForceClassTexture()
 						&& WeaponsCapability.get(playerDisguise).getUsedToken() >= 0) {
 					this.skinType = "default";
-					new ResourceLocation(RenderTF2Character.TEXTURE_PATH_BASE + (TF2Util.getTeamForDisplay(playerDisguise) == 1 ? "blu" : "red")
+					this.skinDisguise = new ResourceLocation(RenderTF2Character.TEXTURE_PATH_BASE + (TF2Util.getTeamForDisplay(playerDisguise) == 1 ? "blu" : "red")
 							+ "/" + TF2Class.getClass(WeaponsCapability.get(playerDisguise).getUsedToken()).getName() + ".png");
 				} else {
-					this.skinType = DefaultPlayerSkin.getSkinType(owner.getUUID());
-					THREAD_POOL.submit(() -> {
-						GameProfile profile = SkullBlockEntity.updateGameprofile(
-								new GameProfile(owner.getUUID(), getDisguiseType().substring(2)));
-						if (profile.getId() != null) {
-							skinType = DefaultPlayerSkin.getSkinType(profile.getId());
-							skinDisguise = DefaultPlayerSkin.getDefaultSkin(profile.getId());
-						}
-						Minecraft.getInstance().getSkinManager().loadProfileTextures(profile,
-								(typeIn, location, profileTexture) -> {
-if (typeIn == Type.SKIN) {
-								if (typeIn == Type.SKIN) {
-									skinDisguise = location;
-								}
-								skinType = profileTexture.getMetadata("model");
-
-								if (skinType == null) {
-									skinType = "default";
-								}
-}
-}, false);
-					});
+					TF2weapons.proxy.loadDisguiseSkin(this, getDisguiseType().substring(2));
 				}
 			}
 
@@ -1294,7 +1269,7 @@ if (typeIn == Type.SKIN) {
 		}
 		if (nbt.contains("Token")) {
 			((ItemToken) TF2weapons.itemToken)
-					.updateAttributes(new ItemStack(TF2weapons.itemToken, 1, nbt.getByte("Token")), this.owner);
+					.updateAttributes(TF2Util.metaStack(TF2weapons.itemToken, 1, nbt.getByte("Token")), this.owner);
 			this.forcedClass = true;
 		}
 		// this.killsSpinning=nbt.getInteger("KillsSpinning");
@@ -1410,8 +1385,8 @@ if (typeIn == Type.SKIN) {
 	public void disguise() {
 		this.setDisguised(true);
 		if (this.invisTicks < 20 && this.owner.level instanceof ServerLevel)
-			((ServerLevel) this.owner.level).addParticle(ParticleTypes.SMOKE_LARGE, this.owner.getX(),
-					this.owner.getY(), this.owner.getZ(), 20, 0.2, 1, 0.2, 0.04f, new int[0]);
+			((ServerLevel) this.owner.level).sendParticles(ParticleTypes.LARGE_SMOKE, this.owner.getX(),
+					this.owner.getY(), this.owner.getZ(), 20, 0.2, 1, 0.2, 0.04f);
 	}
 
 	public boolean isGrappling() {

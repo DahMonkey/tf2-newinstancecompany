@@ -37,7 +37,7 @@ public class ItemTarget extends LegacyItem {
 			return InteractionResult.FAIL;
 		} else {
 			boolean flag = world.getBlockState(pos).getBlock().isReplaceable(world, pos);
-			BlockPos blockpos = flag ? pos : pos.move(facing);
+			BlockPos blockpos = flag ? pos : pos.relative(facing);
 			ItemStack itemstack = player.getItemInHand(hand);
 
 			if (!player.canPlayerEdit(blockpos, facing, itemstack)) {

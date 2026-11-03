@@ -16,7 +16,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class InventoryWearables extends SimpleContainer implements ICapabilityProvider, INBTSerializable<ListTag> {
+public class InventoryWearables extends LegacyInventory implements ICapabilityProvider, INBTSerializable<ListTag> {
 
 	public LivingEntity owner;
 	public static final int USED_SLOTS = 8;
@@ -73,7 +73,7 @@ public class InventoryWearables extends SimpleContainer implements ICapabilityPr
 			if (!itemstack.isEmpty()) {
 				CompoundTag nbttagcompound = new CompoundTag();
 				nbttagcompound.putByte("Slot", (byte) i);
-				itemstack.writeToNBT(nbttagcompound);
+				itemstack.save(nbttagcompound);
 				list.add(nbttagcompound);
 			}
 		}

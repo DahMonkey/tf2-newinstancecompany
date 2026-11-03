@@ -121,11 +121,11 @@ public class EntityTeleporter extends EntityBuilding {
 						this.playSound(TF2Sounds.MOB_TELEPORTER_SEND, 1.5f, 1f);
 						entityIn.playSound(TF2Sounds.MOB_TELEPORTER_RECEIVE, 0.75f, 1f);
 						if (this.getOwner() instanceof ServerPlayer) {
-							((Player) this.getOwner()).addStat(TF2Achievements.TELEPORTED);
+							((Player) this.getOwner()).awardStat(TF2Achievements.TELEPORTED);
 							/*
 							 * if(((EntityPlayerMP)
 							 * this.getOwner()).getStatFile().readStat(TF2Achievements.TELEPORTED)>=100)
-							 * ((EntityPlayer) this.getOwner()).addStat(TF2Achievements.TELEPORTS);
+							 * ((EntityPlayer) this.getOwner()).awardStat(TF2Achievements.TELEPORTS);
 							 */
 						}
 					}

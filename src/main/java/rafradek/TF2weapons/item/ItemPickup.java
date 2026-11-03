@@ -31,7 +31,7 @@ public class ItemPickup extends LegacyItem {
 	public InteractionResult useOn(Player player, Level world, BlockPos pos, InteractionHand hand,
 			Direction facing, float hitX, float hitY, float hitZ) {
 		if (!world.isClientSide) {
-			BlockPos forwardpos = pos.move(facing);
+			BlockPos forwardpos = pos.relative(facing);
 			EntityPickup pickup = new EntityPickup(world,
 					EntityPickup.Type.values()[player.getItemInHand(hand).getDamageValue()], true);
 			if (!player.isCreative())

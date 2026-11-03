@@ -120,7 +120,7 @@ public class CommandGameArena extends CommandBase {
 				notifyCommandListener(sender, this, configtag.toString());
 				// for (String key : configtag.getKeySet()) {
 				// notifyCommandListener(sender, this, key+" =
-				// "+configtag.getTag(key).toString());
+				// "+configtag.get(key).toString());
 				// }
 			} else {
 				try {

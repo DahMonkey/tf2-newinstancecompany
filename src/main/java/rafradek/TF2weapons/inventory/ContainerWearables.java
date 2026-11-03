@@ -313,7 +313,7 @@ public class ContainerWearables extends AbstractContainerMenu {
 		 * if (this.wearables.getStackInSlot(3) == null) for (int i = 4; i < 13; ++i) {
 		 * ItemStack itemstack = this.wearables.removeStackFromSlot(i);
 		 * 
-		 * if (item!stack.isEmpty()) player.dropItem(itemstack, false); }
+		 * if (item!stack.isEmpty()) player.drop(itemstack, false); }
 		 */
 	}
 

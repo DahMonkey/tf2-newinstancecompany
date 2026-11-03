@@ -295,8 +295,8 @@ public class TF2weapons {
 
 	public static byte[] itemDataCompressed;
 
-	public static final ResourceLocation cratesOpened = id("crates_opened");
-	public static final ResourceLocation robotsKilled = id("robots_killed");
+	public static final ResourceLocation cratesOpened = TF2Achievements.CRATES_OPENED;
+	public static final ResourceLocation robotsKilled = TF2Achievements.ROBOTS_KILLED;
 	public static MinecraftServer server;
 	public static EntityDummy dummyEnt;
 
@@ -577,8 +577,8 @@ public class TF2weapons {
 			helper.register(id("or"), OR = new LootItemConditionType(new EntityOrCondition.Serializer()));
 		});
 		event.register(Registry.CUSTOM_STAT_REGISTRY, helper -> {
-			helper.register(cratesOpened, cratesOpened);
-			helper.register(robotsKilled, robotsKilled);
+			for (ResourceLocation stat : TF2Achievements.ALL)
+				helper.register(stat, stat);
 		});
 		event.register(Registry.BANNER_PATTERN_REGISTRY, helper -> {
 			helper.register(id("red_base"), new BannerPattern("rb"));
@@ -935,8 +935,7 @@ public class TF2weapons {
 				false);
 
 		event.enqueueWork(() -> {
-			Stats.CUSTOM.get(cratesOpened, StatFormatter.DEFAULT);
-			Stats.CUSTOM.get(robotsKilled, StatFormatter.DEFAULT);
+			TF2Achievements.init();
 			registerDispenserBehaviors();
 		});
 

@@ -1,5 +1,10 @@
 package rafradek.TF2weapons;
 
+import net.minecraft.world.entity.EntityType;
+import java.util.List;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.levelgen.Heightmap;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.arena.GameArena;
 import rafradek.TF2weapons.common.TF2Achievements;
@@ -145,8 +150,8 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 		this.entityData.define(TELEPORTERB_VIEW, EMPTY);
 		this.entityData.define(BACKPACK_ITEM_HOLD, ItemStack.EMPTY);
 		this.entityData.define(INVASION_ATTACK_DIR, Float.MIN_VALUE);
-		this.dataManagerGlobal.register(USE_CLASS_TEXTURE, false);
-		this.dataManagerGlobal.register(RESPAWN_TIME, 0);
+		this.dataManagerGlobal.define(USE_CLASS_TEXTURE, false);
+		this.dataManagerGlobal.define(RESPAWN_TIME, 0);
 	}
 
 	public void clone(TF2PlayerCapability cap) {
@@ -156,8 +161,6 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 
 		this.udpServerId = cap.udpServerId;
 
-		if (this.owner instanceof ServerPlayer && TF2weapons.udpServer != null)
-			TF2weapons.udpServer.playerList.put(cap.udpServerId, (ServerPlayer) this.owner);
 
 		this.contracts = cap.contracts;
 		this.newContracts = cap.newContracts;
@@ -237,11 +240,9 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 				Iterator<BlockPos> it = PlayerPersistStorage.get(this.owner).lostMercPos.iterator();
 				while (it.hasNext()) {
 					BlockPos pos = it.next();
-					ArrayList<EntityTF2Character> list = new ArrayList<>();
-					this.owner.level.getChunkAt(pos).getEntitiesOfTypeWithinAABB(EntityTF2Character.class,
-							new AABB(pos), list, test -> {
-								return test.getOrder() == Order.FOLLOW && owner.getUUID().equals(test.getOwnerUUID());
-							});
+					List<EntityTF2Character> list = this.owner.level.getEntitiesOfClass(EntityTF2Character.class,
+							new AABB(pos), test -> test.getOrder() == Order.FOLLOW
+									&& owner.getUUID().equals(test.getOwnerUUID()));
 					boolean success = false;
 					for (EntityTF2Character living : list) {
 						success = TF2Util.teleportSafe(living, owner);
@@ -271,15 +272,15 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 					int i = 0;
 					do {
 						i++;
-						spawnPos = this.owner.level.getTopSolidOrLiquidBlock(this.owner.blockPosition()
-								.add(this.owner.getRandom().nextInt(48) - 24, 0, this.owner.getRandom().nextInt(48) - 24));
+						spawnPos = this.owner.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.owner.blockPosition()
+								.offset(this.owner.getRandom().nextInt(48) - 24, 0, this.owner.getRandom().nextInt(48) - 24));
 						this.bossToSpawn.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-					} while (i < 2 && !this.owner.level.getCollisionBoxes(null, this.bossToSpawn.getBoundingBox())
-							.isEmpty());
+					} while (i < 2 && !this.owner.level.noCollision(this.bossToSpawn.getBoundingBox()));
 
 					if (spawnPos != null) {
-						this.bossToSpawn.onInitialSpawn(
-								this.owner.level.getCurrentDifficultyAt(this.bossToSpawn.blockPosition()), null);
+						this.bossToSpawn.finalizeSpawn((ServerLevel) this.owner.level,
+								this.owner.level.getCurrentDifficultyAt(this.bossToSpawn.blockPosition()),
+								MobSpawnType.EVENT, null, null);
 						this.owner.level.addFreshEntity(this.bossToSpawn);
 						this.bossToSpawn = null;
 						this.bossSpawnTicks = 0;
@@ -289,11 +290,10 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 
 			int contractDay;
 			if (!PlayerPersistStorage.get(this.owner).itemsToGive.isEmpty()) {
-				Component text = Component.translatable("gui.robotinvasion.reward");
-				text.getStyle().setColor(ChatFormatting.GOLD);
+				Component text = Component.translatable("gui.robotinvasion.reward").withStyle(ChatFormatting.GOLD);
 				this.owner.sendSystemMessage(text);
 				for (ItemStack stack : PlayerPersistStorage.get(this.owner).itemsToGive) {
-					this.owner.sendSystemMessage(Component.literal(stack.getHoverName()));
+					this.owner.sendSystemMessage(stack.getHoverName());
 					if (stack.getItem() instanceof ItemMoney)
 						ItemMoney.collect(stack, owner);
 					ItemHandlerHelper.giveItemToPlayer(owner, stack);
@@ -302,8 +302,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 
 			}
 			if (!TF2ConfigVars.disableContracts && this.contracts.size() < 2
-					&& (contractDay = ((ServerPlayer) this.owner).getStats()
-							.readStat(TF2Achievements.CONTRACT_DAY)) != 0
+					&& (contractDay = TF2Achievements.read((ServerPlayer) this.owner, TF2Achievements.CONTRACT_DAY)) != 0
 					&& this.owner.level.getDayTime() % 24000 > 1000
 					&& this.owner.level.getDayTime() / 24000 >= contractDay) {
 				String name = "kill";
@@ -340,7 +339,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 						name = "kill";
 					}
 				} while (this.contracts.size() > 0 && this.contracts.get(0).className.equals(name));
-				((ServerPlayer) this.owner).getStats().unlockAchievement(this.owner, TF2Achievements.CONTRACT_DAY,
+				TF2Achievements.set((ServerPlayer) this.owner, TF2Achievements.CONTRACT_DAY,
 						(int) (this.owner.level.getDayTime() / 24000 + 7));
 				Contract contract = new Contract(name, 0, this.owner.getRandom());
 				this.contracts.add(contract);
@@ -354,10 +353,8 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 			if (this.dataManagerGlobal.isDirty()) {
 				TF2Util.sendTracking(new TF2Message.PlayerCapabilityMessage(this.owner, false, true), this.owner);
 			}
-		} else if (this.owner == Minecraft.getInstance().player) {
-			((LocalPlayer) this.owner).connection.send(new CPacketInput(owner.xxa, owner.zza,
-					((LocalPlayer) this.owner).movementInput.jump,
-					((LocalPlayer) this.owner).movementInput.sneak));
+		} else {
+			TF2weapons.proxy.sendMovementInput(this.owner);
 		}
 	}
 
@@ -458,26 +455,22 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	public void updateBuildings() {
 		PlayerPersistStorage storage = PlayerPersistStorage.get((this.owner));
 		if (storage.buildings[0] != null) {
-			this.entityData.set(SENTRY_VIEW, storage.buildings[0].getB());
-			this.entityData.setDirty(SENTRY_VIEW);
+			TF2Util.forceSet(this.entityData, SENTRY_VIEW, storage.buildings[0].getB());
 		} else
 			this.entityData.set(SENTRY_VIEW, EMPTY);
 
 		if (storage.buildings[1] != null) {
-			this.entityData.set(DISPENSER_VIEW, storage.buildings[1].getB());
-			this.entityData.setDirty(DISPENSER_VIEW);
+			TF2Util.forceSet(this.entityData, DISPENSER_VIEW, storage.buildings[1].getB());
 		} else
 			this.entityData.set(DISPENSER_VIEW, EMPTY);
 
 		if (storage.buildings[2] != null) {
-			this.entityData.set(TELEPORTERA_VIEW, storage.buildings[2].getB());
-			this.entityData.setDirty(TELEPORTERA_VIEW);
+			TF2Util.forceSet(this.entityData, TELEPORTERA_VIEW, storage.buildings[2].getB());
 		} else
 			this.entityData.set(TELEPORTERA_VIEW, EMPTY);
 
 		if (storage.buildings[3] != null) {
-			this.entityData.set(TELEPORTERB_VIEW, storage.buildings[3].getB());
-			this.entityData.setDirty(TELEPORTERB_VIEW);
+			TF2Util.forceSet(this.entityData, TELEPORTERB_VIEW, storage.buildings[3].getB());
 		} else
 			this.entityData.set(TELEPORTERB_VIEW, EMPTY);
 		/*
@@ -568,7 +561,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 		// this.owner.getDataManager().get(TF2EventBusListener.ENTITY_UBER));
 		CompoundTag bossInfo = new CompoundTag();
 		for (Entry<Class<? extends Entity>, Short> entry : this.highestBossLevel.entrySet())
-			bossInfo.putShort(EntityList.getKey(entry.getKey()).toString(), entry.getValue());
+			bossInfo.putShort(bossKey(entry.getKey()), entry.getValue());
 		tag.put("BossInfo", bossInfo);
 		tag.putInt("NextBossTick", this.nextBossTicks);
 		tag.putFloat("DodgedDmg", this.dodgedDmg);
@@ -613,10 +606,11 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	public void deserializeNBT(CompoundTag nbt) {
 		CompoundTag bossInfo = nbt.getCompound("BossInfo");
 		for (String key : bossInfo.getAllKeys())
-			this.highestBossLevel.put(EntityList.getClass(new ResourceLocation(key)), bossInfo.getShort(key));
+			if (bossClass(key) != null)
+				this.highestBossLevel.put(bossClass(key), bossInfo.getShort(key));
 		this.nextBossTicks = nbt.getInt("NextBossTick");
 		this.dodgedDmg = nbt.getFloat("DodgedDmg");
-		ListTag list = (ListTag) nbt.getTag("Contracts");
+		ListTag list = (ListTag) nbt.get("Contracts");
 		this.contracts.clear();
 		if (list != null)
 			for (int i = 0; i < list.size() && i < 16; i++) {
@@ -635,7 +629,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 				// (EntityPlayerMP) this.owner);
 			}
 		this.nextContractDay = nbt.getInt("NextContractDay");
-		this.carrying = (CompoundTag) nbt.getTag("Carrying");
+		this.carrying = (CompoundTag) nbt.get("Carrying");
 		this.carryingType = nbt.getByte("CarryingType");
 		this.robotsKilledInvasion = nbt.getFloat("RobotsKilled");
 		this.maxInvasionBeaten = nbt.getByte("MaxInvasionBeaten");
@@ -646,12 +640,33 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 			this.monoculusSummonedDay = (int) (this.owner.level.getDayTime() / 24000);
 		if (nbt.getBoolean("MerasmusSummonedDay"))
 			this.merasmusSummonedDay = (int) (this.owner.level.getDayTime() / 24000);
-		Entity ent = EntityList.createEntityFromNBT(nbt.getCompound("BossSpawn"), this.owner.level);
+		Entity ent = nbt.contains("BossSpawn")
+				? EntityType.create(nbt.getCompound("BossSpawn"), this.owner.level).orElse(null)
+				: null;
 		if (ent instanceof EntityTF2Boss)
 			this.bossToSpawn = (EntityTF2Boss) ent;
 		this.lastDayInvasion = nbt.getInt("LastDayInvasion");
 		this.backpackItemEquipped = nbt.getBoolean("BackpackEquip");
-		this.setBackpackItemHold(new ItemStack(nbt.getCompound("BackpackEquipItem")));
+		this.setBackpackItemHold(ItemStack.of(nbt.getCompound("BackpackEquipItem")));
+	}
+
+	/** Save key of a boss class; 1.12 used EntityList names, which match these registry names. */
+	private static String bossKey(Class<? extends Entity> clazz) {
+		if (clazz == EntityHHH.class)
+			return TF2weapons.MOD_ID + ":hhh";
+		if (clazz == EntityMonoculus.class)
+			return TF2weapons.MOD_ID + ":monoculus";
+		return TF2weapons.MOD_ID + ":merasmus";
+	}
+
+	private static Class<? extends Entity> bossClass(String key) {
+		if (key.endsWith(":hhh"))
+			return EntityHHH.class;
+		if (key.endsWith(":monoculus"))
+			return EntityMonoculus.class;
+		if (key.endsWith(":merasmus"))
+			return EntityMerasmus.class;
+		return null;
 	}
 
 	public static TF2PlayerCapability get(Player player) {

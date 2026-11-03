@@ -33,7 +33,7 @@ public class ItemStatue extends LegacyItem {
 		if (!world.isClientSide && stack.hasTag() && stack.getTag().contains("Statue")) {
 			EntityStatue statue = new EntityStatue(world);
 			statue.readAdditionalSaveData(stack.getTag().getCompound("Statue"));
-			BlockPos off = pos.move(facing);
+			BlockPos off = pos.relative(facing);
 			statue.setPos(off.getX() + 0.5, off.getY(), off.getZ() + 0.5);
 			statue.setYRot((player.yHeadRot));
 			statue.yBodyRot = player.yHeadRot;

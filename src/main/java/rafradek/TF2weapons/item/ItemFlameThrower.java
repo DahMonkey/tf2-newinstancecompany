@@ -74,7 +74,7 @@ public class ItemFlameThrower extends ItemAirblast {
 				Vec3 tangent = new Vec3(-look.z, 0, look.x);
 				Vec3 pos = living.position().add(tangent.x*0.3, living.getEyeHeight(), tangent.z*0.3)
 						.add(look.scale(0.5));
-				world.addParticle(ParticleTypes.WATER_BUBBLE, pos.x,
+				world.addParticle(ParticleTypes.BUBBLE, pos.x,
 						pos.y, pos.z, living.getDeltaMovement().x, 0.2D + living.getDeltaMovement().y,
 						living.getDeltaMovement().z, new int[0]);
 			} else {

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.item.ItemFromData;
 import rafradek.TF2weapons.item.crafting.TF2CraftingManager;
@@ -36,14 +37,14 @@ public class SlotCraftingTF2 extends ResultSlot {
 						ItemFromData.VISIBLE_WEAPON, test -> test.get(PropertyType.SLOT).containsKey(clazz.getName())));
 			} else
 				stack = ItemFromData.getRandomWeapon(player.getRandom(), ItemFromData.VISIBLE_WEAPON);
-			// player.addStat(TF2Achievements.HOME_MADE);
+			// player.awardStat(TF2Achievements.HOME_MADE);
 			player.getInventory().setItemStack(stack);
 		} else if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 10) {
 			stack = ItemFromData.getRandomWeaponOfType("cosmetic", player.getRandom(), false);
 			player.getInventory().setItemStack(stack);
 		}
 		if (stack.hasTag() && stack.getTag().getBoolean("Australium")) {
-			// player.addStat(TF2Achievements.SHINY);
+			// player.awardStat(TF2Achievements.SHINY);
 		}
 		FMLCommonHandler.instance().firePlayerCraftingEvent(player, stack, craftMatrix);
 		this.onCrafting(stack);

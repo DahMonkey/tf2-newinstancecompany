@@ -227,25 +227,25 @@ public class ItemWearable extends ItemFromData {
 				type = ParticleTypes.HEART;
 				break;
 			case 2:
-				type = ParticleTypes.SMOKE_LARGE;
+				type = ParticleTypes.LARGE_SMOKE;
 				break;
 			case 3:
-				type = ParticleTypes.WATER_BUBBLE;
+				type = ParticleTypes.BUBBLE;
 				break;
 			case 4:
-				type = ParticleTypes.VILLAGER_ANGRY;
+				type = ParticleTypes.ANGRY_VILLAGER;
 				break;
 			case 5:
-				type = ParticleTypes.VILLAGER_HAPPY;
+				type = ParticleTypes.HAPPY_VILLAGER;
 				break;
 			case 6:
-				type = ParticleTypes.SUSPENDED_DEPTH;
+				type = ParticleTypes.UNDERWATER;
 				break;
 			case 7:
-				type = ParticleTypes.SLIME;
+				type = ParticleTypes.ITEM_SLIME;
 				break;
 			case 8:
-				type = ParticleTypes.CRIT_MAGIC;
+				type = ParticleTypes.ENCHANTED_HIT;
 				break;
 			case 9:
 				type = ParticleTypes.DRAGON_BREATH;
@@ -254,13 +254,13 @@ public class ItemWearable extends ItemFromData {
 				type = ParticleTypes.NOTE;
 				break;
 			case 11:
-				type = ParticleTypes.FIREWORKS_SPARK;
+				type = ParticleTypes.FIREWORK;
 				break;
 			case 12:
-				type = ParticleTypes.EXPLOSION_NORMAL;
+				type = ParticleTypes.POOF;
 				break;
 			case 13:
-				type = ParticleTypes.SPELL_MOB;
+				type = ParticleTypes.ENTITY_EFFECT;
 				break;
 			default:
 				type = ParticleTypes.END_ROD;

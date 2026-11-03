@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.core.particles.DustParticleOptions;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,7 +33,7 @@ public class EntityOnyx extends EntityProjectileBase {
 
 	@Override
 	public void spawnParticles(double x, double y, double z) {
-		this.level.addParticle(ParticleTypes.REDSTONE, x, y, z, 0.38, 0.08, 0.7);
+		this.level.addParticle(DustParticleOptions.REDSTONE, x, y, z, 0.38, 0.08, 0.7);
 	}
 
 	@Override

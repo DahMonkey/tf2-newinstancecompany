@@ -53,7 +53,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 
 		if (this.hasWorld()) {
 			for (Direction facing : Direction.HORIZONTALS) {
-				BlockPos sidepos = this.pos.move(facing);
+				BlockPos sidepos = this.pos.relative(facing);
 				BlockEntity ent = this.level.getBlockEntity(sidepos);
 				if (ent instanceof TileEntityOverheadDoor) {
 					((TileEntityOverheadDoor) ent).updateMasterStatus();

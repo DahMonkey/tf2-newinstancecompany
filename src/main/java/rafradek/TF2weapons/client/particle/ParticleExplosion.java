@@ -33,7 +33,7 @@ public class ParticleExplosion extends Particle {
 			double d0 = this.getX() + pos.x;
 			double d1 = this.getY() + pos.y;
 			double d2 = this.getZ() + pos.z;
-			this.level.addParticle(ParticleTypes.EXPLOSION_LARGE, d0, d1, d2,
+			this.level.addParticle(ParticleTypes.EXPLOSION, d0, d1, d2,
 					(float) this.timeSinceStart / (float) this.maximumTime, 0.0D, 0.0D);
 		}
 

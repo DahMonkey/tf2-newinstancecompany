@@ -227,7 +227,7 @@ public class TF2Explosion extends Explosion {
 			TF2Util.sendParticle(EnumTF2Particles.EXPLOSION, world, this.explosionX, this.explosionY, this.explosionZ,
 					this.explosionSize, 0, 0, 1);
 		else
-			this.level.addParticle(ParticleTypes.EXPLOSION_LARGE, this.explosionX, this.explosionY,
+			this.level.addParticle(ParticleTypes.EXPLOSION, this.explosionX, this.explosionY,
 					this.explosionZ, 1.0D, 0.0D, 0.0D, new int[0]);
 
 		if (this.isSmoking && TF2ConfigVars.destTerrain == 2)
@@ -251,9 +251,9 @@ public class TF2Explosion extends Explosion {
 					d3 = d3 * d7;
 					d4 = d4 * d7;
 					d5 = d5 * d7;
-					this.level.addParticle(ParticleTypes.EXPLOSION_NORMAL, (d0 + this.explosionX) / 2.0D,
+					this.level.addParticle(ParticleTypes.POOF, (d0 + this.explosionX) / 2.0D,
 							(d1 + this.explosionY) / 2.0D, (d2 + this.explosionZ) / 2.0D, d3, d4, d5, new int[0]);
-					this.level.addParticle(ParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5, new int[0]);
+					this.level.addParticle(ParticleTypes.SMOKE, d0, d1, d2, d3, d4, d5, new int[0]);
 				}
 
 				if (iblockstate.getMaterial() != Material.AIR) {

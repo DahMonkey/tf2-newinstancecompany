@@ -69,7 +69,7 @@ public class TileEntityUpgrades extends BlockEntity {
 		if (compound.contains("Attributes")
 				&& maxSize == TF2Attribute.getAllPassibleAttributesForUpgradeStation().size()) {
 			CompoundTag attrs = compound.getCompound("Attributes");
-			ListTag attrList = (ListTag) compound.getTag("AttributesList");
+			ListTag attrList = (ListTag) compound.get("AttributesList");
 			for (String key : attrs.getAllKeys())
 				this.attributes.put(TF2Attribute.attributes[Integer.parseInt(key)], attrs.getInt(key));
 			for (int i = 0; i < attrList.size(); i++)

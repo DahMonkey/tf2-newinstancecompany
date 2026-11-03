@@ -78,7 +78,7 @@ public class EntityOutputManager {
 				state = state.setValue(BlockLever.POWERED, tup.getB() != 0);
 				Direction enumfacing = state.getValue(BlockLever.FACING).getFacing();
 				world.setBlock(pos, state, 3);
-				world.notifyNeighborsOfStateChange(pos.move(enumfacing.getOpposite()), state.getBlock(), false);
+				world.notifyNeighborsOfStateChange(pos.relative(enumfacing.getOpposite()), state.getBlock(), false);
 				world.notifyNeighborsOfStateChange(pos, state.getBlock(), false);
 			} else if (state.getBlock() instanceof BlockRedstoneComparator) {
 				world.setBlock(pos, state.setValue(BlockButton.POWERED, Boolean.valueOf(true)), 3);

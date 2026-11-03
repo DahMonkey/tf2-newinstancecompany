@@ -141,13 +141,13 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 				return InteractionResult.PASS;
 			else
 				return InteractionResult.SUCCESS;
-		} else if (!player.canPlayerEdit(pos.move(facing), facing, stack) || !stack.hasTag()
+		} else if (!player.canPlayerEdit(pos.relative(facing), facing, stack) || !stack.hasTag()
 				|| stack.getTag().getByte("Building") == 0)
 			return InteractionResult.PASS;
 		else {
 			BlockState iblockstate = world.getBlockState(pos);
 
-			pos = pos.move(facing);
+			pos = pos.relative(facing);
 			double d0 = 0.0D;
 
 			if (facing == Direction.UP && iblockstate.getBlock() instanceof FenceBlock)

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -227,13 +228,13 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 		 * if(attacker instanceof EntityPlayerMP && target instanceof EntityLivingBase
 		 * && !target.isEntityAlive() && TF2weapons.isEnemy(attacker, (EntityLivingBase)
 		 * target)){ if(!attacker.getCapability(TF2weapons.WEAPONS_CAP, null).charging){
-		 * ((EntityPlayerMP) attacker).addStat(TF2Achievements.KILLED_NOSCOPE);
+		 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.KILLED_NOSCOPE);
 		 * if(((EntityPlayerMP)
 		 * attacker).getStatFile().readStat(TF2Achievements.KILLED_NOSCOPE)>=10)
-		 * ((EntityPlayerMP) attacker).addStat(TF2Achievements.NO_SCOPE); }
+		 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.NO_SCOPE); }
 		 * if(((TF2DamageSource)source).getCritical()==2){
 		 * if(++attacker.getCapability(TF2weapons.PLAYER_CAP, null).headshotsRow>=3)
-		 * ((EntityPlayerMP) attacker).addStat(TF2Achievements.EFFICIENT_SNIPER); } else
+		 * ((EntityPlayerMP) attacker).awardStat(TF2Achievements.EFFICIENT_SNIPER); } else
 		 * attacker.getCapability(TF2weapons.PLAYER_CAP, null).headshotsRow=0; }
 		 */
 	}

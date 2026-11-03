@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.message.IMessage;
 import rafradek.TF2weapons.message.TF2NetworkWrapper.TargetPoint;
 
@@ -996,7 +997,7 @@ public class TF2Util {
 			 * { killedInRow++; if (killedInRow > 2 && exploder instanceof EntityRocket &&
 			 * shooter instanceof EntityPlayerMP && TF2weapons.isEnemy(shooter,
 			 * (EntityLivingBase) ent)) { ((EntityPlayerMP)
-			 * shooter).addStat(TF2Achievements.CRIT_ROCKET_KILL); } }
+			 * shooter).awardStat(TF2Achievements.CRIT_ROCKET_KILL); } }
 			 */
 			if (fromSentry) {
 				EntitySentry sentry = ((EntityProjectileBase) exploder).sentry;
@@ -1119,12 +1120,12 @@ public class TF2Util {
 		 * if (living instanceof EntityPlayerMP) { if
 		 * (target.hasCapability(TF2weapons.WEAPONS_CAP, null) &&
 		 * target.getDataManager().get(TF2EventsCommon.ENTITY_EXP_JUMP)) {
-		 * ((EntityPlayer) living).addStat(TF2Achievements.PILOT_LIGHT); } if
+		 * ((EntityPlayer) living).awardStat(TF2Achievements.PILOT_LIGHT); } if
 		 * (ItemFromData.isSameType(living.getHeldItemMainhand(), "flaregun") &&
 		 * !target.isBurning()) { ((EntityPlayer)
-		 * living).addStat(TF2Achievements.FLAREGUN_IGNITED); if (((EntityPlayerMP)
+		 * living).awardStat(TF2Achievements.FLAREGUN_IGNITED); if (((EntityPlayerMP)
 		 * living).getStatFile().readStat(TF2Achievements.FLAREGUN_IGNITED) >= 100)
-		 * ((EntityPlayer) living).addStat(TF2Achievements.ATTENTION_GETTER); } }
+		 * ((EntityPlayer) living).awardStat(TF2Achievements.ATTENTION_GETTER); } }
 		 */
 
 		try {
@@ -1588,11 +1589,11 @@ public class TF2Util {
 		 */
 		Vec3 vec = new Vec3(0, 0, 0);
 		BlockState center = world.getBlockState(pos);
-		BlockState down = world.getBlockState(pos.move(Direction.DOWN));
-		BlockState north = world.getBlockState(pos.move(Direction.NORTH));
-		BlockState south = world.getBlockState(pos.move(Direction.SOUTH));
-		BlockState west = world.getBlockState(pos.move(Direction.WEST));
-		BlockState east = world.getBlockState(pos.move(Direction.EAST));
+		BlockState down = world.getBlockState(pos.relative(Direction.DOWN));
+		BlockState north = world.getBlockState(pos.relative(Direction.NORTH));
+		BlockState south = world.getBlockState(pos.relative(Direction.SOUTH));
+		BlockState west = world.getBlockState(pos.relative(Direction.WEST));
+		BlockState east = world.getBlockState(pos.relative(Direction.EAST));
 		if (center.getCollisionBoundingBox(world, pos) != null)
 			vec = vec.add(0, 1 - center.getCollisionBoundingBox(world, pos).maxY, 0);
 		else if (down.getCollisionBoundingBox(world, pos) != null)
@@ -1904,6 +1905,24 @@ public class TF2Util {
 			return ((EntityProjectileBase) entity).getThrower();
 		if (entity instanceof Projectile)
 			return ((Projectile) entity).getOwner();
+		return null;
+	}
+
+	/** Sets synced data and marks it for sending even if the new value equals the old one. */
+	public static void forceSet(net.minecraft.network.syncher.SynchedEntityData data,
+			net.minecraft.network.syncher.EntityDataAccessor<CompoundTag> key, CompoundTag value) {
+		// Setting a different value first makes the data manager send the update.
+		CompoundTag marker = new CompoundTag();
+		marker.putBoolean("__resync", true);
+		data.set(key, marker);
+		data.set(key, value);
+	}
+
+	/** 1.12 World.getPlayerEntityByName. */
+	public static Player getPlayerByName(Level level, String name) {
+		for (Player player : level.players())
+			if (name.equals(player.getGameProfile().getName()))
+				return player;
 		return null;
 	}
 }

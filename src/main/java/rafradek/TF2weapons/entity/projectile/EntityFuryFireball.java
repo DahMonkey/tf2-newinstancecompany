@@ -23,9 +23,9 @@ public class EntityFuryFireball extends EntityProjectileSimple {
 	@Override
 	public void spawnParticles(double x, double y, double z) {
 		if (this.isInWater())
-			this.level.addParticle(ParticleTypes.WATER_BUBBLE, x, y, z, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.level.addParticle(ParticleTypes.BUBBLE, x, y, z, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
 		else
-			this.level.addParticle(ParticleTypes.SMOKE_NORMAL, x, y, z, 0, 0, 0);
+			this.level.addParticle(ParticleTypes.SMOKE, x, y, z, 0, 0, 0);
 	}
 
 	@Override

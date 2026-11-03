@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
@@ -391,7 +392,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 
 	/*
 	 * public void addAchievement(EntityPlayer player){ if(this.level>=30)
-	 * player.addStat(TF2Achievements.BOSS_30_LVL); }
+	 * player.awardStat(TF2Achievements.BOSS_30_LVL); }
 	 */
 	@Override
 	public void addAdditionalSaveData(CompoundTag nbt) {

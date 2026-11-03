@@ -77,10 +77,10 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 							wearer.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)), player);
 				} else if (message.value == 16) {
 					player.level.getScoreboard().addPlayerToTeam(player.getName(), "RED");
-					// player.addStat(TF2Achievements.JOIN_TEAM);
+					// player.awardStat(TF2Achievements.JOIN_TEAM);
 				} else if (message.value == 17) {
 					player.level.getScoreboard().addPlayerToTeam(player.getName(), "BLU");
-					// player.addStat(TF2Achievements.JOIN_TEAM);
+					// player.awardStat(TF2Achievements.JOIN_TEAM);
 				} else if (message.value == 18 && player.containerMenu != null
 						&& player.containerMenu instanceof MerchantMenu
 						&& player.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).lostItems
@@ -323,7 +323,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 							HitResult trace = player.level.rayTraceBlocks(player.getEyePosition(1),
 									player.getEyePosition(1).add(player.getViewVector(1).scale(40)));
 							if (trace != null) {
-								BlockPos pos3 = trace.getBlockPos().move(trace.getDirection());
+								BlockPos pos3 = trace.getBlockPos().relative(trace.getDirection());
 								List<EntityTF2Character> list3 = player.level.getEntitiesOfClass(
 										EntityTF2Character.class, player.getBoundingBox().inflate(20, 8, 20),
 										test8 -> (test8.getOwner() == player));

@@ -85,9 +85,9 @@ public class ItemJetpack extends ItemBackpack {
 		} else if (itemStack.getTag().getBoolean("Active") || itemStack.getTag().getByte("Load") > 0) {
 			Vec3 vec = TF2Util.getRotationVector(0, player.yBodyRot);
 			Vec3 vec2 = TF2Util.getRotationVector(0, player.yBodyRot + 90);
-			world.addParticle(ParticleTypes.SMOKE_LARGE, player.getX() - vec.x * 0.4 + vec2.x * 0.3,
+			world.addParticle(ParticleTypes.LARGE_SMOKE, player.getX() - vec.x * 0.4 + vec2.x * 0.3,
 					player.getY() + 1, player.getZ() - vec.z * 0.4 + vec2.z * 0.3, 0, 0, 0);
-			world.addParticle(ParticleTypes.SMOKE_LARGE, player.getX() - vec.x * 0.4 - vec2.x * 0.3,
+			world.addParticle(ParticleTypes.LARGE_SMOKE, player.getX() - vec.x * 0.4 - vec2.x * 0.3,
 					player.getY() + 1, player.getZ() - vec.z * 0.4 - vec2.z * 0.3, 0, 0, 0);
 		}
 	}

@@ -163,7 +163,7 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 					Direction facing = this.getLevel().getBlockState(pos).getValue(BlockRobotDeploy.FACING);
 					EntityTF2Character entity = (EntityTF2Character) EntityList
 							.createEntityByIDFromName(new ResourceLocation(TF2weapons.MOD_ID, weaponName), this.level);
-					BlockPos frontpos = this.pos.move(facing);
+					BlockPos frontpos = this.pos.relative(facing);
 					entity.setPos(frontpos.getX(), frontpos.getY(), frontpos.getZ());
 					TF2CharacterAdditionalData data = new TF2CharacterAdditionalData();
 					data.team = 2;

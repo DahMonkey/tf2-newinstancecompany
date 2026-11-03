@@ -154,15 +154,15 @@ public class BlockOverheadDoor extends BaseEntityBlock {
 
 	@Override
 	public void onBlockDestroyedByPlayer(Level world, BlockPos pos, BlockState state) {
-		BlockPos.MutableBlockPos off = new BlockPos.MutableBlockPos(pos).move(Direction.UP);
+		BlockPos.MutableBlockPos off = new BlockPos.MutableBlockPos(pos).relative(Direction.UP);
 		while (world.getBlockState(off).getBlock() == this) {
 			world.destroyBlock(off, true);
-			off.move(Direction.UP);
+			off.relative(Direction.UP);
 		}
 		off.setY(pos.getY() - 1);
 		while (world.getBlockState(off).getBlock() == this) {
 			world.destroyBlock(off, true);
-			off.move(Direction.DOWN);
+			off.relative(Direction.DOWN);
 		}
 	}
 
@@ -192,7 +192,7 @@ public class BlockOverheadDoor extends BaseEntityBlock {
 				TileEntityOverheadDoor ent = (TileEntityOverheadDoor) world.getBlockEntity(off);
 				return ent.allow == Allow.ENTITY || ent.allow == Allow.TEAM;
 			}
-			off.move(Direction.UP);
+			off.relative(Direction.UP);
 		}
 		return false;
 	}

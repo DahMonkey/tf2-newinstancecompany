@@ -10,7 +10,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class InventoryAmmoBelt extends SimpleContainer implements ICapabilityProvider, INBTSerializable<ListTag> {
+public class InventoryAmmoBelt extends LegacyInventory implements ICapabilityProvider, INBTSerializable<ListTag> {
 
 	public InventoryAmmoBelt() {
 		super("AmmoBelt", false, 9);
@@ -49,7 +49,7 @@ public class InventoryAmmoBelt extends SimpleContainer implements ICapabilityPro
 			if (!itemstack.isEmpty()) {
 				CompoundTag nbttagcompound = new CompoundTag();
 				nbttagcompound.putByte("Slot", (byte) i);
-				itemstack.writeToNBT(nbttagcompound);
+				itemstack.save(nbttagcompound);
 				list.add(nbttagcompound);
 			}
 		}

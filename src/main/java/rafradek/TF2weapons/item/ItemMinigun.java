@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -255,7 +256,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 			attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).killsSpinning++;
 			/*
 			 * if(attacker.getCapability(TF2weapons.WEAPONS_CAP, null).killsSpinning>=8)
-			 * ((EntityPlayer)attacker).addStat(TF2Achievements.REVOLUTION);
+			 * ((EntityPlayer)attacker).awardStat(TF2Achievements.REVOLUTION);
 			 */
 		}
 	}

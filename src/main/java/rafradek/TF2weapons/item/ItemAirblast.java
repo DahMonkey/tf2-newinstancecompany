@@ -138,11 +138,11 @@ public class ItemAirblast extends ItemProjectileWeapon {
 				// System.out.println("class: " + entity.getName());
 			}
 			if (living instanceof ServerPlayer) {
-				((ServerPlayer) living).addStat(TF2Achievements.PROJECTILES_REFLECTED);
+				((ServerPlayer) living).awardStat(TF2Achievements.PROJECTILES_REFLECTED);
 				/*
 				 * if(((EntityPlayerMP)living).getStatFile().readStat(TF2Achievements.
 				 * PROJECTILES_REFLECTED)>=100){
-				 * ((EntityPlayerMP)living).addStat(TF2Achievements.HOT_POTATO); }
+				 * ((EntityPlayerMP)living).awardStat(TF2Achievements.HOT_POTATO); }
 				 */
 			}
 			EntityTracker tracker = ((ServerLevel) world).getEntityTracker();

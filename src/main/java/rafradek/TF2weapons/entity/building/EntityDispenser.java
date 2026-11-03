@@ -442,7 +442,7 @@ public class EntityDispenser extends EntityBuilding {
 		ListTag fill = par1NBTTagCompound.getList("Fill", 10);
 		for (int i = 0; i < fill.size(); i++) {
 			CompoundTag values = (CompoundTag) fill.get(i);
-			this.fillMeter.put(new ItemStack(values.getCompound("Item")), values.getFloat("Fill"));
+			this.fillMeter.put(ItemStack.of(values.getCompound("Item")), values.getFloat("Fill"));
 		}
 	}
 

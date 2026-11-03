@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.NBTLiterals;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -219,9 +220,9 @@ public class ContainerUpgrades extends AbstractContainerMenu {
 				this.transactionsCost[idEnch] += cost;
 
 				/*
-				 * player.addStat(TF2Achievements.WEAPON_UPGRADE); if (attr.numLevels > 1 &&
+				 * player.awardStat(TF2Achievements.WEAPON_UPGRADE); if (attr.numLevels > 1 &&
 				 * attr.calculateCurrLevel(stack) == attr.numLevels)
-				 * player.addStat(TF2Achievements.FULLY_UPGRADED);
+				 * player.awardStat(TF2Achievements.FULLY_UPGRADED);
 				 */
 			} else if (adding && austrAdd) {
 				CompoundTag tag = stacktag.getCompound("Attributes");
@@ -274,7 +275,7 @@ public class ContainerUpgrades extends AbstractContainerMenu {
 			}
 		} else if (id == -1) {
 			if (stacktag.contains("AttributesOrig") && stacktag.getInt("TotalSpent") > 0) {
-				stacktag.put("Attributes", stacktag.getTag("AttributesOrig").copy());
+				stacktag.put("Attributes", stacktag.get("AttributesOrig").copy());
 				stacktag.putInt("LastUpgradesCost", 0);
 				TF2Util.setExperiencePoints(player, expPoints + stacktag.getInt("TotalSpent"));
 				stacktag.putInt("TotalSpent", 0);

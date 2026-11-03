@@ -39,7 +39,7 @@ public class ItemConfigure extends LegacyItem {
 				TF2weapons.network.sendTo(new TF2Message.GuiConfigMessage(
 						((IEntityConfigurable) ent).writeConfig(new CompoundTag()), pos), (ServerPlayer) player);
 			} else {
-				BlockPos forwardpos = pos.move(facing);
+				BlockPos forwardpos = pos.relative(facing);
 				for (EntityPickup pickup : world.getEntitiesOfClass(EntityPickup.class,
 						new AABB(forwardpos))) {
 					pickup.discard();

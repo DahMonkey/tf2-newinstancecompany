@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2PlayerCapability;
@@ -102,7 +103,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 		list.addAll(this.tradeOffers);
 		if (!TF2ConfigVars.disableInvasionItems) {
 			for (int i = 0; i <= TF2PlayerCapability.get(player).maxInvasionBeaten; i++) {
-				if (!(i == 4 && ((ServerPlayer) player).getStats().readStat(TF2weapons.robotsKilled) < 2000)
+				if (!(i == 4 && TF2Achievements.read((ServerPlayer) player, TF2weapons.robotsKilled) < 2000)
 						&& i != InvasionEvent.DIFFICULTY.length)
 					this.addTradeOffer(TF2Util.metaStack(TF2weapons.itemEventMaker, 1, i), 27 + i * 9, list, i + 1);
 			}
@@ -212,7 +213,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 			stack.getTag().putBoolean("Bought", true);
 		/*
 		 * if (this.trader != null && !stack.isEmpty() &&stack.getItem() instanceof
-		 * ItemWeapon) this.trader.addStat(TF2Achievements.MANN_CO_MADE);
+		 * ItemWeapon) this.trader.awardStat(TF2Achievements.MANN_CO_MADE);
 		 */
 
 	}
@@ -491,7 +492,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 				player.displayVillagerTradeGui(this);
 			}
 
-			player.addStat(StatList.TALKED_TO_VILLAGER);
+			player.awardStat(StatList.TALKED_TO_VILLAGER);
 			return true;
 		} else
 			return super.processInteract(player, hand);

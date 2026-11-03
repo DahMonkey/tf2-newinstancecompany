@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -123,9 +124,9 @@ public class ItemStickyLauncher extends ItemProjectileWeapon {
 				living.playSound(ItemFromData.getSound(stack, PropertyType.DETONATE_SOUND), 1f, 1);
 				/*
 				 * if(living instanceof EntityPlayer && cap.stickybombKilled>=3)
-				 * ((EntityPlayer)living).addStat(TF2Achievements.PIPEBAGGER); if(living
+				 * ((EntityPlayer)living).awardStat(TF2Achievements.PIPEBAGGER); if(living
 				 * instanceof EntityPlayer && cap.engineerKilled && cap.dispenserKilled &&
-				 * cap.sentryKilled) ((EntityPlayer)living).addStat(TF2Achievements.ARGYLE_SAP);
+				 * cap.sentryKilled) ((EntityPlayer)living).awardStat(TF2Achievements.ARGYLE_SAP);
 				 */
 			}
 		}

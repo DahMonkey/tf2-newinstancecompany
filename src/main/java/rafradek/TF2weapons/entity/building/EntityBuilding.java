@@ -382,7 +382,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 			this.setInfoEnergy(this.energy.getEnergyStored());
 			if (this.getOwnerUUID() != null && shouldUseBlocks())
 				for (Direction facing : Direction.VALUES) {
-					BlockPos pos = this.blockPosition().move(facing);
+					BlockPos pos = this.blockPosition().relative(facing);
 					BlockEntity ent = this.level.getBlockEntity(pos);
 
 					if (ent != null) {

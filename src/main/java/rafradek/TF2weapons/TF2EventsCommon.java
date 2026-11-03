@@ -1,5 +1,6 @@
 package rafradek.TF2weapons;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import io.netty.buffer.Unpooled;
@@ -497,7 +498,7 @@ public class TF2EventsCommon {
 					/*
 					 * if(event.getEntityLiving().getCapability(TF2weapons.PLAYER_CAP,
 					 * null).dodgedDmg>100){
-					 * ((EntityPlayer)event.getEntityLiving()).addStat(TF2Achievements.DODGE_DAMAGE)
+					 * ((EntityPlayer)event.getEntityLiving()).awardStat(TF2Achievements.DODGE_DAMAGE)
 					 * ; }
 					 */
 				}
@@ -1676,7 +1677,7 @@ public class TF2EventsCommon {
 		/*
 		 * if (!(stack.getItem() instanceof ItemCrate) && stack.hasTagCompound() &&
 		 * stack.getTagCompound().getBoolean("DropFrom")) {
-		 * event.getEntityPlayer().addStat(TF2Achievements.SPOILS_WAR); }
+		 * event.getEntityPlayer().awardStat(TF2Achievements.SPOILS_WAR); }
 		 */
 		ItemStack stackam = TF2Util.pickAmmo(stack, event.getEntity(), false);
 		stack.setCount(stackam.getCount());
@@ -1723,7 +1724,7 @@ public class TF2EventsCommon {
 			}
 			/*
 			 * final int level = calculatedLevel; if (player instanceof EntityPlayerMP) {
-			 * ((EntityPlayerMP) player).addStat(new
+			 * ((EntityPlayerMP) player).awardStat(new
 			 * Achievement(Integer.toString(player.getRNG().nextInt()), "strangeUp", 0, 0,
 			 * stack, null) {
 			 *
@@ -1752,7 +1753,7 @@ public class TF2EventsCommon {
 		/*
 		 * if (event.crafting != null &&
 		 * Block.getBlockFromItem(event.crafting.getItem()) == TF2weapons.blockCabinet)
-		 * { event.player.addStat(TF2Achievements.WEAPON_CRAFTING); }
+		 * { event.player.awardStat(TF2Achievements.WEAPON_CRAFTING); }
 		 */
 	}
 

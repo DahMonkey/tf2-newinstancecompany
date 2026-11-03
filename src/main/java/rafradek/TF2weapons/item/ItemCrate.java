@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.util.TF2Util;
 
@@ -117,12 +118,12 @@ public class ItemCrate extends ItemFromData {
 
 			if (!player.getInventory().add(stack))
 				player.drop(stack, true);
-			// player.addStat(TF2Achievements.LOOT_CRATE);
-			player.addStat(TF2weapons.cratesOpened);
+			// player.awardStat(TF2Achievements.LOOT_CRATE);
+			player.awardStat(TF2weapons.cratesOpened);
 			/*
 			 * if(!world.isRemote &&
 			 * ((EntityPlayerMP)player).getStatFile().readStat(TF2weapons.cratesOpened)>=9
-			 * ){ player.addStat(TF2Achievements.CRATES_10); }
+			 * ){ player.awardStat(TF2Achievements.CRATES_10); }
 			 */
 			itemStackIn.shrink(1);
 			return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);

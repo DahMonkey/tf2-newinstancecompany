@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.block.BlockProp;
@@ -323,7 +324,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 
 	/*
 	 * public void addAchievement(EntityPlayer player){
-	 * super.addAchievement(player); player.addStat(TF2Achievements.MERASMUS); }
+	 * super.addAchievement(player); player.awardStat(TF2Achievements.MERASMUS); }
 	 */
 	@Override
 	public SoundEvent getDeathSound() {

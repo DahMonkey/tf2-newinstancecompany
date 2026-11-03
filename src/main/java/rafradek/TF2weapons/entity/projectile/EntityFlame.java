@@ -43,10 +43,10 @@ public class EntityFlame extends EntityProjectileBase {
 	public void onHitGround(int x, int y, int z, HitResult mop) {
 		if (!this.level.isClientSide && TF2ConfigVars.destTerrain == 2
 				&& this.level.getBlockState(mop.getBlockPos()).getMaterial().getCanBurn()
-				&& this.level.getBlockState(mop.getBlockPos().move(mop.getDirection())).getMaterial() != Material.FIRE
-				&& this.level.getBlockState(mop.getBlockPos().move(mop.getDirection())).getBlock().isReplaceable(world,
-						getPosition().move(mop.getDirection())))
-			this.level.setBlockAndUpdate(mop.getBlockPos().move(mop.getDirection()), Blocks.FIRE.defaultBlockState());
+				&& this.level.getBlockState(mop.getBlockPos().relative(mop.getDirection())).getMaterial() != Material.FIRE
+				&& this.level.getBlockState(mop.getBlockPos().relative(mop.getDirection())).getBlock().isReplaceable(world,
+						getPosition().relative(mop.getDirection())))
+			this.level.setBlockAndUpdate(mop.getBlockPos().relative(mop.getDirection()), Blocks.FIRE.defaultBlockState());
 		this.discard();
 	}
 

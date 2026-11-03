@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -63,7 +64,7 @@ public class EntityJar extends EntityProjectileBase {
 			/*
 			 * if(coatedCount>=5 && this.shootingEntity instanceof EntityPlayer)
 			 * ((EntityPlayer)
-			 * this.shootingEntity).addStat(TF2Achievements.JARATE_MULTIPLE);
+			 * this.shootingEntity).awardStat(TF2Achievements.JARATE_MULTIPLE);
 			 */
 			if (!this.isGasExploded()) {
 				this.playSound(ItemUsable.getSound(usedWeapon, PropertyType.EXPLOSION_SOUND), 1f, 1f);
@@ -128,7 +129,7 @@ public class EntityJar extends EntityProjectileBase {
 	@Override
 	public void spawnParticles(double x, double y, double z) {
 		if (this.isInWater())
-			this.level.addParticle(ParticleTypes.WATER_BUBBLE, x, y, z, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
+			this.level.addParticle(ParticleTypes.BUBBLE, x, y, z, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
 		if (this.isGasExploded()) {
 			for (int i = 0; i < 8; ++i) {
 				Vec3 pos = TF2Util.radiusRandom2D(5f, this.random);

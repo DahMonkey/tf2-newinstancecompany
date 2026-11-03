@@ -115,7 +115,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 				double d2 = random.nextGaussian() * 0.02D;
 				double d0 = random.nextGaussian() * 0.02D;
 				double d1 = random.nextGaussian() * 0.02D;
-				world.addParticle(ParticleTypes.EXPLOSION_NORMAL, getX() + random.nextFloat() * width * 2.0F - width,
+				world.addParticle(ParticleTypes.POOF, getX() + random.nextFloat() * width * 2.0F - width,
 						getY() + random.nextFloat() * height, getZ() + random.nextFloat() * width * 2.0F - width, d2, d0, d1);
 			}
 		}

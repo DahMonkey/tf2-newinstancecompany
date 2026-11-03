@@ -1046,19 +1046,19 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			ServerPlayer player = (ServerPlayer) s.getEntity();
 			if (s.getEntity().getTeam() != null || TF2ConfigVars.neutralAttack) {
 				if (!this.isRobot()) {
-					player.addStat(TF2Achievements.KILLED_MERC);
+					player.awardStat(TF2Achievements.KILLED_MERC);
 					if (player.getStats().readStat(TF2Achievements.KILLED_MERC) >= 5 && player.getStats()
 							.readStat(TF2Achievements.CONTRACT_DAY) == 0/*
 																		 * player.getCapability(TF2weapons.PLAYER_CAP,
 																		 * null).nextContractDay == -1
 																		 */)
-						player.addStat(TF2Achievements.CONTRACT_DAY, (int) (this.level.getDayTime() / 24000 + 1));
+						player.awardStat(TF2Achievements.CONTRACT_DAY, (int) (this.level.getDayTime() / 24000 + 1));
 				} else {
-					player.addStat(TF2weapons.robotsKilled);
+					player.awardStat(TF2weapons.robotsKilled);
 					TF2PlayerCapability.get(player).robotsKilledInvasion += 1;
 				}
 			}
-			// player.addStat(TF2Achievements.FIRST_ENCOUNTER);
+			// player.awardStat(TF2Achievements.FIRST_ENCOUNTER);
 
 		}
 		if (this.lastHurtByPlayer != null && TF2Util.isAlliedTo(this, this.lastHurtByPlayer))
@@ -1098,7 +1098,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				FMLNetworkHandler.openGui(player, TF2weapons.instance, 4, world, this.getId(), 0, 0);
 			}
 
-			player.addStat(StatList.TALKED_TO_VILLAGER);
+			player.awardStat(StatList.TALKED_TO_VILLAGER);
 			return true;
 		} else
 			return super.processInteract(player, hand);
@@ -1130,8 +1130,8 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		this.setRobot(tag.getByte("Robot"));
 		this.setMoneyDrop(tag.getInt("MoneyDrop"));
 
-		if (tag.getTag("Loadout") instanceof ListTag) {
-			ListTag list = (ListTag) tag.getTag("Loadout");
+		if (tag.get("Loadout") instanceof ListTag) {
+			ListTag list = (ListTag) tag.get("Loadout");
 
 			if (list != null) {
 				for (int i = 0; i < list.size(); ++i) {
@@ -1152,7 +1152,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			this.loadoutHeld.setStackInSlot(4, this.loadoutHeld.getStackInSlot(3));
 		}
 
-		this.refill.setStackInSlot(0, new ItemStack(tag.getCompound("Refill")));
+		this.refill.setStackInSlot(0, ItemStack.of(tag.getCompound("Refill")));
 
 		if (tag.contains("Offers")) {
 			this.tradeOffers = new MerchantOffers();

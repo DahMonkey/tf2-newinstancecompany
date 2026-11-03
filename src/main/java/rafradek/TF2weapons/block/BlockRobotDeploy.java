@@ -97,7 +97,7 @@ public class BlockRobotDeploy extends BaseEntityBlock {
 		if (placer instanceof Player) {
 			BlockEntity ent = world.getBlockEntity(pos);
 			for (Direction facing : Direction.HORIZONTALS) {
-				BlockPos offpos = pos.move(facing);
+				BlockPos offpos = pos.relative(facing);
 				BlockEntity entoff = world.getBlockEntity(offpos);
 				if (entoff instanceof TileEntityRobotDeploy && !world.getBlockState(offpos).getValue(JOINED)
 						&& world.getBlockState(offpos).getValue(HOLDER)) {

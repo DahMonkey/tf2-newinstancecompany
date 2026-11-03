@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.core.particles.DustParticleOptions;
+import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -250,7 +252,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		if (this.begin-- > 20 && this.level.isClientSide)
 			for (int i = 0; i < 40; i++) {
 				Vec3 pos = TF2Util.radiusRandom2D(2.7f, this.random);
-				this.level.addParticle(ParticleTypes.REDSTONE, pos.x + this.getX(), this.getY() - 0.5,
+				this.level.addParticle(DustParticleOptions.REDSTONE, pos.x + this.getX(), this.getY() - 0.5,
 						pos.y + this.getZ(), 0.55, 0.12, 1, new int[0]);
 			}
 		if (this.tickCount == 1) {
@@ -374,7 +376,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 	/*
 	 * public void addAchievement(EntityPlayer player){
-	 * super.addAchievement(player); player.addStat(TF2Achievements.MONOCULUS); }
+	 * super.addAchievement(player); player.awardStat(TF2Achievements.MONOCULUS); }
 	 */
 	@Override
 	public float getEyeHeight() {
@@ -531,7 +533,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 				// if (trace.entityHit != null) {
 
 				// }
-				((ServerLevel) parentEntity.level).addParticle(ParticleTypes.CRIT, trace.getLocation().x, trace.getLocation().y,
+				((ServerLevel) parentEntity.level).sendParticles(ParticleTypes.CRIT, trace.getLocation().x, trace.getLocation().y,
 						trace.getLocation().z, 1, 0D, 0D, 0D, 0D);
 			}
 		}
