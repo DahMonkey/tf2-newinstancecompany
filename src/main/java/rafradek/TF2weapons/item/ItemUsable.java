@@ -140,17 +140,17 @@ public abstract class ItemUsable extends ItemFromData {
 			double additionToMult) {
 		double initialO = initial;
 		for (AttributeModifier modifier : attribute.getModifiersByOperation(0)) {
-			if (!modifier.getID().equals(except)) {
+			if (!modifier.getId().equals(except)) {
 				initial += initialO * modifier.getAmount() * additionToMult;
 			}
 		}
 		for (AttributeModifier modifier : attribute.getModifiersByOperation(1)) {
-			if (!modifier.getID().equals(except)) {
+			if (!modifier.getId().equals(except)) {
 				initial += initialO * modifier.getAmount();
 			}
 		}
 		for (AttributeModifier modifier : attribute.getModifiersByOperation(2)) {
-			if (!modifier.getID().equals(except)) {
+			if (!modifier.getId().equals(except)) {
 				initial *= 1 + modifier.getAmount();
 			}
 		}

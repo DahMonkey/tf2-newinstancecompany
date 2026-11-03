@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -67,19 +69,18 @@ public class ItemBackpack extends ItemFromData {
 	}
 
 	@Override
-	public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-		Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+		Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getAttributeModifiers(slot, stack));
 
 		if (slot == EquipmentSlot.CHEST) {
-			multimap.put(Attributes.ARMOR.getName(), new AttributeModifier(ARMOR_MOD, "Armor modifier",
-					TF2Attribute.getModifier("Armor", stack, getData(stack).getFloat(PropertyType.ARMOR), null), 0));
-			multimap.put(Attributes.MAX_HEALTH.getName(), new AttributeModifier(MAX_HEALTH_MOD,
-					"Health modifier", TF2Attribute.getModifier("Health", stack, 0, null), 0));
-			multimap.put(Attributes.ARMOR_TOUGHNESS.getName(),
+			multimap.put(Attributes.ARMOR, new AttributeModifier(ARMOR_MOD, "Armor modifier",
+					TF2Attribute.getModifier("Armor", stack, getData(stack).getFloat(PropertyType.ARMOR), null), AttributeModifier.Operation.fromValue(0)));
+			multimap.put(Attributes.MAX_HEALTH, new AttributeModifier(MAX_HEALTH_MOD,
+					"Health modifier", TF2Attribute.getModifier("Health", stack, 0, null), AttributeModifier.Operation.fromValue(0)));
+			multimap.put(Attributes.ARMOR_TOUGHNESS,
 					new AttributeModifier(ARMOR_TOUGHNESS_MOD, "Armor toughness modifier",
 							TF2Attribute.getModifier("Armor", stack, 0, null) * 0.5f
-									+ getData(stack).getFloat(PropertyType.ARMOR_TOUGHNESS),
-							0));
+									+ getData(stack).getFloat(PropertyType.ARMOR_TOUGHNESS), AttributeModifier.Operation.fromValue(0)));
 		}
 
 		return multimap;

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -70,14 +71,13 @@ public class EntityHeavy extends EntityTF2Character {
 		return new float[] { 0.045f, 0.12f, 0.11f };
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(40.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0D);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.1D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6.0D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Character.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 40.0D)
+				.add(Attributes.MAX_HEALTH, 30.0D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.5D)
+				.add(Attributes.MOVEMENT_SPEED, 0.1D)
+				.add(Attributes.ATTACK_DAMAGE, 6.0D);
 	}
 
 	@Override

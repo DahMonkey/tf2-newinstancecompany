@@ -53,8 +53,8 @@ public class EntityRocket extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 
 	}
 

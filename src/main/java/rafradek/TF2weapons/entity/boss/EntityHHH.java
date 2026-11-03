@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.entity.boss;
 
+import javax.annotation.Nullable;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
@@ -116,21 +120,18 @@ public class EntityHHH extends EntityTF2Boss {
 
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		// this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(128.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(105);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.10D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(13D);
-
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Boss.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 128.0D)
+				.add(Attributes.MAX_HEALTH, 105)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+				.add(Attributes.MOVEMENT_SPEED, 0.10D)
+				.add(Attributes.ATTACK_DAMAGE, 13D);
 	}
 
 	@Override
-	public SpawnGroupData onInitialSpawn(DifficultyInstance diff, SpawnGroupData p_110161_1_) {
-		p_110161_1_ = super.onInitialSpawn(diff, p_110161_1_);
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance diff, MobSpawnType spawnReason, @Nullable SpawnGroupData p_110161_1_, @Nullable CompoundTag spawnTag) {
+		p_110161_1_ = super.finalizeSpawn(levelAccessor, diff, spawnReason, p_110161_1_, spawnTag);
 		this.getAttribute(Attributes.MOVEMENT_SPEED)
 				.setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue()
 						* (0.88 + this.level * 0.12));
@@ -167,7 +168,7 @@ public class EntityHHH extends EntityTF2Boss {
 		if (!world.isClientSide && this.begin <= 0) {
 			if (this.random.nextInt(20) == 0) {
 				TF2Util.addModifierSafe(this, Attributes.MOVEMENT_SPEED, new AttributeModifier(fasterSpeed,
-						"fastspeed", TF2Util.lerp(0.2f, 0.0f, this.getHealth() / this.getMaxHealth()), 2), false);
+						"fastspeed", TF2Util.lerp(0.2f, 0.0f, this.getHealth() / this.getMaxHealth()), AttributeModifier.Operation.fromValue(2)), false);
 			}
 			if (this.begin == 0) {
 				this.setNoAi(false);
@@ -222,7 +223,7 @@ public class EntityHHH extends EntityTF2Boss {
 						this.dashTick = 35;
 						this.dashMotion = this.getVectorForRotation(0, this.yHeadRot).scale(0.45);
 						TF2Util.addModifierSafe(this, Attributes.MOVEMENT_SPEED,
-								new AttributeModifier(slowDash, "dash", -0.5, 2), false);
+								new AttributeModifier(slowDash, "dash", -0.5, AttributeModifier.Operation.fromValue(2)), false);
 					}
 					if (this.dashTick-- > 0) {
 						if (this.dashTick < 20) {
@@ -308,7 +309,7 @@ public class EntityHHH extends EntityTF2Boss {
 					this.swing(InteractionHand.MAIN_HAND);
 					this.attackTick = 20;
 					for (LivingEntity living : ents) {
-						this.attackEntityAsMob(living);
+						this.doHurtTarget(living);
 					}
 				}
 			}
@@ -317,7 +318,7 @@ public class EntityHHH extends EntityTF2Boss {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 
 		if (super.hurt(source, amount)) {
 			if (this.getTarget() == null || this.getNavigation().isDone()) {
@@ -336,8 +337,8 @@ public class EntityHHH extends EntityTF2Boss {
 	}
 
 	@Override
-	public boolean attackEntityAsMob(Entity entityIn) {
-		if (super.attackEntityAsMob(entityIn)) {
+	public boolean doHurtTarget(Entity entityIn) {
+		if (super.doHurtTarget(entityIn)) {
 
 			this.playSound(TF2Sounds.MOB_HHH_HIT, 1F, 1F);
 			if (!entityIn.isAlive())

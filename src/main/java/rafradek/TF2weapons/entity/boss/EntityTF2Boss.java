@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.ServerLevelAccessor;
 import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -78,7 +81,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (source == DamageSource.DROWN || source == DamageSource.LAVA || source == DamageSource.ON_FIRE)
 			return false;
 		if (source instanceof TF2DamageSource) {
@@ -194,7 +197,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 			--this.blockBreakCounter;
 
-			if (this.blockBreakCounter <= 0 && this.level.getGameRules().getBoolean("mobGriefing")) {
+			if (this.blockBreakCounter <= 0 && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 				this.blockBreakCounter = 27;
 				breakBlocks();
 			}
@@ -328,7 +331,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public SpawnGroupData onInitialSpawn(DifficultyInstance diff, SpawnGroupData p_110161_1_) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance diff, MobSpawnType spawnReason, @Nullable SpawnGroupData p_110161_1_, @Nullable CompoundTag spawnTag) {
 		int players = 0;
 		int highestLevel = 0;
 		int statmult = 0;
@@ -371,13 +374,13 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		this.playersAttacked = players;
 		this.playSound(this.getAppearSound(), 4F, 1);
 		this.getAttribute(Attributes.ARMOR)
-				.addTransientModifier(new AttributeModifier(EntityTF2Boss.BOSS_ARMOR_SPAWN, "armorspawn", 20, 0));
+				.addTransientModifier(new AttributeModifier(EntityTF2Boss.BOSS_ARMOR_SPAWN, "armorspawn", 20, AttributeModifier.Operation.fromValue(0)));
 		return p_110161_1_;
 	}
 
 	@Override
-	public void onDeath(DamageSource cause) {
-		super.onDeath(cause);
+	public void die(DamageSource cause) {
+		super.die(cause);
 		for (Player player : this.attackers) {
 			int level = player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).highestBossLevel.get(this.getClass()) != null
 					? player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).highestBossLevel.get(this.getClass())

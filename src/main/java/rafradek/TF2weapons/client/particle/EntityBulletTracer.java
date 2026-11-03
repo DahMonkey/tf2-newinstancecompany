@@ -69,12 +69,12 @@ public class EntityBulletTracer extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		if (nextDead)
 			setExpired();
 		nextDead = true;
 		// setVelocity(0, 0, 0);
-		super.onUpdate();
+		super.tick();
 		setDeltaMovement(getDeltaMovement().x * (1.025D), getDeltaMovement().y, getDeltaMovement().z);
 		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y * (1.025D), getDeltaMovement().z);
 		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z * (1.025D));

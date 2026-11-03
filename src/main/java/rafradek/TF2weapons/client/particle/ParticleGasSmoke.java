@@ -16,8 +16,8 @@ public class ParticleGasSmoke extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		this.setParticleTextureIndex(7 - this.age * 8 / this.lifetime);
 		if (this.age++ >= this.lifetime) {
 			this.setExpired();

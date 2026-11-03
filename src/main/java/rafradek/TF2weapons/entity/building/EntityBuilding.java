@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -158,12 +160,12 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public boolean processInteract(Player player, InteractionHand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (!this.level.isClientSide && player == this.getOwner() && hand == InteractionHand.MAIN_HAND) {
 			this.grab();
-			return true;
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}
-		return false;
+		return InteractionResult.PASS;
 	}
 
 	@Override
@@ -224,12 +226,11 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		return state == 50 ? TF2Sounds.MOB_SAPPER_IDLE : null;
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(16D * TF2ConfigVars.damageMultiplier);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return Mob.createMobAttributes()
+				.add(Attributes.MAX_HEALTH, 16D * TF2ConfigVars.damageMultiplier)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 1D)
+				.add(Attributes.MOVEMENT_SPEED, 0D);
 	}
 
 	@Override
@@ -238,7 +239,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (source == DamageSource.ON_FIRE)
 			return false;
 		return super.hurt(source, amount);
@@ -272,7 +273,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public UUID getOwnerId() {
+	public UUID getOwnerUUID() {
 		return this.entityData.get(OWNER_UUID).orNull();
 	}
 
@@ -297,8 +298,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public void onDeath(DamageSource source) {
-		super.onDeath(source);
+	public void die(DamageSource source) {
+		super.die(source);
 		if (this.getOwner() instanceof EntityEngineer) {
 			WeaponsCapability.get(this.getOwner()).giveMetal(
 					getCost(this.getBuildingID(), ((EntityEngineer) this.getOwner()).loadout.getStackInSlot(2)) / 2);
@@ -309,10 +310,10 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	public void clearReferences() {
 		if (this.getOwnerUUID() != null && this.fromPDA) {
 			if (this.disposableID == -1)
-				PlayerPersistStorage.get(this.level, getOwnerId()).buildings[this.getBuildingID()] = null;
+				PlayerPersistStorage.get(this.level, getOwnerUUID()).buildings[this.getBuildingID()] = null;
 			else {
 				try {
-					PlayerPersistStorage.get(this.level, getOwnerId()).disposableBuildings.remove(this.getUUID());
+					PlayerPersistStorage.get(this.level, getOwnerUUID()).disposableBuildings.remove(this.getUUID());
 				} catch (IndexOutOfBoundsException e) {
 					LOGGER.error("Disposable ID out of bounds");
 				}
@@ -321,7 +322,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 		if (this.firstUpdate && !this.level.isClientSide && this.fromPDA
@@ -391,7 +392,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 				}
 		}
 
-		super.onUpdate();
+		super.tick();
 
 		if (this.isConstructing())
 			this.updateConstruction();
@@ -558,7 +559,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 	/*
 	 * @Override public boolean writeToNBTOptional(NBTTagCompound tagCompund) {
-	 * return this.getOwnerId() != null ? super.writeToNBTOptional(tagCompund) :
+	 * return this.getOwnerUUID() != null ? super.writeToNBTOptional(tagCompund) :
 	 * false; }
 	 */
 

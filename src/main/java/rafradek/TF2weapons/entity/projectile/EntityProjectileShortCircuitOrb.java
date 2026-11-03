@@ -60,8 +60,8 @@ public class EntityProjectileShortCircuitOrb extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		if (this.hitEntities.size() > 0) {
 			this.hitEntities.clear();
 		}

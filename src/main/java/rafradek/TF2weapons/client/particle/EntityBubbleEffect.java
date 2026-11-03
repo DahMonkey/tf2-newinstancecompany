@@ -31,8 +31,8 @@ public class EntityBubbleEffect extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		alpha *= 0.9f;
 	}
 

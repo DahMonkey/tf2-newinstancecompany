@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -211,7 +212,7 @@ public class EntityDispenser extends EntityBuilding {
 	}
 
 	@Override
-	public boolean processInteract(Player player, InteractionHand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (player == this.getOwner() && hand == InteractionHand.MAIN_HAND) {
 			if (!this.level.isClientSide) {
 				if (TF2ConfigVars.disableBuildingGui)
@@ -220,9 +221,9 @@ public class EntityDispenser extends EntityBuilding {
 					FMLNetworkHandler.openGui(player, TF2weapons.instance, 5, world, this.getId(), 0, 0);
 			}
 
-			return true;
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}
-		return true;
+		return InteractionResult.sidedSuccess(this.level.isClientSide);
 	}
 
 	@Override

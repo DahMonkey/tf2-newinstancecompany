@@ -45,8 +45,8 @@ public class EntityFlameEffect extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		this.alpha *= 0.9f;
 	}
 

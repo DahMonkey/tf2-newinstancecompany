@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.block;
 
+import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.tileentity.TileEntityAmmoFurnace;
 import java.util.Random;

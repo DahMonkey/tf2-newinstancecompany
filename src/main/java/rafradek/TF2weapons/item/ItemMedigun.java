@@ -481,7 +481,7 @@ public class ItemMedigun extends ItemUsable {
 	@Override
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder renderer,
 			ScaledResolution resolution) {
-		Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
+		RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(false);
 		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -518,7 +518,7 @@ public class ItemMedigun extends ItemUsable {
 			text = "UBERCHARGE: " + Math.round(uber * 100f) + "%";
 		else
 			text = "UBERCHARGES: " + Mth.floor(uber / (1f / this.getUbers(stack, player)));
-		Minecraft.getInstance().gui.drawString(Minecraft.getInstance().gui.getFontRenderer(), text,
+		Minecraft.getInstance().gui.drawString(Minecraft.getInstance().Minecraft.getInstance().font, text,
 				resolution.getScaledWidth() - 130, resolution.getScaledHeight() - 48, 16777215);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.33F);
@@ -548,7 +548,7 @@ public class ItemMedigun extends ItemUsable {
 			float offset = 0f;
 			if (TF2Util.getTeamForDisplay(player) != 0)
 				offset = 96f;
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientRender.VAC_EFFECT);
+			RenderSystem.setShaderTexture(0, ClientRender.VAC_EFFECT);
 			switch (stack.getTag().getByte("ResType")) {
 			case 0:
 				offset += 0f;

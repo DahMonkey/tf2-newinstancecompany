@@ -22,7 +22,7 @@ public class ClientRender {
 
 	public static void renderAttackDirection(float attackdir) {
 		GlStateManager.pushMatrix();
-		Minecraft.getInstance().RenderSystem.setShaderTexture(0, ATTACK_DIR_ICON);
+		RenderSystem.setShaderTexture(0, ATTACK_DIR_ICON);
 		Vec3 forward = new Vec3(1, 0, 0).yRot((float) (attackdir - Math.PI * 0.5));
 		GlStateManager.translate((float) forward.x, Minecraft.getInstance().player.getEyeHeight(), (float) forward.z);
 		GlStateManager.scale(0.07f, 0.07f, 0.07f);

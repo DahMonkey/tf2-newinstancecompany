@@ -65,7 +65,7 @@ public class EntityAIAirblast extends Goal {
 				ItemStack stack = ((LivingEntity) entity).getMainHandItem();
 				hasmelee = stack.getItem() instanceof ItemMeleeWeapon || (!(stack.getItem() instanceof ItemWeapon)
 						&& stack.getAttributeModifiers(EquipmentSlot.MAINHAND)
-								.containsKey(Attributes.ATTACK_DAMAGE.getName()));
+								.containsKey(Attributes.ATTACK_DAMAGE));
 			}
 			if (ItemAirblast.isPushable(host, entity)
 					&& (hasmelee || entity instanceof ThrowableProjectile || entity instanceof Projectile)) {

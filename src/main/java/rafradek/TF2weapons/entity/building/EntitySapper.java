@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.item.ItemWrench;
@@ -50,7 +51,7 @@ public class EntitySapper extends EntityBuilding {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if ((source instanceof TF2DamageSource) && !((TF2DamageSource) source).getWeapon().isEmpty()
 				&& ((TF2DamageSource) source).getWeapon().getItem() instanceof ItemWrench)
 			super.hurt(source, amount);
@@ -62,10 +63,9 @@ public class EntitySapper extends EntityBuilding {
 		super.defineSynchedData();
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(12D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityBuilding.createAttributes()
+				.add(Attributes.MAX_HEALTH, 12D);
 	}
 
 	@Override

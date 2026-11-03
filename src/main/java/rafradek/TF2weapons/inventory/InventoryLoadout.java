@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.item.ItemFromData;
 import rafradek.TF2weapons.message.TF2Message;
@@ -31,10 +32,10 @@ public class InventoryLoadout extends ItemStackHandler {
 			living.getAttributes()
 					.removeAttributeModifiers(old.getAttributeModifiers(old.getItem().getEquipmentSlot(old)));
 		if (!stack.isEmpty()) {
-			Multimap<String, AttributeModifier> modifiers = stack
+			Multimap<Attribute, AttributeModifier> modifiers = stack
 					.getAttributeModifiers(stack.getItem().getEquipmentSlot(stack));
-			modifiers.removeAll(Attributes.ARMOR.getName());
-			modifiers.removeAll(Attributes.ARMOR_TOUGHNESS.getName());
+			modifiers.removeAll(Attributes.ARMOR);
+			modifiers.removeAll(Attributes.ARMOR_TOUGHNESS);
 			living.getAttributes().applyAttributeModifiers(modifiers);
 		}
 	}

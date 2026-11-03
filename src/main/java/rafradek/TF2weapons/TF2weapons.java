@@ -1,5 +1,6 @@
 package rafradek.TF2weapons;
 
+import net.minecraft.world.level.GameRules;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -296,6 +297,9 @@ public class TF2weapons {
 	public static byte[] itemDataCompressed;
 
 	public static final ResourceLocation cratesOpened = TF2Achievements.CRATES_OPENED;
+	public static BannerPattern redPattern, bluPattern, neutralPattern, fastSpawn;
+	public static final GameRules.Key<GameRules.BooleanValue> DO_TF2_AI = GameRules.register("doTF2AI",
+			GameRules.Category.MOBS, GameRules.BooleanValue.create(true));
 	public static final ResourceLocation robotsKilled = TF2Achievements.ROBOTS_KILLED;
 	public static MinecraftServer server;
 	public static EntityDummy dummyEnt;
@@ -581,10 +585,10 @@ public class TF2weapons {
 				helper.register(stat, stat);
 		});
 		event.register(Registry.BANNER_PATTERN_REGISTRY, helper -> {
-			helper.register(id("red_base"), new BannerPattern("rb"));
-			helper.register(id("blu_base"), new BannerPattern("bb"));
-			helper.register(id("neutral_base"), new BannerPattern("nb"));
-			helper.register(id("fast_spawn"), new BannerPattern("fs"));
+			helper.register(id("red_base"), redPattern = new BannerPattern("rb"));
+			helper.register(id("blu_base"), bluPattern = new BannerPattern("bb"));
+			helper.register(id("neutral_base"), neutralPattern = new BannerPattern("nb"));
+			helper.register(id("fast_spawn"), fastSpawn = new BannerPattern("fs"));
 		});
 	}
 
@@ -860,9 +864,15 @@ public class TF2weapons {
 	}
 
 	private void entityAttributes(EntityAttributeCreationEvent event) {
-		for (EntityType<? extends EntityTF2Character> type : List.of(HEAVY, SCOUT, SNIPER, SOLDIER, PYRO, DEMOMAN,
-				MEDIC, SPY, ENGINEER))
-			event.put(type, EntityTF2Character.createAttributes().build());
+		event.put(HEAVY, EntityHeavy.createAttributes().build());
+		event.put(SCOUT, EntityScout.createAttributes().build());
+		event.put(SNIPER, EntitySniper.createAttributes().build());
+		event.put(SOLDIER, EntitySoldier.createAttributes().build());
+		event.put(PYRO, EntityPyro.createAttributes().build());
+		event.put(DEMOMAN, EntityDemoman.createAttributes().build());
+		event.put(MEDIC, EntityMedic.createAttributes().build());
+		event.put(SPY, EntitySpy.createAttributes().build());
+		event.put(ENGINEER, EntityEngineer.createAttributes().build());
 		event.put(SENTRY, EntitySentry.createAttributes().build());
 		event.put(DISPENSER, EntityDispenser.createAttributes().build());
 		event.put(TELEPORTER, EntityTeleporter.createAttributes().build());
@@ -870,7 +880,7 @@ public class TF2weapons {
 		event.put(MONOCULUS, EntityMonoculus.createAttributes().build());
 		event.put(HHH, EntityHHH.createAttributes().build());
 		event.put(MERASMUS, EntityMerasmus.createAttributes().build());
-		event.put(TARGET, ArmorStand.createLivingAttributes().build());
+		event.put(TARGET, EntityTarget.createAttributes().build());
 		event.put(DUMMY, Mob.createMobAttributes().build());
 	}
 

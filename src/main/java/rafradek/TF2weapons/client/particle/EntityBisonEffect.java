@@ -20,8 +20,8 @@ public class EntityBisonEffect extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		if (age < 5) quadSize += 0.2F;
 		else quadSize -=0.12F;
 	}

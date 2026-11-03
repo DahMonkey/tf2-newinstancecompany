@@ -88,7 +88,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (!isEntityInvulnerable(source) && source.getDirectEntity() instanceof Player) {
 			if (data != null) spawnAtLocation(ItemStatue.getStatue(this), 0);
 			discard();
@@ -98,7 +98,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		if (isOnGround()) {
 			setDeltaMovement(getDeltaMovement().x * (0.1), getDeltaMovement().y, getDeltaMovement().z);
 			setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z * (0.1));

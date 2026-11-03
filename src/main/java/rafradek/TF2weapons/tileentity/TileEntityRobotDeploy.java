@@ -172,7 +172,7 @@ public class TileEntityRobotDeploy extends BlockEntity implements BlockEntityTic
 					entity.robotStrength = 1f;
 					entity.setSharing(true);
 					entity.setOwnerID(this.ownerName, this.owner);
-					entity.onInitialSpawn(this.level.getCurrentDifficultyAt(frontpos), data);
+					TF2Util.initialSpawn(entity, this.level.getCurrentDifficultyAt(frontpos), data);
 					entity.playLivingSound();
 					for (int i = 0; i < entity.loadout.getSlots(); i++) {
 						entity.loadout.setStackInSlot(i, ItemStack.EMPTY);

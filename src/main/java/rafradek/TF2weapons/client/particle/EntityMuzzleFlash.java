@@ -32,8 +32,8 @@ public class EntityMuzzleFlash extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		this.quadSize *= 0.92f;
 		this.alpha *= 0.8f;
 		this.setPos();

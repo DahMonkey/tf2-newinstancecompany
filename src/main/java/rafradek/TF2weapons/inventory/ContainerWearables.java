@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.Container;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.TF2PlayerCapability;
@@ -109,7 +110,7 @@ public class ContainerWearables extends LegacyContainer {
 						}
 
 						if (!this.getStack().isEmpty()) {
-							Multimap<String, AttributeModifier> modifiers = this.getStack()
+							Multimap<Attribute, AttributeModifier> modifiers = this.getStack()
 									.getAttributeModifiers(EquipmentSlot.HEAD);
 							ContainerWearables.this.player.getAttributes().applyAttributeModifiers(modifiers);
 							TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[l] = modifiers;
@@ -170,10 +171,10 @@ public class ContainerWearables extends LegacyContainer {
 					}
 
 					if (!this.getStack().isEmpty()) {
-						Multimap<String, AttributeModifier> modifiers = this.getStack()
+						Multimap<Attribute, AttributeModifier> modifiers = this.getStack()
 								.getAttributeModifiers(EquipmentSlot.CHEST);
-						modifiers.removeAll(Attributes.ARMOR.getName());
-						modifiers.removeAll(Attributes.ARMOR_TOUGHNESS.getName());
+						modifiers.removeAll(Attributes.ARMOR);
+						modifiers.removeAll(Attributes.ARMOR_TOUGHNESS);
 						ContainerWearables.this.player.getAttributes().applyAttributeModifiers(modifiers);
 						TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[2] = modifiers;
 					}

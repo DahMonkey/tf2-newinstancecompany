@@ -681,11 +681,11 @@ public class TF2EventsClient {
 					line1 = "You have a new contract";
 					line2 = "Contracts can be accessed in the pause menu";
 				}
-				gui.getFontRenderer().drawString(line1,
-						event.getResolution().getScaledWidth() - gui.getFontRenderer().width(line1), 50,
+				Minecraft.getInstance().font.drawString(line1,
+						event.getResolution().getScaledWidth() - Minecraft.getInstance().font.width(line1), 50,
 						0xFFFFFF);
-				gui.getFontRenderer().drawString(line2,
-						event.getResolution().getScaledWidth() - gui.getFontRenderer().width(line2), 65,
+				Minecraft.getInstance().font.drawString(line2,
+						event.getResolution().getScaledWidth() - Minecraft.getInstance().font.width(line2), 65,
 						0xFFFFFF);
 			}
 			if (ClientProxy.reload.isDown()) {
@@ -693,7 +693,7 @@ public class TF2EventsClient {
 				int commands = 5;
 				for (int i = 0; i < commands; i++) {
 					String line = I18n.get("gui.command." + (i + 1));
-					gui.getFontRenderer().drawString(line, 5,
+					Minecraft.getInstance().font.drawString(line, 5,
 							(event.getResolution().getScaledHeight() - commands * 15) / 2 + i * 15, 0xFFFFFF);
 				}
 			}
@@ -710,7 +710,7 @@ public class TF2EventsClient {
 						GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE,
 						GlStateManager.DestFactor.ZERO);
 				ClientProxy.setColor(TF2Util.getTeamColor(player), 1f, 0, 0f, 1f);
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.VIGNETTE);
+				RenderSystem.setShaderTexture(0, ClientProxy.VIGNETTE);
 				BufferBuilder BufferBuilder = tessellator.getBuffer();
 				BufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 				BufferBuilder.pos(0.0D, event.getResolution().getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
@@ -740,7 +740,7 @@ public class TF2EventsClient {
 					toUse = ((ItemBackpack) backpack.getItem()).getBackpackItemToUse(backpack, player);
 				}
 
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.WIDGETS_TEXTURE_MC);
+				RenderSystem.setShaderTexture(0, ClientProxy.WIDGETS_TEXTURE_MC);
 				int mid = width / 2;
 
 				Minecraft.getInstance().gui.drawTexturedModalRect(mid + 91 + 29, height - 23, 24, 22, 29, 24);
@@ -775,7 +775,7 @@ public class TF2EventsClient {
 					TF2EventsCommon.sentryView.setHealth(0);
 
 				GlStateManager.translate(4, 4, 0);
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
+				RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
 				TF2EventsCommon.sentryView.renderGUI(renderer, tessellator, player, width, height,
 						Minecraft.getInstance().gui);
 
@@ -786,7 +786,7 @@ public class TF2EventsClient {
 				}
 
 				GlStateManager.translate(0, 68, 0);
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
+				RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
 				TF2EventsCommon.dispenserView.renderGUI(renderer, tessellator, player, width, height,
 						Minecraft.getInstance().gui);
 
@@ -796,7 +796,7 @@ public class TF2EventsClient {
 					TF2EventsCommon.teleporterAView.setHealth(0);
 
 				GlStateManager.translate(0, 52, 0);
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
+				RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
 				TF2EventsCommon.teleporterAView.renderGUI(renderer, tessellator, player, width, height,
 						Minecraft.getInstance().gui);
 
@@ -806,7 +806,7 @@ public class TF2EventsClient {
 					TF2EventsCommon.teleporterBView.setHealth(0);
 
 				GlStateManager.translate(0, 52, 0);
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
+				RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
 				TF2EventsCommon.teleporterBView.renderGUI(renderer, tessellator, player, width, height,
 						Minecraft.getInstance().gui);
 				GlStateManager.popMatrix();
@@ -818,7 +818,7 @@ public class TF2EventsClient {
 			}
 			if (!held.isEmpty() && held.getItem() instanceof IItemOverlay) {
 				if (((IItemOverlay) held.getItem()).showInfoBox(held, player)) {
-					Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
+					RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
 
 					// GL11.glDisable(GL11.GL_DEPTH_TEST);
 					// GL11.glDepthMask(false);
@@ -850,9 +850,9 @@ public class TF2EventsClient {
 							event.getResolution().getScaledHeight() - 52, 0.0D).tex(0.5D, 0.53125D).endVertex();
 					tessellator.draw();
 					String[] text = ((IItemOverlay) held.getItem()).getInfoBoxLines(held, player);
-					gui.drawString(gui.getFontRenderer(), text[0], event.getResolution().getScaledWidth() - 66,
+					gui.drawString(Minecraft.getInstance().font, text[0], event.getResolution().getScaledWidth() - 66,
 							event.getResolution().getScaledHeight() - 48, 16777215);
-					gui.drawString(gui.getFontRenderer(), text[1], event.getResolution().getScaledWidth() - 66,
+					gui.drawString(Minecraft.getInstance().font, text[1], event.getResolution().getScaledWidth() - 66,
 							event.getResolution().getScaledHeight() - 30, 16777215);
 					// GL11.glDepthMask(true);
 					// GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -867,7 +867,7 @@ public class TF2EventsClient {
 				// GL11.glDepthMask(false);
 				// OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				// GL11.glDisable(GL11.GL_ALPHA_TEST);
-				gui.drawCenteredString(gui.getFontRenderer(), I18n.get("gui.markedit"),
+				gui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.markedit"),
 						event.getResolution().getScaledWidth() / 2, event.getResolution().getScaledHeight() / 4,
 						16777215);
 				// GL11.glDepthMask(true);
@@ -879,7 +879,7 @@ public class TF2EventsClient {
 				// GL11.glDepthMask(false);
 				// OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				// GL11.glDisable(GL11.GL_ALPHA_TEST);
-				gui.drawCenteredString(gui.getFontRenderer(), I18n.get("gui.bombmrs"),
+				gui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.bombmrs"),
 						event.getResolution().getScaledWidth() / 2, event.getResolution().getScaledHeight() / 4,
 						16777215);
 				// GL11.glDepthMask(true);
@@ -895,7 +895,7 @@ public class TF2EventsClient {
 			if (healTarget != null && healTarget instanceof LivingEntity) {
 				LivingEntity living = (LivingEntity) healTarget;
 
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
+				RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
 				// GL11.glDisable(GL11.GL_DEPTH_TEST);
 				// GL11.glDepthMask(false);
 				// OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -978,9 +978,9 @@ public class TF2EventsClient {
 						.tex(0.0D, 0.59375D - 0.28125D * health).endVertex();
 				tessellator.draw();
 
-				gui.getFontRenderer().drawString(Integer.toString(tf2health),
+				Minecraft.getInstance().font.drawString(Integer.toString(tf2health),
 						event.getResolution().getScaledWidth() / 2 - 47
-								- gui.getFontRenderer().width(Integer.toString(tf2health)) / 2,
+								- Minecraft.getInstance().font.width(Integer.toString(tf2health)) / 2,
 						event.getResolution().getScaledHeight() / 2 + 52, 0x101010);
 				String text = "";
 				if (player.level.getEntity(cap.getHealTarget()) != null) {
@@ -989,9 +989,9 @@ public class TF2EventsClient {
 						&& WeaponsCapability.get(living) != null) {
 					text = "Ubercharge: " + Math.round(WeaponsCapability.get(living).getUberView() * 100f) + "%";
 				}
-				gui.drawString(gui.getFontRenderer(), text, event.getResolution().getScaledWidth() / 2 - 28,
+				gui.drawString(Minecraft.getInstance().font, text, event.getResolution().getScaledWidth() / 2 - 28,
 						event.getResolution().getScaledHeight() / 2 + 42, 16777215);
-				gui.drawString(gui.getFontRenderer(), living.getHoverName().getString(),
+				gui.drawString(Minecraft.getInstance().font, living.getHoverName().getString(),
 						event.getResolution().getScaledWidth() / 2 - 28,
 						event.getResolution().getScaledHeight() / 2 + 54, 16777215);
 
@@ -1004,7 +1004,7 @@ public class TF2EventsClient {
 
 			if (mouseTarget != null && mouseTarget instanceof EntityBuilding
 					&& TF2Util.isAlliedTo(player, mouseTarget)) {
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
+				RenderSystem.setShaderTexture(0, ClientProxy.buildingTexture);
 				// GL11.glDisable(GL11.GL_DEPTH_TEST);
 				// GL11.glDepthMask(false);
 				// OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -1046,7 +1046,7 @@ public class TF2EventsClient {
 							* event.getPartialRenderTick(),
 					1.0F, 0.0F, 0.0F);
 			GL11.glScalef(1.1f, 1.1f, 1.1f);
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, RenderGrenade.TEXTURE_BOMB);
+			RenderSystem.setShaderTexture(0, RenderGrenade.TEXTURE_BOMB);
 			modelBomb.render(event.getEntity(), 0F, 0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 		}
@@ -1318,7 +1318,7 @@ public class TF2EventsClient {
 			GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.enableBlend();
 			GlStateManager.disableLighting();
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.circleTexture);
+			RenderSystem.setShaderTexture(0, ClientProxy.circleTexture);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferbuilder = tessellator.getBuffer();
 			float size = (event.getEntity().tickCount % 20) / 20f;
@@ -1548,7 +1548,7 @@ public class TF2EventsClient {
 					|| (explosive != null && explosive.getAmplifier() > 0) || (fire != null && fire.getAmplifier() > 0);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(event.getX(), event.getY() + event.getEntity().getBbHeight() + 0.5, event.getZ());
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientRender.VAC_EFFECT);
+			RenderSystem.setShaderTexture(0, ClientRender.VAC_EFFECT);
 			if (bullet != null && (!hasShield || bullet.getAmplifier() > 0)) {
 				ClientRender.renderIconWorld(0f + offset, 0f, 0.125f + offset, 1f, 0.6f, 0.6f);
 			}
@@ -1561,7 +1561,7 @@ public class TF2EventsClient {
 			GlStateManager.popMatrix();
 			if (hasShield) {
 				GlStateManager.pushMatrix();
-				Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientRender.VAC_SHIELD);
+				RenderSystem.setShaderTexture(0, ClientRender.VAC_SHIELD);
 				GlStateManager.translate(event.getX(), event.getY(), event.getZ());
 				ClientProxy.setColor(TF2Util.getTeamColor(event.getEntity()), 1f, 0.2f, 0f, 1f);
 				double width = event.getEntity().getBbWidth() * 0.5 + 0.25;

@@ -54,7 +54,7 @@ public class EntityGrapplingHook extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		if (this.tickCount > this.getMaxTime() || (!this.level.isClientSide && this.sticked
 				&& (stickedBlock == null || this.level.isEmptyBlock(stickedBlock))
 				&& (this.stickedEntity == null || !this.stickedEntity.isAlive()))) {
@@ -67,7 +67,7 @@ public class EntityGrapplingHook extends EntityProjectileSimple {
 			this.setPos(relativeX + this.stickedEntity.getX(), relativeY + this.stickedEntity.getY(),
 					relativeZ + this.stickedEntity.getZ());
 		} else if (!this.sticked)
-			super.onUpdate();
+			super.tick();
 	}
 
 	@Override

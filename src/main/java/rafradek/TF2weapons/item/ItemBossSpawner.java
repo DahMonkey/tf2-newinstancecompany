@@ -107,7 +107,7 @@ public class ItemBossSpawner extends LegacyItem {
 		}
 		if (boss != null) {
 			boss.moveTo(pos.getX() + 0.5D, pos.getY() + 0.05D, pos.getZ() + 0.5D, 0.0F, 0.0F);
-			boss.onInitialSpawn(world.getCurrentDifficultyAt(pos), null);
+			TF2Util.initialSpawn(boss, world.getCurrentDifficultyAt(pos), null);
 			boss.summoned = true;
 			world.addFreshEntity(boss);
 			stack.shrink(1);

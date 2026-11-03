@@ -153,13 +153,13 @@ public class EntityAISetup extends Goal {
 		ItemStack pda = this.engineer.loadout.getStackInSlot(3);
 		if (building instanceof EntitySentry) {
 			TF2Util.addModifierSafe(building, Attributes.FOLLOW_RANGE, new AttributeModifier(
-					"upgraderange", TF2Attribute.getModifier("Sentry Range", pda, 1f, engineer) - 1f, 2), true);
+					"upgraderange", TF2Attribute.getModifier("Sentry Range", pda, 1f, engineer) - 1f, AttributeModifier.Operation.fromValue(2)), true);
 			((EntitySentry) building).attackRateMult = TF2Attribute.getModifier("Sentry Fire Rate", pda, 1, engineer);
 			((EntitySentry) building).setHeat((int) TF2Attribute.getModifier("Piercing", pda, 0, engineer));
 		}
 		TF2Util.addModifierSafe(building, Attributes.MAX_HEALTH,
 				new AttributeModifier(EntityBuilding.UPGRADE_HEALTH_UUID, "upgradehealth",
-						TF2Attribute.getModifier("Building Health", pda, 1f, engineer) - 1f, 2),
+						TF2Attribute.getModifier("Building Health", pda, 1f, engineer) - 1f, AttributeModifier.Operation.fromValue(2)),
 				true);
 		if (building instanceof EntityDispenser) {
 			((EntityDispenser) building).setRange(TF2Attribute.getModifier("Dispenser Range", pda, 1, engineer));

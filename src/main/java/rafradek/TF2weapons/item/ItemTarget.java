@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.EntityTarget;
 import java.util.List;

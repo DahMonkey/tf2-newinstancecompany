@@ -37,7 +37,7 @@ import net.minecraft.world.level.Level;
 
 public class ItemSniperRifle extends ItemBulletWeapon {
 	public static UUID slowdownUUID = UUID.fromString("12843092-A5D6-BBCD-3D4F-A3DD4D8C65A9");
-	public static AttributeModifier slowdown = new AttributeModifier(slowdownUUID, "sniper slowdown", -0.73D, 2);
+	public static AttributeModifier slowdown = new AttributeModifier(slowdownUUID, "sniper slowdown", -0.73D, AttributeModifier.Operation.fromValue(2));
 
 	@Override
 	public boolean canAltFire(Level worldObj, LivingEntity player, ItemStack item) {
@@ -268,7 +268,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			// gui.drawTexturedModalRect(x,
 			// y, textureSprite, widthIn, heightIn);
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.scopeTexture);
+			RenderSystem.setShaderTexture(0, ClientProxy.scopeTexture);
 			double widthDrawStart = (double) (resolution.getScaledWidth() - resolution.getScaledHeight()) / 2;
 			double widthDrawEnd = widthDrawStart + resolution.getScaledHeight();
 			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -277,7 +277,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			renderer.pos(widthDrawEnd, 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
 			renderer.pos(widthDrawStart, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
 			tessellator.draw();
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.blackTexture);
+			RenderSystem.setShaderTexture(0, ClientProxy.blackTexture);
 			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(0, resolution.getScaledHeight(), -90.0D).tex(0d, 1d).endVertex();
 			renderer.pos(widthDrawStart, resolution.getScaledHeight(), -90.0D).tex(1d, 1d).endVertex();
@@ -290,7 +290,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			renderer.pos(resolution.getScaledWidth(), 0.0D, -90.0D).tex(1d, 0d).endVertex();
 			renderer.pos(widthDrawEnd, 0.0D, -90.0D).tex(0d, 0d).endVertex();
 			tessellator.draw();
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.chargeTexture);
+			RenderSystem.setShaderTexture(0, ClientProxy.chargeTexture);
 			GlStateManager.color(0.5F, 0.5F, 0.5F, 0.7F);
 			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos((double) resolution.getScaledWidth() / 2 + 50, (double) resolution.getScaledHeight() / 2 + 15,

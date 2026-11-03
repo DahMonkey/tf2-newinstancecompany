@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -70,7 +71,7 @@ public class EntityPyro extends EntityTF2Character {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (source == DamageSource.ON_FIRE)
 			return false;
 		return super.hurt(source, amount);
@@ -127,14 +128,13 @@ public class EntityPyro extends EntityTF2Character {
 		super.aiStep();
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(35.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(17.5D);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.15D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.1329D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6.0D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Character.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 35.0D)
+				.add(Attributes.MAX_HEALTH, 17.5D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.15D)
+				.add(Attributes.MOVEMENT_SPEED, 0.1329D)
+				.add(Attributes.ATTACK_DAMAGE, 6.0D);
 	}
 
 	/*

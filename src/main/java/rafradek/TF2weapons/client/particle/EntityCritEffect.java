@@ -20,8 +20,8 @@ public class EntityCritEffect extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		this.quadSize -= 0.05F;
 	}
 

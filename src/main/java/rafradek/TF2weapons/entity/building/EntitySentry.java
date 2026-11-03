@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.client.Minecraft;
 import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
@@ -84,7 +87,7 @@ public class EntitySentry extends EntityBuilding {
 			EntityDataSerializers.INT);
 
 	private static final AttributeModifier MINI_HEALTH_MODIFIER = new AttributeModifier(
-			UUID.fromString("1184831d-b1dc-40c8-86e6-34fa8f5abada"), "minisentry", -6, 0);
+			UUID.fromString("1184831d-b1dc-40c8-86e6-34fa8f5abada"), "minisentry", -6, AttributeModifier.Operation.fromValue(0));
 
 	public EntitySentry(Level world) {
 		this(TF2weapons.SENTRY, world);
@@ -122,7 +125,7 @@ public class EntitySentry extends EntityBuilding {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (this.isControlled())
 			amount *= 0.5f;
 		return super.hurt(source, amount);
@@ -156,16 +159,16 @@ public class EntitySentry extends EntityBuilding {
 
 		// this.targetTasks.addTask(1, new EntityAISentryOwnerHurt(this, true));
 		this.targetSelector.addGoal(2, new EntityAISpotTarget<>(this, LivingEntity.class, true, true,
-				target -> (((((getAttackFlags() & 2) == 2 && getOwnerId() != null) && target instanceof Player)
+				target -> (((((getAttackFlags() & 2) == 2 && getOwnerUUID() != null) && target instanceof Player)
 						|| target.getTeam() != null
 						|| ((getAttackFlags() & 1) == 1 && (getRevengeTarget() == target
 								|| (getOwner() != null && (getOwner().getLastHurtByMob() == target
 										|| getOwner().getLastHurtMob() == target))))
-						|| ((getAttackFlags() & 4) == 4 && TF2Util.isHostile(target) && getOwnerId() != null)
+						|| ((getAttackFlags() & 4) == 4 && TF2Util.isHostile(target) && getOwnerUUID() != null)
 						|| ((getAttackFlags() & 4) == 4 && target instanceof Mob
 								&& TF2Util.isAlliedTo(EntitySentry.this, ((Mob) target).getTarget())))
 						|| ((getAttackFlags() & 8) == 8 && !(target instanceof Player)
-								&& !(TF2Util.isHostile(target)) && getOwnerId() != null))
+								&& !(TF2Util.isHostile(target)) && getOwnerUUID() != null))
 						&& (!TF2Util.isAlliedTo(EntitySentry.this, target))
 						&& (!(target instanceof EntityTF2Character && TF2ConfigVars.naturalCheck.equals("Never"))
 								|| !((EntityTF2Character) target).natural),
@@ -206,12 +209,11 @@ public class EntitySentry extends EntityBuilding {
 		return hand == InteractionHand.MAIN_HAND ? sentryRocket : (this.isHeat() ? sentryHeat : sentryBullet);
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(20.0D);
-		// this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValu(1.6D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityBuilding.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 20.0D);
 	}
+	/* TODO port: // this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValu(1.6D) */
 
 	@Override
 	protected void defineSynchedData() {
@@ -577,7 +579,7 @@ public class EntitySentry extends EntityBuilding {
 	}
 
 	@Override
-	public boolean processInteract(Player player, InteractionHand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (player == this.getOwner() && hand == InteractionHand.MAIN_HAND) {
 			if (!this.level.isClientSide) {
 				if (TF2ConfigVars.disableBuildingGui)
@@ -585,9 +587,9 @@ public class EntitySentry extends EntityBuilding {
 				else
 					FMLNetworkHandler.openGui(player, TF2weapons.instance, 5, world, this.getId(), 0, 0);
 			}
-			return true;
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}
-		return true;
+		return InteractionResult.sidedSuccess(this.level.isClientSide);
 	}
 
 	@Override
@@ -596,8 +598,8 @@ public class EntitySentry extends EntityBuilding {
 	}
 
 	@Override
-	public void onDeath(DamageSource s) {
-		super.onDeath(s);
+	public void die(DamageSource s) {
+		super.die(s);
 	}
 
 	@Override
@@ -651,7 +653,7 @@ public class EntitySentry extends EntityBuilding {
 		renderer.pos(50, 2, 0.0D).tex(0.9375D, imagePos).endVertex();
 		tessellator.draw();
 
-		gui.drawString(gui.getFontRenderer(), Integer.toString(this.getKills()), 85, 9, 16777215);
+		gui.drawString(Minecraft.getInstance().font, Integer.toString(this.getKills()), 85, 9, 16777215);
 		float health = this.getHealth() / this.getMaxHealth();
 		if (health > 0.33f) {
 			GlStateManager.color(0.9F, 0.9F, 0.9F, 1F);

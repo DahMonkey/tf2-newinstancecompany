@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
@@ -130,14 +131,13 @@ public class EntityMedic extends EntityTF2Character {
 		return TF2weapons.lootMedic;
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(30.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(15D);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.1D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.14111D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6.0D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Character.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 30.0D)
+				.add(Attributes.MAX_HEALTH, 15D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.1D)
+				.add(Attributes.MOVEMENT_SPEED, 0.14111D)
+				.add(Attributes.ATTACK_DAMAGE, 6.0D);
 	}
 
 	@Override

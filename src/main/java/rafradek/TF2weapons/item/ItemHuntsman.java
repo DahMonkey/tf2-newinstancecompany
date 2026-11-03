@@ -31,7 +31,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ItemHuntsman extends ItemProjectileWeapon {
 
 	public static UUID slowdownUUID = UUID.fromString("12843092-A5D6-BBCD-3D4F-A3DD4ABC65A9");
-	public static AttributeModifier slowdown = new AttributeModifier(slowdownUUID, "sniper slowdown", -0.51D, 2);
+	public static AttributeModifier slowdown = new AttributeModifier(slowdownUUID, "sniper slowdown", -0.51D, AttributeModifier.Operation.fromValue(2));
 
 	public ItemHuntsman() {
 		super();

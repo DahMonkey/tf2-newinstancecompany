@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.Container;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.message.IMessage;
@@ -729,7 +730,7 @@ public class TF2Util {
 		BlockState state = world.getBlockState(pos);
 		Block block = state.getBlock();
 		if (block.isAir(state, world, pos) || TF2ConfigVars.destTerrain == 0 || state.getDestroySpeed(world, pos) < 0
-				|| (!(living instanceof Player) && !world.getGameRules().getBoolean("mobGriefing"))
+				|| (!(living instanceof Player) && !world.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING))
 				|| (living instanceof Player && !world.isBlockModifiable((Player) living, pos)))
 			return 0;
 
@@ -1349,8 +1350,7 @@ public class TF2Util {
 							mob.getAttribute(Attributes.FOLLOW_RANGE)
 							.addTransientModifier(new AttributeModifier(FOLLOW_MODIFIER, "Follow Check",
 									65 - mob.getAttribute(Attributes.FOLLOW_RANGE)
-									.getValue(),
-									0));
+									.getValue(), AttributeModifier.Operation.fromValue(0)));
 							mob.getPersistentData().putInt("TF2AM", (int) world.getGameTime());
 						}
 						// mob.getNavigator().tryMoveToEntityLiving(living, 1.1f);
@@ -1368,7 +1368,7 @@ public class TF2Util {
 
 	public static void addModifierSafe(LivingEntity living, Attribute attribute, AttributeModifier modifier,
 			boolean saved) {
-		living.getAttribute(attribute).removeModifier(modifier.getID());
+		living.getAttribute(attribute).removeModifier(modifier.getId());
 		living.getAttribute(attribute).addTransientModifier(modifier);
 		living.getAttribute(attribute).getValue();
 		if (!saved)
@@ -1925,5 +1925,21 @@ public class TF2Util {
 			if (name.equals(player.getGameProfile().getName()))
 				return player;
 		return null;
+	}
+
+	/** 1.12's onInitialSpawn(difficulty, data), for mobs spawned by the mod itself. */
+	public static net.minecraft.world.entity.SpawnGroupData initialSpawn(net.minecraft.world.entity.Mob mob,
+			net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.SpawnGroupData data) {
+		if (!(mob.level instanceof net.minecraft.server.level.ServerLevel))
+			return data;
+		return mob.finalizeSpawn((net.minecraft.server.level.ServerLevel) mob.level, difficulty,
+				net.minecraft.world.entity.MobSpawnType.EVENT, data, null);
+	}
+
+	/** 1.12's EntityItem.setThrower(name); null-safe for spawnAtLocation results. */
+	public static void setThrower(@javax.annotation.Nullable net.minecraft.world.entity.item.ItemEntity item,
+			@javax.annotation.Nullable java.util.UUID thrower) {
+		if (item != null && thrower != null)
+			item.setThrower(thrower);
 	}
 }

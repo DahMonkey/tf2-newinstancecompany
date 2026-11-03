@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.arena;
 
+import net.minecraft.world.level.GameRules;
 import rafradek.TF2weapons.NBTLiterals;
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
@@ -112,7 +113,7 @@ public class GameArena implements INBTSerializable<CompoundTag> {
 				}
 			}
 
-			boolean naturalRegen = this.level.getGameRules().getBoolean("naturalRegeneration");
+			boolean naturalRegen = this.level.getGameRules().getBoolean(GameRules.RULE_NATURAL_REGENERATION);
 
 			Iterator<Entry<UUID, Player>> itePly = playerUUID.entrySet().iterator();
 			while (itePly.hasNext()) {

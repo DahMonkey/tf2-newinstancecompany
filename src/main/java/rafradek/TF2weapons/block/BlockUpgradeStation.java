@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.block;
 
+import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2weapons;

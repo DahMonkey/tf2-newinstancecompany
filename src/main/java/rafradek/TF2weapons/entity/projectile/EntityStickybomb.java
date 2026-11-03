@@ -41,7 +41,7 @@ public class EntityStickybomb extends EntityProjectileBase {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float damage) {
+	public boolean hurt(DamageSource source, float damage) {
 		if (source.isExplosion() && !TF2Util.isAlliedTo(source.getEntity(), this.shootingEntity)) {
 			this.addStickCooldown();
 		}
@@ -87,8 +87,8 @@ public class EntityStickybomb extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		if (this.stickCooldown > 0) {
 			this.stickCooldown--;
 		}

@@ -90,8 +90,8 @@ public class EntityPickup extends Entity {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 
 		if (!this.level.isClientSide && this.isDisabled() && --this.rematerializeTime <= 0) {
 			this.entityData.set(DISABLED, false);

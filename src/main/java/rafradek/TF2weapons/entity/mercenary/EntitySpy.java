@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -231,14 +232,13 @@ public class EntitySpy extends EntityTF2Character {
 			this.spawnAtLocation(new ItemStack(TF2weapons.itemDisguiseKit), 0);
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(50.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(12.5D);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.1D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.14111D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Character.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 50.0D)
+				.add(Attributes.MAX_HEALTH, 12.5D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.1D)
+				.add(Attributes.MOVEMENT_SPEED, 0.14111D)
+				.add(Attributes.ATTACK_DAMAGE, 4.0D);
 	}
 
 	@Override

@@ -172,7 +172,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 					((EntitySentry) entity).attackRateMult = TF2Attribute.getModifier("Sentry Fire Rate", stack, 1,
 							player);
 					TF2Util.addModifierSafe(entity, Attributes.FOLLOW_RANGE, new AttributeModifier(
-							"upgraderange", TF2Attribute.getModifier("Sentry Range", stack, 1f, entity) - 1f, 2), true);
+							"upgraderange", TF2Attribute.getModifier("Sentry Range", stack, 1f, entity) - 1f, AttributeModifier.Operation.fromValue(2)), true);
 					((EntitySentry) entity).setHeat((int) TF2Attribute.getModifier("Piercing", stack, 0, player));
 					if (disposable || !TF2Util
 							.getFirstItem(player.getInventory(),
@@ -190,7 +190,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 				}
 				TF2Util.addModifierSafe(entity, Attributes.MAX_HEALTH,
 						new AttributeModifier(EntityBuilding.UPGRADE_HEALTH_UUID, "upgradehealth",
-								TF2Attribute.getModifier("Building Health", stack, 1f, entity) - 1f, 2),
+								TF2Attribute.getModifier("Building Health", stack, 1f, entity) - 1f, AttributeModifier.Operation.fromValue(2)),
 						true);
 				if (entity instanceof EntityDispenser) {
 					((EntityDispenser) entity).setRange(TF2Attribute.getModifier("Dispenser Range", stack, 1, entity));
@@ -254,7 +254,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			ScaledResolution resolution) {
 		if (!stack.hasTag() || (stack.getTag().getByte("Building") == 0)) {
 			TF2PlayerCapability plcap = TF2PlayerCapability.get(player);
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.blueprintTexture);
+			RenderSystem.setShaderTexture(0, ClientProxy.blueprintTexture);
 
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 			GuiComponent gui = Minecraft.getInstance().gui;
@@ -269,8 +269,8 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 					gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 132 + i * 72,
 							resolution.getScaledHeight() / 2 + 12, 208, 64 + i * 48, 48, 48);
 				} else if (WeaponsCapability.get(player).getMetal() >= cost) {
-					// gui.drawString(gui.getFontRenderer(),
-					// gui.getFontRenderer().getStringWidth(Integer.toString(cost));
+					// gui.drawString(Minecraft.getInstance().font,
+					// Minecraft.getInstance().font.getStringWidth(Integer.toString(cost));
 					gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
 							resolution.getScaledHeight() / 2, i == 4 ? 0 : i * 64, 0, 64, 64);
 				}
@@ -283,19 +283,19 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			for (int i = 0; i < buildCount; i++) {
 				int cost = EntityBuilding.getCost(i,
 						TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
-				gui.drawString(gui.getFontRenderer(), Integer.toString(cost),
+				gui.drawString(Minecraft.getInstance().font, Integer.toString(cost),
 						resolution.getScaledWidth() / 2 - 72
-								- gui.getFontRenderer().width(Integer.toString(cost)) + i * 72,
+								- Minecraft.getInstance().font.width(Integer.toString(cost)) + i * 72,
 						resolution.getScaledHeight() / 2 - 8, 0xFFFFFFFF);
-				gui.drawCenteredString(gui.getFontRenderer(), "[" + (i + 1) + "]",
+				gui.drawCenteredString(Minecraft.getInstance().font, "[" + (i + 1) + "]",
 						resolution.getScaledWidth() / 2 - 108 + i * 72, resolution.getScaledHeight() / 2 + 72,
 						0xFFFFFFFF);
-				gui.drawString(gui.getFontRenderer(), I18n.get(GUI_BUILD_NAMES[i]),
+				gui.drawString(Minecraft.getInstance().font, I18n.get(GUI_BUILD_NAMES[i]),
 						resolution.getScaledWidth() / 2 - 140 + i * 72, resolution.getScaledHeight() / 2 - 18,
 						0xFFFFFFFF);
 				if (WeaponsCapability.get(player).getMetal() < cost
 						&& !(hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).getSize() != 0)) {
-					gui.getFontRenderer().drawSplitString(I18n.get("gui.build.nometal"),
+					Minecraft.getInstance().font.drawSplitString(I18n.get("gui.build.nometal"),
 							resolution.getScaledWidth() / 2 - 140 + i * 72, resolution.getScaledHeight() / 2 + 20, 80,
 							0xFFF00F0F);
 				}
@@ -309,26 +309,26 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			 * gui.drawTexturedModalRect(resolution.getScaledWidth()/2+72,
 			 * resolution.getScaledHeight()/2-32, 192, 0, 64, 64);
 			 * 
-			 * gui.drawCenteredString(gui.getFontRenderer(), "[2]",
+			 * gui.drawCenteredString(Minecraft.getInstance().font, "[2]",
 			 * resolution.getScaledWidth()/2-36, resolution.getScaledHeight()/2+40,
-			 * 0xFFFFFFFF); gui.drawCenteredString(gui.getFontRenderer(), "[3]",
+			 * 0xFFFFFFFF); gui.drawCenteredString(Minecraft.getInstance().font, "[3]",
 			 * resolution.getScaledWidth()/2+36, resolution.getScaledHeight()/2+40,
-			 * 0xFFFFFFFF); gui.drawCenteredString(gui.getFontRenderer(), "[4]",
+			 * 0xFFFFFFFF); gui.drawCenteredString(Minecraft.getInstance().font, "[4]",
 			 * resolution.getScaledWidth()/2+108, resolution.getScaledHeight()/2+40,
-			 * 0xFFFFFFFF); gui.drawCenteredString(gui.getFontRenderer(),
+			 * 0xFFFFFFFF); gui.drawCenteredString(Minecraft.getInstance().font,
 			 * I18n.format("gui.build.sentry"), resolution.getScaledWidth()/2-108,
 			 * resolution.getScaledHeight()/2-40, 0xFFFFFFFF);
-			 * gui.drawCenteredString(gui.getFontRenderer(),
+			 * gui.drawCenteredString(Minecraft.getInstance().font,
 			 * I18n.format("gui.build.dispenser"), resolution.getScaledWidth()/2-36,
 			 * resolution.getScaledHeight()/2-40, 0xFFFFFFFF);
-			 * gui.drawCenteredString(gui.getFontRenderer(),
+			 * gui.drawCenteredString(Minecraft.getInstance().font,
 			 * I18n.format("gui.build.entrance"), resolution.getScaledWidth()/2+36,
 			 * resolution.getScaledHeight()/2-40, 0xFFFFFFFF);
-			 * gui.drawCenteredString(gui.getFontRenderer(), I18n.format("gui.build.exit"),
+			 * gui.drawCenteredString(Minecraft.getInstance().font, I18n.format("gui.build.exit"),
 			 * resolution.getScaledWidth()/2+108, resolution.getScaledHeight()/2-40,
 			 * 0xFFFFFFFF);
 			 */
-			gui.drawCenteredString(gui.getFontRenderer(), I18n.get("gui.build"), resolution.getScaledWidth() / 2,
+			gui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.build"), resolution.getScaledWidth() / 2,
 					resolution.getScaledHeight() / 2 - 40, 0xFFFFFFFF);
 
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

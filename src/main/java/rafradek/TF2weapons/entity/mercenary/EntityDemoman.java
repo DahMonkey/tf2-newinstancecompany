@@ -1,5 +1,10 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.nbt.CompoundTag;
+import javax.annotation.Nullable;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -121,27 +126,25 @@ public class EntityDemoman extends EntityTF2Character {
 		return new float[] { 0.065f, 0.065f, 0.11f };
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(35.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(17.5D);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.15D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.12347D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6.0D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Character.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 35.0D)
+				.add(Attributes.MAX_HEALTH, 17.5D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.15D)
+				.add(Attributes.MOVEMENT_SPEED, 0.12347D)
+				.add(Attributes.ATTACK_DAMAGE, 6.0D);
 	}
 
 	@Override
-	public SpawnGroupData onInitialSpawn(DifficultyInstance p_180482_1_, SpawnGroupData data) {
-		data = super.onInitialSpawn(p_180482_1_, data);
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance p_180482_1_, MobSpawnType spawnReason, @Nullable SpawnGroupData data, @Nullable CompoundTag spawnTag) {
+		data = super.finalizeSpawn(levelAccessor, p_180482_1_, spawnReason, data, spawnTag);
 		if (!this.loadout.getStackInSlot(1).isEmpty()
 				&& this.loadout.getStackInSlot(1).getItem() instanceof ItemChargingTarge) {
 			this.getAttribute(Attributes.MAX_HEALTH)
-					.addTransientModifier(new AttributeModifier("ShieldHP", 3, 0));
+					.addTransientModifier(new AttributeModifier("ShieldHP", 3, AttributeModifier.Operation.fromValue(0)));
 			this.heal(3);
 			this.getAttribute(Attributes.MOVEMENT_SPEED)
-					.addTransientModifier(new AttributeModifier("ShieldMove", 0.02, 2));
+					.addTransientModifier(new AttributeModifier("ShieldMove", 0.02, AttributeModifier.Operation.fromValue(2)));
 		}
 		return data;
 	}

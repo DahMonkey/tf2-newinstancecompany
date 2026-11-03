@@ -235,7 +235,7 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 				data.noEquipment = team < 2 && spawner != null && spawner.isShiftKeyDown();
 				data.isGiant = team == 2 && spawner != null && spawner.isShiftKeyDown();
 				if (nbtdata == null)
-					entityliving.onInitialSpawn(par0World.getCurrentDifficultyAt(new BlockPos(entityliving)), data);
+					TF2Util.initialSpawn(entityliving, par0World.getCurrentDifficultyAt(new BlockPos(entityliving)), data);
 				entityliving.playLivingSound();
 				if (entity instanceof EntityBuilding)
 					((EntityBuilding) entity).setEntTeam(team);

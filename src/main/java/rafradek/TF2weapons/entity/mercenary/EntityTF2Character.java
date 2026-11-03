@@ -1,5 +1,10 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.*;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -99,7 +104,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	public EntityAINearestChecked<LivingEntity> findplayer = new EntityAINearestChecked<>(this,
 			LivingEntity.class, true, false, this::isValidTarget, true, false);
 	protected MeleeAttackGoal attackMeele = new MeleeAttackGoal(this, 1.1F, false);
-	public EntityAIWander wander;
+	public RandomStrollGoal wander;
 	// public int ammoLeft;
 	public boolean unlimitedAmmo;
 	public boolean natural;
@@ -117,25 +122,24 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	public int followTicks;
 	public MerchantOffers tradeOffers;
 	public double[] targetPrevPos = new double[9];
-	private static final EntityDataAccessor<Byte> VIS_TEAM = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> VIS_TEAM = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> DIFFICULTY = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> DIFFICULTY = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData
-			.createKey(EntityTF2Character.class, EntityDataSerializers.OPTIONAL_UUID);
-	private static final EntityDataAccessor<Byte> ORDER = SynchedEntityData.createKey(EntityTF2Character.class,
+	protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(EntityTF2Character.class, EntityDataSerializers.OPTIONAL_UUID);
+	private static final EntityDataAccessor<Byte> ORDER = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> MAIN_WEAPON = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> MAIN_WEAPON = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> ACTIVE_SLOT = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> ACTIVE_SLOT = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Boolean> SHARE = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Boolean> SHARE = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Byte> ROBOT = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> ROBOT = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> FRONT = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> FRONT = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> SIDE = SynchedEntityData.createKey(EntityTF2Character.class,
+	private static final EntityDataAccessor<Byte> SIDE = SynchedEntityData.defineId(EntityTF2Character.class,
 			EntityDataSerializers.BYTE);
 	public float rotation;
 	public int traderFollowTicks;
@@ -168,26 +172,27 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		super(type, p_i1738_1_);
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(1, new EntityAIMoveTowardsRestriction2(this, 1.25f));
-		this.goalSelector.addGoal(1, avoidSentry = new AvoidEntityGoal<EntitySentry>(this, EntitySentry.class, sentry -> {
+		this.goalSelector.addGoal(1, avoidSentry = new AvoidEntityGoal<EntitySentry>(this, EntitySentry.class, 25, 1.0, 1.0, living -> {
+			EntitySentry sentry = (EntitySentry) living;
 			double range = sentry.getAttribute(Attributes.FOLLOW_RANGE).getValue() + 1;
 			range *= range;
 			return !TF2Util.isAlliedTo(this, sentry) && !sentry.isDisabled() && sentry.distanceToSqr(this) < range;
-		}, 25, 1.0f, 1.0f) {
+		}) {
 			@Override
 			public boolean canContinueToUse() {
-				double range = closestLivingEntity.getAttribute(Attributes.FOLLOW_RANGE)
+				double range = toAvoid.getAttribute(Attributes.FOLLOW_RANGE)
 						.getValue() + 1;
 				range *= range;
-				return super.canContinueToUse() && !(this.closestLivingEntity == null
-						|| this.closestLivingEntity.distanceToSqr(EntityTF2Character.this) > range);
+				return super.canContinueToUse() && !(this.toAvoid == null
+						|| this.toAvoid.distanceToSqr(EntityTF2Character.this) > range);
 			}
 		});
 		this.goalSelector.addGoal(2, new EntityAIFollowTrader(this));
 		this.goalSelector.addGoal(3, new EntityAIFindDispenser(this, 20f));
-		this.goalSelector.addGoal(6, wander = new EntityAIWander(this, 1.0D));
+		this.goalSelector.addGoal(6, wander = new WaterAvoidingRandomStrollGoal(this, 1.0D));
 		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, EntityTF2Character.class, 8.0F));
 		this.goalSelector.addGoal(7, new EntityAISeek(this));
-		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, true));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers());
 		this.targetSelector.addGoal(5, findplayer);
 		this.targetSelector.addGoal(3, new EntityAIOwnerHurt(this));
 		this.targetSelector.addGoal(4,
@@ -209,8 +214,8 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		this.refill = new ItemStackHandler(1);
 		this.ammoCount = new int[4];
 		this.isEmpty = new boolean[4];
-		this.inventoryHandsDropChances[0] = 0;
-		this.inventoryArmorDropChances[0] = 0.25f;
+		this.handDropChances[0] = 0;
+		this.armorDropChances[0] = 0.25f;
 		// this.jumpMovementFactor = 0.1f;
 		if (p_i1738_1_ != null) {
 			// this.getHeldItem(EnumHand.MAIN_HAND).getTagCompound().setTag("Attributes",
@@ -233,7 +238,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 */
 	@Override
 	public ItemStack getPickedResult(HitResult target) {
-		ItemStack stack = TF2Util.metaStack(TF2weapons.itemPlacer, 1, getTF2Class().get3DDataValue() + 9 * (this.getEntTeam()));
+		ItemStack stack = TF2Util.metaStack(TF2weapons.itemPlacer, 1, getTF2Class().getIndex() + 9 * (this.getEntTeam()));
 
 		// stack.setTagCompound(new NBTTagCompound());
 		// stack.getTagCompound().setTag("SavedEntity", new NBTTagCompound());
@@ -271,7 +276,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 
 				if (!hat.isEmpty() && this.random.nextInt(9) == 0) {
 					hat.getTag().putByte("UEffect", (byte) this.random.nextInt(10));
-					this.inventoryArmorDropChances[0] = 0.35f;
+					this.armorDropChances[0] = 0.35f;
 					this.tradeLevel = 2;
 					this.difficulty = 2;
 					this.xpReward *= 1.5;
@@ -291,7 +296,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			} else if (this.random.nextInt(2 + Math.min(5, (int) (this.level.getDayTime() / 160000))) == 0) {
 				ItemStack hat = ItemFromData.getRandomWeapon(random, data -> data.getBoolean(PropertyType.F2P));
 				this.setItemSlot(EquipmentSlot.HEAD, hat);
-				this.inventoryArmorDropChances[0] = 0.35f;
+				this.armorDropChances[0] = 0.35f;
 				this.difficulty = -1;
 				this.tradeLevel = -1;
 			}
@@ -303,12 +308,12 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
+	protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
 		if (this.noEquipment || this.isRobot())
 			return;
 
 		float chance = 1f + 3f * this.tradeLevel + this.tradeLevel * this.tradeLevel * 2f;
-		if (this.random.nextFloat() < TF2ConfigVars.armorMult * chance * difficulty.getAdditionalDifficulty() * 0.3f) {
+		if (this.random.nextFloat() < TF2ConfigVars.armorMult * chance * difficulty.getEffectiveDifficulty() * 0.3f) {
 			int i = this.random.nextInt(2);
 			float f = (this.level.getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F) / chance;
 
@@ -319,19 +324,19 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			if (this.random.nextFloat() < 0.095F * chance) {
 				++i;
 				this.getAttribute(Attributes.ARMOR)
-						.addTransientModifier(new AttributeModifier("hatarmor", 1, 0));
+						.addTransientModifier(new AttributeModifier("hatarmor", 1, AttributeModifier.Operation.fromValue(0)));
 			}
 
 			if (this.random.nextFloat() < 0.095F * chance) {
 				++i;
 				this.getAttribute(Attributes.ARMOR_TOUGHNESS)
-						.addTransientModifier(new AttributeModifier("hatarmort", 2, 0));
+						.addTransientModifier(new AttributeModifier("hatarmort", 2, AttributeModifier.Operation.fromValue(0)));
 			}
 
 			boolean flag = true;
 
 			for (EquipmentSlot entityequipmentslot : EquipmentSlot.values()) {
-				if (entityequipmentslot.getSlotType() == EquipmentSlot.Type.ARMOR) {
+				if (entityequipmentslot.getType() == EquipmentSlot.Type.ARMOR) {
 					ItemStack itemstack = this.getItemBySlot(entityequipmentslot);
 
 					if (!flag && this.random.nextFloat() < f) {
@@ -341,7 +346,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 					flag = false;
 
 					if (itemstack.isEmpty() && entityequipmentslot != EquipmentSlot.HEAD) {
-						Item item = getArmorByChance(entityequipmentslot, i);
+						Item item = Mob.getEquipmentForSlot(entityequipmentslot, i);
 
 						if (item != null) {
 							this.setItemSlot(entityequipmentslot, new ItemStack(item));
@@ -370,7 +375,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		super.defineSynchedData();
 		this.entityData.define(VIS_TEAM, (byte) this.random.nextInt(2));
 		this.entityData.define(DIFFICULTY, (byte) 0);
-		this.entityData.define(OWNER_UUID, Optional.absent());
+		this.entityData.define(OWNER_UUID, Optional.empty());
 		this.entityData.define(ORDER, (byte) 0);
 		this.entityData.define(SHARE, false);
 		this.entityData.define(ROBOT, (byte) 0);
@@ -435,23 +440,23 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			// this.unlimitedAmmo = true;
 			if (this.getOwnerUUID() != null)
 				TF2Util.addModifierSafe(this, Attributes.FOLLOW_RANGE,
-						new AttributeModifier(FOLLOW_MULT_UUID, "GiantRange", 0.4, 2), true);
+						new AttributeModifier(FOLLOW_MULT_UUID, "GiantRange", 0.4, AttributeModifier.Operation.fromValue(2)), true);
 			if (robot > 1) {
 				this.maxUpStep = 1f;
 				this.goalSelector.removeGoal(avoidSentry);
 				TF2Util.addModifierSafe(this, Attributes.ARMOR,
-						new AttributeModifier(ARMOR_MULT_UUID, "GiantArmor", -0.5, 2), true);
+						new AttributeModifier(ARMOR_MULT_UUID, "GiantArmor", -0.5, AttributeModifier.Operation.fromValue(2)), true);
 				TF2Util.addModifierSafe(this, Attributes.MAX_HEALTH,
-						new AttributeModifier(HEALTH_MULT_UUID, "GiantHealth", (0.25 + this.robotStrength) * 2.5, 1),
+						new AttributeModifier(HEALTH_MULT_UUID, "GiantHealth", (0.25 + this.robotStrength) * 2.5, AttributeModifier.Operation.fromValue(1)),
 						true);
 				TF2Util.addModifierSafe(this, Attributes.KNOCKBACK_RESISTANCE,
-						new AttributeModifier(KNOCKBACK_MULT_UUID, "GiantKnockback", 0.6, 0), true);
+						new AttributeModifier(KNOCKBACK_MULT_UUID, "GiantKnockback", 0.6, AttributeModifier.Operation.fromValue(0)), true);
 				TF2Util.addModifierSafe(this, Attributes.FOLLOW_RANGE,
-						new AttributeModifier(FOLLOW_MULT_UUID, "GiantRange", 0.8, 2), true);
+						new AttributeModifier(FOLLOW_MULT_UUID, "GiantRange", 0.8, AttributeModifier.Operation.fromValue(2)), true);
 				this.setHealth(this.getMaxHealth());
 				if (!(this instanceof EntityScout || this instanceof EntityMedic))
 					TF2Util.addModifierSafe(this, Attributes.MOVEMENT_SPEED,
-							new AttributeModifier(SPEED_GIANT_MULT_UUID, "GiantSpeed", -0.43, 2), true);
+							new AttributeModifier(SPEED_GIANT_MULT_UUID, "GiantSpeed", -0.43, AttributeModifier.Operation.fromValue(2)), true);
 			}
 		}
 	}
@@ -465,7 +470,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public void setAIMoveSpeed(float speedIn) {
+	public void setSpeed(float speedIn) {
 		if (this.isGiant()) {
 			speedIn = Math.max(speedIn,
 					(float) this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue()
@@ -475,7 +480,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public boolean isPotionApplicable(MobEffectInstance potioneffectIn) {
+	public boolean canBeAffected(MobEffectInstance potioneffectIn) {
 		return !(this.isGiant() && potioneffectIn.getEffect() == TF2weapons.stun);
 	}
 
@@ -483,8 +488,8 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	public void setTarget(LivingEntity target) {
 
 		super.setTarget(target);
-		if (this.isTrading() && target != null && this.getCustomer() != this.getOwner()) {
-			this.setCustomer(null);
+		if (this.isTrading() && target != null && this.getTradingPlayer() != this.getOwner()) {
+			this.setTradingPlayer(null);
 			// System.out.println(target);
 		}
 		if (!this.alert)
@@ -543,7 +548,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	@Override
 	public void aiStep() {
 
-		if (this.level.isClientSide && !Minecraft.getInstance().isIntegratedServerRunning()) {
+		if (this.level.isClientSide) {
 			this.zza = this.entityData.get(FRONT) / 128f;
 			this.xxa = this.entityData.get(SIDE) / 128f;
 		}
@@ -555,14 +560,14 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			this.entityData.set(SIDE, (byte) Mth.clamp(Math.round(this.xxa * 128f), -128, 127));
 		}
 
-		this.updateArmSwingProgress();
+		this.updateSwingTime();
 		ItemStack hat = this.getItemBySlot(EquipmentSlot.HEAD);
 		if (!hat.isEmpty() && hat.getItem() instanceof ItemWearable) {
 			((ItemWearable) hat.getItem()).onUpdateWearing(hat, this.level, this);
 		}
 		ItemStack backpack = ItemBackpack.getBackpack(this);
 		if (!backpack.isEmpty() && backpack.getItem() instanceof ItemBackpack) {
-			((ItemBackpack) backpack.getItem()).onArmorTickAny(world, this, backpack);
+			((ItemBackpack) backpack.getItem()).onArmorTickAny(this.level, this, backpack);
 		}
 		if (this.getTarget() != null && !this.getTarget().isAlive())
 			this.setTarget(null);
@@ -570,7 +575,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				&& TF2Util.isAlliedTo(this, this.getTarget()))
 			this.setTarget(null);
 		if (this.jump && this.onGround)
-			this.jump();
+			this.jumpFromGround();
 		if (this.spawnMedic) {
 
 			// medic.setEntTeam(event.getWorld().rand.nextInt(2));
@@ -583,7 +588,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			EntityMedic medic = new EntityMedic(this.level);
 			medic.moveTo(this.getX() + this.random.nextDouble() * 0.5 - 0.25, this.getY(),
 					this.getZ() + this.random.nextDouble() * 0.5 - 0.25, this.random.nextFloat() * 360.0F, 0.0F);
-			medic.onInitialSpawn(this.level.getCurrentDifficultyAt(this.getBlockPos()), data);
+			TF2Util.initialSpawn(medic, this.level.getCurrentDifficultyAt(this.blockPosition()), data);
 
 			this.level.addFreshEntity(medic);
 			this.spawnMedic = false;
@@ -598,9 +603,9 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				this.setYRot((this.yHeadRot + 60));
 			else
 				this.setYRot((this.yHeadRot - 60));
-		// if (this.hasHome()) {
+		// if (this.hasRestriction()) {
 
-		if (this.firstUpdate) {
+		if (this.firstTick) {
 			this.spawnPos = this.blockPosition();
 		}
 
@@ -615,7 +620,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			}
 			if (this.isRobot()) {
 				if (this.getTarget() == null
-						|| (this.friendly && this.getTarget().getAttackingEntity() == null)) {
+						|| (this.friendly && this.getTarget().getKillCredit() == null)) {
 					this.noActionTime += 1;
 					if (this.noActionTime > 800 + this.getRobotSize() * 500)
 						this.discard();
@@ -624,14 +629,14 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 					this.setXRot((40));
 				}
 			}
-			if (this.getOrder() == Order.HOLD && !this.hasHome())
-				this.setHomePosAndDistance(this.getBlockPos(), 12);
+			if (this.getOrder() == Order.HOLD && !this.hasRestriction())
+				this.restrictTo(this.blockPosition(), 12);
 			else if (this.getOrder() == Order.FOLLOW && this.hasHome())
-				this.detachHome();
+				this.clearRestriction();
 
 			this.setDiff(this.level.getDifficulty().getId());
 			if (this.isTrading() && (this.trader.distanceToSqr(trader) > 100 || !this.isAlive()))
-				this.setCustomer(null);
+				this.setTradingPlayer(null);
 
 			if (this.getMainHandItem().getItem() instanceof ItemUsable) {
 
@@ -681,7 +686,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				}
 			} else if (this.getUseItem().isEmpty() && this.getTarget() == null
 					&& this.getHealth() / this.getMaxHealth() < 0.7f
-					&& this.refill.getStackInSlot(0).getItem() instanceof ItemFood) {
+					&& this.refill.getStackInSlot(0).isEdible()) {
 				this.setItemInHand(InteractionHand.OFF_HAND, this.refill.getStackInSlot(0));
 				this.startUsingItem(InteractionHand.OFF_HAND);
 				// this.eating =
@@ -714,233 +719,20 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public void travel(float m1, float m2, float m3) {
+	public void travel(Vec3 travelVector) {
 		float move = this.getSpeed();
-		super.travel(m1 / move, m2, m3 / move);
-		if (!this.isServerWorld() && !Minecraft.getInstance().isIntegratedServerRunning()) {
-			if (!this.isInWater()) {
-				if (!this.isInLava()) {
-					if (this.isFallFlying()) {
-						if (this.getDeltaMovement().y > -0.5D) {
-							this.fallDistance = 1.0F;
-						}
-
-						Vec3 vec3d = this.getLookAngle();
-						float f = this.getXRot() * 0.017453292F;
-						double d6 = Math.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z);
-						double d8 = Math.sqrt(this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z);
-						double d1 = vec3d.length();
-						float f4 = Mth.cos(f);
-						f4 = (float) ((double) f4 * (double) f4 * Math.min(1.0D, d1 / 0.4D));
-						this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + (-0.08D + f4 * 0.06D), this.getDeltaMovement().z);
-
-						if (this.getDeltaMovement().y < 0.0D && d6 > 0.0D) {
-							double d2 = this.getDeltaMovement().y * -0.1D * f4;
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + (d2), this.getDeltaMovement().z);
-							this.setDeltaMovement(this.getDeltaMovement().x + (vec3d.x * d2 / d6), this.getDeltaMovement().y, this.getDeltaMovement().z);
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z + (vec3d.z * d2 / d6));
-						}
-
-						if (f < 0.0F) {
-							double d10 = d8 * (-Mth.sin(f)) * 0.04D;
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + (d10 * 3.2D), this.getDeltaMovement().z);
-							this.setDeltaMovement(this.getDeltaMovement().x - (vec3d.x * d10 / d6), this.getDeltaMovement().y, this.getDeltaMovement().z);
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z - (vec3d.z * d10 / d6));
-						}
-
-						if (d6 > 0.0D) {
-							this.setDeltaMovement(this.getDeltaMovement().x + ((vec3d.x / d6 * d8 - this.getDeltaMovement().x) * 0.1D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z + ((vec3d.z / d6 * d8 - this.getDeltaMovement().z) * 0.1D));
-						}
-
-						this.setDeltaMovement(this.getDeltaMovement().x * (0.9900000095367432D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-						this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.9800000190734863D), this.getDeltaMovement().z);
-						this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.9900000095367432D));
-						this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-
-						if (this.horizontalCollision && !this.level.isClientSide) {
-							double d11 = Math.sqrt(this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z);
-							double d3 = d8 - d11;
-							float f5 = (float) (d3 * 10.0D - 3.0D);
-
-							if (f5 > 0.0F) {
-								this.playSound(this.getFallSound((int) f5), 1.0F, 1.0F);
-								this.hurt(DamageSource.FLY_INTO_WALL, f5);
-							}
-						}
-
-						if (this.onGround && !this.level.isClientSide) {
-							this.setFlag(7, false);
-						}
-					} else {
-						float f6 = 0.91F;
-						BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos
-								.retain(this.getX(), this.getBoundingBox().minY - 1.0D, this.getZ());
-
-						if (this.onGround) {
-							BlockState underState = this.level.getBlockState(blockpos$pooledmutableblockpos);
-							f6 = underState.getBlock().getSlipperiness(underState, this.level,
-									blockpos$pooledmutableblockpos, this) * 0.91F;
-						}
-
-						float f7 = 0.16277136F / (f6 * f6 * f6);
-						float f8;
-
-						if (this.onGround) {
-							f8 = f7;
-						} else {
-							f8 = this.flyingSpeed;
-						}
-
-						this.moveRelativeLook(m1, m2, m3, f8);
-						f6 = 0.91F;
-
-						if (this.onGround) {
-							BlockState underState = this.level.getBlockState(blockpos$pooledmutableblockpos
-									.setPos(this.getX(), this.getBoundingBox().minY - 1.0D, this.getZ()));
-							f6 = underState.getBlock().getSlipperiness(underState, this.level,
-									blockpos$pooledmutableblockpos, this) * 0.91F;
-						}
-
-						if (this.onClimbable()) {
-							float f9 = 0.15F;
-							this.setDeltaMovement((Mth.clamp(this.getDeltaMovement().x, -0.15000000596046448D, 0.15000000596046448D)), this.getDeltaMovement().y, this.getDeltaMovement().z);
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (Mth.clamp(this.getDeltaMovement().z, -0.15000000596046448D, 0.15000000596046448D)));
-							this.fallDistance = 0.0F;
-
-							if (this.getDeltaMovement().y < -0.15D) {
-								this.setDeltaMovement(this.getDeltaMovement().x, (-0.15D), this.getDeltaMovement().z);
-							}
-						}
-
-						this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-
-						if (this.horizontalCollision && this.onClimbable()) {
-							this.setDeltaMovement(this.getDeltaMovement().x, (0.2D), this.getDeltaMovement().z);
-						}
-
-						if (this.hasEffect(MobEffects.LEVITATION)) {
-							this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + ((0.05D
-									* (this.getEffect(MobEffects.LEVITATION).getAmplifier() + 1)
-									- this.getDeltaMovement().y) * 0.2D), this.getDeltaMovement().z);
-						} else {
-							blockpos$pooledmutableblockpos.setPos(this.getX(), 0.0D, this.getZ());
-
-							if (!this.level.isClientSide || this.level.isLoaded(blockpos$pooledmutableblockpos)
-									&& this.level.getChunkAt(blockpos$pooledmutableblockpos).isLoaded()) {
-								if (!this.isNoGravity()) {
-									this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (0.08D), this.getDeltaMovement().z);
-								}
-							} else if (this.getY() > 0.0D) {
-								this.setDeltaMovement(this.getDeltaMovement().x, (-0.1D), this.getDeltaMovement().z);
-							} else {
-								this.setDeltaMovement(this.getDeltaMovement().x, (0.0D), this.getDeltaMovement().z);
-							}
-						}
-
-						this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.9800000190734863D), this.getDeltaMovement().z);
-						this.setDeltaMovement(this.getDeltaMovement().x * (f6), this.getDeltaMovement().y, this.getDeltaMovement().z);
-						this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f6));
-						blockpos$pooledmutableblockpos.release();
-					}
-				} else {
-					double d4 = this.getY();
-
-					this.moveRelative(m1, m2, m3, 0.02F);
-					this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-					this.setDeltaMovement(this.getDeltaMovement().x * (0.5D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-					this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.5D), this.getDeltaMovement().z);
-					this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.5D));
-
-					if (!this.isNoGravity()) {
-						this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (0.02D), this.getDeltaMovement().z);
-					}
-
-					if (this.horizontalCollision && this.isOffsetPositionInLiquid(this.getDeltaMovement().x,
-							this.getDeltaMovement().y + 0.6000000238418579D - this.getY() + d4, this.getDeltaMovement().z)) {
-						this.setDeltaMovement(this.getDeltaMovement().x, (0.30000001192092896D), this.getDeltaMovement().z);
-					}
-				}
-			} else {
-				double d0 = this.getY();
-				float f1 = this.getWaterSlowDown();
-				float f2 = 0.02F;
-				float f3 = EnchantmentHelper.getDepthStriderModifier(this);
-
-				if (f3 > 3.0F) {
-					f3 = 3.0F;
-				}
-
-				if (!this.onGround) {
-					f3 *= 0.5F;
-				}
-
-				if (f3 > 0.0F) {
-					f1 += (0.54600006F - f1) * f3 / 3.0F;
-					f2 += (this.getSpeed() - f2) * f3 / 3.0F;
-				}
-
-				this.moveRelative(m1, m2, m3, f2);
-				this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-				this.setDeltaMovement(this.getDeltaMovement().x * (f1), this.getDeltaMovement().y, this.getDeltaMovement().z);
-				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.800000011920929D), this.getDeltaMovement().z);
-				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f1));
-
-				if (!this.isNoGravity()) {
-					this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (0.02D), this.getDeltaMovement().z);
-				}
-
-				if (this.horizontalCollision && this.isOffsetPositionInLiquid(this.getDeltaMovement().x,
-						this.getDeltaMovement().y + 0.6000000238418579D - this.getY() + d0, this.getDeltaMovement().z)) {
-					this.setDeltaMovement(this.getDeltaMovement().x, (0.30000001192092896D), this.getDeltaMovement().z);
-				}
-			}
-			this.animationSpeedOld = this.animationSpeed;
-			double d5 = this.getX() - this.xo;
-			double d7 = this.getZ() - this.zo;
-			double d9 = this instanceof EntityFlying ? this.getY() - this.yo : 0.0D;
-			float f10 = Mth.sqrt((float)d5 * d5 + d9 * d9 + d7 * d7) * 4.0F;
-
-			if (f10 > 1.0F) {
-				f10 = 1.0F;
-			}
-
-			this.animationSpeed += (f10 - this.animationSpeed) * 0.4F;
-			this.limbSwing += this.animationSpeed;
-		}
-
-	}
-
-	private void moveRelativeLook(float strafe, float up, float forward, float friction) {
-		float f = strafe * strafe + up * up + forward * forward;
-		if (f >= 1.0E-4F) {
-			f = Mth.sqrt((float)f);
-			if (f < 1.0F)
-				f = 1.0F;
-			f = friction / f;
-			strafe = strafe * f;
-			up = up * f;
-			forward = forward * f;
-			if (this.isInWater() || this.isInLava()) {
-				strafe = strafe * (float) this.getAttribute(SWIM_SPEED).getValue();
-				up = up * (float) this.getAttribute(SWIM_SPEED).getValue();
-				forward = forward * (float) this.getAttribute(SWIM_SPEED).getValue();
-			}
-			float f1 = Mth.sin(this.yHeadRot * 0.017453292F);
-			float f2 = Mth.cos(this.yHeadRot * 0.017453292F);
-			this.setDeltaMovement(this.getDeltaMovement().x + (strafe * f2 - forward * f1), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + (up), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z + (forward * f2 + strafe * f1));
-		}
+		if (move > 0 && this.isControlledByLocalInstance())
+			travelVector = new Vec3(travelVector.x / move, travelVector.y, travelVector.z / move);
+		super.travel(travelVector);
 	}
 
 	@Override
-	protected void finishUsingItem() {
-		if (!this.activeItemStack.isEmpty() && this.isUsingItem()
-				&& this.activeItemStack.getUseAnimation() == UseAnim.EAT) {
-			this.heal(((ItemFood) this.activeItemStack.getItem()).getHealAmount(activeItemStack));
+	protected void completeUsingItem() {
+		if (!this.useItem.isEmpty() && this.isUsingItem() && this.useItem.getUseAnimation() == UseAnim.EAT
+				&& this.useItem.isEdible()) {
+			this.heal(this.useItem.getItem().getFoodProperties(this.useItem, this).getNutrition());
 		}
-		super.finishUsingItem();
+		super.completeUsingItem();
 		this.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
 	}
 
@@ -949,8 +741,8 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public SpawnGroupData onInitialSpawn(DifficultyInstance p_180482_1_, SpawnGroupData entityLivingData) {
-		super.onInitialSpawn(p_180482_1_, entityLivingData);
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance p_180482_1_, MobSpawnType spawnReason, @Nullable SpawnGroupData entityLivingData, @Nullable CompoundTag spawnTag) {
+		super.finalizeSpawn(levelAccessor, p_180482_1_, spawnReason, entityLivingData, spawnTag);
 		TF2CharacterAdditionalData data;
 		if (!(entityLivingData instanceof TF2CharacterAdditionalData)) {
 			data = new TF2CharacterAdditionalData();
@@ -998,7 +790,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			}
 		}
 		this.addWeapons();
-		this.setEquipmentBasedOnDifficulty(p_180482_1_);
+		this.populateDefaultEquipmentSlots(this.random, p_180482_1_);
 		this.switchSlot(this.getDefaultSlot(), false, true);
 
 		int i = 3;
@@ -1006,12 +798,12 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			this.isEmpty[i] = stack.isEmpty();
 			i--;
 		}
-		if (!this.level.getGameRules().getBoolean("doTF2AI")) {
-			this.tasks.taskEntries.clear();
-			this.targetTasks.taskEntries.clear();
+		if (!this.level.getGameRules().getBoolean(TF2weapons.DO_TF2_AI)) {
+			this.goalSelector.getAvailableGoals().clear();
+			this.targetSelector.getAvailableGoals().clear();
 		}
 		this.getAttribute(Attributes.MAX_HEALTH)
-				.addTransientModifier(new AttributeModifier("damageModifier", TF2ConfigVars.damageMultiplier - 1, 2));
+				.addTransientModifier(new AttributeModifier("damageModifier", TF2ConfigVars.damageMultiplier - 1, AttributeModifier.Operation.fromValue(2)));
 		this.applySpeed();
 		this.setHealth(this.getMaxHealth());
 		for (int j = 0; j < this.ammoCount.length; j++) {
@@ -1027,7 +819,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MULT_UUID);
 		if (this.getOwnerUUID() == null && this.getRobotSize() < 2)
 			this.getAttribute(Attributes.MOVEMENT_SPEED).addTransientModifier(
-					new AttributeModifier(SPEED_MULT_UUID, "speedModifier", TF2ConfigVars.speedMult - 1, 2));
+					new AttributeModifier(SPEED_MULT_UUID, "speedModifier", TF2ConfigVars.speedMult - 1, AttributeModifier.Operation.fromValue(2)));
 	}
 
 	public int getDefaultSlot() {
@@ -1035,20 +827,20 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	protected float getJumpUpwardsMotion() {
+	protected float getJumpPower() {
 		return 0.5f;
 	}
 
 	@Override
-	public void onDeath(DamageSource s) {
+	public void die(DamageSource s) {
 		if (s.getEntity() != null && s.getEntity() instanceof ServerPlayer
 				&& !TF2Util.isAlliedTo(this, s.getEntity())) {
 			ServerPlayer player = (ServerPlayer) s.getEntity();
 			if (s.getEntity().getTeam() != null || TF2ConfigVars.neutralAttack) {
 				if (!this.isRobot()) {
 					player.awardStat(TF2Achievements.KILLED_MERC);
-					if (player.getStats().readStat(TF2Achievements.KILLED_MERC) >= 5 && player.getStats()
-							.readStat(TF2Achievements.CONTRACT_DAY) == 0/*
+					if (TF2Achievements.read(player, TF2Achievements.KILLED_MERC) >= 5
+							&& TF2Achievements.read(player, TF2Achievements.CONTRACT_DAY) == 0/*
 																		 * player.getCapability(TF2weapons.PLAYER_CAP,
 																		 * null).nextContractDay == -1
 																		 */)
@@ -1063,7 +855,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		}
 		if (this.lastHurtByPlayer != null && TF2Util.isAlliedTo(this, this.lastHurtByPlayer))
 			this.xpReward = 0;
-		super.onDeath(s);
+		super.die(s);
 	}
 
 	public boolean isValidTarget(LivingEntity living) {
@@ -1083,7 +875,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public boolean processInteract(Player player, InteractionHand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (!(player.getMainHandItem() != null
 				&& player.getMainHandItem().getItem() instanceof ItemMonsterPlacerPlus)
 				&& (this.getOwner() == player || this.getTarget() == null || this.friendly)
@@ -1094,14 +886,14 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				ClientProxy.displayScreenConfirm("Choose a team to interact",
 						"Visit the Mann Co. Store located in a village");
 			if (!this.level.isClientSide && (TF2Util.isAlliedTo(this, player) || player.isCreative())) {
-				this.setCustomer(player);
-				FMLNetworkHandler.openGui(player, TF2weapons.instance, 4, world, this.getId(), 0, 0);
+				this.setTradingPlayer(player);
+				TF2weapons.openGui(player, 4, this.level, this.getId(), 0, 0);
 			}
 
-			player.awardStat(StatList.TALKED_TO_VILLAGER);
-			return true;
+			player.awardStat(Stats.TALKED_TO_VILLAGER);
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		} else
-			return super.processInteract(player, hand);
+			return super.mobInteract(player, hand);
 	}
 
 	public boolean isTrading() {
@@ -1155,8 +947,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		this.refill.setStackInSlot(0, ItemStack.of(tag.getCompound("Refill")));
 
 		if (tag.contains("Offers")) {
-			this.tradeOffers = new MerchantOffers();
-			this.tradeOffers.readRecipiesFromTags(tag.getCompound("Offers"));
+			this.tradeOffers = new MerchantOffers(tag.getCompound("Offers"));
 		}
 		this.preferredSlot = tag.getByte("PSlot");
 		this.switchSlot(tag.getByte("Slot"), true, true);
@@ -1166,9 +957,9 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			this.traderFollowTicks = tag.getInt("FollowTraderTicks");
 		}
 
-		if (!this.level.getGameRules().getBoolean("doTF2AI")) {
-			this.tasks.taskEntries.clear();
-			this.targetTasks.taskEntries.clear();
+		if (!this.level.getGameRules().getBoolean(TF2weapons.DO_TF2_AI)) {
+			this.goalSelector.getAvailableGoals().clear();
+			this.targetSelector.getAvailableGoals().clear();
 		}
 
 		if (tag.hasUUID("Owner")) {
@@ -1180,9 +971,9 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			this.setOrder(Order.values()[tag.getByte("Order")]);
 
 			// this.world.getCapability(TF2weapons.WORLD_CAP,
-			// null).lostMercPos.remove(this.getOwnerId(), this.getPos());
-			PlayerPersistStorage.get(this.level, this.getOwnerUUID()).medicMercPos.remove(this.getBlockPos());
-			PlayerPersistStorage.get(this.level, this.getOwnerUUID()).restMercPos.remove(this.getBlockPos());
+			// null).lostMercPos.remove(this.getOwnerUUID(), this.getPos());
+			PlayerPersistStorage.get(this.level, this.getOwnerUUID()).medicMercPos.remove(this.blockPosition());
+			PlayerPersistStorage.get(this.level, this.getOwnerUUID()).restMercPos.remove(this.blockPosition());
 		}
 
 		this.tradeLevel = tag.getByte("TradeLevel");
@@ -1225,7 +1016,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		tag.put("LoadoutHeld", loadoutHeld.serializeNBT());
 		tag.put("Refill", this.refill.getStackInSlot(0).serializeNBT());
 		if (this.tradeOffers != null)
-			tag.put("Offers", this.tradeOffers.getRecipiesAsTags());
+			tag.put("Offers", this.tradeOffers.createTag());
 		if (this.usedSlot == -1)
 			this.usedSlot = this.getDefaultSlot();
 		tag.putByte("Slot", (byte) this.usedSlot);
@@ -1240,15 +1031,15 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			tag.putByte("Order", (byte) this.getOrder().ordinal());
 			if (this.getOrder() == Order.FOLLOW) {
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).getPlayerStorage(this.getOwnerUUID()).lostMercPos
-						.add(this.getBlockPos());
+						.add(this.blockPosition());
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).getPlayerStorage(this.getOwnerUUID()).setSave();
 			} else if (this.getOrder() == Order.HOLD && this instanceof EntityMedic) {
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).getPlayerStorage(this.getOwnerUUID()).medicMercPos
-						.add(this.getBlockPos());
+						.add(this.blockPosition());
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).getPlayerStorage(this.getOwnerUUID()).setSave();
 			} else if (this.getOrder() == Order.HOLD && !(this instanceof EntityEngineer)) {
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).getPlayerStorage(this.getOwnerUUID()).restMercPos
-						.add(this.getBlockPos());
+						.add(this.blockPosition());
 				this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).getPlayerStorage(this.getOwnerUUID()).setSave();
 			}
 		}
@@ -1263,22 +1054,22 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public boolean getCanSpawnHere() {
+	public boolean checkSpawnRules(LevelAccessor levelAccessor, MobSpawnType spawnReason) {
 		if (detectBanner())
-			return this.level.getDifficulty() != Difficulty.PEACEFUL && super.getCanSpawnHere();
+			return this.level.getDifficulty() != Difficulty.PEACEFUL && super.checkSpawnRules(levelAccessor, spawnReason);
 
-		if (this.isRemoved() || (TF2ConfigVars.overworldOnly && this.dimension != 0)) {
+		if (this.isRemoved() || (TF2ConfigVars.overworldOnly && this.level.dimension() != Level.OVERWORLD)) {
 			return false;
 		}
 
-		boolean naturalGround = TF2Util.isNaturalBlock(world, this.blockPosition().below(),
-				world.getBlockState(this.blockPosition().below()));
+		boolean naturalGround = TF2Util.isNaturalBlock(this.level, this.blockPosition().below(),
+				this.level.getBlockState(this.blockPosition().below()));
 		boolean validLight = this.isValidLightLevel(naturalGround, this.isRobot());
 
 		if (!validLight)
 			return false;
 
-		return this.level.getDifficulty() != Difficulty.PEACEFUL && super.getCanSpawnHere();
+		return this.level.getDifficulty() != Difficulty.PEACEFUL && super.checkSpawnRules(levelAccessor, spawnReason);
 	}
 
 	public boolean detectBanner() {
@@ -1287,7 +1078,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		Iterator<BlockPos> iterator = this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).banners.iterator();
 		while (iterator.hasNext()) {
 			BlockPos pos = iterator.next();
-			if (pos.distanceSq(this.blockPosition()) < 1200) {
+			if (pos.distSqr(this.blockPosition()) < 1200) {
 				BlockEntity banner = this.level.getBlockEntity(pos);
 				if (banner != null && banner instanceof BannerBlockEntity) {
 					boolean fast = false;
@@ -1302,7 +1093,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 						} else if (pattern == TF2weapons.fastSpawn)
 							fast = true;
 					}
-					return fast && pos.distanceSq(this.blockPosition()) < 800;
+					return fast && pos.distSqr(this.blockPosition()) < 800;
 				} else {
 					iterator.remove();
 					return false;
@@ -1313,16 +1104,15 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+	protected void actuallyHurt(DamageSource damageSrc, float damageAmount) {
 		if (!this.isInvulnerableTo(damageSrc)) {
 			damageAmount = ForgeHooks.onLivingHurt(this, damageSrc, damageAmount);
 			if (damageAmount <= 0)
 				return;
-			damageAmount = ISpecialArmor.ArmorProperties.applyArmor(this,
-					(NonNullList<ItemStack>) this.getArmorSlots(), damageSrc, damageAmount);
+			damageAmount = this.getDamageAfterArmorAbsorb(damageSrc, damageAmount);
 			if (damageAmount <= 0)
 				return;
-			damageAmount = this.applyPotionDamageCalculations(damageSrc, damageAmount);
+			damageAmount = this.getDamageAfterMagicAbsorb(damageSrc, damageAmount);
 			float f = damageAmount;
 			damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
 			this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - damageAmount));
@@ -1331,7 +1121,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			if (damageAmount != 0.0F) {
 				float f1 = this.getHealth();
 				this.setHealth(this.getHealth() - damageAmount);
-				this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
+				this.getCombatTracker().recordDamage(damageSrc, f1, damageAmount);
 			}
 		}
 	}
@@ -1339,14 +1129,14 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	protected boolean isValidLightLevel(boolean isNaturalBlock, boolean event) {
 
 		BlockPos blockpos = new BlockPos(this.getX(), this.getBoundingBox().minY, this.getZ());
-		int skylight = this.level.getLightFor(EnumSkyBlock.SKY, blockpos);
+		int skylight = this.level.getBrightness(LightLayer.SKY, blockpos);
 		if (16 + skylight < this.random.nextInt(32))
 			return false;
 		else {
-			int lightbl = this.level.getLightFor(EnumSkyBlock.BLOCK, blockpos);
+			int lightbl = this.level.getBrightness(LightLayer.BLOCK, blockpos);
 			if ((!isNaturalBlock && skylight < 13) || (lightbl > 1 && !event))
 				return false;
-			int i = this.level.getLightFromNeighbors(blockpos);
+			int i = this.level.getMaxLocalRawBrightness(blockpos);
 			/*
 			 * if (this.world.isThundering()) { int j = this.world.getSkylightSubtracted();
 			 * this.world.setSkylightSubtracted(10); i =
@@ -1355,7 +1145,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			 */
 			LevelChunk chunk = this.level.getChunkAt(blockpos);
 			boolean spawnDay = event
-					|| (this.random.nextInt(32) == 0 && chunk.getRandomWithSeed(987234911L).nextInt(10) == 0);
+					|| (this.random.nextInt(32) == 0 && new java.util.Random(chunk.getPos().toLong() ^ 987234911L).nextInt(10) == 0);
 			return spawnDay || i <= 4 + this.random.nextInt(4);
 		}
 	}
@@ -1364,8 +1154,8 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 * Called to update the entity's position/logic.
 	 */
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		if (!this.level.isClientSide && this.getOwnerUUID() == null && this.level.getDifficulty() == Difficulty.PEACEFUL)
 			this.discard();
 	}
@@ -1383,24 +1173,24 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.ENTITY_HOSTILE_SWIM;
+		return SoundEvents.HOSTILE_SWIM;
 	}
 
 	@Override
 	protected SoundEvent getSplashSound() {
-		return SoundEvents.ENTITY_HOSTILE_SPLASH;
+		return SoundEvents.HOSTILE_SPLASH;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, Block blockIn) {
-		this.playSound(SoundEvents.ENTITY_ZOMBIE_STEP, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos pos, BlockState blockIn) {
+		this.playSound(SoundEvents.ZOMBIE_STEP, 0.15F, 1.0F);
 	}
 
 	/**
 	 * Called when the entity is attacked.
 	 */
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (this.lastHurtByPlayerTime > 0 && source == DamageSource.MAGIC)
 			this.lastHurtByPlayerTime = Math.max(20, this.lastHurtByPlayerTime);
 		if (this.isInvulnerableTo(source))
@@ -1425,7 +1215,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 */
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_HOSTILE_HURT;
+		return SoundEvents.HOSTILE_HURT;
 	}
 
 	/**
@@ -1433,31 +1223,31 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 */
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_HOSTILE_DEATH;
+		return SoundEvents.HOSTILE_DEATH;
 	}
 
 	@Override
-	public boolean attackEntityAsMob(Entity entityIn) {
+	public boolean doHurtTarget(Entity entityIn) {
 		float f = (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue();
 		int i = 0;
 
 		if (entityIn instanceof LivingEntity) {
-			f += EnchantmentHelper.getModifierForCreature(this.getMainHandItem(),
+			f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(),
 					((LivingEntity) entityIn).getMobType());
-			i += EnchantmentHelper.getKnockbackModifier(this);
+			i += EnchantmentHelper.getKnockbackBonus(this);
 		}
 
-		boolean flag = entityIn.hurt(DamageSource.causeMobDamage(this), f);
+		boolean flag = entityIn.hurt(DamageSource.mobAttack(this), f);
 
 		if (flag) {
 			if (i > 0 && entityIn instanceof LivingEntity) {
-				((LivingEntity) entityIn).knockback(this, i * 0.5F, Mth.sin(this.getYRot() * 0.017453292F),
+				((LivingEntity) entityIn).knockback(i * 0.5F, Mth.sin(this.getYRot() * 0.017453292F),
 						(-Mth.cos(this.getYRot() * 0.017453292F)));
 				this.setDeltaMovement(this.getDeltaMovement().x * (0.6D), this.getDeltaMovement().y, this.getDeltaMovement().z);
 				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.6D));
 			}
 
-			int j = EnchantmentHelper.getFireAspectModifier(this);
+			int j = EnchantmentHelper.getFireAspect(this);
 
 			if (j > 0)
 				entityIn.setSecondsOnFire(j * 4);
@@ -1469,7 +1259,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 
 				if (!itemstack.isEmpty() && itemstack1 != null && itemstack.getItem() instanceof AxeItem
 						&& itemstack1.getItem() == Items.SHIELD) {
-					float f1 = 0.25F + EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
+					float f1 = 0.25F + EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
 
 					if (this.random.nextFloat() < f1) {
 						entityplayer.getCooldowns().setCooldown(Items.SHIELD, 100);
@@ -1478,7 +1268,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				}
 			}
 
-			this.applyEnchantments(this, entityIn);
+			this.doEnchantDamageEffects(this, entityIn);
 		}
 
 		return flag;
@@ -1489,24 +1279,23 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 * entity.
 	 */
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttributes().registerAttribute(Attributes.ATTACK_DAMAGE);
+	public static AttributeSupplier.Builder createAttributes() {
+		return Mob.createMobAttributes()
+				.add(Attributes.ATTACK_DAMAGE);
 	}
 
 	@Override
-	protected boolean canDropLoot() {
+	protected boolean shouldDropLoot() {
 		return true;
 	}
 
 	@Override
-	public int getTalkInterval() {
+	public int getAmbientSoundInterval() {
 		return this.getOwnerUUID() != null ? 1000 : 320;
 	}
 
 	@Override
-	protected float getSoundPitch() {
+	public float getVoicePitch() {
 		return this.isBaby() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.08F + 1.5F
 				: (this.random.nextFloat() - this.random.nextFloat()) * 0.08F + 1.0F;
 	}
@@ -1533,7 +1322,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	protected boolean canDespawn() {
+	public boolean removeWhenFarAway(double distance) {
 		return this.natural && this.getOwnerUUID() == null;
 	}
 
@@ -1542,17 +1331,17 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 * TF2weapons.lootTF2Character; }
 	 */
 	@Override
-	public void setCustomer(Player player) {
+	public void setTradingPlayer(Player player) {
 		this.trader = player;
 	}
 
 	@Override
-	public Player getCustomer() {
+	public Player getTradingPlayer() {
 		return this.trader;
 	}
 
 	@Override
-	public MerchantOffers getRecipes(Player player) {
+	public MerchantOffers getOffers() {
 		if (this.tradeOffers == null)
 			makeOffers();
 		return tradeOffers;
@@ -1613,7 +1402,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				ItemStack metal2 = TF2Util.metaStack(TF2weapons.itemTF2, Math.max(1, (cost / (costmult == 1 ? 9 : 27)) % 3),
 						2 + costmult);
 				this.tradeOffers.add(new MerchantOffer(buyItem ? item : metal,
-						!buyItem && costmult > 0 ? metal2 : ItemStack.EMPTY, buyItem ? metal : item, 0, 1));
+						!buyItem && costmult > 0 ? metal2 : ItemStack.EMPTY, buyItem ? metal : item, 1, 0, 0f));
 			}
 		}
 		int hatCount = this.random.nextInt(2 + this.tradeLevel);
@@ -1634,7 +1423,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				metal2 = ItemStack.EMPTY;
 
 			this.tradeOffers.add(new MerchantOffer(buyItem ? item : metal, buyItem ? ItemStack.EMPTY : metal2,
-					buyItem ? metal : item, 0, 1));
+					buyItem ? metal : item, 1, 0, 0f));
 		}
 
 		if (this.tradeLevel >= 1) {
@@ -1646,7 +1435,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 				metal2 = ItemStack.EMPTY;
 
 			this.tradeOffers.add(new MerchantOffer(buyKey ? item : metal, buyKey ? ItemStack.EMPTY : metal2,
-					buyKey ? metal : item, 0, 1));
+					buyKey ? metal : item, 1, 0, 0f));
 
 			ArrayList<TF2Attribute> list = new ArrayList<>(Arrays.asList(TF2Attribute.attributes));
 			list.removeIf(attr -> attr == null || attr.perKill == 0);
@@ -1678,21 +1467,28 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		ItemStack nugget = TF2Util.metaStack(TF2weapons.itemTF2, cost % (refined ? 9 : 3), 3);
 		if (buy)
 			this.tradeOffers.add(new MerchantOffer(ingot.getCount() > 0 ? ingot : nugget,
-					nugget.getCount() > 0 ? nugget : ItemStack.EMPTY, toBuy, 0, 100));
+					nugget.getCount() > 0 ? nugget : ItemStack.EMPTY, toBuy, 100, 0, 0f));
 		else
 			this.tradeOffers
-					.add(new MerchantOffer(toBuy, ItemStack.EMPTY, ingot.getCount() > 0 ? ingot : nugget, 0, 100));
+					.add(new MerchantOffer(toBuy, ItemStack.EMPTY, ingot.getCount() > 0 ? ingot : nugget, 100, 0, 0f));
 	}
 
 	@Override
-	public void setRecipes(MerchantOffers recipeList) {
+	public void overrideOffers(MerchantOffers recipeList) {
 		this.tradeOffers = recipeList;
 
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return 1.62F * (this.getRobotSize() > 1 ? 1.68f : this.getRobotSize() > 2 ? 1.9f : 1f);
+	protected float getStandingEyeHeight(Pose pose, EntityDimensions size) {
+		return size.height * 0.9f;
+	}
+
+	@Override
+	public EntityDimensions getDimensions(Pose pose) {
+		float scale = this.getRobotSize() == 2 ? 1.65f : this.getRobotSize() > 2 ? 1.88f : 1f;
+		return EntityDimensions.scalable(Math.min(Math.max(0.98f, this.getWidth()), this.getWidth() * scale),
+				this.getHeight() * scale);
 	}
 
 	public int[] getValidSlots() {
@@ -1704,30 +1500,30 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public void useRecipe(MerchantOffer recipe) {
-		recipe.incrementToolUses();
+	public void notifyTrade(MerchantOffer recipe) {
+		recipe.increaseUses();
 		if (this.getOwnerUUID() != null) {
-			if (recipe.getItemToBuy().getItem() instanceof ItemWeapon) {
+			if (recipe.getResult().getItem() instanceof ItemWeapon) {
 				this.loadout.setStackInSlot(
-						ItemFromData.getSlotForClass(ItemFromData.getData(recipe.getItemToBuy()), this),
-						recipe.getItemToBuy());
+						ItemFromData.getSlotForClass(ItemFromData.getData(recipe.getResult()), this),
+						recipe.getResult());
 				this.switchSlot(0);
 			}
 
-			else if (recipe.getItemToBuy().getItem() instanceof ItemWearable) {
-				this.setItemSlot(EquipmentSlot.HEAD, recipe.getItemToBuy());
-				this.inventoryArmorDropChances[0] = 0f;
+			else if (recipe.getResult().getItem() instanceof ItemWearable) {
+				this.setItemSlot(EquipmentSlot.HEAD, recipe.getResult());
+				this.armorDropChances[0] = 0f;
 			}
 		}
-		this.livingSoundTime = -this.getTalkInterval();
-		this.playSound(SoundEvents.ENTITY_VILLAGER_YES, this.getSoundVolume(), this.getSoundPitch());
+		this.ambientSoundTime = -this.getAmbientSoundInterval();
+		this.playSound(SoundEvents.VILLAGER_YES, this.getSoundVolume(), this.getVoicePitch());
 		int i = 3 + this.random.nextInt(4);
 
 		this.lastTrader = this.trader;
 		this.tradeCount.put(this.trader,
 				this.tradeCount.containsKey(trader) ? this.tradeCount.get(this.trader) + 1 : 1);
 		this.traderFollowTicks = Math.min(4800, this.tradeCount.get(this.trader) * 250 + 350);
-		if (recipe.getRewardsExp())
+		if (recipe.shouldRewardExp())
 			this.level.addFreshEntity(new ExperienceOrb(this.level, this.getX(), this.getY() + 0.5D, this.getZ(), i));
 
 	}
@@ -1762,7 +1558,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 
 		if (itemChange) {
 			if (this.getMainHandItem().getItem() instanceof ItemUsable && slot != this.usedSlot)
-				((ItemUsable) this.getMainHandItem().getItem()).holster(getWepCapability(), stack, this, world);
+				((ItemUsable) this.getMainHandItem().getItem()).holster(getWepCapability(), stack, this, this.level);
 
 			this.setItemInHand(InteractionHand.MAIN_HAND, stack);
 
@@ -1781,7 +1577,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	public void onEquipItem(int slot, ItemStack stack) {
 
 		WeaponData data = ItemFromData.getData(stack);
-		this.attack.explosive = TF2Attribute.EXPLOSIVE.apply(stack);
+		this.attack.explosive = TF2Attribute.EXPLOSIVE.test(stack);
 		this.attack.projSpeed = TF2Attribute.getModifier("Proj Speed", stack,
 				data.getFloat(PropertyType.PROJECTILE_SPEED), this);
 		this.attack.fireAtFeet = 0;
@@ -1797,12 +1593,12 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		}
 
 		this.moveAttack.setRange(data.getFloat(PropertyType.EFFICIENT_RANGE), data.get(PropertyType.MINIMAL_RANGE, 3f));
-		((ItemUsable) stack.getItem()).draw(getWepCapability(), stack, this, world);
+		((ItemUsable) stack.getItem()).draw(getWepCapability(), stack, this, this.level);
 		if (stack.getItem() instanceof ItemProjectileWeapon) {
 			String projName = data.getString(PropertyType.PROJECTILE);
 			try {
 				EntityProjectileBase proj = MapList.projectileClasses.get(projName).getConstructor(Level.class)
-						.newInstance(world);
+						.newInstance(this.level);
 				proj.initProjectile(this, InteractionHand.MAIN_HAND, stack);
 				this.attack.gravity = (float) proj.getGravityOverride();
 			} catch (Exception e) {
@@ -1819,27 +1615,49 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	public void verifySellingItem(ItemStack stack) {}
+	public void notifyTradeUpdated(ItemStack stack) {}
 
 	@Override
-	public int getMaxSpawnedInChunk() {
+	public int getVillagerXp() {
+		return 0;
+	}
+
+	@Override
+	public void overrideXp(int xp) {}
+
+	@Override
+	public boolean showProgressBar() {
+		return false;
+	}
+
+	@Override
+	public SoundEvent getNotifyTradeSound() {
+		return SoundEvents.VILLAGER_YES;
+	}
+
+	@Override
+	public boolean isClientSide() {
+		return this.level.isClientSide;
+	}
+
+	@Override
+	public int getMaxSpawnClusterSize() {
 		return 4;
 	}
 
 	@Override
-	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
+	protected void dropCustomDeathLoot(DamageSource source, int lootingModifier, boolean wasRecentlyHit) {
 		for (int i = 0; i < 4; i++) {
 			if (!this.loadoutHeld.getStackInSlot(i).isEmpty() || !this.hasHeldInventory()) {
 				if (!this.loadout.getStackInSlot(i).isEmpty())
-					this.spawnAtLocation(this.loadout.getStackInSlot(i), 0).setThrower(ownerName);
+					TF2Util.setThrower(this.spawnAtLocation(this.loadout.getStackInSlot(i), 0), this.getOwnerUUID());
 				this.loadout.setStackInSlot(i, this.loadoutHeld.getStackInSlot(i));
 			}
 		}
 		for (int i = 0; i < 4; i++)
 			if (!this.loadoutHeld.getStackInSlot(i + 4).isEmpty() || !this.hasHeldInventory()) {
 				if (!this.getItemBySlot(EquipmentSlot.values()[5 - i]).isEmpty())
-					this.spawnAtLocation(this.getItemBySlot(EquipmentSlot.values()[5 - i]), 0)
-							.setThrower(ownerName);
+					TF2Util.setThrower(this.spawnAtLocation(this.getItemBySlot(EquipmentSlot.values()[5 - i]), 0), this.getOwnerUUID());
 				this.setItemSlot(EquipmentSlot.values()[5 - i], this.loadoutHeld.getStackInSlot(i + 4));
 				this.setDropChance(EquipmentSlot.values()[5 - i], i == 0 ? 0.25f : 0f);
 			}
@@ -1848,14 +1666,13 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			if (this.getOwner() != null && this.distanceToSqr(this.getOwner()) < 100)
 				this.spawnAtLocation(stack, 0);
 			else {
-				Map<String, MerchantOffers> map = this.getLevel().getCapability(TF2weapons.WORLD_CAP,
-						null).lostItems;
+				Map<String, MerchantOffers> map = this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).lostItems;
 				if (!map.containsKey(this.ownerName))
 					map.put(ownerName, new MerchantOffers());
-				map.get(ownerName).add(new MerchantOffer(ItemStack.EMPTY, ItemStack.EMPTY, stack, 0, 1));
+				map.get(ownerName).add(new MerchantOffer(ItemStack.EMPTY, ItemStack.EMPTY, stack, 1, 0, 0f));
 			}
 		}
-		LivingEntity attacker = this.getAttackingEntity();
+		LivingEntity attacker = this.getKillCredit();
 		if (!this.refill.getStackInSlot(0).isEmpty()
 				&& (attacker == this.getOwner() || !TF2Util.isAlliedTo(attacker, this))) {
 			this.spawnAtLocation(this.refill.getStackInSlot(0), 0);
@@ -1873,14 +1690,14 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 					if (stack.getItem() instanceof ItemFromData)
 						TF2Attribute
 								.upgradeItemStack(stack,
-										(int) (Math.min(320, world.getDayTime() / 4000)
-												+ random.nextInt((int) Math.min(720, world.getDayTime() / 2000))),
+										(int) (Math.min(320, this.level.getDayTime() / 4000)
+												+ random.nextInt((int) Math.min(720, this.level.getDayTime() / 2000))),
 										random);
 					this.spawnAtLocation(stack, 0);
 				}
 			}
-		else if (this.inventoryArmorDropChances[0] < 1) {
-			this.inventoryArmorDropChances[0] = 0;
+		else if (this.armorDropChances[0] < 1) {
+			this.armorDropChances[0] = 0;
 		}
 		if (this.getMoneyDrop() > 0 && (isPlayerAttacker || this.getOwnerUUID() != null)) {
 			for (int i = 0; i < this.getMoneyDrop() / 64; i++) {
@@ -1893,31 +1710,22 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		if (this.isRobot() && this.getOwnerUUID() != null) {
 			this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemTF2, 1, this.isGiant() ? 13 : 12), 0f);
 		}
-		super.dropEquipment(wasRecentlyHit, lootingModifier);
+		super.dropCustomDeathLoot(source, lootingModifier, wasRecentlyHit);
 	}
 
-	@Override
-	public Level getLevel() {
-		return world;
-	}
-
-	@Override
-	public BlockPos getPos() {
-		return this.blockPosition();
-	}
 
 	public WeaponsCapability getWepCapability() {
 		return this.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
 	}
 
 	@Override
-	protected int getExperiencePoints(Player player) {
+	protected int getExperienceReward(Player player) {
 		if (TF2Util.isAlliedTo(player, this))
 			return 0;
 		else if (this.isRobot() && !this.isGiant())
-			return super.getExperiencePoints(player) / 2;
+			return super.getExperienceReward(player) / 2;
 		else
-			return super.getExperiencePoints(player);
+			return super.getExperienceReward(player);
 
 	}
 	/*
@@ -1932,30 +1740,25 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	 */
 
 	@Override
-	public void notifyDataManagerChange(EntityDataAccessor<?> key) {
-		super.notifyDataManagerChange(key);
+	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+		super.onSyncedDataUpdated(key);
 		if (ROBOT.equals(key)) {
 			if (this.robotSizeEnsured != this.getRobotSize()) {
 				this.robotSizeEnsured = this.getRobotSize();
-				float scale = 1f;
-				if (this.getRobotSize() == 2)
-					scale = 1.65f;
-				else if (this.getRobotSize() > 2)
-					scale = 1.88f;
-				this.setSize(Math.min(0.98f, this.getBbWidth() * scale), this.getBbHeight() * scale);
+				this.refreshDimensions();
 			}
 		}
 	}
 
 	@Override
-	public UUID getOwnerId() {
-		return this.getEntityData().get(OWNER_UUID).orNull();
+	public UUID getOwnerUUID() {
+		return this.getEntityData().get(OWNER_UUID).orElse(null);
 	}
 
 	@Override
 	public Entity getOwner() {
 		if (this.getOwnerUUID() != null)
-			return this.level.getPlayerByUUID(this.getEntityData().get(OWNER_UUID).orNull());
+			return this.level.getPlayerByUUID(this.getEntityData().get(OWNER_UUID).orElse(null));
 		else
 			return null;
 	}
@@ -1963,9 +1766,9 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	public void setOwner(LivingEntity owner) {
 		if (owner == null) {
 			this.ownerName = null;
-			this.entityData.set(OWNER_UUID, Optional.absent());
+			this.entityData.set(OWNER_UUID, Optional.empty());
 		} else if (owner instanceof Player) {
-			this.ownerName = owner.getName();
+			this.ownerName = owner.getName().getString();
 			this.entityData.set(OWNER_UUID, Optional.of(owner.getUUID()));
 			this.setPersistenceRequired();
 		}
@@ -2068,14 +1871,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 		return TF2Util.lerp(min, max, 1 - (1f / div));
 	}
 
-	@Override
-	public boolean isCreatureType(EnumCreatureType type, boolean forSpawnCount) {
-		return forSpawnCount && this.isRobot() ? false : super.isCreatureType(type, forSpawnCount);
-	}
-
 	@SuppressWarnings("unchecked")
-	@Override
-	@Nullable
 	@Override
 	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
 		T value = this.getCapabilityLegacy(capability, facing);

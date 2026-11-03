@@ -24,7 +24,7 @@ public class ParticleExplosion extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		++this.timeSinceStart;
 		float scale = ((float) timeSinceStart / (float) this.maximumTime) * size;
 		float count = 0.33f * scale * size * scale;

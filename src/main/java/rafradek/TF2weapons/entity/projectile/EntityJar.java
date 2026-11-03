@@ -110,8 +110,8 @@ public class EntityJar extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		if (this.isGasExploded()) {
 			this.explode(this.getX(), this.getY(), this.getZ(), null, 1f);
 			if (this.gasExplodeCooldown-- <= 0) {

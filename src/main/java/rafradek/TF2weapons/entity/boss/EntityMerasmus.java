@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
@@ -119,16 +120,13 @@ public class EntityMerasmus extends EntityTF2Boss {
 		});
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		// this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(256.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(200);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.098D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(0D);
-
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Boss.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 256.0D)
+				.add(Attributes.MAX_HEALTH, 200)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+				.add(Attributes.MOVEMENT_SPEED, 0.098D)
+				.add(Attributes.ATTACK_DAMAGE, 0D);
 	}
 
 	protected PathNavigation getNewNavigator(Level world) {
@@ -141,7 +139,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		float prevHP = this.getHealth();
 		if (super.hurt(source, amount)) {
 			float newHP = this.getHealth();
@@ -534,7 +532,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 				} else if (this.attacksMade % 2 == 0) {
 					this.attackDuration = 20 - this.host.level / 4;
 					if (target != host && this.host.distanceToSqr(target) < 6) {
-						if (this.host.attackEntityAsMob(target)) {
+						if (this.host.doHurtTarget(target)) {
 							target.knockback(this.host, 1.5f, Mth.sin(this.host.getYRot() * 0.017453292F),
 									(-Mth.cos(this.host.getYRot() * 0.017453292F)));
 						}

@@ -29,7 +29,7 @@ public class ParticleBulletHole extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));

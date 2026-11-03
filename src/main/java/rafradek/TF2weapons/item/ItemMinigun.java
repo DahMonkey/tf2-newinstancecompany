@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.client.Minecraft;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -31,7 +32,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ItemMinigun extends ItemBulletWeapon {
 
 	public static UUID slowdownUUID = UUID.fromString("12843092-A5D6-BBCD-3D4F-A3DD4D8C94C8");
-	public static AttributeModifier slowdown = new AttributeModifier(slowdownUUID, "minigun slowdown", -0.5D, 2);
+	public static AttributeModifier slowdown = new AttributeModifier(slowdownUUID, "minigun slowdown", -0.5D, AttributeModifier.Operation.fromValue(2));
 
 	public ItemMinigun() {
 		super();

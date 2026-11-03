@@ -82,12 +82,12 @@ public class EntityFlame extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		if (this.isEyeInFluid(Material.WATER)) {
 			this.discard();
 			return;
 		}
-		super.onUpdate();
+		super.tick();
 	}
 
 	@Override

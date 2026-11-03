@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import java.text.DecimalFormat;
@@ -48,8 +49,8 @@ public class EntityTarget extends ArmorStand {
 	public boolean creative;
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		if (!this.level.isClientSide && this.tickCount % 5 == 0) {
 			DecimalFormat format = new DecimalFormat("#.##");
 			if (this.startAttack != -1 && this.tickCount - this.lastAttack >= 35) {
@@ -83,14 +84,13 @@ public class EntityTarget extends ArmorStand {
 		this.entityData.define(DPS, 0f);
 	}
 
-	@Override
-	public void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
+	public static AttributeSupplier.Builder createAttributes() {
+		return LivingEntity.createLivingAttributes()
+				.add(Attributes.KNOCKBACK_RESISTANCE, 1.0);
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (!this.level.isClientSide && !this.isRemoved()) {
 			if (DamageSource.OUT_OF_WORLD.equals(source) || (source.getEntity() instanceof LivingEntity
 					&& source.getMsgId().equals("player") && source.getEntity().isShiftKeyDown())) {

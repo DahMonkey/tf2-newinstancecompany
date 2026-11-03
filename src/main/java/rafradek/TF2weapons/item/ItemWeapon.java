@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import com.google.common.collect.HashMultimap;
 import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
@@ -76,8 +79,8 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 	public static final UUID HEADS_HEALTH = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785FC3A");
 	public static final UUID HEADS_SPEED = UUID.fromString("FA233E1C-4180-4865-B01B-B4A79785FC3A");
-	public AttributeModifier headsHealthMod = new AttributeModifier(HEADS_HEALTH, "Heads modifier", 0, 0);
-	public AttributeModifier headsSpeedMod = new AttributeModifier(HEADS_SPEED, "Heads modifier", 0, 2);
+	public AttributeModifier headsHealthMod = new AttributeModifier(HEADS_HEALTH, "Heads modifier", 0, AttributeModifier.Operation.fromValue(0));
+	public AttributeModifier headsSpeedMod = new AttributeModifier(HEADS_SPEED, "Heads modifier", 0, AttributeModifier.Operation.fromValue(2));
 	public static boolean inHand;
 
 	public ItemWeapon() {
@@ -310,8 +313,8 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
-	public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-		Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+		Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getAttributeModifiers(slot, stack));
 
 		if (slot == EquipmentSlot.MAINHAND && getData(stack) != ItemFromData.BLANK_DATA && stack.hasTag()
 				&& (stack.getCapability(TF2weapons.WEAPONS_DATA_CAP).orElse(null).usedClass == -1
@@ -326,24 +329,24 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		return multimap;
 	}
 
-	public void addModifiersWithToken(ItemStack stack, Multimap<String, AttributeModifier> multimap) {
+	public void addModifiersWithToken(ItemStack stack, Multimap<Attribute, AttributeModifier> multimap) {
 		int heads = Math.min((int) TF2Attribute.getModifier("Kill Count", stack, 0, null),
 				stack.getTag().getInt("Heads"));
-		multimap.put(Attributes.ATTACK_DAMAGE.getName(),
+		multimap.put(Attributes.ATTACK_DAMAGE,
 				new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier",
-						this.getWeaponDamage(stack, null, null) * this.getWeaponPelletCount(stack, null) - 1, 0));
-		multimap.put(Attributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER,
-				"Weapon modifier", -4 + (1000D / this.getFiringSpeed(stack, null)), 0));
+						this.getWeaponDamage(stack, null, null) * this.getWeaponPelletCount(stack, null) - 1, AttributeModifier.Operation.fromValue(0)));
+		multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(ATTACK_SPEED_MODIFIER,
+				"Weapon modifier", -4 + (1000D / this.getFiringSpeed(stack, null)), AttributeModifier.Operation.fromValue(0)));
 		float addHealth = TF2Attribute.getModifier("Health", stack, 0, null)
 				+ heads * TF2Attribute.getModifier("Max Health Kill", stack, 0, null);
 		if (addHealth != 0)
-			multimap.put(Attributes.MAX_HEALTH.getName(),
-					new AttributeModifier(HEALTH_MODIFIER, "Weapon modifier", addHealth, 0));
+			multimap.put(Attributes.MAX_HEALTH,
+					new AttributeModifier(HEALTH_MODIFIER, "Weapon modifier", addHealth, AttributeModifier.Operation.fromValue(0)));
 		float addSpeed = TF2Attribute.getModifier("Speed", stack,
 				1 + heads * TF2Attribute.getModifier("Speed Kill", stack, 0, null), null);
 		if (addSpeed != 1)
-			multimap.put(Attributes.MOVEMENT_SPEED.getName(),
-					new AttributeModifier(SPEED_MODIFIER, "Weapon modifier", addSpeed - 1, 2));
+			multimap.put(Attributes.MOVEMENT_SPEED,
+					new AttributeModifier(SPEED_MODIFIER, "Weapon modifier", addSpeed - 1, AttributeModifier.Operation.fromValue(2)));
 	}
 
 	public float critChance(ItemStack stack, Entity entity) {
@@ -612,9 +615,9 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		cap.focusShotTicks = 0;
 		cap.setCharging(false);
 		float removeHealth = 0;
-		for (Entry<String, AttributeModifier> entry : stack.getAttributeModifiers(EquipmentSlot.MAINHAND)
+		for (Entry<Attribute, AttributeModifier> entry : stack.getAttributeModifiers(EquipmentSlot.MAINHAND)
 				.entries()) {
-			if (entry.getValue().getID() == HEALTH_MODIFIER)
+			if (entry.getValue().getId() == HEALTH_MODIFIER)
 				removeHealth += entry.getValue().getAmount();
 		}
 		if (removeHealth != 0)
@@ -659,8 +662,8 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			target.setSilent(true);
 			if (target instanceof Player) {
 				target.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).silent = target.level.getGameRules()
-						.getBoolean("showDeathMessages");
-				target.level.getGameRules().setOrCreateGameRule("showDeathMessages", "false");
+						.getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
+				target.level.getGameRules().getRule(GameRules.RULE_SHOWDEATHMESSAGES).set(false, target.level.getServer());
 			}
 		} else if (target instanceof LivingEntity && TF2Util.isAlliedTo(attacker, target)
 				&& !(target instanceof EntityBuilding)) {
@@ -1011,7 +1014,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tessellator, BufferBuilder buffer,
 			ScaledResolution resolution) {
 		if (this.hasKillstreak(stack, 1)) {
-			Minecraft.getInstance().RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
+			RenderSystem.setShaderTexture(0, ClientProxy.healingTexture);
 
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			GL11.glDepthMask(false);
@@ -1042,10 +1045,10 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 			GuiComponent.drawModalRectWithCustomSizedTexture(28, resolution.getScaledHeight() - 18, 83, 68, 45, 40, 128, 128);
 
-			gui.drawCenteredString(gui.getFontRenderer(),
+			gui.drawCenteredString(Minecraft.getInstance().font,
 					Integer.toString(stack.getTag().getInt(NBTLiterals.STREAK_KILLS)), 50,
 					resolution.getScaledHeight() - 44, 16777215);
-			gui.drawCenteredString(gui.getFontRenderer(), "STREAK", 50, resolution.getScaledHeight() - 31, 16777215);
+			gui.drawCenteredString(Minecraft.getInstance().font, "STREAK", 50, resolution.getScaledHeight() - 31, 16777215);
 
 			GL11.glDepthMask(true);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -1058,8 +1061,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		if (TF2Attribute.getModifier("Silent Kill", stack, 0, attacker) != 0) {
 			target.setSilent(false);
 			if (target instanceof Player) {
-				target.level.getGameRules().setOrCreateGameRule("showDeathMessages",
-						Boolean.toString(target.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).silent));
+				target.level.getGameRules().getRule(GameRules.RULE_SHOWDEATHMESSAGES).set(target.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).silent, target.level.getServer());
 			}
 		}
 	}

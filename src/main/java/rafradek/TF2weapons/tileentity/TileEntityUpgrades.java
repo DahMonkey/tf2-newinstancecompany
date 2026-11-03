@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.tileentity;
 
+import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.block.BlockOverheadDoor;
 import rafradek.TF2weapons.common.TF2Attribute;
 import java.util.ArrayList;

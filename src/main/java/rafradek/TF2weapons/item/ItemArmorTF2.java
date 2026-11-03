@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import com.google.common.collect.HashMultimap;
 import net.minecraft.network.chat.Component;
 import com.google.common.collect.Multimap;
 import java.util.List;
@@ -35,12 +37,12 @@ public class ItemArmorTF2 extends ArmorItem {
 	}
 
 	@Override
-	public Multimap<String, AttributeModifier> getItemAttributeModifiers(EquipmentSlot equipmentSlot) {
-		Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
+	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
+		Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getDefaultAttributeModifiers(equipmentSlot));
 
 		if (equipmentSlot == this.armorType && this.knockbackReduction != 0) {
-			multimap.put(Attributes.KNOCKBACK_RESISTANCE.getName(),
-					new AttributeModifier(knockbackUUID, "Knockback modifier", this.knockbackReduction, 0));
+			multimap.put(Attributes.KNOCKBACK_RESISTANCE,
+					new AttributeModifier(knockbackUUID, "Knockback modifier", this.knockbackReduction, AttributeModifier.Operation.fromValue(0)));
 		}
 
 		return multimap;

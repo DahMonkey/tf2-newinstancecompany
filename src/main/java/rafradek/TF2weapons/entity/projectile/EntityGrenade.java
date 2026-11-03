@@ -162,8 +162,8 @@ public class EntityGrenade extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void tick() {
+		super.tick();
 		this.fuse--;
 		if (this.fuse <= 0)
 			this.explode(this.getX(), this.getY() + this.getBbHeight() / 2, this.getZ(), null, this.getBomb() > 0 ? 1 : 0.64f);

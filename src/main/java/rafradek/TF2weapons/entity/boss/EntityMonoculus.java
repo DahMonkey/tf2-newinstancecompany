@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.entity.boss;
 
+import javax.annotation.Nullable;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.core.particles.DustParticleOptions;
 import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
@@ -130,7 +134,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 
 		if (super.hurt(source, amount)) {
 			if (source instanceof TF2DamageSource) {
@@ -341,21 +345,18 @@ public class EntityMonoculus extends EntityTF2Boss {
 		}
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		// this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(256.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(160);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.11D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(7D);
-
+	public static AttributeSupplier.Builder createAttributes() {
+		return EntityTF2Boss.createAttributes()
+				.add(Attributes.FOLLOW_RANGE, 256.0D)
+				.add(Attributes.MAX_HEALTH, 160)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+				.add(Attributes.MOVEMENT_SPEED, 0.11D)
+				.add(Attributes.ATTACK_DAMAGE, 7D);
 	}
 
 	@Override
-	public SpawnGroupData onInitialSpawn(DifficultyInstance diff, SpawnGroupData p_110161_1_) {
-		p_110161_1_ = super.onInitialSpawn(diff, p_110161_1_);
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance diff, MobSpawnType spawnReason, @Nullable SpawnGroupData p_110161_1_, @Nullable CompoundTag spawnTag) {
+		p_110161_1_ = super.finalizeSpawn(levelAccessor, diff, spawnReason, p_110161_1_, spawnTag);
 		this.getAttribute(Attributes.MOVEMENT_SPEED)
 				.setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue()
 						* (0.95 + this.level * 0.05));

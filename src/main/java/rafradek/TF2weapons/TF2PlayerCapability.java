@@ -1,5 +1,6 @@
 package rafradek.TF2weapons;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.EntityType;
 import java.util.List;
 import net.minecraft.world.entity.MobSpawnType;
@@ -131,7 +132,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 	public static final EntityDataAccessor<Integer> RESPAWN_TIME = new EntityDataAccessor<>(1, EntityDataSerializers.INT);
 
 	@SuppressWarnings("unchecked")
-	public Multimap<String, AttributeModifier>[] wearablesAttrib = new Multimap[5];
+	public Multimap<Attribute, AttributeModifier>[] wearablesAttrib = new Multimap[5];
 
 	public TF2PlayerCapability(Player entity) {
 		this.owner = entity;

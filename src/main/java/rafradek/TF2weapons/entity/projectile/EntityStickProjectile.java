@@ -35,13 +35,13 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		if (this.tickCount > this.getMaxTime()
 				|| (this.level.isClientSide && this.sticked && this.level.isEmptyBlock(stickedBlock))) {
 			this.discard();
 			return;
 		} else if (!this.sticked)
-			super.onUpdate();
+			super.tick();
 	}
 
 	@Override

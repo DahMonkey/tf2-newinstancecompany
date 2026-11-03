@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.block;
 
+import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.tileentity.TileEntityOverheadDoor;
 import rafradek.TF2weapons.tileentity.TileEntityOverheadDoor.Allow;

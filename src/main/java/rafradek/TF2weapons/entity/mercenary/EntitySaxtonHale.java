@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import rafradek.TF2weapons.common.TF2Achievements;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -171,7 +174,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean hurt(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source))
 			return false;
 		else if (super.hurt(source, amount)) {
@@ -386,19 +389,18 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
 	}
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttributes().registerAttribute(Attributes.ATTACK_DAMAGE);
-		this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(50.0D);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0D);
-		this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.8D);
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.12D);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(20D);
+	public static AttributeSupplier.Builder createAttributes() {
+		return Mob.createMobAttributes()
+				.add(Attributes.ATTACK_DAMAGE)
+				.add(Attributes.FOLLOW_RANGE, 50.0D)
+				.add(Attributes.MAX_HEALTH, 1000.0D)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.8D)
+				.add(Attributes.MOVEMENT_SPEED, 0.12D)
+				.add(Attributes.ATTACK_DAMAGE, 20D);
 	}
 
 	@Override
-	public boolean attackEntityAsMob(Entity entityIn) {
+	public boolean doHurtTarget(Entity entityIn) {
 		float f = (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
 		int i = 0;
 
@@ -479,7 +481,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 	}
 
 	@Override
-	public boolean processInteract(Player player, InteractionHand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (!(player.getMainHandItem() != null
 				&& player.getMainHandItem().getItem() instanceof ItemMonsterPlacerPlus)
 				&& this.getTarget() == null && this.isAlive() && !this.isTrading() && !this.isBaby()
@@ -493,9 +495,9 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 			}
 
 			player.awardStat(StatList.TALKED_TO_VILLAGER);
-			return true;
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		} else
-			return super.processInteract(player, hand);
+			return super.mobInteract(player, hand);
 	}
 
 	public boolean isTrading() {

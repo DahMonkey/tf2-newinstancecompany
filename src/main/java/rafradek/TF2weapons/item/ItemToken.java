@@ -57,11 +57,11 @@ public class ItemToken extends LegacyItem {
 			WeaponsCapability.get(living).setUsedToken(stack.getDamageValue());
 			float livinghealth = living.getHealth() / living.getMaxHealth();
 			living.getAttribute(Attributes.MOVEMENT_SPEED).addTransientModifier(
-					new AttributeModifier(SPEED_UUID, "tokenspeed", SPEED_VALUES[stack.getDamageValue()], 1));
+					new AttributeModifier(SPEED_UUID, "tokenspeed", SPEED_VALUES[stack.getDamageValue()], AttributeModifier.Operation.fromValue(1)));
 			living.getAttribute(Attributes.MAX_HEALTH).addTransientModifier(
-					new AttributeModifier(HEALTH_UUID, "tokenhealth", HEALTH_VALUES[stack.getDamageValue()], 0));
+					new AttributeModifier(HEALTH_UUID, "tokenhealth", HEALTH_VALUES[stack.getDamageValue()], AttributeModifier.Operation.fromValue(0)));
 			living.getAttribute(Attributes.MAX_HEALTH).addTransientModifier(
-					new AttributeModifier(HEALTH_MULT_UUID, "tokenhealthmult", TF2ConfigVars.damageMultiplier - 1, 2));
+					new AttributeModifier(HEALTH_MULT_UUID, "tokenhealthmult", TF2ConfigVars.damageMultiplier - 1, AttributeModifier.Operation.fromValue(2)));
 			living.setHealth(living.getMaxHealth() * living.getHealth());
 		} else {
 			WeaponsCapability.get(living).setUsedToken(-1);

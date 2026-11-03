@@ -1,5 +1,10 @@
 package rafradek.TF2weapons;
 
+import net.minecraft.world.level.GameRules;
+import javax.annotation.Nullable;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.common.TF2Achievements;
@@ -437,7 +442,7 @@ public class TF2EventsCommon {
 	 *
 	 * Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving,
 	 * event.getWorld(), f, f1, f2); if (canSpawn == Result.ALLOW || (canSpawn ==
-	 * Result.DEFAULT && entityliving.getCanSpawnHere())) {
+	 * Result.DEFAULT && entityliving.checkSpawnRules(entityliving.level, MobSpawnType.NATURAL))) {
 	 * System.out.println("tick9"); ++i2;
 	 * event.getWorld().spawnEntity(entityliving); if
 	 * (!ForgeEventFactory.doSpecialSpawn(entityliving, event.getWorld(), f, f1,
@@ -525,15 +530,15 @@ public class TF2EventsCommon {
 	public void clonePlayer(final PlayerEvent.Clone event) {
 		InventoryWearables oldInv = event.getOriginal().getCapability(TF2weapons.INVENTORY_CAP).orElse(null);
 		InventoryWearables newInv = event.getEntity().getCapability(TF2weapons.INVENTORY_CAP).orElse(null);
-		if (event.getEntity().level.getGameRules().getBoolean("keepInventory")) {
+		if (event.getEntity().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
 			for (int i = 0; i < oldInv.getContainerSize(); i++) {
 				newInv.setInventorySlotContents(i, oldInv.getStackInSlot(i));
 				if (!oldInv.getStackInSlot(i).isEmpty()) {
-					Multimap<String, AttributeModifier> modifiers = oldInv.getStackInSlot(i)
+					Multimap<Attribute, AttributeModifier> modifiers = oldInv.getStackInSlot(i)
 							.getAttributeModifiers(EquipmentSlot.CHEST);
 					if (i == 2) {
-						modifiers.removeAll(Attributes.ARMOR.getName());
-						modifiers.removeAll(Attributes.ARMOR_TOUGHNESS.getName());
+						modifiers.removeAll(Attributes.ARMOR);
+						modifiers.removeAll(Attributes.ARMOR_TOUGHNESS);
 					}
 					event.getEntity().getAttributes().applyAttributeModifiers(modifiers);
 					if (i < TF2PlayerCapability.get(event.getEntity()).wearablesAttrib.length)
@@ -799,13 +804,12 @@ public class TF2EventsCommon {
 			}
 
 			TF2Util.addModifierSafe(living, Attributes.ARMOR,
-					new AttributeModifier(REMOVE_ARMOR, "remove_arm", -event.getEntity().getArmorValue(), 0),
+					new AttributeModifier(REMOVE_ARMOR, "remove_arm", -event.getEntity().getArmorValue(), AttributeModifier.Operation.fromValue(0)),
 					false);
 			TF2Util.addModifierSafe(living, Attributes.ARMOR_TOUGHNESS,
 					new AttributeModifier(
 							REMOVE_ARMOR, "remove_armt", -event.getEntity()
-									.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue(),
-							0),
+									.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue(), AttributeModifier.Operation.fromValue(0)),
 					false);
 			// vent.getSource().setDamageBypassesArmor();
 			event.setAmount(event.getAmount() * (protect));
@@ -1232,8 +1236,6 @@ public class TF2EventsCommon {
 		}
 		if (TF2weapons.dummyEnt == null)
 			TF2weapons.dummyEnt = new EntityDummy(event.getLevel());
-		if (!event.getLevel().getGameRules().hasRule("doTF2AI"))
-			event.getLevel().getGameRules().addGameRule("doTF2AI", "true", ValueType.BOOLEAN_VALUE);
 		if (!event.getLevel().isClientSide && event.getLevel().getScoreboard().getPlayerTeam("RED") == null) {
 			PlayerTeam teamRed = event.getLevel().getScoreboard().createTeam("RED");
 			PlayerTeam teamBlu = event.getLevel().getScoreboard().createTeam("BLU");
@@ -1311,7 +1313,7 @@ public class TF2EventsCommon {
 			 * event.getEntity().posZ + event.getWorld().rand.nextDouble() * 0.5 - 0.25,
 			 * event.getWorld().rand.nextFloat() * 360.0F, 0.0F); medic.natural = true; //
 			 * medic.setEntTeam(event.getWorld().rand.nextInt(2));
-			 * medic.onInitialSpawn(event.getWorld().getDifficultyForLocation(new
+			 * TF2Util.initialSpawn(medic, event.getWorld().getDifficultyForLocation(new
 			 * BlockPos(event.getX(), event.getY(), event.getZ())), null);
 			 * EntityTF2Character.nextEntTeam = medic.getEntTeam();
 			 *

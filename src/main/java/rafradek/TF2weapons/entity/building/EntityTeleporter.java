@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.InteractionResult;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -222,13 +224,13 @@ public class EntityTeleporter extends EntityBuilding {
 	}
 
 	@Override
-	public boolean processInteract(Player player, InteractionHand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 
 		if (player == this.getOwner() && player.getItemInHand(hand).getItem() instanceof DyeItem) {
 			if (!world.isClientSide) {
 				this.setColor(player.getItemInHand(hand).getDamageValue());
 			}
-			return true;
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}
 		if (player == this.getOwner() && hand == InteractionHand.MAIN_HAND) {
 			if (!this.level.isClientSide)
@@ -236,9 +238,9 @@ public class EntityTeleporter extends EntityBuilding {
 					this.grab();
 				else
 					FMLNetworkHandler.openGui(player, TF2weapons.instance, 5, world, this.getId(), 0, 0);
-			return true;
+			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}
-		return false;
+		return InteractionResult.PASS;
 	}
 
 	@Override
@@ -256,7 +258,7 @@ public class EntityTeleporter extends EntityBuilding {
 	}
 
 	public void setExit(boolean exit) {
-		// if(this.getOwner()!=null&&exit&&teleporters.get(UUID.fromString(this.getOwnerId()))[this.getID()]!=null)
+		// if(this.getOwner()!=null&&exit&&teleporters.get(UUID.fromString(this.getOwnerUUID()))[this.getID()]!=null)
 		// return;
 		if (this.tpID == -1) {
 			tpCount++;
@@ -273,7 +275,7 @@ public class EntityTeleporter extends EntityBuilding {
 
 	public void setID(int id) {
 		if ((id >= TP_PER_PLAYER || id < 0)/*
-											 * ||teleporters.get(UUID.fromString( this.getOwnerId()))[id]!=null
+											 * ||teleporters.get(UUID.fromString( this.getOwnerUUID()))[id]!=null
 											 */)
 			return;
 		if (this.getOwnerUUID() != null)
@@ -484,7 +486,7 @@ public class EntityTeleporter extends EntityBuilding {
 			tessellator.draw();
 		}
 		if (this.getTPprogress() <= 0) {
-			gui.drawString(gui.getFontRenderer(), this.getTeleports() + " (ID: " + (this.getID() + 1) + ")", 85, 10,
+			gui.drawString(Minecraft.getInstance().font, this.getTeleports() + " (ID: " + (this.getID() + 1) + ")", 85, 10,
 					16777215);
 		}
 
@@ -582,7 +584,7 @@ public class EntityTeleporter extends EntityBuilding {
 		 * 0.0625).endVertex(); renderer.pos(event.getResolution().getScaledWidth() / 2
 		 * - 5, event.getResolution().getScaledHeight() / 2 + 54, 0.0D).tex(0.9375D,
 		 * 0.0625).endVertex(); tessellator.draw(); } if (teleporter.getTPprogress() <=
-		 * 0) { gui.drawString(gui.getFontRenderer(), teleporter.getTeleports() +
+		 * 0) { gui.drawString(Minecraft.getInstance().font, teleporter.getTeleports() +
 		 * " (ID: " + (teleporter.getID() + 1) + ")",
 		 * event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 38, 16777215); } float health =

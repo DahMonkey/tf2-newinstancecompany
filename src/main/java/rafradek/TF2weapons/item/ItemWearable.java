@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import com.google.common.collect.HashMultimap;
+import net.minecraft.util.RandomSource;
 import net.minecraft.network.chat.Component;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
@@ -47,22 +50,22 @@ public class ItemWearable extends ItemFromData {
 	public static int usedModel;
 
 	@SuppressWarnings("unchecked")
-	public static final Tuple<String, AttributeModifier>[] EFFECT_MODIFIERS = new Tuple[] {
-			new Tuple<>(Attributes.ATTACK_DAMAGE.getName(), new AttributeModifier("Mod e1", 0.1, 2)),
-			new Tuple<>(Attributes.MAX_HEALTH.getName(), new AttributeModifier("Mod e2", 1, 0)),
-			new Tuple<>(Attributes.MOVEMENT_SPEED.getName(), new AttributeModifier("Mod e3", 0.12, 1)),
-			new Tuple<>(Attributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier("Mod e4", 3, 0)),
-			new Tuple<>(Attributes.ATTACK_SPEED.getName(), new AttributeModifier("Mod e5", 0.14, 2)),
-			new Tuple<>(Attributes.ATTACK_DAMAGE.getName(), new AttributeModifier("Mod e6", 1, 0)),
-			new Tuple<>(Attributes.ATTACK_SPEED.getName(), new AttributeModifier("Mod e7", 0.08, 2)),
-			new Tuple<>(Attributes.MAX_HEALTH.getName(), new AttributeModifier("Mod e8", 2, 0)),
-			new Tuple<>(Attributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier("Mod e9", 4, 0)),
-			new Tuple<>(Attributes.ATTACK_DAMAGE.getName(), new AttributeModifier("Mod e10", 0.08, 2)),
-			new Tuple<>(Attributes.MOVEMENT_SPEED.getName(), new AttributeModifier("Mod e11", 0.16, 1)),
-			new Tuple<>(Attributes.ATTACK_SPEED.getName(), new AttributeModifier("Mod e12", 0.12, 2)),
-			new Tuple<>(Attributes.MOVEMENT_SPEED.getName(), new AttributeModifier("Mod e13", 0.1, 1)),
-			new Tuple<>(Attributes.MAX_HEALTH.getName(), new AttributeModifier("Mod e14", 0.1, 2)),
-			new Tuple<>(Attributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier("Mod e15", 5, 0)) };
+	public static final Tuple<Attribute, AttributeModifier>[] EFFECT_MODIFIERS = new Tuple[] {
+			new Tuple<>(Attributes.ATTACK_DAMAGE, new AttributeModifier("Mod e1", 0.1, AttributeModifier.Operation.fromValue(2))),
+			new Tuple<>(Attributes.MAX_HEALTH, new AttributeModifier("Mod e2", 1, AttributeModifier.Operation.fromValue(0))),
+			new Tuple<>(Attributes.MOVEMENT_SPEED, new AttributeModifier("Mod e3", 0.12, AttributeModifier.Operation.fromValue(1))),
+			new Tuple<>(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Mod e4", 3, AttributeModifier.Operation.fromValue(0))),
+			new Tuple<>(Attributes.ATTACK_SPEED, new AttributeModifier("Mod e5", 0.14, AttributeModifier.Operation.fromValue(2))),
+			new Tuple<>(Attributes.ATTACK_DAMAGE, new AttributeModifier("Mod e6", 1, AttributeModifier.Operation.fromValue(0))),
+			new Tuple<>(Attributes.ATTACK_SPEED, new AttributeModifier("Mod e7", 0.08, AttributeModifier.Operation.fromValue(2))),
+			new Tuple<>(Attributes.MAX_HEALTH, new AttributeModifier("Mod e8", 2, AttributeModifier.Operation.fromValue(0))),
+			new Tuple<>(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Mod e9", 4, AttributeModifier.Operation.fromValue(0))),
+			new Tuple<>(Attributes.ATTACK_DAMAGE, new AttributeModifier("Mod e10", 0.08, AttributeModifier.Operation.fromValue(2))),
+			new Tuple<>(Attributes.MOVEMENT_SPEED, new AttributeModifier("Mod e11", 0.16, AttributeModifier.Operation.fromValue(1))),
+			new Tuple<>(Attributes.ATTACK_SPEED, new AttributeModifier("Mod e12", 0.12, AttributeModifier.Operation.fromValue(2))),
+			new Tuple<>(Attributes.MOVEMENT_SPEED, new AttributeModifier("Mod e13", 0.1, AttributeModifier.Operation.fromValue(1))),
+			new Tuple<>(Attributes.MAX_HEALTH, new AttributeModifier("Mod e14", 0.1, AttributeModifier.Operation.fromValue(2))),
+			new Tuple<>(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Mod e15", 5, AttributeModifier.Operation.fromValue(0))) };
 
 	public ItemWearable() {
 		super();
@@ -130,11 +133,11 @@ public class ItemWearable extends ItemFromData {
 	}
 
 	@Override
-	public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-		Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+		Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getAttributeModifiers(slot, stack));
 
 		if (slot == EquipmentSlot.HEAD && stack.getTag().contains("UEffect")) {
-			Tuple<String, AttributeModifier> tuple = EFFECT_MODIFIERS[stack.getTag().getByte("UEffect")
+			Tuple<Attribute, AttributeModifier> tuple = EFFECT_MODIFIERS[stack.getTag().getByte("UEffect")
 					% EFFECT_MODIFIERS.length];
 			multimap.put(tuple.getA(), tuple.getB());
 		}

@@ -27,7 +27,7 @@ public class EntityRocketEffect extends Particle {
 	}
 
 	@Override
-	public void onUpdate() {
+	public void tick() {
 		if (rocket.isRemoved()) {
 			this.setExpired();
 			return;
@@ -37,7 +37,7 @@ public class EntityRocketEffect extends Particle {
 		this.setDeltaMovement((rocket.getDeltaMovement().x), this.getDeltaMovement().y, this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, (rocket.getDeltaMovement().y), this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (rocket.getDeltaMovement().z));
-		super.onUpdate();
+		super.tick();
 	}
 
 	/*

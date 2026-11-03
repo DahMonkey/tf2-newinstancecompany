@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.MobSpawnType;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2EventsCommon.TF2WorldStorage;
@@ -139,7 +140,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void onUpdate() {
+	public void tick() {
 		// this.playersArea.removeIf(player -> !isInRange(player.getPosition()));
 		Iterator<Player> players = this.playersArea.iterator();
 		while (players.hasNext()) {
@@ -293,15 +294,13 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 										Event.Result canSpawn = ForgeEventFactory
 												.canEntitySpawn(entityliving, world, f, i3, f1, false);
 										if (canSpawn == Event.Result.ALLOW || (canSpawn == Event.Result.DEFAULT
-												&& (entityliving.getCanSpawnHere() && entityliving.isNotColliding()))) {
+												&& (entityliving.checkSpawnRules(entityliving.level, MobSpawnType.NATURAL) && entityliving.isNotColliding()))) {
 											livingdata.isGiant = entityliving.canBecomeGiant()
 													&& world.random.nextFloat() < 0.025 * this.getWaveDifficulty();
 											entityliving.robotStrength = this.difficulty;
 
 											if (!ForgeEventFactory.doSpecialSpawn(entityliving, world, f, i3, f1))
-												livingdata = (TF2CharacterAdditionalData) entityliving.onInitialSpawn(
-														world.getCurrentDifficultyAt(new BlockPos(entityliving)),
-														livingdata);
+												livingdata = (TF2CharacterAdditionalData) TF2Util.initialSpawn(entityliving, world.getCurrentDifficultyAt(new BlockPos(entityliving)), livingdata);
 
 											if (entityliving.isNotColliding()) {
 												world.addFreshEntity(entityliving);

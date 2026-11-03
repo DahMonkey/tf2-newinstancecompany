@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.world.gen.structure;
 
+import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.block.BlockUpgradeStation;

@@ -415,10 +415,10 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		/*
 		 * this.owner.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.
 		 * MAX_HEALTH) .applyModifier(new AttributeModifier(HEADS_HEALTH,
-		 * "Heads modifier", collectedHeads, 0));
+		 * "Heads modifier", collectedHeads, AttributeModifier.Operation.fromValue(0)));
 		 * this.owner.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.
 		 * MOVEMENT_SPEED) .applyModifier(new AttributeModifier(HEADS_SPEED,
-		 * "Heads modifier", collectedHeads * 0.04, 2));
+		 * "Heads modifier", collectedHeads * 0.04, AttributeModifier.Operation.fromValue(2)));
 		 */
 		this.owner.heal(TF2Attribute.getModifier("Max Health Kill", weapon, 0, this.owner));
 	}
@@ -465,10 +465,10 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 			/*
 			 * this.owner.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.
 			 * MAX_HEALTH) .applyModifier(new AttributeModifier(HEADS_HEALTH,
-			 * "Heads modifier", collectedHeads, 0));
+			 * "Heads modifier", collectedHeads, AttributeModifier.Operation.fromValue(0)));
 			 * this.owner.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.
 			 * MOVEMENT_SPEED) .applyModifier(new AttributeModifier(HEADS_SPEED,
-			 * "Heads modifier", collectedHeads * 0.04, 2));
+			 * "Heads modifier", collectedHeads * 0.04, AttributeModifier.Operation.fromValue(2)));
 			 */
 		}
 
