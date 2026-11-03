@@ -24,13 +24,15 @@ jobs:
           echo "eula=true" > run/eula.txt
           printf "online-mode=false\nlevel-type=minecraft\\:normal\n" > run/server.properties
       - name: Dedicated server
-        run: ci/smoke.sh runServer 'Done \(' 60 1200 2>&1 | tee smoke-server.txt
+        run: |
+          ci/smoke.sh runServer 'Done \(' 60 1200 2>&1 | tee smoke-server.txt
         continue-on-error: true
       - name: Client
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
           MESA_GL_VERSION_OVERRIDE: '4.5'
-        run: xvfb-run -a -s "-screen 0 1280x720x24" ci/smoke.sh runClient 'Sound engine started|Created: .*atlas' 90 1500 2>&1 | tee smoke-client.txt
+        run: |
+          xvfb-run -a -s "-screen 0 1280x720x24" ci/smoke.sh runClient 'Sound engine started|Created: .*atlas' 90 1500 2>&1 | tee smoke-client.txt
         continue-on-error: true
       - name: Upload logs
         if: always()
