@@ -28,15 +28,15 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 	@Override
 	public boolean canUse() {
 
-		if (this.creature.isWithinHomeDistanceCurrentPosition()) {
+		if (this.creature.isWithinRestriction()) {
 			return false;
 		} else {
 
-			BlockPos blockpos = this.creature.getHomePosition();
+			BlockPos blockpos = this.creature.getRestrictCenter();
 
-			Vec3 vec3d = this.creature.getMaximumHomeDistance() == 0 ? new Vec3(blockpos)
+			Vec3 vec3d = this.creature.getRestrictRadius() == 0 ? Vec3.atBottomCenterOf(blockpos)
 					: DefaultRandomPos.findRandomTargetBlockTowards(this.creature,
-							(int) Math.min(this.creature.getMaximumHomeDistance(), 16), 7,
+							(int) Math.min(this.creature.getRestrictRadius(), 16), 7,
 							new Vec3(blockpos.getX(), blockpos.getY(), blockpos.getZ()));
 
 			if (vec3d == null) {

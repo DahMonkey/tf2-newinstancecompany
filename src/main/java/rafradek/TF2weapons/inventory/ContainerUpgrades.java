@@ -88,8 +88,8 @@ public class ContainerUpgrades extends LegacyContainer {
 		this.applicable.clear();
 		for (int i = 0; i < this.station.attributeList.size(); i++) {
 
-			if (!this.upgradedItem.getStackInSlot(0).isEmpty() && station.attributeList.get(i) != null
-					&& station.attributeList.get(i).canApply(this.upgradedItem.getStackInSlot(0)))
+			if (!this.upgradedItem.getItem(0).isEmpty() && station.attributeList.get(i) != null
+					&& station.attributeList.get(i).canApply(this.upgradedItem.getItem(0)))
 				this.applicable.add(station.attributeList.get(i));
 		}
 	}
@@ -166,7 +166,7 @@ public class ContainerUpgrades extends LegacyContainer {
 
 	@Override
 	public boolean enchantItem(Player player, int id) {
-		ItemStack stack = this.upgradedItem.getStackInSlot(0);
+		ItemStack stack = this.upgradedItem.getItem(0);
 
 		CompoundTag stacktag = stack.getTag();
 

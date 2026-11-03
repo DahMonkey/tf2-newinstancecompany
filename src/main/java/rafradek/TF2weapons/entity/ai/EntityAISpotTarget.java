@@ -49,7 +49,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 
 	public int targetChoosen = 0;
 	private Class<T> targetClass;
-	private Sorter theNearestAttackableTargetSorter;
+	private java.util.Comparator<net.minecraft.world.entity.Entity> theNearestAttackableTargetSorter;
 	private Predicate<T> targetEntitySelector;
 	public T targetEntity;
 	private boolean targetLock;
@@ -59,10 +59,10 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 			final Predicate<T> p_i1665_6_, boolean targetLock, boolean allowBehind) {
 		super();
 		this.nearbyOnly = p_i1665_4_;
-		this.shouldCheckSight = p_i1665_5_;
+		this.mustSee = p_i1665_5_;
 		this.mob = p_i1665_1_;
 		this.targetClass = p_i1665_2_;
-		this.theNearestAttackableTargetSorter = java.util.Comparator.comparingDouble(p_i1665_1_::distanceToSqr);
+		this.theNearestAttackableTargetSorter = java.util.Comparator.comparingDouble(e -> p_i1665_1_.distanceToSqr(e));
 		this.setFlags(TF2Util.mutexFlags(1));
 		this.targetLock = targetLock;
 		this.targetEntitySelector = target -> {
@@ -72,13 +72,13 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 				// System.out.println("found "+target.getClass().getName()+"
 				// "+EntityAINearestChecked.this.taskOwner.getClass().getName());
 				if (target instanceof LivingEntity) {
-					double d0 = EntityAISpotTarget.this.getTargetDistance();
+					double d0 = EntityAISpotTarget.this.getFollowDistance();
 
 					if (target.isShiftKeyDown())
 						d0 *= 0.800000011920929D;
 
 					if (target instanceof Player && target.isInvisible()) {
-						float f = ((Player) target).getArmorVisibility();
+						float f = target.getArmorCoverPercentage();
 
 						if (f < 0.1F)
 							f = 0.1F;
@@ -101,7 +101,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 		};
 	}
 
-	protected double getTargetDistance() {
+	protected double getFollowDistance() {
 		AttributeInstance iattributeinstance = this.mob.getAttribute(Attributes.FOLLOW_RANGE);
 		return iattributeinstance == null ? 16.0D : iattributeinstance.getValue();
 	}
@@ -122,7 +122,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 
 	@Override
 	public boolean canUse() {
-		double d0 = this.getTargetDistance() / 2;
+		double d0 = this.getFollowDistance() / 2;
 		if (((this.mob.getTarget() == null)
 				|| this.mob.getTarget().distanceToSqr(mob) > d0 * d0))
 			this.targetChoosen++;
@@ -131,7 +131,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 			// System.out.println("executing
 			// "+this.taskOwner.getClass().getName());
 			this.targetChoosen = 0;
-			double d1 = this.getTargetDistance();
+			double d1 = this.getFollowDistance();
 			List<T> list = this.mob.level.getEntitiesOfClass(this.targetClass,
 					this.mob.getBoundingBox().inflate(d1, d0, d1), this.targetEntitySelector);
 			Collections.sort(list, this.theNearestAttackableTargetSorter);
@@ -178,19 +178,19 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 			if (team != null && team1 == team)
 				return false;
 			else {
-				double d0 = this.getTargetDistance();
+				double d0 = this.getFollowDistance();
 
 				if (this.mob.distanceToSqr(entitylivingbase) > d0 * d0)
 					return false;
 				else {
-					if (this.shouldCheckSight)
+					if (this.mustSee)
 						if (this.mob.getSensing().hasLineOfSight(entitylivingbase))
 							this.targetUnseenTicks = 0;
 						else if (++this.targetUnseenTicks > 60)
 							return false;
 
 					return !(entitylivingbase instanceof Player)
-							|| !((Player) entitylivingbase).getAbilities().disableDamage;
+							|| !((Player) entitylivingbase).getAbilities().invulnerable;
 				}
 			}
 		}
@@ -203,7 +203,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 			return false;
 		else if (!target.isAlive())
 			return false;
-		else if (!this.mob.canAttackClass(target.getClass()))
+		else if (!this.mob.canAttackType(target.getType()))
 			return false;
 		else {
 			Team team = this.mob.getTeam();
@@ -221,10 +221,10 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 						return false;
 				}
 				if (target instanceof Player && !includeInvincibles
-						&& ((Player) target).getAbilities().disableDamage)
+						&& ((Player) target).getAbilities().invulnerable)
 					return false;
 
-				return !this.shouldCheckSight || this.mob.getSensing().hasLineOfSight(target);
+				return !this.mustSee || this.mob.getSensing().hasLineOfSight(target);
 			}
 		}
 	}

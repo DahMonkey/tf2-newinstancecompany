@@ -283,7 +283,7 @@ public class TF2Explosion extends Explosion {
 	 * (float)(f2 + d2)) { double d3 = p_72842_2_.minX + (p_72842_2_.maxX -
 	 * p_72842_2_.minX) * f; double d4 = p_72842_2_.minY + (p_72842_2_.maxY -
 	 * p_72842_2_.minY) * f1; double d5 = p_72842_2_.minZ + (p_72842_2_.maxZ -
-	 * p_72842_2_.minZ) * f2; RayTraceResult mop=this.world.rayTraceBlocks(new
+	 * p_72842_2_.minZ) * f2; RayTraceResult mop=this.TF2Util.rayTraceBlocks(world, new
 	 * Vec3d(d3, d4, d5), p_72842_1_, false, true, false); IBlockState
 	 * state=this.world.getBlockState(mop.getBlockPos()); if (mop ==
 	 * null||state.getBlock()==Blocks.SNOW_LAYER) { ++i; }

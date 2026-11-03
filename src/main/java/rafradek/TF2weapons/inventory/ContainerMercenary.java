@@ -55,7 +55,7 @@ public class ContainerMercenary extends MerchantMenu {
 			{
 				int i = 3;
 				for (EquipmentSlot slot : EquipmentSlot.values()) {
-					if (slot.getType() == Type.ARMOR) {
+					if (slot.getType() == EquipmentSlot.Type.ARMOR) {
 						if (this.mercenary.loadoutHeld.getStackInSlot(4 + i).isEmpty() && !this.mercenary.isEmpty[i]) {
 							this.mercenary.loadoutHeld.setStackInSlot(4 + i, this.mercenary.getItemBySlot(slot));
 							this.mercenary.setItemSlot(slot, ItemStack.EMPTY);
@@ -282,7 +282,7 @@ public class ContainerMercenary extends MerchantMenu {
 		super.removed(player);
 		if (!this.mercenary.level.isClientSide) {
 			for (EquipmentSlot slot : EquipmentSlot.values()) {
-				if (slot.getType() == Type.ARMOR) {
+				if (slot.getType() == EquipmentSlot.Type.ARMOR) {
 					this.mercenary.setDropChance(slot,
 							!this.mercenary.getItemBySlot(slot).isEmpty() ? 2.0f : 0.25f);
 				}
@@ -298,7 +298,7 @@ public class ContainerMercenary extends MerchantMenu {
 
 				int i = 7;
 				for (EquipmentSlot slot : EquipmentSlot.values()) {
-					if (slot.getType() == Type.ARMOR) {
+					if (slot.getType() == EquipmentSlot.Type.ARMOR) {
 						if (this.mercenary.getItemBySlot(slot)
 								.isEmpty()/*
 											 * && this.mercenary.loadoutHeld.getStackInSlot(3).getItem() instanceof
@@ -335,17 +335,17 @@ public class ContainerMercenary extends MerchantMenu {
 
 				slot.onQuickCraft(itemstack1, itemstack);
 			} else if (index != 0 && index != 1 && index < 39) {
-				if (equip.getSlotType() == EquipmentSlot.Type.ARMOR) {
-					if (!this.getSlot(43 - equip.getSlotIndex()).isItemValid(itemstack1) || !this
-							.moveItemStackTo(itemstack1, 43 - equip.getSlotIndex(), 44 - equip.getSlotIndex(), false))
+				if (equip.getType() == EquipmentSlot.Type.ARMOR) {
+					if (!this.getSlot(43 - equip.getFilterFlag()).mayPlace(itemstack1) || !this
+							.moveItemStackTo(itemstack1, 43 - equip.getFilterFlag(), 44 - equip.getFilterFlag(), false))
 						return ItemStack.EMPTY;
 				} else if (itemstack1.getItem() instanceof ItemUsable) {
 					for (int i = 0; i < 4; i++) {
-						if (!this.getSlot(i + 43).isItemValid(itemstack1)
+						if (!this.getSlot(i + 43).mayPlace(itemstack1)
 								|| !this.moveItemStackTo(itemstack1, i + 43, i + 44, false))
 							return ItemStack.EMPTY;
 					}
-				} else if (this.getSlot(47).isItemValid(itemstack1)) {
+				} else if (this.getSlot(47).mayPlace(itemstack1)) {
 					if (!this.moveItemStackTo(itemstack1, 47, 48, false))
 						return ItemStack.EMPTY;
 				} else if (index >= 3 && index < 30) {

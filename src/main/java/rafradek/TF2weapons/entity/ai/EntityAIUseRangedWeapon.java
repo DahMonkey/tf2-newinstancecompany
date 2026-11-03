@@ -175,7 +175,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 			lookX += this.velTarget.x * ticksToReach * 1;
 			lookZ += this.velTarget.z * ticksToReach * 1;
 			lookY = this.posTarget.y + this.attackTarget.getBbHeight() / 2 + this.velTarget.y * moveTicks;
-			if (this.fireAtFeet == -1 || this.entityHost.level.rayTraceBlocks(new Vec3(this.entityHost.getX(),
+			if (this.fireAtFeet == -1 || TF2Util.rayTraceBlocks(this.entityHost.level, new Vec3(this.entityHost.getX(),
 					this.entityHost.getY() + this.entityHost.getEyeHeight(), this.entityHost.getZ()),
 					new Vec3(lookX, lookY, lookZ), false, true, false) != null)
 				lookY += this.attackTarget.getEyeHeight() - this.attackTarget.getBbHeight() / 2;
@@ -194,14 +194,14 @@ public class EntityAIUseRangedWeapon extends Goal {
 				 */
 			}
 
-			HitResult mop = this.entityHost.level.rayTraceBlocks(this.attackTarget.position(),
+			HitResult mop = TF2Util.rayTraceBlocks(this.entityHost.level, this.attackTarget.position(),
 					this.attackTarget.position().add(0, -0.3 - yFall, 0));
 			if (mop != null && mop.getType() == HitResult.Type.BLOCK)
 				yFall = this.attackTarget.getY() - mop.getLocation().y;
 			shouldFireProj = mop != null || this.attackTarget.getDeltaMovement().y <= 0f;
 			lookY -= yFall;
 
-			if (this.fireAtFeet > 0 && this.entityHost.level.rayTraceBlocks(
+			if (this.fireAtFeet > 0 && TF2Util.rayTraceBlocks(this.entityHost.level, 
 					new Vec3(this.entityHost.getX(), this.entityHost.getY() + this.entityHost.getEyeHeight(),
 							this.entityHost.getZ()),
 					new Vec3(lookX, this.attackTarget.getY(), lookZ), false, true, false) == null) {

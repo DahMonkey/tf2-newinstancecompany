@@ -22,10 +22,10 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class ContainerTF2Workbench extends LegacyContainer implements IRecipeContainer {
+public class ContainerTF2Workbench extends LegacyContainer {
 	/** The crafting matrix inventory (3x3). */
 	public CraftingContainer craftMatrix = new CraftingContainer(this, 3, 3);
-	public InventoryCraftResult craftResult = new InventoryCraftResult();
+	public net.minecraft.world.inventory.ResultContainer craftResult = new net.minecraft.world.inventory.ResultContainer();
 	public final Level world;
 	/** Position of the workbench */
 	public final BlockPos pos;
@@ -34,7 +34,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 
 	public ContainerTF2Workbench(Player player, Inventory inventory, Level world, BlockPos posIn) {
 		this.player = player;
-		this.level = world;
+		this.world = world;
 		this.pos = posIn;
 		this.addSlot(
 				new SlotCraftingTF2(inventory.player, this.craftMatrix, this.craftResult, 0, 148, 41));
@@ -75,7 +75,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 		// this.world);
 		else
 			stack = getReplacement(player,
-					TF2CraftingManager.INSTANCE.findMatchingRecipe(this.craftMatrix, this.level, this.player));
+					TF2CraftingManager.INSTANCE.findMatchingRecipe(this.craftMatrix, this.world, this.player));
 		this.craftResult.setItem(0, stack);
 	}
 
@@ -83,11 +83,12 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 		if (!stack.isEmpty() && stack.getItem() instanceof ItemBuildingBox
 				&& player.getTeam() == player.level.getScoreboard().getPlayerTeam("BLU"))
 			stack.setDamageValue(stack.getDamageValue() + 1);
-		if (!stack.isEmpty() && stack.getItem() instanceof BannerItem
-				&& stack.getDamageValue() == DyeColor.RED.getDyeDamage()) {
+		if (!stack.isEmpty() && stack.getItem() == net.minecraft.world.item.Items.RED_BANNER) {
 			CompoundTag pattern = new CompoundTag();
 			if (player.getTeam() == player.level.getScoreboard().getPlayerTeam("BLU")) {
-				stack.setDamageValue(DyeColor.BLUE.getDyeDamage());
+				ItemStack blue = new ItemStack(net.minecraft.world.item.Items.BLUE_BANNER, stack.getCount());
+				blue.setTag(stack.getTag());
+				stack = blue;
 				pattern.putString("Pattern", "bb");
 				pattern.putInt("Color", 15);
 			} else {
@@ -95,7 +96,10 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 				pattern.putInt("Color", 15);
 			}
 
-			stack.getTagElement("BlockEntityTag").getList("Patterns", 10).add(pattern);
+			CompoundTag blockTag = stack.getOrCreateTagElement("BlockEntityTag");
+			net.minecraft.nbt.ListTag patterns = blockTag.getList("Patterns", 10);
+			patterns.add(pattern);
+			blockTag.put("Patterns", patterns);
 		}
 		if (!stack.isEmpty() && stack.getItem() instanceof ItemBuildingBox) {
 			if (stack.getDamageValue() / 2 == 11) {
@@ -131,7 +135,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 	public void onContainerClosed(Player player) {
 		super.onContainerClosed(player);
 
-		if (!this.level.isClientSide)
+		if (!this.world.isClientSide)
 			for (int i = 0; i < 9; ++i) {
 				ItemStack itemstack = this.craftMatrix.removeItemNoUpdate(i);
 
@@ -142,7 +146,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 
 	@Override
 	public boolean canInteractWith(Player player) {
-		return this.level.getBlockState(this.pos).getBlock() != TF2weapons.blockCabinet ? false
+		return this.world.getBlockState(this.pos).getBlock() != TF2weapons.blockCabinet ? false
 				: player.distanceToSqr(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D,
 						this.pos.getZ() + 0.5D) <= 64.0D;
 	}
@@ -199,7 +203,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 	 */
 	@Override
 	public boolean canMergeSlot(ItemStack stack, Slot slotIn) {
-		return slotIn.inventory != this.craftResult && super.canMergeSlot(stack, slotIn);
+		return slotIn.container != this.craftResult && super.canMergeSlot(stack, slotIn);
 	}
 
 	@Override
@@ -209,12 +213,10 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 		return true;
 	}
 
-	@Override
-	public InventoryCraftResult getCraftResult() {
+	public net.minecraft.world.inventory.ResultContainer getCraftResult() {
 		return this.craftResult;
 	}
 
-	@Override
 	public CraftingContainer getCraftMatrix() {
 		return this.craftMatrix;
 	}

@@ -138,12 +138,17 @@ public class ClientProxy extends CommonProxy {
 		});
 		modBus.addListener(ModelLoader::onBakingCompleted);
 		modBus.addListener((net.minecraftforge.client.event.EntityRenderersEvent.AddLayers event) -> {
+			Minecraft mc = Minecraft.getInstance();
+			net.minecraft.client.renderer.entity.EntityRendererProvider.Context context = new net.minecraft.client.renderer.entity.EntityRendererProvider.Context(
+					mc.getEntityRenderDispatcher(), mc.getItemRenderer(), mc.getBlockRenderer(),
+					mc.getEntityRenderDispatcher().getItemInHandRenderer(), mc.getResourceManager(),
+					event.getEntityModels(), mc.font);
 			disguiseRenderPlayer = new rafradek.TF2weapons.client.renderer.entity.RenderPlayerDisguised(
-					event.getContext(), false);
+					context, false);
 			disguiseRenderPlayerSmall = new rafradek.TF2weapons.client.renderer.entity.RenderPlayerDisguised(
-					event.getContext(), true);
+					context, true);
 			forceTextureRenderPlayer = new rafradek.TF2weapons.client.renderer.entity.RenderPlayerForceTexture(
-					event.getContext(), false);
+					context, false);
 		});
 		modBus.addListener(TF2EventsClient::registerIcons);
 		modBus.addListener(TF2EventsClient::iconsStitched);
@@ -170,20 +175,24 @@ public class ClientProxy extends CommonProxy {
 		return (MenuType<M>) TF2weapons.MENU_TYPES[id];
 	}
 
+	private interface ScreenFactory {
+		Screen create(AbstractContainerMenu menu, net.minecraft.world.entity.player.Inventory inv, Component title);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static void screen(int id, ScreenFactory factory) {
+		MenuScreens.register((MenuType) TF2weapons.MENU_TYPES[id],
+				(MenuScreens.ScreenConstructor) (m, inv, t) -> factory.create((AbstractContainerMenu) m, inv, t));
+	}
+
 	private static void registerScreens() {
-		MenuScreens.register(menu(0), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new GuiWearables((ContainerWearables) m));
-		MenuScreens.register(menu(1), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new GuiTF2Crafting((ContainerTF2Workbench) m));
-		MenuScreens.register(menu(2), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new GuiUpgradeStation((ContainerUpgrades) m));
-		MenuScreens.register(menu(3), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new GuiAmmoFurnace((ContainerAmmoFurnace) m));
-		MenuScreens.register(menu(4), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new rafradek.TF2weapons.client.gui.inventory.GuiMercenary(
-						(rafradek.TF2weapons.inventory.ContainerMercenary) m, inv, t));
-		MenuScreens.register(menu(5), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> GuiBuildingFactory.create(m));
+		screen(0, (m, inv, t) -> new GuiWearables((ContainerWearables) m));
+		screen(1, (m, inv, t) -> new GuiTF2Crafting((ContainerTF2Workbench) m));
+		screen(2, (m, inv, t) -> new GuiUpgradeStation((ContainerUpgrades) m));
+		screen(3, (m, inv, t) -> new GuiAmmoFurnace((ContainerAmmoFurnace) m));
+		screen(4, (m, inv, t) -> new rafradek.TF2weapons.client.gui.inventory.GuiMercenary(
+				(rafradek.TF2weapons.inventory.ContainerMercenary) m, inv, t));
+		screen(5, (m, inv, t) -> GuiBuildingFactory.create(m));
 	}
 
 	/** Remembers which block classes react to right-click, as the 1.12 code did with reflection. */
@@ -301,7 +310,7 @@ public class ClientProxy extends CommonProxy {
 					@Override
 					protected TextureAtlasSprite getSprite(EntityFuryFireball entity) {
 						return Minecraft.getInstance().getItemRenderer().getItemModelShaper()
-								.getParticleIcon(Items.FIRE_CHARGE);
+								.getItemModel(Items.FIRE_CHARGE).getParticleIcon();
 					}
 				});
 		event.registerEntityRenderer(TF2weapons.HALE,
@@ -511,7 +520,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	public static void spawnRocketParticle(Level world, EntityRocket rocket) {
-		spawnParticle(world, new EntityRocketEffect(world, rocket));
+		spawnParticle(world, new rafradek.TF2weapons.entity.projectile.EntityRocketEffect(world, rocket));
 	}
 
 	public static void spawnParticle(Level world, Particle particle) {
@@ -600,7 +609,7 @@ public class ClientProxy extends CommonProxy {
 		}
 
 		@Override
-		public void tick(boolean slow) {
+		public void tick(boolean slow, float slowFactor) {
 			this.leftImpulse = 0.0F;
 			this.forwardImpulse = 1.0F;
 		}

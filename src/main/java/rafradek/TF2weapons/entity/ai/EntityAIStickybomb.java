@@ -99,7 +99,7 @@ public class EntityAIStickybomb extends Goal {
 	@Override
 	public void tick() {
 		if (this.attackTarget == null)
-			this.attackTarget = DefaultRandomPos.findRandomTarget(this.entityHost, 10, 4);
+			this.attackTarget = DefaultRandomPos.getPos(this.entityHost, 10, 4);
 		if (this.attackTarget == null)
 			return;
 		this.entityHost.switchSlot(1);

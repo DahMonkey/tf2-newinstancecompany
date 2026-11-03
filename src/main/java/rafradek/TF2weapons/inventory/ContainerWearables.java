@@ -38,7 +38,7 @@ public class ContainerWearables extends LegacyContainer {
 	/** The crafting matrix inventory. */
 	/** Determines if inventory manipulation should be handled. */
 	public boolean isLocalWorld;
-	private final Player player;
+	public final Player player;
 	public Container wearables;
 	public static IItemHandler nullInv = new ItemStackHandler(9);
 	public boolean ammoBelt;
@@ -311,9 +311,9 @@ public class ContainerWearables extends LegacyContainer {
 		super.onContainerClosed(player);
 
 		if (!player.level.isClientSide && !WeaponsCapability.get(player).forcedClass)
-			((ItemToken) TF2weapons.itemToken).updateAttributes(this.wearables.getStackInSlot(4), player);
+			((ItemToken) TF2weapons.itemToken).updateAttributes(this.wearables.getItem(4), player);
 		/*
-		 * if (this.wearables.getStackInSlot(3) == null) for (int i = 4; i < 13; ++i) {
+		 * if (this.wearables.getItem(3) == null) for (int i = 4; i < 13; ++i) {
 		 * ItemStack itemstack = this.wearables.removeItemNoUpdate(i);
 		 * 
 		 * if (item!stack.isEmpty()) player.drop(itemstack, false); }
@@ -328,9 +328,9 @@ public class ContainerWearables extends LegacyContainer {
 	public void addSlotAmmo() {
 		IItemHandler handler = nullInv;
 		ammoBelt = false;
-		if (!this.wearables.getStackInSlot(3).isEmpty() && this.wearables.getStackInSlot(3)
+		if (!this.wearables.getItem(3).isEmpty() && this.wearables.getItem(3)
 				.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
-			handler = this.wearables.getStackInSlot(3).getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+			handler = this.wearables.getItem(3).getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			ammoBelt = true;
 		}
 		for (int i = 0; i < 3; ++i)

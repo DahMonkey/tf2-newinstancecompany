@@ -67,9 +67,9 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
 	}
 
-	protected final ServerBossEvent bossInfo = (new ServerBossEvent(this.getHoverName(), BossEvent.Color.PURPLE,
-			BossEvent.Overlay.PROGRESS));
-	public int level = 1;
+	protected final ServerBossEvent bossInfo = (new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE,
+			BossEvent.BossBarOverlay.PROGRESS));
+	public int bossLevel = 1;
 	public int timeLeft = 2400;
 	public HashSet<Player> attackers = new HashSet<>();
 	public HashSet<UUID> participateUUID = new HashSet<>();
@@ -87,8 +87,8 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	protected EntityTF2Boss(EntityType<? extends EntityTF2Boss> type, Level world) {
 		super(type, world);
 		if (!this.level.isClientSide)
-			this.setGlowing(true);
-		this.inventoryHandsDropChances = new float[] { 0, 0 };
+			this.setGlowingTag(true);
+		java.util.Arrays.fill(this.handDropChances, 0f);
 		this.weaponCap = new WeaponsCapability(this);
 		this.weaponCap.setCanExpJump(false);
 	}
@@ -125,8 +125,8 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public void fall(float distance, float damageMultiplier) {
-		super.fall(distance, 0);
+	public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source) {
+		return false;
 	}
 
 	@Override
@@ -153,11 +153,11 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		for (int i = 0; i < count; i++) {
 			if (i > 0)
 				this.dropFewItems(wasRecentlyHit, lootingModifier);
-			this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemTF2, this.level / 2 + Mth.log2(this.level) + 2, 2),
+			this.spawnAtLocation(TF2Util.metaStack(TF2weapons.itemTF2, this.bossLevel / 2 + Mth.log2(this.bossLevel) + 2, 2),
 					0);
 			ItemStack weapon = ItemFromData.getRandomWeapon(this.random, ItemFromData.VISIBLE_WEAPON);
-			if (this.level > 1)
-				TF2Attribute.upgradeItemStack(weapon, 40 + (this.level - 2) * 55 + Mth.log2(this.level) * 40,
+			if (this.bossLevel > 1)
+				TF2Attribute.upgradeItemStack(weapon, 40 + (this.bossLevel - 2) * 55 + Mth.log2(this.bossLevel) * 40,
 						random);
 			this.spawnAtLocation(weapon, 0);
 		}
@@ -196,7 +196,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 				this.setTarget(null);
 			}
 			if (timeLeft == 2250)
-				this.setGlowing(false);
+				this.setGlowingTag(false);
 			if (timeLeft == 1200)
 				this.playSound(TF2Sounds.MOB_BOSS_ESCAPE_60, 4F, 1f);
 			else if (timeLeft == 200)
@@ -207,7 +207,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 					this.returnSpawnItems();
 				this.discard();
 			}
-			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+			this.bossInfo.setProgress(this.getHealth() / this.getMaxHealth());
 			--this.blockBreakCounter;
 
 			if (this.blockBreakCounter <= 0 && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
@@ -216,6 +216,37 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 			}
 		}
 
+	}
+
+	/** 1.12 dropFewItems: extra loot for every additional participant. */
+	public void dropFewItems(boolean hit, int looting) {
+	}
+
+	public static net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder createAttributes() {
+		return Monster.createMonsterAttributes();
+	}
+
+	/** Ghast-style flying movement shared by the floating bosses. */
+	protected void flyingTravel(net.minecraft.world.phys.Vec3 travel) {
+		if (this.isInWater()) {
+			this.moveRelative(0.02F, travel);
+			this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
+			this.setDeltaMovement(this.getDeltaMovement().scale(0.8F));
+		} else if (this.isInLava()) {
+			this.moveRelative(0.02F, travel);
+			this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
+			this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
+		} else {
+			BlockPos ground = this.getBlockPosBelowThatAffectsMyMovement();
+			float f = 0.91F;
+			if (this.onGround)
+				f = this.level.getBlockState(ground).getFriction(this.level, ground, this) * 0.91F;
+			float f1 = 0.16277137F / (f * f * f);
+			this.moveRelative(this.onGround ? 0.1F * f1 : 0.02F, travel);
+			this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
+			this.setDeltaMovement(this.getDeltaMovement().scale(f));
+		}
+		this.calculateEntityAnimation(this, false);
 	}
 
 	public void returnSpawnItems() {
@@ -235,9 +266,9 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 					BlockState iblockstate = this.level.getBlockState(blockpos);
 					Block block = iblockstate.getBlock();
 
-					if (!block.isAir(iblockstate, this.level, blockpos) && !iblockstate.getMaterial().isLiquid()
-							&& WitherBoss.canDestroyBlock(block)
-							&& block.canEntityDestroy(iblockstate, world, blockpos, this))
+					if (!iblockstate.isAir() && !iblockstate.getMaterial().isLiquid()
+							&& WitherBoss.canDestroy(iblockstate)
+							&& iblockstate.canEntityDestroy(this.level, blockpos, this))
 						flag = this.level.destroyBlock(blockpos, true) || flag;
 				}
 
@@ -256,7 +287,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public boolean isNonBoss() {
+	public boolean canChangeDimensions() {
 		return false;
 	}
 
@@ -275,9 +306,9 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public void travel(float m1, float m2, float m3) {
+	public void travel(net.minecraft.world.phys.Vec3 travel) {
 		float move = this.getSpeed();
-		super.travel(m1 / move, m2, m3 / move);
+		super.travel(move == 0 ? travel : new net.minecraft.world.phys.Vec3(travel.x / move, travel.y, travel.z / move));
 	}
 
 	public boolean attemptTeleportForce(double x, double y, double z) {
@@ -291,7 +322,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		boolean flag = false;
 		BlockPos blockpos = this.blockPosition();
 		Level world = this.level;
-		Random random = this.getRandom();
+		net.minecraft.util.RandomSource random = this.getRandom();
 
 		if (world.isLoaded(blockpos)) {
 			boolean flag1 = false;
@@ -300,10 +331,10 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 				BlockPos blockpos1 = blockpos.below();
 				BlockState iblockstate = world.getBlockState(blockpos1);
 
-				if (iblockstate.getMaterial().blocksMovement()) {
+				if (iblockstate.getMaterial().blocksMotion()) {
 					flag1 = true;
 				} else {
-					--this.getY();
+					this.setPos(this.getX(), this.getY() - 1, this.getZ());
 					blockpos = blockpos1;
 				}
 			}
@@ -311,7 +342,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 			if (flag1) {
 				this.teleportTo(this.getX(), this.getY(), this.getZ());
 
-				if (world.getCollisionBoxes(null, this.getBoundingBox()).isEmpty()
+				if (world.noCollision(this, this.getBoundingBox())
 						&& !world.containsAnyLiquid(this.getBoundingBox())) {
 					flag = true;
 				}
@@ -368,12 +399,12 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 				if (level > highestLevel)
 					highestLevel = level;
 				player.sendSystemMessage(Component.translatable("tf2boss.appear",
-						new Object[] { this.getHoverName(), Math.min(30, highestLevel + 1) }));
+						new Object[] { this.getDisplayName(), Math.min(30, highestLevel + 1) }));
 			}
 		}
 		highestLevel++;
-		this.level = Math.min(30, highestLevel);
-		// System.out.println("Level: " + this.level + " player: " + players);
+		this.bossLevel = Math.min(30, highestLevel);
+		// System.out.println("Level: " + this.bossLevel + " player: " + players);
 		this.healthForPlayer = (float) (this.getAttribute(Attributes.MAX_HEALTH).getBaseValue()
 				* 0.1f * (0.5f + highestLevel * 0.5f));
 		float desiredHealth = (float) this.getAttribute(Attributes.MAX_HEALTH).getBaseValue()
@@ -398,22 +429,22 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 			int level = player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).highestBossLevel.get(this.getClass()) != null
 					? player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).highestBossLevel.get(this.getClass())
 					: 0;
-			if (this.level > level)
+			if (this.bossLevel > level)
 				player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).highestBossLevel.put(this.getClass(),
-						(short) this.level);
+						(short) this.bossLevel);
 			player.sendSystemMessage(
-					Component.translatable("tf2boss.death", new Object[] { this.getHoverName(), this.level }));
+					Component.translatable("tf2boss.death", new Object[] { this.getDisplayName(), this.bossLevel }));
 		}
 	}
 
 	/*
-	 * public void addAchievement(EntityPlayer player){ if(this.level>=30)
+	 * public void addAchievement(EntityPlayer player){ if(this.bossLevel>=30)
 	 * player.awardStat(TF2Achievements.BOSS_30_LVL); }
 	 */
 	@Override
 	public void addAdditionalSaveData(CompoundTag nbt) {
 		super.addAdditionalSaveData(nbt);
-		nbt.putShort("Level", (short) this.level);
+		nbt.putShort("Level", (short) this.bossLevel);
 		nbt.putShort("Players", (short) this.playersAttacked);
 		nbt.putShort("TimeLeft", (short) this.timeLeft);
 		nbt.putFloat("DamageMult", this.desiredHealth);
@@ -445,7 +476,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	@Override
 	public void readAdditionalSaveData(CompoundTag nbt) {
 		super.readAdditionalSaveData(nbt);
-		level = nbt.getShort("Level");
+		bossLevel = nbt.getShort("Level");
 		this.playersAttacked = nbt.getShort("Players");
 		this.timeLeft = nbt.getShort("TimeLeft");
 		this.desiredHealth = nbt.getFloat("DamageMult");
@@ -455,18 +486,20 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		ListTag playerleast = nbt.getList("PlayerLeast", 4);
 		ListTag playermost = nbt.getList("PlayerMost", 4);
 		for (int i = 0; i < playerleast.size(); i++) {
-			this.attackers.add(this.level.getPlayerByUUID(
-					new UUID(((LongTag) playermost.get(i)).getLong(), ((LongTag) playerleast.get(i)).getLong())));
+			Player attacker = this.level.getPlayerByUUID(
+					new UUID(((LongTag) playermost.get(i)).getAsLong(), ((LongTag) playerleast.get(i)).getAsLong()));
+			if (attacker != null)
+				this.attackers.add(attacker);
 		}
 		ListTag participateleast = nbt.getList("ParticipateLeast", 4);
 		ListTag participatemost = nbt.getList("ParticipateMost", 4);
 		for (int i = 0; i < participateleast.size(); i++) {
-			this.participateUUID.add(new UUID(((LongTag) participatemost.get(i)).getLong(),
-					((LongTag) participateleast.get(i)).getLong()));
+			this.participateUUID.add(new UUID(((LongTag) participatemost.get(i)).getAsLong(),
+					((LongTag) participateleast.get(i)).getAsLong()));
 		}
 
 		if (this.timeLeft < 2250)
-			this.setGlowing(false);
+			this.setGlowingTag(false);
 		if (nbt.contains("SpawnPos")) {
 			int[] arr = nbt.getIntArray("SpawnPos");
 			this.spawnPos = new BlockPos(arr[0], arr[1], arr[2]);
@@ -474,14 +507,14 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public void addTrackingPlayer(ServerPlayer player) {
-		super.addTrackingPlayer(player);
+	public void startSeenByPlayer(ServerPlayer player) {
+		super.startSeenByPlayer(player);
 		this.bossInfo.addPlayer(player);
 	}
 
 	@Override
-	public void removeTrackingPlayer(ServerPlayer player) {
-		super.removeTrackingPlayer(player);
+	public void stopSeenByPlayer(ServerPlayer player) {
+		super.stopSeenByPlayer(player);
 		this.bossInfo.removePlayer(player);
 	}
 
@@ -491,9 +524,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	@Nullable
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
 		T value = this.getCapabilityLegacy(capability, facing);
 		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);

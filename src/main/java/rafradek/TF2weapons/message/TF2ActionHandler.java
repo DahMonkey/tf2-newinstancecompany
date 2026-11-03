@@ -56,9 +56,9 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 	// previousPlayerAction=new ThreadLocalMap<EntityLivingBase,Integer>();
 	@Override
 	public IMessage onMessage(final TF2Message.ActionMessage message, final MessageContext ctx) {
-		if (ctx.side == Dist.SERVER) {
+		if (!ctx.side.isClient()) {
 			final ServerPlayer player = ctx.getServerHandler().player;
-			((ServerLevel) player.level).execute(() -> {
+			ctx.context.enqueueWork(() -> {
 				if (message.value <= 15) {
 					handleMessage(message, player, false);
 					message.entity = player.getId();
@@ -77,91 +77,97 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 					TF2weapons.network.sendTo(new TF2Message.WearableChangeMessage(wearer, 3,
 							wearer.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)), player);
 				} else if (message.value == 16) {
-					player.level.getScoreboard().addPlayerToTeam(player.getName(), "RED");
+					player.level.getScoreboard().addPlayerToTeam(player.getScoreboardName(), player.level.getScoreboard().getPlayerTeam("RED"));
 					// player.awardStat(TF2Achievements.JOIN_TEAM);
 				} else if (message.value == 17) {
-					player.level.getScoreboard().addPlayerToTeam(player.getName(), "BLU");
+					player.level.getScoreboard().addPlayerToTeam(player.getScoreboardName(), player.level.getScoreboard().getPlayerTeam("BLU"));
 					// player.awardStat(TF2Achievements.JOIN_TEAM);
 				} else if (message.value == 18 && player.containerMenu != null
 						&& player.containerMenu instanceof MerchantMenu
 						&& player.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).lostItems
-						.containsKey(player.getName())) {
-					player.closeScreen();
+						.containsKey(player.getScoreboardName())) {
+					player.closeContainer();
 					final MerchantOffers listg = player.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).lostItems
-							.get(player.getName());
+							.get(player.getScoreboardName());
 					if (listg != null) {
 						Iterator<MerchantOffer> iterator = listg.iterator();
 						while (iterator.hasNext()) {
 							MerchantOffer recipe = iterator.next();
-							if (recipe != null && recipe.getItemToBuy().isEmpty()) {
-								ItemHandlerHelper.giveItemToPlayer(player, recipe.getItemToSell());
+							if (recipe != null && recipe.getCostA().isEmpty()) {
+								ItemHandlerHelper.giveItemToPlayer(player, recipe.getResult());
 								iterator.remove();
 							}
 						}
 					}
-					player.level.getCapability(TF2weapons.WORLD_CAP).orElse(null).lostItems.get(player.getName());
-					player.displayVillagerTradeGui(new Merchant() {
+					new Merchant() {
 
 						MerchantOffers list;
+						Player customer;
 
 						@Override
-						public void setCustomer(Player player) {
-							if (player == null && list != null) {
+						public void setTradingPlayer(Player newCustomer) {
+							this.customer = newCustomer;
+							if (newCustomer == null && list != null) {
 								Iterator<MerchantOffer> iterator = list.iterator();
 								while (iterator.hasNext()) {
 									MerchantOffer recipe = iterator.next();
-									if (recipe != null && recipe.isRecipeDisabled()) {
+									if (recipe != null && recipe.isOutOfStock()) {
 										iterator.remove();
 									}
 								}
 							}
-
 						}
 
 						@Override
-						public Player getCustomer() {
-							return player;
+						public Player getTradingPlayer() {
+							return customer;
 						}
 
 						@Override
-						public MerchantOffers getRecipes(Player player) {
+						public MerchantOffers getOffers() {
 							if (list == null)
-								list = listg;
+								list = listg != null ? listg : new MerchantOffers();
 							return list;
 						}
 
 						@Override
-						public void setRecipes(MerchantOffers recipeList) {
+						public void overrideOffers(MerchantOffers recipeList) {
 							list = recipeList;
 						}
 
 						@Override
-						public void useRecipe(MerchantOffer recipe) {
-							recipe.incrementToolUses();
-
+						public void notifyTrade(MerchantOffer recipe) {
+							recipe.increaseUses();
 						}
 
 						@Override
-						public void verifySellingItem(ItemStack stack) {
-
+						public void notifyTradeUpdated(ItemStack stack) {
 						}
 
 						@Override
-						public Component getDisplayName() {
-							return Component.translatable("gui.recoveritems");
+						public int getVillagerXp() {
+							return 0;
 						}
 
 						@Override
-						public Level getLevel() {
-							return player.level;
+						public void overrideXp(int xp) {
 						}
 
 						@Override
-						public BlockPos getPos() {
-							return player.blockPosition();
+						public boolean showProgressBar() {
+							return false;
 						}
 
-					});
+						@Override
+						public net.minecraft.sounds.SoundEvent getNotifyTradeSound() {
+							return net.minecraft.sounds.SoundEvents.VILLAGER_YES;
+						}
+
+						@Override
+						public boolean isClientSide() {
+							return false;
+						}
+					}.openTradingScreen(player, Component.translatable("gui.recoveritems"), 0);
 					// TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 4, player.world,(int)
 					// player.posX,(int) player.posY,(int) player.posZ);
 				} else if (message.value == 23
@@ -170,7 +176,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 					player.fallDistance = 0;
 					if (!WeaponsCapability.get(player).isGrappled()) {
 						WeaponsCapability.get(player).airJumps += 1;
-						player.getLevel().addParticle(ParticleTypes.CLOUD, player.getX(), player.getY(),
+						player.getLevel().sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY(),
 								player.getZ(), 12, 1, 0.2, 1, 0D);
 					} else {
 						if (player.getMainHandItem().getItem() instanceof ItemGrapplingHook) {
@@ -188,7 +194,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 						stack1.getTag().putBoolean("Deployed", !stack1.getTag().getBoolean("Deployed"));
 					}
 				} else if (message.value == 29) {
-					player.level.getScoreboard().removePlayerFromTeams(player.getName());
+					player.level.getScoreboard().removePlayerFromTeam(player.getScoreboardName());
 				} else if (message.value == 30) {
 					ItemStack stack2 = ItemBackpack.getBackpack(player);
 					if (stack2.getItem() instanceof ItemJetpack
@@ -217,7 +223,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 					int id3 = message.value - 64;
 					if (player != null && id3 < player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.size()) {
 						player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.remove(id3);
-						player.getStats().unlockAchievement(player, TF2Achievements.CONTRACT_DAY,
+						TF2Achievements.set(player, TF2Achievements.CONTRACT_DAY,
 								(int) (player.level.getDayTime() / 24000 + 1));
 					}
 				} else if (message.value >= 100 && message.value < 109) {
@@ -233,7 +239,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 						if (id5 == 0) {
 							player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).medicCall = 100;
 							boolean success1 = false;
-							for (EntityMedic medic1 : player.level.getEntities(EntityMedic.class,
+							for (EntityMedic medic1 : player.getLevel().getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(EntityMedic.class),
 									test1 -> (test1.getOwner() == player))) {
 								if (TF2Util.teleportSafe(medic1, player)) {
 									success1 = true;
@@ -247,9 +253,9 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 									BlockPos pos1 = it1.next();
 									success1 = false;
 									ArrayList<EntityMedic> list1 = new ArrayList<>();
-									player.level.getChunkAt(pos1).getEntitiesOfTypeWithinAABB(
-											EntityMedic.class, new AABB(pos1), list1,
-											test2 -> player.getUUID().equals(test2.getOwnerUUID()));
+									list1.addAll(player.level.getEntitiesOfClass(
+											EntityMedic.class, new AABB(pos1).inflate(16, 256, 16),
+											test2 -> player.getUUID().equals(test2.getOwnerUUID())));
 									for (EntityMedic medic2 : list1) {
 										if (TF2Util.teleportSafe(medic2, player)) {
 
@@ -267,7 +273,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 							}
 						} else if (id5 == 1) {
 							boolean success2 = false;
-							for (EntityTF2Character living1 : player.level.getEntities(EntityTF2Character.class,
+							for (EntityTF2Character living1 : player.getLevel().getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(EntityTF2Character.class),
 									test3 -> (test3.getOwner() == player
 									&& !(test3 instanceof EntityMedic || test3 instanceof EntityEngineer)))) {
 								if (TF2Util.teleportSafe(living1, player)) {
@@ -282,9 +288,9 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 									BlockPos pos2 = it2.next();
 									success2 = false;
 									ArrayList<EntityTF2Character> list2 = new ArrayList<>();
-									player.level.getChunkAt(pos2).getEntitiesOfTypeWithinAABB(
-											EntityTF2Character.class, new AABB(pos2), list2,
-											test4 -> player.getUUID().equals(test4.getOwnerUUID()));
+									list2.addAll(player.level.getEntitiesOfClass(
+											EntityTF2Character.class, new AABB(pos2).inflate(16, 256, 16),
+											test4 -> player.getUUID().equals(test4.getOwnerUUID())));
 									for (EntityTF2Character medic3 : list2) {
 										if (TF2Util.teleportSafe(medic3, player)) {
 
@@ -321,24 +327,26 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 								living3.activateBackpack();
 							}
 						} else if (id5 == 4) {
-							HitResult trace = player.level.rayTraceBlocks(player.getEyePosition(1),
-									player.getEyePosition(1).add(player.getViewVector(1).scale(40)));
-							if (trace != null) {
-								BlockPos pos3 = ((BlockHitResult) trace).getBlockPos().relative(trace.getDirection());
+							BlockHitResult trace = player.level.clip(new net.minecraft.world.level.ClipContext(player.getEyePosition(1),
+									player.getEyePosition(1).add(player.getViewVector(1).scale(40)),
+									net.minecraft.world.level.ClipContext.Block.COLLIDER,
+									net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+							if (trace.getType() != HitResult.Type.MISS) {
+								BlockPos pos3 = trace.getBlockPos().relative(trace.getDirection());
 								List<EntityTF2Character> list3 = player.level.getEntitiesOfClass(
 										EntityTF2Character.class, player.getBoundingBox().inflate(20, 8, 20),
 										test8 -> (test8.getOwner() == player));
 								boolean hasFollow = false;
 								for (EntityTF2Character living4 : list3) {
 									if (living4.getOrder() == Order.FOLLOW) {
-										living4.setHomePosAndDistance(pos3, 0);
+										living4.restrictTo(pos3, 0);
 										living4.getNavigation().moveTo(pos3.getX(), pos3.getY(), pos3.getZ(), 1);
 										living4.setOrder(Order.HOLD);
 										hasFollow = true;
 									}
 								}
 								if (!hasFollow && !list3.isEmpty()) {
-									list3.get(0).setHomePosAndDistance(pos3, 0);
+									list3.get(0).restrictTo(pos3, 0);
 									list3.get(0).getNavigation().moveTo(pos3.getX(), pos3.getY(), pos3.getZ(), 1);
 									list3.get(0).setOrder(Order.HOLD);
 								}

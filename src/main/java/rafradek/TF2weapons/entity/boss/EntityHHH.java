@@ -81,13 +81,13 @@ public class EntityHHH extends EntityTF2Boss {
 		this.setSize(0.9f, 2.85f);
 		this.maxUpStep = 1.05f;
 		this.setNoAi(true);
-		this.setPathPriority(BlockPathTypes.LAVA, 8.0F);
+		this.setPathfindingMalus(BlockPathTypes.LAVA, 8.0F);
 		this.setItemInHand(InteractionHand.MAIN_HAND, ItemFromData.getNewStack("headtaker"));
 		this.getMainHandItem().enchant(Enchantments.KNOCKBACK, 10);
 	}
 
 	@Override
-	protected void initEntityAI() {
+	protected void registerGoals() {
 		this.goalSelector.addGoal(1, new FloatGoal(this));
 		this.goalSelector.addGoal(2, new EntityAIAirAttack());
 		this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
@@ -113,7 +113,7 @@ public class EntityHHH extends EntityTF2Boss {
 		 *
 		 * @Override public boolean apply(EntityLivingBase input) { return (input
 		 * instanceof EntityTF2Character || input instanceof EntityPlayer) &&
-		 * getDistanceSq(input)<600; }
+		 * distanceToSqr(input)<600; }
 		 *
 		 * }));
 		 */
@@ -134,20 +134,20 @@ public class EntityHHH extends EntityTF2Boss {
 		p_110161_1_ = super.finalizeSpawn(levelAccessor, diff, spawnReason, p_110161_1_, spawnTag);
 		this.getAttribute(Attributes.MOVEMENT_SPEED)
 				.setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue()
-						* (0.88 + this.level * 0.12));
+						* (0.88 + this.bossLevel * 0.12));
 		this.getAttribute(Attributes.ATTACK_DAMAGE)
 				.setBaseValue(this.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue()
-						* (0.9 + this.level * 0.1));
+						* (0.9 + this.bossLevel * 0.1));
 
 		return p_110161_1_;
 	}
 
 	@Override
 	public void dropFewItems(boolean hit, int looting) {
-		if (this.random.nextBoolean() || this.level == 1)
+		if (this.random.nextBoolean() || this.bossLevel == 1)
 			this.spawnAtLocation(ItemFromData.getNewStack("headtaker"), 0);
 		// ItemStack hat=ItemFromData.getNewStack("monoculus");
-		// hat.getTagCompound().setShort("BossLevel",(short)this.level);
+		// hat.getTagCompound().setShort("BossLevel",(short)this.bossLevel);
 		// this.entityDropItem(hat, 0);
 	}
 
@@ -186,8 +186,8 @@ public class EntityHHH extends EntityTF2Boss {
 				List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class,
 						this.getBoundingBox().inflate(20, 10, 20),
 						input -> (input instanceof EntityTF2Character || input instanceof Player
-								|| input == getRevengeTarget()) && getDistanceSq(input) < 600
-								&& TargetGoal.isSuitableTarget(EntityHHH.this, input, false, false));
+								|| input == getLastHurtByMob()) && distanceToSqr(input) < 600
+								&& TF2Util.isSuitableTarget(EntityHHH.this, input, false, false));
 				Collections.sort(list, java.util.Comparator.comparingDouble(this::distanceToSqr));
 				if (list.size() > 0)
 					this.setTarget(list.get(0));
@@ -199,7 +199,7 @@ public class EntityHHH extends EntityTF2Boss {
 					boolean one = false;
 					List<LivingEntity> lists = this.level.getEntitiesOfClass(LivingEntity.class,
 							this.getBoundingBox().inflate(10, 10, 10),
-							input -> getDistanceSq(input) < 100 && !TF2Util.isAlliedTo(EntityHHH.this, input)
+							input -> distanceToSqr(input) < 100 && !TF2Util.isAlliedTo(EntityHHH.this, input)
 									&& !(input.getItemBySlot(EquipmentSlot.HEAD).isEmpty()
 											&& input.getItemBySlot(EquipmentSlot.HEAD).getItem() == Item
 													.byBlock(Blocks.PUMPKIN)));
@@ -217,11 +217,11 @@ public class EntityHHH extends EntityTF2Boss {
 			if (this.getTarget() != null) {
 				if (!this.getTarget().isOnGround())
 					this.targetInAir += 1;
-				if (this.level > 1) {
+				if (this.bossLevel > 1) {
 					if (this.dashCool-- <= 0) {
 						this.dashCool = 300;
 						this.dashTick = 35;
-						this.dashMotion = this.getVectorForRotation(0, this.yHeadRot).scale(0.45);
+						this.dashMotion = this.calculateViewVector(0, this.yHeadRot).scale(0.45);
 						TF2Util.addModifierSafe(this, Attributes.MOVEMENT_SPEED,
 								new AttributeModifier(slowDash, "dash", -0.5, AttributeModifier.Operation.fromValue(2)), false);
 					}
@@ -254,7 +254,7 @@ public class EntityHHH extends EntityTF2Boss {
 						this.lastPos = this.position();
 					}
 					if (!shouldTeleport)
-						shouldTeleport = Math.abs(path.getFinalPathPoint().y - this.getTarget().getY()) > 1.5
+						shouldTeleport = Math.abs(path.getEndNode().y - this.getTarget().getY()) > 1.5
 								&& this.getTarget().isOnGround();
 				}
 				if (shouldTeleport) {
@@ -274,7 +274,7 @@ public class EntityHHH extends EntityTF2Boss {
 			if (this.toTeleportTime > 0) {
 				if (this.level instanceof ServerLevel) {
 					ServerLevel world = (ServerLevel) this.level;
-					world.addParticle(ParticleTypes.PORTAL, this.getX(), this.getY() - 0.5, this.getZ(), 8, 2.7, 0, 2.7,
+					world.sendParticles(ParticleTypes.PORTAL, this.getX(), this.getY() - 0.5, this.getZ(), 8, 2.7, 0, 2.7,
 							0);
 				}
 				if (--this.toTeleportTime == 0) {
@@ -301,10 +301,10 @@ public class EntityHHH extends EntityTF2Boss {
 			if (--this.attackTick <= 0) {
 				List<LivingEntity> ents = this.level
 						.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(3, 1, 3),
-								input -> getDistanceSq(input) < 4 && !TF2Util.isAlliedTo(EntityHHH.this, input)
+								input -> distanceToSqr(input) < 4 && !TF2Util.isAlliedTo(EntityHHH.this, input)
 										&& (TF2Util.lookingAt(EntityHHH.this, 30, input.getX(),
 												input.getY() + input.getEyeHeight(), input.getZ())
-												|| input.getCollisionBoundingBox() != null));
+												|| input.canBeCollidedWith()));
 				if (!ents.isEmpty()) {
 					this.swing(InteractionHand.MAIN_HAND);
 					this.attackTick = 20;
@@ -369,7 +369,7 @@ public class EntityHHH extends EntityTF2Boss {
 	}
 
 	@Override
-	public int getTalkInterval() {
+	public int getAmbientSoundInterval() {
 		return 130;
 	}
 
@@ -404,7 +404,7 @@ public class EntityHHH extends EntityTF2Boss {
 			 * Predicate<EntityLivingBase>(){
 			 *
 			 * @Override public boolean apply(EntityLivingBase input) { return
-			 * getDistanceSq(input)<100 && !TF2weapons.isOnSameTeam(EntityHHH.this, input)
+			 * distanceToSqr(input)<100 && !TF2weapons.isOnSameTeam(EntityHHH.this, input)
 			 * && !(input.getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null &&
 			 * input.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem()==Item.
 			 * getItemFromBlock(Blocks.PUMPKIN)); }
@@ -491,7 +491,7 @@ public class EntityHHH extends EntityTF2Boss {
 			if (--this.attackTime > 0) {
 				this.setFlags(TF2Util.mutexFlags(3));
 				this.ticksInAir = 0;
-				EntityHHH.this.faceEntity(target, 45, 90);
+				EntityHHH.this.lookAt(target, 45, 90);
 				EntityHHH.this.getLookControl().setLookAt(target, 90, 90);
 				if (this.attackTime == 30) {
 					ItemStack stack = ItemFromData.getNewStack("hhhaxe");

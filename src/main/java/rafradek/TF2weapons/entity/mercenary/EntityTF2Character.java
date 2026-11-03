@@ -1,5 +1,12 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.util.RandomSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -631,7 +638,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 			}
 			if (this.getOrder() == Order.HOLD && !this.hasRestriction())
 				this.restrictTo(this.blockPosition(), 12);
-			else if (this.getOrder() == Order.FOLLOW && this.hasHome())
+			else if (this.getOrder() == Order.FOLLOW && this.hasRestriction())
 				this.clearRestriction();
 
 			this.setDiff(this.level.getDifficulty().getId());
@@ -1177,7 +1184,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	protected SoundEvent getSplashSound() {
+	protected SoundEvent getSwimSplashSound() {
 		return SoundEvents.HOSTILE_SPLASH;
 	}
 
@@ -1719,13 +1726,14 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	@Override
-	protected int getExperienceReward(Player player) {
-		if (TF2Util.isAlliedTo(player, this))
+	public int getExperienceReward() {
+		Player player = this.lastHurtByPlayer;
+		if (player != null && TF2Util.isAlliedTo(player, this))
 			return 0;
 		else if (this.isRobot() && !this.isGiant())
-			return super.getExperienceReward(player) / 2;
+			return super.getExperienceReward() / 2;
 		else
-			return super.getExperienceReward(player);
+			return super.getExperienceReward();
 
 	}
 	/*

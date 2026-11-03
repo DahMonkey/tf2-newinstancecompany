@@ -125,6 +125,12 @@ public class TF2Util {
 		return result.getType() == HitResult.Type.MISS ? null : result;
 	}
 
+	/** 1.12 World.rayTraceBlocks(start, end, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock). */
+	public static BlockHitResult rayTraceBlocks(Level world, Vec3 start, Vec3 end, boolean stopOnLiquid,
+			boolean ignoreNoBox, boolean returnLast) {
+		return rayTraceBlocks(world, start, end, null, stopOnLiquid);
+	}
+
 	public static BlockHitResult rayTraceBlocks(Level world, Vec3 start, Vec3 end) {
 		return rayTraceBlocks(world, start, end, null, false);
 	}
@@ -2021,5 +2027,20 @@ public class TF2Util {
 		default:
 			return net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS;
 		}
+	}
+
+	/** 1.12 EntityAITarget.isSuitableTarget. */
+	public static boolean isSuitableTarget(net.minecraft.world.entity.Mob attacker, LivingEntity target,
+			boolean includeInvincibles, boolean checkSight) {
+		if (target == null || target == attacker || !target.isAlive() || !attacker.canAttackType(target.getType()))
+			return false;
+		if (attacker.isAlliedTo(target))
+			return false;
+		if (!includeInvincibles && target instanceof Player
+				&& (((Player) target).isCreative() || ((Player) target).isSpectator()))
+			return false;
+		if (!attacker.isWithinRestriction(target.blockPosition()))
+			return false;
+		return !checkSight || attacker.getSensing().hasLineOfSight(target);
 	}
 }

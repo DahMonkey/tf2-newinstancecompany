@@ -55,7 +55,7 @@ public class EntityAISentryBuster extends Goal {
 			if (this.path != null) {
 				return true;
 			} else {
-				return this.getAttackReachSqr() >= this.attacker.distanceToSqr(target);
+				return this.getAttackReachSqr() >= this.attacker.distanceToSqr(net.minecraft.world.phys.Vec3.atBottomCenterOf(target));
 			}
 		}
 		return false;
@@ -73,7 +73,7 @@ public class EntityAISentryBuster extends Goal {
 
 		if (target == null) {
 			return false;
-		} else if (!this.attacker.isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase))) {
+		} else if (!this.attacker.isWithinRestriction(entitylivingbase.blockPosition())) {
 			return false;
 		} else {
 			return !(entitylivingbase instanceof Player) || !((Player) entitylivingbase).isSpectator()
@@ -116,7 +116,7 @@ public class EntityAISentryBuster extends Goal {
 		if (entitylivingbase != null)
 			target = entitylivingbase.blockPosition();
 		this.attacker.getLookControl().setLookAt(target.getX(), target.getY(), target.getZ(), 30.0F, 30.0F);
-		double d0 = this.attacker.distanceToSqr(target);
+		double d0 = this.attacker.distanceToSqr(net.minecraft.world.phys.Vec3.atBottomCenterOf(target));
 		--this.delayCounter;
 
 		if (d0 >= this.lastDistance) {

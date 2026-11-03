@@ -71,7 +71,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		this.setSize(4, 4);
 		this.setItemInHand(InteractionHand.MAIN_HAND, ItemFromData.getNewStack("mnceye"));
 		this.setItemInHand(InteractionHand.OFF_HAND, ItemFromData.getNewStack("mnclaser"));
-		this.moveHelper = new MonoculusMoveHelper(this);
+		this.moveControl = new MonoculusMoveHelper(this);
 	}
 
 	@Override
@@ -82,30 +82,26 @@ public class EntityMonoculus extends EntityTF2Boss {
 	}
 
 	@Override
-	protected void initEntityAI() {
+	protected void registerGoals() {
 		this.goalSelector.addGoal(5, new AIRandomFly(this));
 		this.goalSelector.addGoal(3, new AILaserAttack(this));
 		this.goalSelector.addGoal(6, new AIFireballAttack(this));
 		this.goalSelector.addGoal(7, new AILookAround(this));
 
-		this.targetTasks.taskEntries.clear();
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<LivingEntity>(this, LivingEntity.class,
 				0, true, false, input -> input instanceof Player || input instanceof EntityTF2Character) {
 			@Override
-			protected double getTargetDistance() {
-				return super.getTargetDistance() * 0.5;
+			protected double getFollowDistance() {
+				return super.getFollowDistance() * 0.5;
 			}
 		});
-		this.targetSelector.addGoal(3, new HurtByTargetGoal(this, false));
+		this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
 		this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 5, false, false,
 				input -> input instanceof Player));
 	}
 
 	@Override
-	public void fall(float distance, float damageMultiplier) {}
-
-	@Override
-	protected void updateFallState(double y, boolean onGroundIn, BlockState state, BlockPos pos) {}
+	protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos) {}
 
 	public boolean isAngry() {
 		return this.getEntityData().get(ANGRY);
@@ -117,10 +113,10 @@ public class EntityMonoculus extends EntityTF2Boss {
 		this.toAngry = 0;
 		if (angry)
 			TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[19],
-					3 * (0.75f + this.level * 0.25f));
+					3 * (0.75f + this.bossLevel * 0.25f));
 		else
 			TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[19],
-					1 * (0.75f + this.level * 0.25f));
+					1 * (0.75f + this.bossLevel * 0.25f));
 
 		this.getEntityData().set(ANGRY, angry);
 	}
@@ -144,7 +140,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 				}
 			} else {
 				this.toAngry += amount;
-				if (this.toAngry >= 40 * (1 + level * 0.08f)) {
+				if (this.toAngry >= 40 * (1 + bossLevel * 0.08f)) {
 					this.setAngry(120);
 				}
 			}
@@ -183,67 +179,35 @@ public class EntityMonoculus extends EntityTF2Boss {
 		this.laserCooldown = nbt.getShort("LaserCooldown");
 	}
 
-	/**
-	 * Moves the entity based on the specified heading.
-	 */
-	@SuppressWarnings("deprecation")
+	/** Ghast-style flying movement. */
 	@Override
-	public void travel(float strafe, float forward, float par3) {
+	public void travel(Vec3 travel) {
 		if (this.isInWater()) {
-			this.moveRelative(strafe, forward, par3, 0.02F);
-			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x * (0.800000011920929D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.800000011920929D), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.800000011920929D));
+			this.moveRelative(0.02F, travel);
+			this.move(MoverType.SELF, this.getDeltaMovement());
+			this.setDeltaMovement(this.getDeltaMovement().scale(0.8F));
 		} else if (this.isInLava()) {
-			this.moveRelative(strafe, forward, par3, 0.02F);
-			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x * (0.5D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.5D), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.5D));
+			this.moveRelative(0.02F, travel);
+			this.move(MoverType.SELF, this.getDeltaMovement());
+			this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
 		} else {
+			BlockPos ground = this.getBlockPosBelowThatAffectsMyMovement();
 			float f = 0.91F;
-
 			if (this.onGround)
-				f = this.level
-						.getBlockState(new BlockPos(Mth.floor(this.getX()),
-								Mth.floor(this.getBoundingBox().minY) - 1, Mth.floor(this.getZ())))
-						.getBlock().slipperiness * 0.91F;
-
-			float f1 = 0.16277136F / (f * f * f);
-			this.moveRelative(strafe, forward, par3, this.onGround ? 0.1F * f1 : 0.02F);
+				f = this.level.getBlockState(ground).getFriction(this.level, ground, this) * 0.91F;
+			float f1 = 0.16277137F / (f * f * f);
 			f = 0.91F;
-
 			if (this.onGround)
-				f = this.level
-						.getBlockState(new BlockPos(Mth.floor(this.getX()),
-								Mth.floor(this.getBoundingBox().minY) - 1, Mth.floor(this.getZ())))
-						.getBlock().slipperiness * 0.91F;
-
-			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x * (f), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (f), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f));
+				f = this.level.getBlockState(ground).getFriction(this.level, ground, this) * 0.91F;
+			this.moveRelative(this.onGround ? 0.1F * f1 : 0.02F, travel);
+			this.move(MoverType.SELF, this.getDeltaMovement());
+			this.setDeltaMovement(this.getDeltaMovement().scale(f));
 		}
-
-		this.animationSpeedOld = this.animationSpeed;
-		double d1 = this.getX() - this.xo;
-		double d0 = this.getZ() - this.zo;
-		float f2 = (float) Math.sqrt(d1 * d1 + d0 * d0) * 4.0F;
-
-		if (f2 > 1.0F)
-			f2 = 1.0F;
-
-		this.animationSpeed += (f2 - this.animationSpeed) * 0.4F;
-		this.limbSwing += this.animationSpeed;
+		this.calculateEntityAnimation(this, false);
 	}
 
-	/**
-	 * returns true if this entity is by a ladder, false otherwise
-	 */
-
 	@Override
-	public boolean isOnLadder() {
+	public boolean onClimbable() {
 		return false;
 	}
 
@@ -265,7 +229,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		this.laserTime--;
 		if (this.level.isClientSide) {
-			this.ignoreFrustumCheck = this.isLaser();
+			this.noCulling = this.isLaser();
 		}
 		// System.out.println(" "+this.rotationPitch);
 		if (!this.level.isClientSide) {
@@ -304,15 +268,17 @@ public class EntityMonoculus extends EntityTF2Boss {
 				}
 			}
 
-			if (this.level > 1)
+			if (this.bossLevel > 1)
 				this.laserCooldown--;
 
 			if (this.tickCount % 20 == 0 && !this.isAngry() && this.random.nextInt(20) == 0)
 				this.setAngry(100);
 
 			if (this.tickCount % 5 == 0) {
-				if (this.getTarget() != null && this.level.rayTraceBlocks(this.getEyePosition(1),
-						this.getTarget().position()) != null) {
+				if (this.getTarget() != null && this.level.clip(new net.minecraft.world.level.ClipContext(this.getEyePosition(1),
+						this.getTarget().position(), net.minecraft.world.level.ClipContext.Block.COLLIDER,
+						net.minecraft.world.level.ClipContext.Fluid.NONE, this))
+						.getType() != HitResult.Type.MISS) {
 					TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[39],
 							this.isAngry() ? 0.8f : 0.45f);
 					TF2Attribute.setAttribute(this.getOffhandItem(), TF2Attribute.attributes[39], 0f);
@@ -331,8 +297,8 @@ public class EntityMonoculus extends EntityTF2Boss {
 					double x = this.getX() + random.nextDouble() * 48 - 24;
 					double z = this.getZ() + random.nextDouble() * 48 - 24;
 					double y = this.getY() + random.nextDouble() * 48 - 24;
-					y = Math.min(y, this.level.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY() + 16);
-					if (this.attemptTeleport(x, y, z)) {
+					y = Math.min(y, this.level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, y, z)).getY() + 16);
+					if (this.randomTeleport(x, y, z, false)) {
 						for (int j = 0; j < 40; j++) {
 							Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.random);
 							this.level.addParticle(ParticleTypes.PORTAL, pos.x + this.getX(), pos.y + this.getY(),
@@ -359,7 +325,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		p_110161_1_ = super.finalizeSpawn(levelAccessor, diff, spawnReason, p_110161_1_, spawnTag);
 		this.getAttribute(Attributes.MOVEMENT_SPEED)
 				.setBaseValue(this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue()
-						* (0.95 + this.level * 0.05));
+						* (0.95 + this.bossLevel * 0.05));
 		return p_110161_1_;
 	}
 
@@ -367,11 +333,11 @@ public class EntityMonoculus extends EntityTF2Boss {
 	public void dropFewItems(boolean hit, int looting) {
 		if (this.random.nextBoolean()) {
 			ItemStack bomb = ItemFromData.getNewStack("bombinomicon");
-			TF2Attribute.setAttribute(bomb, MapList.nameToAttribute.get("BombEnemy"), 1.45f + this.level * 0.2f);
+			TF2Attribute.setAttribute(bomb, MapList.nameToAttribute.get("BombEnemy"), 1.45f + this.bossLevel * 0.2f);
 			this.spawnAtLocation(bomb, 0);
 		}
 		ItemStack hat = ItemFromData.getNewStack("monoculus");
-		hat.getTag().putShort("BossLevel", (short) this.level);
+		hat.getTag().putShort("BossLevel", (short) this.bossLevel);
 		this.spawnAtLocation(hat, 0);
 	}
 
@@ -452,10 +418,10 @@ public class EntityMonoculus extends EntityTF2Boss {
 							this.parentEntity.getMainHandItem(), this.parentEntity, world, 2, InteractionHand.MAIN_HAND);
 					if (this.triple > 0) {
 						triple--;
-						this.attackTimer = Math.max(4, 6 - this.parentEntity.level / 3);
+						this.attackTimer = Math.max(4, 6 - this.parentEntity.bossLevel / 3);
 
 					} else {
-						this.attackTimer = Math.max(11, 30 - this.parentEntity.level * 2);
+						this.attackTimer = Math.max(11, 30 - this.parentEntity.bossLevel * 2);
 						if (this.parentEntity.isAngry())
 							triple = 2;
 					}
@@ -500,7 +466,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 */
 		@Override
 		public void start() {
-			this.parentEntity.laserTime = LASER_DURATION + this.parentEntity.level * 10;
+			this.parentEntity.laserTime = LASER_DURATION + this.parentEntity.bossLevel * 10;
 		}
 
 		/**
@@ -523,12 +489,12 @@ public class EntityMonoculus extends EntityTF2Boss {
 				this.parentEntity.setLaser(false);
 			} else
 				this.parentEntity.setLaser(true);
-			if (this.parentEntity.laserTime < LASER_START + this.parentEntity.level * 10
+			if (this.parentEntity.laserTime < LASER_START + this.parentEntity.bossLevel * 10
 					&& --this.damageCooldown <= 0) {
 				((ItemWeapon) this.parentEntity.getOffhandItem().getItem()).use(
 						this.parentEntity.getOffhandItem(), this.parentEntity, this.parentEntity.level,
 						InteractionHand.OFF_HAND, null);
-				this.damageCooldown = Math.max(20 - this.parentEntity.level, 10);
+				this.damageCooldown = Math.max(20 - this.parentEntity.bossLevel, 10);
 			}
 			for (HitResult trace : TF2Util.pierce(this.parentEntity.level, parentEntity, 120, false, 0.5f, true)) {
 				// if (trace.entityHit != null) {
@@ -608,13 +574,13 @@ public class EntityMonoculus extends EntityTF2Boss {
 				return false;
 			MoveControl entitymovehelper = this.parentEntity.getMoveControl();
 
-			if (!entitymovehelper.isUpdating()
-					|| (!this.parentEntity.isWithinHomeDistanceCurrentPosition() && !movingToHome))
+			if (!entitymovehelper.hasWanted()
+					|| (!this.parentEntity.isWithinRestriction() && !movingToHome))
 				return true;
 			else {
-				double d0 = entitymovehelper.getX() - this.parentEntity.getX();
-				double d1 = entitymovehelper.getY() - this.parentEntity.getY();
-				double d2 = entitymovehelper.getZ() - this.parentEntity.getZ();
+				double d0 = entitymovehelper.getWantedX() - this.parentEntity.getX();
+				double d1 = entitymovehelper.getWantedY() - this.parentEntity.getY();
+				double d2 = entitymovehelper.getWantedZ() - this.parentEntity.getZ();
 				double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 				return d3 < 1.0D || d3 > 3600.0D;
 			}
@@ -633,18 +599,18 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 */
 		@Override
 		public void start() {
-			Random random = this.parentEntity.getRandom();
+			net.minecraft.util.RandomSource random = this.parentEntity.getRandom();
 			double d0 = this.parentEntity.getX() + (random.nextFloat() * 2.0F - 1.0F) * 16.0F;
-			BlockPos pos = this.parentEntity.level.getTopSolidOrLiquidBlock(this.parentEntity.blockPosition());
+			BlockPos pos = this.parentEntity.level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, this.parentEntity.blockPosition());
 			double d1 = Math.min(pos.getY() + 16, this.parentEntity.getY() + (random.nextFloat() * 2.0F - 1.0F) * 16.0F);
 			double d2 = this.parentEntity.getZ() + (random.nextFloat() * 2.0F - 1.0F) * 16.0F;
 			LivingEntity target = this.parentEntity.getTarget();
-			this.movingToHome = this.parentEntity.getHomePosition().distanceSq(d0, d1, d2) < this.parentEntity
-					.distanceToSqr(this.parentEntity.getHomePosition());
+			this.movingToHome = this.parentEntity.getRestrictCenter().distToCenterSqr(d0, d1, d2) < this.parentEntity
+					.distanceToSqr(Vec3.atCenterOf(this.parentEntity.getRestrictCenter()));
 			boolean flyToPlayer = target != null && target.distanceToSqr(this.parentEntity) > 680;
 
 			if ((!flyToPlayer || target.distanceToSqr(d0, d1, d2) < target.distanceToSqr(this.parentEntity))
-					&& (flyToPlayer || (this.parentEntity.isWithinHomeDistanceCurrentPosition() || movingToHome)))
+					&& (flyToPlayer || (this.parentEntity.isWithinRestriction() || movingToHome)))
 				this.parentEntity.getMoveControl().setWantedPosition(d0, d1, d2, 0.3d);
 		}
 	}
@@ -659,27 +625,27 @@ public class EntityMonoculus extends EntityTF2Boss {
 		}
 
 		@Override
-		public void onUpdateMoveHelper() {
-			double speed = this.speed
-					* this.entity.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
+		public void tick() {
+			double speed = this.speedModifier
+					* this.mob.getAttribute(Attributes.MOVEMENT_SPEED).getValue();
 			if (this.parentEntity.isLaser())
 				speed *= 0.2;
-			if (this.action == MoveControl.Action.MOVE_TO) {
-				double d0 = this.getX() - this.parentEntity.getX();
-				double d1 = this.getY() - this.parentEntity.getY();
-				double d2 = this.getZ() - this.parentEntity.getZ();
+			if (this.operation == MoveControl.Operation.MOVE_TO) {
+				double d0 = this.wantedX - this.parentEntity.getX();
+				double d1 = this.wantedY - this.parentEntity.getY();
+				double d2 = this.wantedZ - this.parentEntity.getZ();
 				double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
 				if (this.courseChangeCooldown-- <= 0) {
 					this.courseChangeCooldown = 0;
 					d3 = (float) Math.sqrt(d3);
 
-					if (this.isNotColliding(this.getX(), this.getY(), this.getZ(), d3)) {
+					if (this.isNotColliding(this.wantedX, this.wantedY, this.wantedZ, d3)) {
 						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x + (d0 / d3 * speed), this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z);
 						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().y + (d1 / d3 * speed), this.parentEntity.getDeltaMovement().z);
 						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z + (d2 / d3 * speed));
 					} else
-						this.action = MoveControl.Action.WAIT;
+						this.operation = MoveControl.Operation.WAIT;
 				}
 			}
 		}
@@ -696,7 +662,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 			for (int i = 1; i < p_179926_7_; ++i) {
 				axisalignedbb = axisalignedbb.move(d0, d1, d2);
 
-				if (!this.parentEntity.level.getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty())
+				if (!this.parentEntity.level.noCollision(this.parentEntity, axisalignedbb))
 					return false;
 			}
 

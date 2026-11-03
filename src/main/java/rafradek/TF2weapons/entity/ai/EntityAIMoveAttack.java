@@ -185,7 +185,7 @@ public class EntityAIMoveAttack extends Goal {
 		boolean nopath = (this.entityHost.getNavigation().isDone() || (this.entityHost.tickCount % 20) == 0);
 		if (d0 < this.attackRangeMinSquared && (nopath || !backpath)) {
 			for (int i = 0; i < 10; i++) {
-				Vec3 Vec3 = DefaultRandomPos.findRandomTarget(this.entityHost, 0, 0);
+				Vec3 Vec3 = DefaultRandomPos.getPos(this.entityHost, 0, 0);
 
 				if (Vec3 != null) {
 					Vec3 off = this.entityHost.position().subtract(this.attackTarget.position())
@@ -200,7 +200,7 @@ public class EntityAIMoveAttack extends Goal {
 				}
 			}
 		} else if (this.dodge && nopath) {
-			Vec3 Vec3 = DefaultRandomPos.findRandomTarget(this.entityHost, 4, 2);
+			Vec3 Vec3 = DefaultRandomPos.getPos(this.entityHost, 4, 2);
 
 			if (Vec3 != null) {
 				backpath = false;

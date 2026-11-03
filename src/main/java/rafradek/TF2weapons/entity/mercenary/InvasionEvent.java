@@ -43,7 +43,7 @@ import net.minecraftforge.eventbus.api.Event.Result;
 public class InvasionEvent implements INBTSerializable<CompoundTag> {
 
 	protected final ServerBossEvent bossInfo = (new ServerBossEvent(
-			Component.translatable("gui.robotinvasion", 1, 1), BossEvent.Color.BLUE, BossEvent.Overlay.PROGRESS));
+			Component.translatable("gui.robotinvasion", 1, 1), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS));
 
 	public static final float[] DIFFICULTY = { 1f, 1.5f, 2f, 2.75f, 4f };
 
@@ -70,25 +70,35 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 	private int robotKilledEnv;
 	private int robotCountWeighted;
 	private int lowestInvasionBeaten = 100;
-	public static List<SpawnListEntry> spawnList = new ArrayList<>();
+	public static List<SpawnEntry> spawnList = new ArrayList<>();
+
+	/** Weighted mercenary class for robot spawns (1.12 SpawnListEntry). */
+	public static class SpawnEntry extends net.minecraft.util.random.WeightedEntry.IntrusiveBase {
+		public final java.util.function.Supplier<? extends net.minecraft.world.entity.EntityType<? extends EntityTF2Character>> type;
+
+		public SpawnEntry(java.util.function.Supplier<? extends net.minecraft.world.entity.EntityType<? extends EntityTF2Character>> type, int weight) {
+			super(weight);
+			this.type = type;
+		}
+	}
 
 	public boolean finished;
 	public int waves;
 
 	public InvasionEvent(Level world, CompoundTag tag) {
-		this.level = world;
+		this.world = world;
 		this.deserializeNBT(tag);
 	}
 
 	public InvasionEvent(Level world, BlockPos targetPos, int diff) {
-		this.level = world;
+		this.world = world;
 		this.startTime = world.getDayTime();
 		this.target = targetPos;
 		this.direction = (float) (world.random.nextFloat() * Math.PI * 2 - Math.PI);
-		List<ServerPlayer> players = this.level.getPlayers(ServerPlayer.class,
+		List<ServerPlayer> players = this.world.getPlayers(ServerPlayer.class,
 				player -> this.isInRange(player.blockPosition()));
 		for (ServerPlayer player : players) {
-			float killed = player.getStats().readStat(TF2weapons.robotsKilled);
+			float killed = rafradek.TF2weapons.common.TF2Achievements.read(player, TF2weapons.robotsKilled);
 			this.difficulty += 1f + Math.min(0.5f + diff * 0.1, killed / (500f * (diff + 1)));
 			this.onPlayerEnter(player);
 			this.lowestInvasionBeaten = Math.min(lowestInvasionBeaten,
@@ -114,7 +124,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		if (player instanceof ServerPlayer)
 			this.bossInfo.removePlayer((ServerPlayer) player);
 		TF2PlayerCapability.get(player).setInvasionDir(Float.MIN_VALUE);
-		TF2PlayerCapability.get(player).lastDayInvasion = (int) (this.level.getDayTime() / 24000);
+		TF2PlayerCapability.get(player).lastDayInvasion = (int) (this.world.getDayTime() / 24000);
 	}
 
 	public void addRobotToList(EntityTF2Character entity) {
@@ -150,12 +160,12 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 				players.remove();
 			}
 		}
-		for (Player player : this.level.getPlayers(Player.class,
+		for (Player player : this.world.getPlayers(Player.class,
 				player -> !playersArea.contains(player) && isInRange(player.blockPosition()))) {
 			this.onPlayerEnter(player);
 		}
-		if ((this.level.getGameTime() & 111) == 0)
-			for (EntityTF2Character ent : this.level.getEntitiesOfClass(EntityTF2Character.class,
+		if ((this.world.getGameTime() & 111) == 0)
+			for (EntityTF2Character ent : this.world.getEntitiesOfClass(EntityTF2Character.class,
 					new AABB(target).inflate(256),
 					entity -> entity.isAlive() && entity.getOwnerUUID() == null && entity.isRobot())) {
 				this.addRobotToList(ent);
@@ -187,7 +197,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 				continue;
 			}
 
-			if (ent.getIdleTime() > (reduce ? 400 : 750)) {
+			if (ent.getNoActionTime() > (reduce ? 400 : 750)) {
 				it.remove();
 				ent.discard();
 				this.removeRobotCount(ent);
@@ -221,11 +231,8 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 								if (!this.eligibleChunksForSpawning.contains(chunkpos)
 										&& (Math.PI - Math.abs(Math.abs(angle - direction) - Math.PI)) < Math.PI * 0.4
 										&& distance / 60f < world.random.nextFloat() + 0.1f) {
-									if (!flag && world.getWorldBorder().contains(chunkpos)) {
-										PlayerChunkMapEntry playerchunkmapentry = ((ServerLevel) world)
-												.getPlayerChunkMap().getEntry(chunkpos.x, chunkpos.z);
-
-										if (playerchunkmapentry != null && playerchunkmapentry.isSentToPlayers()) {
+									if (!flag && world.getWorldBorder().isWithinBounds(chunkpos)) {
+										if (((ServerLevel) world).isPositionEntityTicking(chunkpos.getWorldPosition())) {
 											this.eligibleChunksForSpawning.add(chunkpos);
 										}
 									}
@@ -235,7 +242,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 					}
 				}
 
-				BlockPos spawnPoint = world.getSpawnPoint();
+				BlockPos spawnPoint = ((ServerLevel) world).getSharedSpawnPos();
 
 				java.util.ArrayList<ChunkPos> shuffled = com.google.common.collect.Lists
 						.newArrayList(this.eligibleChunksForSpawning);
@@ -250,13 +257,15 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 					int i2 = blockpos.getZ();
 					BlockState iblockstate = world.getBlockState(blockpos);
 
-					if (!iblockstate.isNormalCube()) {
+					if (!iblockstate.isRedstoneConductor(world, blockpos)) {
 
 						for (int k2 = 0; k2 < 3; ++k2) {
 							int l2 = k1;
 							int i3 = l1;
 							int j3 = i2;
-							SpawnListEntry spawnEntry = WeightedRandom.getRandomItem(world.random, spawnList);
+							SpawnEntry spawnEntry = WeightedRandom.getRandomItem(world.random, spawnList).orElse(null);
+							if (spawnEntry == null)
+								continue;
 							TF2CharacterAdditionalData livingdata = new TF2CharacterAdditionalData();
 							livingdata.natural = true;
 							livingdata.team = 2;
@@ -267,42 +276,42 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 								l2 += world.random.nextInt(6) - world.random.nextInt(6);
 								i3 += world.random.nextInt(1) - world.random.nextInt(1);
 								j3 += world.random.nextInt(6) - world.random.nextInt(6);
-								blockpos$mutableblockpos.setPos(l2, i3, j3);
+								blockpos$mutableblockpos.set(l2, i3, j3);
 								float f = l2 + 0.5F;
 								float f1 = j3 + 0.5F;
 
-								if (!world.isAnyPlayerWithinRangeAt(f, i3, f1, 24.0D)
+								if (!world.hasNearbyAlivePlayer(f, i3, f1, 24.0D)
 										&& this.checkInArea((int) f, i3, (int) f1)
-										&& spawnPoint.distanceSq(f, i3, f1) >= 576.0D) {
+										&& spawnPoint.distToLowCornerSqr(f, i3, f1) >= 576.0D) {
 
-									if (true && WorldEntitySpawner
-											.canCreatureTypeSpawnAtLocation(
-													EntitySpawnPlacementRegistry
-															.getPlacementForEntity(EntityTF2Character.class),
-													world, blockpos$mutableblockpos)) {
+									if (true && net.minecraft.world.level.NaturalSpawner.isSpawnPositionOk(
+													net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND,
+													world, blockpos$mutableblockpos, spawnEntry.type.get())) {
 										EntityTF2Character entityliving = null;
 
 										try {
-											entityliving = (EntityTF2Character) spawnEntry.newInstance(world);
+											entityliving = spawnEntry.type.get().create(world);
 										} catch (Exception exception) {
 											exception.printStackTrace();
 										}
+										if (entityliving == null)
+											continue;
 
 										entityliving.moveTo(f, i3, f1, world.random.nextFloat() * 360.0F,
 												0.0F);
 										entityliving.setRobot(1);
 										Event.Result canSpawn = ForgeEventFactory
-												.canEntitySpawn(entityliving, world, f, i3, f1, false);
+												.canEntitySpawn(entityliving, world, f, i3, f1, null, MobSpawnType.EVENT);
 										if (canSpawn == Event.Result.ALLOW || (canSpawn == Event.Result.DEFAULT
-												&& (entityliving.checkSpawnRules(entityliving.level, MobSpawnType.NATURAL) && entityliving.isNotColliding()))) {
+												&& (entityliving.checkSpawnRules(entityliving.level, MobSpawnType.EVENT) && entityliving.checkSpawnObstruction(world)))) {
 											livingdata.isGiant = entityliving.canBecomeGiant()
 													&& world.random.nextFloat() < 0.025 * this.getWaveDifficulty();
 											entityliving.robotStrength = this.difficulty;
 
-											if (!ForgeEventFactory.doSpecialSpawn(entityliving, world, f, i3, f1))
-												livingdata = (TF2CharacterAdditionalData) TF2Util.initialSpawn(entityliving, world.getCurrentDifficultyAt(new BlockPos(entityliving)), livingdata);
+											if (!ForgeEventFactory.doSpecialSpawn(entityliving, world, f, i3, f1, null, MobSpawnType.EVENT))
+												livingdata = (TF2CharacterAdditionalData) TF2Util.initialSpawn(entityliving, world.getCurrentDifficultyAt(entityliving.blockPosition()), livingdata);
 
-											if (entityliving.isNotColliding()) {
+											if (entityliving.checkSpawnObstruction(world)) {
 												world.addFreshEntity(entityliving);
 												this.addRobotToList(entityliving);
 											} else {
@@ -336,7 +345,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 			}
 		}
 
-		if (this.level.getDayTime() >= this.endTime)
+		if (this.world.getDayTime() >= this.endTime)
 			this.finish();
 	}
 
@@ -356,9 +365,9 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		this.pauseTicks = 300;
 		this.robotsWave = (int) (11.2f * this.getWaveDifficulty());
 		this.robotKilledWave = 0;
-		this.endTime = this.level.getDayTime() + (this.wave + 1) * 12000;
+		this.endTime = this.world.getDayTime() + (this.wave + 1) * 12000;
 		this.bossInfo.setName(Component.translatable("gui.robotinvasion", this.wave, this.waves));
-		this.bossInfo.setPercent(1f - (float) this.robotKilledWave / this.robotsWave);
+		this.bossInfo.setProgress(1f - (float) this.robotKilledWave / this.robotsWave);
 		this.entityList.keySet().removeIf(ent -> {
 			ent.hurt(DamageSource.GENERIC, 99999);
 			robotCountWeighted -= ent.isGiant() ? 3 : 1;
@@ -378,7 +387,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		this.robotKilledTotal += robotSize * robotSize * robotSize;
 		this.robotKilledWave += robotSize * robotSize * robotSize;
 
-		this.bossInfo.setPercent(1f - (float) this.robotKilledWave / this.robotsWave);
+		this.bossInfo.setProgress(1f - (float) this.robotKilledWave / this.robotsWave);
 		// this.players.put(player,
 		// this.players.get(player)+robot.getRobotSize()*robot.getRobotSize());
 
@@ -386,7 +395,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 
 	public void addNotSpawnArea(BlockPos pos) {
 		for (BlockPos pos2 : this.notSpawnArea) {
-			if (pos.distanceSq(pos2) < 400)
+			if (pos.distSqr(pos2) < 400)
 				return;
 		}
 		this.notSpawnArea.add(pos);
@@ -394,7 +403,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 
 	public boolean checkInArea(int x, int y, int z) {
 		for (BlockPos pos : this.notSpawnArea) {
-			if (pos.distanceSq(x, y, z) < 400)
+			if (pos.distToLowCornerSqr(x, y, z) < 400)
 				return false;
 		}
 		return true;
@@ -423,15 +432,14 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 	public void giveRobotAwards() {
 		if (this.playersTotal.isEmpty())
 			return;
-		TF2WorldStorage cap = this.level.getCapability(TF2weapons.WORLD_CAP).orElse(null);
+		TF2WorldStorage cap = this.world.getCapability(TF2weapons.WORLD_CAP).orElse(null);
 
 		List<ItemStack> items = new ArrayList<>();
 		float chance = this.difficulty;
 		chance = Math.min(46f, (float) Math.pow(this.robotKilledWave, 0.7))
-				* (this.level.random.nextFloat() * 0.8f + 1.05f);
+				* (this.world.random.nextFloat() * 0.8f + 1.05f);
 		if (this.wave == this.waves) {
-			if (this.lowestInvasionBeaten <= this.diffTour || this.diffTour == DIFFICULTY.length - 1)
-				items.add(new ItemStack(TF2weapons.blockRobotDeploy, this.diffTour - this.lowestInvasionBeaten + 1));
+			// The robot deploy block reward returns with the map tooling (not ported yet).
 			chance *= 2;
 		}
 
@@ -449,7 +457,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 				boolean australium = chance > 18 && world.random.nextInt(6) == 0;
 				float chl = chance;
 				item = ItemFromData.getRandomWeapon(world.random,
-						Predicates.and(data -> (chl > (australium ? 2f : 0.5f) * data.getInt(PropertyType.COST)),
+						rafradek.TF2weapons.util.PredicateUtil.<rafradek.TF2weapons.util.WeaponData>and(data -> (chl > (australium ? 2f : 0.5f) * data.getInt(PropertyType.COST)),
 								ItemFromData.VISIBLE_WEAPON));
 				if (!item.isEmpty()) {
 					cost = 0.5f * ItemFromData.getData(item).getInt(PropertyType.COST);
@@ -499,7 +507,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 	}
 
 	public boolean isInRange(BlockPos pos) {
-		return pos.distanceSq(target) <= 65536D;
+		return pos.distSqr(new BlockPos(target.getX(), pos.getY(), target.getZ())) <= 65536D;
 	}
 
 	@Override
@@ -516,7 +524,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		tag.putShort("rkenv", (short) this.robotKilledEnv);
 		ListTag list = new ListTag();
 		for (UUID uuid : this.playersTotal) {
-			list.add(NbtUtils.createUUIDTag(uuid));
+			list.add(NbtUtils.createUUID(uuid));
 		}
 		tag.putByte("difftour", (byte) this.diffTour);
 		tag.put("players", list);
@@ -541,33 +549,33 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		this.robotsWave = nbt.getShort("rwave");
 		this.robotKilledEnv = nbt.getShort("rkenv");
 		this.diffTour = nbt.getByte("difftour");
-		this.bossInfo.setPercent(1f - (float) this.robotKilledWave / this.robotsWave);
+		this.bossInfo.setProgress(1f - (float) this.robotKilledWave / this.robotsWave);
 		this.direction = nbt.getFloat("direction");
 		ListTag list = nbt.getList("players", 11);
 		for (int i = 0; i < list.size(); i++) {
-			this.playersTotal.add(NbtUtils.getUUIDFromTag(list.getCompound(i)));
+			this.playersTotal.add(NbtUtils.loadUUID(list.get(i)));
 		}
 		this.lowestInvasionBeaten = nbt.getByte("lowinvasion");
 	}
 
 	private static BlockPos getRandomChunkPosition(Level world, int x, int z) {
-		LevelChunk chunk = world.getChunkFromChunkCoords(x, z);
+		LevelChunk chunk = world.getChunk(x, z);
 		int i = x * 16 + world.random.nextInt(16);
 		int j = z * 16 + world.random.nextInt(16);
-		int k = Mth.roundUp(chunk.getHeight(new BlockPos(i, 0, j)) + 1, 16);
-		int l = world.random.nextInt(k > 0 ? k : chunk.getTopFilledSegment() + 16 - 1);
+		int k = chunk.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, i, j) + 1;
+		int l = Mth.randomBetweenInclusive(world.random, world.getMinBuildHeight(), Math.max(k, world.getMinBuildHeight()));
 		return new BlockPos(i, l, j);
 	}
 
 	static {
-		spawnList.add(new SpawnListEntry(EntitySoldier.class, 4, 2, 4));
-		spawnList.add(new SpawnListEntry(EntityScout.class, 3, 2, 4));
-		spawnList.add(new SpawnListEntry(EntityPyro.class, 3, 2, 4));
-		spawnList.add(new SpawnListEntry(EntityDemoman.class, 3, 2, 4));
-		spawnList.add(new SpawnListEntry(EntityHeavy.class, 3, 2, 4));
-		spawnList.add(new SpawnListEntry(EntityEngineer.class, 1, 1, 1));
-		spawnList.add(new SpawnListEntry(EntitySniper.class, 1, 1, 1));
-		spawnList.add(new SpawnListEntry(EntitySpy.class, 1, 1, 1));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.SOLDIER, 4));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.SCOUT, 3));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.PYRO, 3));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.DEMOMAN, 3));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.HEAVY, 3));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.ENGINEER, 1));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.SNIPER, 1));
+		spawnList.add(new SpawnEntry(() -> TF2weapons.SPY, 1));
 	}
 
 	public void onDamageSentry(EntityTF2Character entity, EntitySentry sentry, DamageSource source, float amount) {

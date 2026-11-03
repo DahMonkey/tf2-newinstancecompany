@@ -42,14 +42,14 @@ public class EntityTarget extends ArmorStand {
 	}
 
 	public EntityTarget(Level world, double d, double d1, double e, boolean creative) {
-		super(world, d, d1, e);
-		this.setSize(0.6F, 1.8625F);
+		this(TF2weapons.TARGET, world);
+		this.setPos(d, d1, e);
 		this.creative = creative;
 	}
 
-	private static final EntityDataAccessor<Float> LAST_DAMAGE = SynchedEntityData.<Float>createKey(EntityTarget.class,
+	private static final EntityDataAccessor<Float> LAST_DAMAGE = SynchedEntityData.defineId(EntityTarget.class,
 			EntityDataSerializers.FLOAT);
-	private static final EntityDataAccessor<Float> DPS = SynchedEntityData.<Float>createKey(EntityTarget.class,
+	private static final EntityDataAccessor<Float> DPS = SynchedEntityData.defineId(EntityTarget.class,
 			EntityDataSerializers.FLOAT);
 
 	public float[] dps = new float[3];
@@ -76,15 +76,15 @@ public class EntityTarget extends ArmorStand {
 			 * this.dps[2]=this.dps[1]; this.dps[1]=this.dps[0]; this.dps[0]=0f;
 			 * DecimalFormat format = new DecimalFormat("#.##");
 			 */
-			this.setCustomNameTag("Last: " + format.format(this.getLastDamage()) + " DPS: "
+			this.setCustomName(net.minecraft.network.chat.Component.literal("Last: " + format.format(this.getLastDamage()) + " DPS: "
 					+ format.format(total * (20f / (this.lastAttack - this.startAttack + this.deltaTime))) + " Total: "
-					+ format.format(total));
+					+ format.format(total)));
 		}
 	}
 
 	@Override
 	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-		if (STATUS.equals(key)) {
+		if (DATA_CLIENT_FLAGS.equals(key)) {
 			this.setSize(0.6F, 1.8625F);
 		} else
 			super.onSyncedDataUpdated(key);
@@ -107,29 +107,27 @@ public class EntityTarget extends ArmorStand {
 		if (!this.level.isClientSide && !this.isRemoved()) {
 			if (DamageSource.OUT_OF_WORLD.equals(source) || (source.getEntity() instanceof LivingEntity
 					&& source.getMsgId().equals("player") && source.getEntity().isShiftKeyDown())) {
-				source.setExplosion();
-				Block.spawnAsEntity(world, getPosition().above(), new ItemStack(TF2weapons.itemTarget));
-				super.hurt(source, amount);
+				Block.popResource(this.level, this.blockPosition().above(), new ItemStack(TF2weapons.itemTarget));
+				super.hurt(DamageSource.explosion((LivingEntity) null), amount);
 				return false;
 			} else {
-				if (this.invulnerableTime > this.invulnerableDuration / 2.0F) {
-					if (amount <= this.lastDamage) {
+				if (this.invulnerableTime > 10.0F) {
+					if (amount <= this.lastHurt) {
 						return false;
 					}
 
-					amount -= this.lastDamage;
-					this.lastDamage = amount;
+					amount -= this.lastHurt;
+					this.lastHurt = amount;
 				} else {
-					this.lastDamage = amount;
-					this.invulnerableTime = this.invulnerableDuration;
-					this.maxHurtTime = 10;
-					this.hurtTime = this.maxHurtTime;
+					this.lastHurt = amount;
+					this.invulnerableTime = 20;
+					this.hurtDuration = 10;
+					this.hurtTime = this.hurtDuration;
 				}
 
 				amount = ForgeHooks.onLivingDamage(this, source,
-						this.applyPotionDamageCalculations(source,
-								ArmorProperties.applyArmor(this, (NonNullList<ItemStack>) this.getArmorSlots(),
-										source, ForgeHooks.onLivingHurt(this, source, amount))));
+						this.getDamageAfterMagicAbsorb(source,
+								this.getDamageAfterArmorAbsorb(source, ForgeHooks.onLivingHurt(this, source, amount))));
 				this.entityData.set(LAST_DAMAGE, amount);
 				this.dps[0] += amount;
 				if (this.startAttack == -1) {
@@ -142,9 +140,9 @@ public class EntityTarget extends ArmorStand {
 				this.total += amount;
 				this.invulnerableTime = 10;
 				DecimalFormat format = new DecimalFormat("#.##");
-				this.setCustomNameTag("Last: " + format.format(this.getLastDamage()) + " DPS: "
+				this.setCustomName(net.minecraft.network.chat.Component.literal("Last: " + format.format(this.getLastDamage()) + " DPS: "
 						+ format.format(total * (20f / (this.lastAttack - this.startAttack + this.deltaTime)))
-						+ " Total: " + format.format(total));
+						+ " Total: " + format.format(total)));
 				for (ItemStack stack : this.getArmorSlots()) {
 					stack.setDamageValue(0);
 				}
@@ -161,7 +159,7 @@ public class EntityTarget extends ArmorStand {
 	}
 
 	@Override
-	public boolean getAlwaysRenderNameTag() {
+	public boolean isCustomNameVisible() {
 		return true;
 	}
 

@@ -30,15 +30,14 @@ public class EntityAIOwnerHurt extends TargetGoal {
 			this.mob.setTarget(owner.getLastHurtMob());
     }
 	
-	@Override
-	protected boolean isSuitableTarget(LivingEntity target, boolean includeInvincibles) {
+		protected boolean isSuitableTarget(LivingEntity target, boolean includeInvincibles) {
 		if (target == null)
 			return false;
 		else if (target == this.mob)
 			return false;
 		else if (!target.isAlive())
 			return false;
-		else if (!this.mob.canAttackClass(target.getClass()))
+		else if (!this.mob.canAttackType(target.getType()))
 			return false;
 		else {
 			Team team = this.mob.getTeam();
@@ -56,10 +55,10 @@ public class EntityAIOwnerHurt extends TargetGoal {
 					if (target == ((OwnableEntity) this.mob).getOwner())
 						return false;
 				} else if (target instanceof Player && !includeInvincibles
-						&& ((Player) target).getAbilities().disableDamage)
+						&& ((Player) target).getAbilities().invulnerable)
 					return false;
 
-				return !this.shouldCheckSight || this.mob.getSensing().hasLineOfSight(target);
+				return !this.mustSee || this.mob.getSensing().hasLineOfSight(target);
 			}
 		}
 	}

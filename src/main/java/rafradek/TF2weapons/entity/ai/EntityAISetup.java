@@ -54,9 +54,9 @@ public class EntityAISetup extends Goal {
 		boolean dispenseralive = this.engineer.dispenser != null && this.engineer.dispenser.isAlive();
 
 		boolean sentryhome = sentryalive
-				&& this.engineer.isWithinHomeDistanceFromPosition(this.engineer.sentry.blockPosition());
+				&& this.engineer.isWithinRestriction(this.engineer.sentry.blockPosition());
 		boolean dispenserhome = dispenseralive
-				&& this.engineer.isWithinHomeDistanceFromPosition(this.engineer.dispenser.blockPosition());
+				&& this.engineer.isWithinRestriction(this.engineer.dispenser.blockPosition());
 
 		int sentryCost = EntityBuilding.getCost(0, this.engineer.loadout.getStackInSlot(2));
 		if (sentryalive)
@@ -117,13 +117,11 @@ public class EntityAISetup extends Goal {
 			if (this.engineer.getNavigation().isDone()) {
 
 				int size = 1 + buildType == 1 ? 1 : 0;
-				Vec3 Vec3 = DefaultRandomPos.findRandomTarget(this.engineer, size + 1, size);
+				Vec3 Vec3 = DefaultRandomPos.getPos(this.engineer, size + 1, size);
 				if (Vec3 != null) {
 					AABB box = new AABB(Vec3.x - 0.5, Vec3.y, Vec3.z - 0.5, Vec3.x + 0.5,
 							Vec3.y + 1, Vec3.z + 0.5);
-					List<AABB> list = this.engineer.level.getCollisionBoxes(this.engineer, box);
-
-					if (list.isEmpty() && !this.engineer.level.isMaterialInBB(box, Material.WATER)) {
+					if (this.engineer.level.noCollision(this.engineer, box) && !this.engineer.level.containsAnyLiquid(box)) {
 						this.engineer.getNavigation().moveTo(Vec3.x, Vec3.y, Vec3.z, 1);
 						this.target = Vec3;
 					}
@@ -166,13 +164,13 @@ public class EntityAISetup extends Goal {
 		}
 
 		if (this.engineer.grabbed != null) {
-			building.readFromNBT(this.engineer.grabbed);
+			building.load(this.engineer.grabbed);
 			building.setConstructing(true);
 			building.redeploy = true;
 		}
 
 		BlockState blockTarget = this.engineer.level.getBlockState(new BlockPos(target));
-		if (!blockTarget.getBlock().isPassable(this.engineer.level, new BlockPos(target)))
+		if (!blockTarget.getCollisionShape(this.engineer.level, new BlockPos(target)).isEmpty())
 			building.setPos(target.x, target.y + 1.3, target.z);
 		else
 			building.setPos(target.x, target.y + 0.3, target.z);

@@ -3,14 +3,11 @@ package rafradek.TF2weapons.entity;
 import net.minecraft.world.entity.EntityType;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import io.netty.buffer.ByteBuf;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.item.ItemStatue;
 import javax.annotation.Nullable;
-import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -21,7 +18,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
@@ -62,14 +58,13 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	public EntityStatue(Level world, LivingEntity toCopy, boolean isFeign) {
-		super(world);
+		this(TF2weapons.STATUE, world);
 		this.setPos(toCopy.getX(), toCopy.getY(), toCopy.getZ());
-		width = toCopy.getBbWidth();
-		height = toCopy.getBbHeight();
+		this.setSize(toCopy.getBbWidth(), toCopy.getBbHeight());
 		entity = toCopy;
 		if (!world.isClientSide) {
 			if (toCopy instanceof Player) {
-				data = toCopy.save(new CompoundTag());
+				data = toCopy.saveWithoutId(new CompoundTag());
 				player = true;
 				profile = ((Player) toCopy).getGameProfile();
 			} else data = toCopy.serializeNBT();
@@ -102,7 +97,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 
 	@Override
 	public boolean hurt(DamageSource source, float amount) {
-		if (!isEntityInvulnerable(source) && source.getDirectEntity() instanceof Player) {
+		if (!isInvulnerableTo(source) && source.getDirectEntity() instanceof Player) {
 			if (data != null) spawnAtLocation(ItemStatue.getStatue(this), 0);
 			discard();
 			return true;
@@ -120,16 +115,17 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y * (0.98), getDeltaMovement().z);
 		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z * (0.98));
 		setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y - (0.08), getDeltaMovement().z);
-		if (!world.isClientSide && ticksLeft >= 0 && ticksLeft-- == 0) discard();
-		move(MoverType.SELF, getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z);
+		if (!level.isClientSide && ticksLeft >= 0 && ticksLeft-- == 0) discard();
+		move(MoverType.SELF, getDeltaMovement());
 		if (isFeign && tickCount >= 20) {
 			discard();
 			for (int k = 0; k < 20; ++k) {
 				double d2 = random.nextGaussian() * 0.02D;
 				double d0 = random.nextGaussian() * 0.02D;
 				double d1 = random.nextGaussian() * 0.02D;
-				world.addParticle(ParticleTypes.POOF, getX() + random.nextFloat() * width * 2.0F - width,
-						getY() + random.nextFloat() * height, getZ() + random.nextFloat() * width * 2.0F - width, d2, d0, d1);
+				float width = getBbWidth();
+				level.addParticle(ParticleTypes.POOF, getX() + random.nextFloat() * width * 2.0F - width,
+						getY() + random.nextFloat() * getBbHeight(), getZ() + random.nextFloat() * width * 2.0F - width, d2, d0, d1);
 			}
 		}
 	}
@@ -143,7 +139,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 		data = compound.getCompound("Entity");
 		ticksLeft = compound.getShort("TicksLeft");
 		player = compound.getBoolean("Player");
-		if (player) profile = NbtUtils.readGameProfileFromNBT(compound.getCompound("Profile"));
+		if (player) profile = NbtUtils.readGameProfile(compound.getCompound("Profile"));
 		useHand = compound.getBoolean("UseArm");
 	}
 
@@ -159,15 +155,19 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	@Override
-	public void writeSpawnData(ByteBuf buffer) {
+	public net.minecraft.network.protocol.Packet<?> getAddEntityPacket() {
+		return net.minecraftforge.network.NetworkHooks.getEntitySpawningPacket(this);
+	}
+
+	@Override
+	public void writeSpawnData(FriendlyByteBuf buff) {
 		if (first) return;
-		FriendlyByteBuf buff = new FriendlyByteBuf(buffer);
-		buffer.writeBoolean(player);
+		buff.writeBoolean(profile != null);
 		if (profile != null) {
 			buff.writeUUID(profile.getId());
 			buff.writeUtf(profile.getName());
 			buff.writeVarInt(profile.getProperties().size());
-			for (Property property : profile.getProperties().values()) {
+			for (com.mojang.authlib.properties.Property property : profile.getProperties().values()) {
 				buff.writeUtf(property.getName());
 				buff.writeUtf(property.getValue());
 				if (property.hasSignature()) {
@@ -183,11 +183,9 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void readSpawnData(ByteBuf additionalData) {
-		if (additionalData.readableBytes() == 0) return;
+	public void readSpawnData(FriendlyByteBuf buff) {
+		if (buff.readableBytes() == 0) return;
 		try {
-			FriendlyByteBuf buff = new FriendlyByteBuf(additionalData);
 			if (buff.readBoolean()) {
 				profile = new GameProfile(buff.readUUID(), buff.readUtf(16));
 				int l = buff.readVarInt();
@@ -198,16 +196,9 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 					if (buff.readBoolean()) profile.getProperties().put(s, new Property(s, s1, buff.readUtf(32767)));
 					else profile.getProperties().put(s, new Property(s, s1));
 				}
-				final PlayerInfo info = new PlayerInfo(profile);
-				entity = new RemotePlayer(world, profile) {
-					@Override
-					@Nullable
-					protected PlayerInfo getPlayerInfo() {
-						return info;
-					}
-				};
-				entity.readFromNBT(buff.readNbt());
-			} else entity = (LivingEntity) EntityList.createEntityFromNBT(buff.readNbt(), world);
+				entity = rafradek.TF2weapons.client.ClientStatueHelper.createDisplayEntity(level, profile, buff.readNbt());
+			} else
+				entity = rafradek.TF2weapons.client.ClientStatueHelper.createDisplayEntity(level, null, buff.readNbt());
 			if (entity == null) {
 				discard();
 				return;
@@ -216,7 +207,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 			entity.hurtTime = 0;
 			entity.animationSpeed = 0.5f;
 			entity.tickCount = 15;
-			entity.limbSwing += random.nextFloat() * 10;
+			entity.animationPosition += random.nextFloat() * 10;
 			setSize(entity.getBbWidth(), entity.getBbHeight());
 			entity.setPos(getX(), getY(), getZ());
 			entity.yHeadRot = getYRot();

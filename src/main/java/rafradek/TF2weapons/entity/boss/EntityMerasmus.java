@@ -90,18 +90,18 @@ public class EntityMerasmus extends EntityTF2Boss {
 	}
 
 	@Override
-	protected void initEntityAI() {
+	protected void registerGoals() {
 		this.goalSelector.addGoal(1, new FloatGoal(this));
 		this.goalSelector.addGoal(4, new AIAttack(this));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
-		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, false, new Class[0]));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<LivingEntity>(this, LivingEntity.class,
 				3, false, false, input -> input instanceof EntityTF2Character || input instanceof Player) {
 			@Override
-			protected double getTargetDistance() {
-				return super.getTargetDistance() * 0.35;
+			protected double getFollowDistance() {
+				return super.getFollowDistance() * 0.35;
 			}
 
 			@Override
@@ -129,7 +129,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 				.add(Attributes.ATTACK_DAMAGE, 0D);
 	}
 
-	protected PathNavigation getNewNavigator(Level world) {
+	@Override
+	protected PathNavigation createNavigation(Level world) {
 		return new WallClimberNavigation(this, world);
 	}
 
@@ -199,16 +200,17 @@ public class EntityMerasmus extends EntityTF2Boss {
 
 				if (this.bombCooldown-- <= 0) {
 					List<Player> list = this.level.getEntitiesOfClass(Player.class,
-							this.getBoundingBox().inflate(30, 15, 30), input -> getDistanceSq(input) < 900
-									&& !TF2Util.isAlliedTo(EntityMerasmus.this, input) && TargetGoal
-											.isSuitableTarget(EntityMerasmus.this, input, false, false));
+							this.getBoundingBox().inflate(30, 15, 30), input -> distanceToSqr(input) < 900
+									&& !TF2Util.isAlliedTo(EntityMerasmus.this, input)
+									&& TF2Util.isSuitableTarget(EntityMerasmus.this, input, false, false));
 					if (!list.isEmpty()) {
 						Player living = list.get(this.random.nextInt(list.size()));
 						living.addEffect(new MobEffectInstance(TF2weapons.bombmrs, 300));
 						TF2Util.stun(living, 300, false);
 						((ServerPlayer) living).connection
 								.send(new ClientboundSoundPacket(TF2Sounds.MOB_MERASMUS_HEADBOMB,
-										this.getSoundSource(), living.getX(), living.getY(), living.getZ(), 4F, 1f));
+										this.getSoundSource(), living.getX(), living.getY(), living.getZ(), 4F, 1f,
+										this.random.nextLong()));
 						// this.teleportCooldown=90;
 					}
 					this.bombCooldown = Math.max(680 - this.playersAttacked * 60, 480);
@@ -233,10 +235,10 @@ public class EntityMerasmus extends EntityTF2Boss {
 					} else {
 						this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 					}
-					if (this.bombDuration == 200 || !this.getMoveControl().isUpdating()) {
+					if (this.bombDuration == 200 || !this.getMoveControl().hasWanted()) {
 
-						Random random = this.getRandom();
-						BlockPos pos = this.level.getTopSolidOrLiquidBlock(this.blockPosition());
+						net.minecraft.util.RandomSource random = this.getRandom();
+						BlockPos pos = this.level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, this.blockPosition());
 						double d0 = this.getX();
 						double d2 = this.getZ();
 						if (pos.getY() + 7 < this.getY()) {
@@ -280,8 +282,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 				x = this.getX() + random.nextDouble() * 40 - 20;
 				z = this.getZ() + random.nextDouble() * 40 - 20;
 			}
-			double y = this.level.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z)).getY() + 3;
-			if (this.attemptTeleport(x, y, z)) {
+			double y = this.level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 0, z)).getY() + 3;
+			if (this.randomTeleport(x, y, z, false)) {
 				this.playSound(TF2Sounds.MOB_MERASMUS_APPEAR, 1F, 1f);
 				for (int j = 0; j < 40; j++) {
 					Vec3 pos = TF2Util.radiusRandom3D(2.7f, this.random);
@@ -302,11 +304,11 @@ public class EntityMerasmus extends EntityTF2Boss {
 		this.getEntityData().set(SPELL_BOMB, bomb);
 		this.getNavigation().stop();
 		if (bomb) {
-			this.moveHelper = new FloatingMoveHelper(this);
+			this.moveControl = new FloatingMoveHelper(this);
 			this.setItemSlot(EquipmentSlot.OFFHAND, ItemFromData.getNewStack("bombinomicon"));
 			this.playSound(TF2Sounds.MOB_MERASMUS_BOMBINOMICON, 3.3F, 1F);
 		} else {
-			this.moveHelper = new MoveControl(this);
+			this.moveControl = new MoveControl(this);
 			this.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
 		}
 		TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[19], bomb ? 0.65f : 1);
@@ -316,7 +318,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 	@Override
 	public void dropFewItems(boolean hit, int looting) {
 		ItemStack hat = ItemFromData.getNewStack("merasmushat");
-		hat.getTag().putShort("BossLevel", (short) this.level);
+		hat.getTag().putShort("BossLevel", (short) this.bossLevel);
 		this.spawnAtLocation(hat, 0);
 	}
 
@@ -335,7 +337,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 	}
 
 	@Override
-	public void remove(Entity.RemovalReason removalReason) {
+	public void remove(net.minecraft.world.entity.Entity.RemovalReason removalReason) {
 		super.remove(removalReason);
 		for (BlockPos pos : this.usedPos) {
 			if (this.level.getBlockState(pos).getBlock() == TF2weapons.blockProp)
@@ -395,21 +397,21 @@ public class EntityMerasmus extends EntityTF2Boss {
 		this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
 		if (hide) {
-			this.navigator.stop();
+			this.navigation.stop();
 			// this.moveHelper=null;
 			this.playSound(TF2Sounds.MOB_MERASMUS_HIDE, this.getSoundVolume(), 1F);
 			this.setInvisible(true);
 			int blockCount = (int) Math.min(100,
-					10 * (0.7f + 0.3f * this.playersAttacked) * (0.9f + 0.1f * this.level));
+					10 * (0.7f + 0.3f * this.playersAttacked) * (0.9f + 0.1f * this.bossLevel));
 			BlockPos initial = this.blockPosition();
 			for (int i = 0; i < blockCount; i++) {
-				BlockPos pos = initial.add(
+				BlockPos pos = initial.offset(
 						this.random.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f), 0,
 						this.random.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f));
-				pos = this.level.getTopSolidOrLiquidBlock(pos);
+				pos = this.level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, pos);
 				// pos=pos.add(0, 1, 0);
 				if (this.level.getBlockState(pos).getMaterial().isReplaceable()) {
-					this.level.setBlockAndUpdate(pos, TF2weapons.blockProp
+					this.level.setBlockAndUpdate(pos, ((BlockProp) TF2weapons.blockProp)
 							.getStateFromMeta(this.random.nextInt(BlockProp.EnumBlockType.values().length)));
 				}
 				if (i == 0)
@@ -432,60 +434,12 @@ public class EntityMerasmus extends EntityTF2Boss {
 		this.setNoAi(hide);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public void travel(float strafe, float forward, float par3) {
-		if (!this.isBombSpell() && !this.hidden) {
-			super.travel(strafe, forward, par3);
-			return;
-		}
-		if (this.isInWater()) {
-			this.moveRelative(strafe, forward, par3, 0.02F);
-			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x * (0.800000011920929D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.800000011920929D), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.800000011920929D));
-		} else if (this.isInLava()) {
-			this.moveRelative(strafe, forward, par3, 0.02F);
-			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x * (0.5D), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (0.5D), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (0.5D));
-		} else {
-			float f = 0.91F;
-
-			if (this.onGround)
-				f = this.level
-						.getBlockState(new BlockPos(Mth.floor(this.getX()),
-								Mth.floor(this.getBoundingBox().minY) - 1, Mth.floor(this.getZ())))
-						.getBlock().slipperiness * 0.91F;
-
-			float f1 = 0.16277136F / (f * f * f);
-			this.moveRelative(strafe, forward, par3, this.onGround ? 0.1F * f1 : 0.02F);
-			f = 0.91F;
-
-			if (this.onGround)
-				f = this.level
-						.getBlockState(new BlockPos(Mth.floor(this.getX()),
-								Mth.floor(this.getBoundingBox().minY) - 1, Mth.floor(this.getZ())))
-						.getBlock().slipperiness * 0.91F;
-
-			this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x * (f), this.getDeltaMovement().y, this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * (f), this.getDeltaMovement().z);
-			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f));
-		}
-
-		this.animationSpeedOld = this.animationSpeed;
-		double d1 = this.getX() - this.xo;
-		double d0 = this.getZ() - this.zo;
-		float f2 = (float) Math.sqrt(d1 * d1 + d0 * d0) * 4.0F;
-
-		if (f2 > 1.0F)
-			f2 = 1.0F;
-
-		this.animationSpeed += (f2 - this.animationSpeed) * 0.4F;
-		this.limbSwing += this.animationSpeed;
+	public void travel(Vec3 travel) {
+		if (!this.isBombSpell() && !this.hidden)
+			super.travel(travel);
+		else
+			this.flyingTravel(travel);
 	}
 
 	public static class AIAttack extends Goal {
@@ -521,57 +475,57 @@ public class EntityMerasmus extends EntityTF2Boss {
 				if (host.envDamage > 0)
 					host.envDamage -= 6;
 				this.host.swing(InteractionHand.MAIN_HAND);
-				boolean sup = this.host.level > 1 && (this.attacksMade % 7 == 0 || (this.attacksMade - 1) % 7 == 0);
+				boolean sup = this.host.bossLevel > 1 && (this.attacksMade % 7 == 0 || (this.attacksMade - 1) % 7 == 0);
 				if (this.attacksMade > 0 && this.attacksMade % 13 == 0) {
 					this.host.setBombSpell(true);
 					this.host.bombDuration = 200;
 					this.host.teleport();
-					BlockPos pos = this.host.level.getTopSolidOrLiquidBlock(this.host.blockPosition());
+					BlockPos pos = this.host.level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, this.host.blockPosition());
 					this.host.topBlock = pos.getY() + 7 + this.host.random.nextInt(3);
 					this.attackDuration = 200;
 				} else if (this.attacksMade % 2 == 0) {
-					this.attackDuration = 20 - this.host.level / 4;
+					this.attackDuration = 20 - this.host.bossLevel / 4;
 					if (target != host && this.host.distanceToSqr(target) < 6) {
 						if (this.host.doHurtTarget(target)) {
-							target.knockback(this.host, 1.5f, Mth.sin(this.host.getYRot() * 0.017453292F),
+							target.knockback(1.5f, Mth.sin(this.host.getYRot() * 0.017453292F),
 									(-Mth.cos(this.host.getYRot() * 0.017453292F)));
 						}
 					} else {
-						this.host.faceEntity(target, 180, 90);
+						this.host.lookAt(target, 180, 90);
 						((ItemProjectileWeapon) this.host.getMainHandItem().getItem())
 								.shoot(this.host.getMainHandItem(), this.host, world, 0, InteractionHand.MAIN_HAND);
 						if (sup) {
-							Vec3 right = this.host.getVectorForRotation(0, this.host.yHeadRot + 90);
-							this.host.rotationYawHead -= 24;
+							Vec3 right = Vec3.directionFromRotation(0, this.host.yHeadRot + 90);
+							this.host.yHeadRot -= 24;
 							for (int i = -2; i <= 2; i++) {
 								this.host.setPos(this.host.getX() + (right.x * i), this.host.getY(), this.host.getZ());
 								this.host.setPos(this.host.getX(), this.host.getY(), this.host.getZ() + (right.z * i));
-								this.host.rotationYawHead += 12;
+								this.host.yHeadRot += 12;
 								((ItemProjectileWeapon) this.host.getMainHandItem().getItem()).shoot(
 										this.host.getMainHandItem(), this.host, world, 0, InteractionHand.MAIN_HAND);
 							}
-							this.host.rotationYawHead -= 24;
+							this.host.yHeadRot -= 24;
 						}
 					}
 				} else {
-					this.attackDuration = (int) (55 / (0.91 + this.host.level * 0.09f));
+					this.attackDuration = (int) (55 / (0.91 + this.host.bossLevel * 0.09f));
 					this.host.getNavigation().stop();
 					this.host.playSound(TF2Sounds.MOB_MERASMUS_SPELL, 2F, 1F);
 					boolean attacked = false;
-					double range = 10d + this.host.level * 0.8;
+					double range = 10d + this.host.bossLevel * 0.8;
 					for (LivingEntity living : world.getEntitiesOfClass(LivingEntity.class,
 							this.host.getBoundingBox().inflate(range, range * 0.4, range),
 							input -> input.distanceToSqr(host) < range * range
 									&& !TF2Util.isAlliedTo(host, input)
-									&& TargetGoal.isSuitableTarget(host, input, false, false))) {
+									&& TF2Util.isSuitableTarget(host, input, false, false))) {
 						TF2Util.sendParticle(EnumTF2Particles.BULLET_TRACER, this.host, this.host.getX(),
 								this.host.getY() + this.host.getBbHeight() / 2, this.host.getZ(), living.getX(),
 								living.getY() + living.getBbHeight() / 2, living.getZ(), 1, 0, 0x60FF60, 10000);
 						living.hurt(
-								new EntityDamageSource("magicm", this.host).setMagic().setDifficultyScaled(),
-								4.4f + this.host.level * 0.7f);
+								new EntityDamageSource("magicm", this.host).setMagic().setScalesWithDifficulty(),
+								4.4f + this.host.bossLevel * 0.7f);
 						living.push(0, 0.7, 0);
-						living.onGround = false;
+						living.setOnGround(false);
 						if (living instanceof ServerPlayer)
 							TF2Util.sendTracking(new TF2Message.VelocityAddMessage(new Vec3(0, 0.7, 0), true), living);
 						if (living.getCapability(TF2weapons.WEAPONS_CAP).isPresent())
@@ -600,22 +554,22 @@ public class EntityMerasmus extends EntityTF2Boss {
 		}
 
 		@Override
-		public void onUpdateMoveHelper() {
-			if (this.action == MoveControl.Action.MOVE_TO) {
-				double d0 = this.getX() - this.parentEntity.getX();
-				double d1 = this.getY() - this.parentEntity.getY();
-				double d2 = this.getZ() - this.parentEntity.getZ();
+		public void tick() {
+			if (this.operation == MoveControl.Operation.MOVE_TO) {
+				double d0 = this.wantedX - this.parentEntity.getX();
+				double d1 = this.wantedY - this.parentEntity.getY();
+				double d2 = this.wantedZ - this.parentEntity.getZ();
 				double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
 				if (this.courseChangeCooldown-- <= 0) {
 					this.courseChangeCooldown += this.parentEntity.getRandom().nextInt(5) + 2;
 					d3 = (float) Math.sqrt(d3);
 
-					if (this.isNotColliding(this.getX(), this.getY(), this.getZ(), d3)) {
+					if (this.isNotColliding(this.wantedX, this.wantedY, this.wantedZ, d3)) {
 						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x + (d0 / d3 * 0.05D), this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z);
 						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z + (d2 / d3 * 0.05D));
 					} else
-						this.action = MoveControl.Action.WAIT;
+						this.operation = MoveControl.Operation.WAIT;
 				}
 			}
 		}
@@ -632,7 +586,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 			for (int i = 1; i < p_179926_7_; ++i) {
 				axisalignedbb = axisalignedbb.move(d0, d1, d2);
 
-				if (!this.parentEntity.level.getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty())
+				if (!this.parentEntity.level.noCollision(this.parentEntity, axisalignedbb))
 					return false;
 			}
 

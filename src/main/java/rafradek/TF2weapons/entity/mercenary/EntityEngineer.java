@@ -163,8 +163,8 @@ public class EntityEngineer extends EntityTF2Character {
 			;
 		}
 		if (!this.level.isClientSide) {
-			if (this.getMaximumHomeDistance() == 0 && this.distanceToSqr(this.getHomePosition()) < 1) {
-				this.setHomePosAndDistance(this.getHomePosition(), 8);
+			if (this.getRestrictRadius() == 0 && this.distanceToSqr(this.getRestrictCenter()) < 1) {
+				this.restrictTo(this.getRestrictCenter(), 8);
 			}
 			if (this.getOwner() != null && this.getOrder() == Order.FOLLOW && this.grabbed == null) {
 				if (this.sentry != null && this.sentry.isAlive() && !this.sentry.isMini()
@@ -180,10 +180,10 @@ public class EntityEngineer extends EntityTF2Character {
 		/*
 		 * else if(this.getOwner() != null && this.getOrder() == Order.HOLD) { if
 		 * (this.sentry != null && this.sentry.isEntityAlive() &&
-		 * !this.isWithinHomeDistanceFromPosition(this.sentry.getPosition())) {
+		 * !this.isWithinRestriction(this.sentry.getPosition())) {
 		 * this.sentry.detonate(); } else if (this.dispenser != null &&
 		 * this.dispenser.isEntityAlive() &&
-		 * !this.isWithinHomeDistanceFromPosition(this.dispenser.getPosition())) {
+		 * !this.isWithinRestriction(this.dispenser.getPosition())) {
 		 * this.dispenser.detonate(); } }
 		 */
 		super.aiStep();

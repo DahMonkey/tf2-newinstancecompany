@@ -12,8 +12,7 @@ import rafradek.TF2weapons.inventory.ContainerEnergy;
 /** Picks the building screen (GUI id 5) from the building the menu was opened for. */
 public class GuiBuildingFactory {
 
-	@SuppressWarnings("unchecked")
-	public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> U create(M menu) {
+	public static Screen create(AbstractContainerMenu menu) {
 		Screen screen = null;
 		if (menu instanceof ContainerDispenser && ((ContainerEnergy) menu).building instanceof EntityDispenser)
 			screen = new GuiDispenser((ContainerDispenser) menu);
@@ -24,6 +23,6 @@ public class GuiBuildingFactory {
 			else if (energy.building instanceof EntityTeleporter)
 				screen = new GuiTeleporter(energy);
 		}
-		return (U) screen;
+		return screen;
 	}
 }

@@ -62,7 +62,7 @@ public class EntityAIRepair extends Goal {
 	 */
 	public boolean isValidTarget(EntityBuilding building) {
 		return building != null && building.isAlive()
-				&& this.entityHost.isWithinHomeDistanceFromPosition(building.blockPosition())
+				&& this.entityHost.isWithinRestriction(building.blockPosition())
 				&& (building.canUseWrenchImportant()
 						|| ((this.entityHost.getTarget() == null || this.entityHost.getTarget().isRemoved())
 								&& this.entityHost.hasSentryAndDispenser() && building.canUseWrench()));
