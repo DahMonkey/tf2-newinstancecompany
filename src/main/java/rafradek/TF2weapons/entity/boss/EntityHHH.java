@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -67,7 +68,11 @@ public class EntityHHH extends EntityTF2Boss {
 	private Vec3 lastPos = Vec3.ZERO;
 
 	public EntityHHH(Level world) {
-		super(world);
+		this(TF2weapons.HHH, world);
+	}
+
+	public EntityHHH(EntityType<? extends EntityHHH> type, Level world) {
+		super(type, world);
 		this.setSize(0.9f, 2.85f);
 		this.maxUpStep = 1.05f;
 		this.setNoAi(true);

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -42,7 +43,11 @@ public class EntityDemoman extends EntityTF2Character {
 	public BlockPos targetpos;
 
 	public EntityDemoman(Level par1World) {
-		super(par1World);
+		this(TF2weapons.DEMOMAN, par1World);
+	}
+
+	public EntityDemoman(EntityType<? extends EntityDemoman> type, Level par1World) {
+		super(type, par1World);
 		this.goalSelector.addGoal(5, new EntityAIStickybomb(this, 1, 10f));
 		if (this.attack != null) {
 			this.attack.setRange(20F);

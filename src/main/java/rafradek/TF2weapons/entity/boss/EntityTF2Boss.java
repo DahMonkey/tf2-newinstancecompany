@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -66,8 +67,8 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 
 	public WeaponsCapability weaponCap;
 
-	public EntityTF2Boss(Level world) {
-		super(world);
+	protected EntityTF2Boss(EntityType<? extends EntityTF2Boss> type, Level world) {
+		super(type, world);
 		if (!this.level.isClientSide)
 			this.setGlowing(true);
 		this.inventoryHandsDropChances = new float[] { 0, 0 };

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -31,7 +32,11 @@ public class EntityMedic extends EntityTF2Character {
 	public EntityAIUseMedigun useMedigun = new EntityAIUseMedigun(this, 1.0F, 20.0F);
 
 	public EntityMedic(Level par1World) {
-		super(par1World);
+		this(TF2weapons.MEDIC, par1World);
+	}
+
+	public EntityMedic(EntityType<? extends EntityMedic> type, Level par1World) {
+		super(type, par1World);
 		this.targetTasks.taskEntries.clear();
 		this.targetSelector.addGoal(1,
 				this.findplayer = new EntityAINearestChecked<LivingEntity>(this, LivingEntity.class, true,

@@ -18,11 +18,9 @@ import rafradek.TF2weapons.client.TF2EventsClient;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.common.WeaponsCapability.RageType;
-import rafradek.TF2weapons.entity.EntityLightDynamic;
 import rafradek.TF2weapons.entity.IEntityTF2;
 import rafradek.TF2weapons.entity.building.EntityBuilding;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
-import rafradek.TF2weapons.lightsource.MuzzleFlashLightSource;
 import rafradek.TF2weapons.message.TF2Message;
 import rafradek.TF2weapons.message.TF2Message.PredictionMessage;
 import rafradek.TF2weapons.util.*;
@@ -224,12 +222,6 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		return true;
 	}
 
-	@Optional.Method(modid = "dynamiclights")
-	public void doMuzzleFlashLight(ItemStack stack, LivingEntity living) {
-		MuzzleFlashLightSource light = new MuzzleFlashLightSource(living);
-		TF2EventsClient.muzzleFlashes.add(light);
-		DynamicLights.addLightSource(light);
-	}
 
 	public abstract void shoot(ItemStack stack, LivingEntity living, Level world, int thisCritical, InteractionHand hand);
 
@@ -815,11 +807,6 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	public boolean doMuzzleFlash(ItemStack stack, LivingEntity attacker, InteractionHand hand) {
 
 		ClientProxy.spawnFlashParticle(attacker.level, attacker, hand);
-		attacker.level.addFreshEntity(new EntityLightDynamic(attacker.level, attacker, 3));
-		if (TF2ConfigVars.dynamicLights) {
-			this.doMuzzleFlashLight(stack, attacker);
-
-		}
 		return true;
 	}
 

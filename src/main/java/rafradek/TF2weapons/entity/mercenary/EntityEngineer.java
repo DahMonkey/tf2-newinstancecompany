@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -35,7 +36,11 @@ public class EntityEngineer extends EntityTF2Character {
 	public int grabbedid;
 
 	public EntityEngineer(Level p_i1738_1_) {
-		super(p_i1738_1_);
+		this(TF2weapons.ENGINEER, p_i1738_1_);
+	}
+
+	public EntityEngineer(EntityType<? extends EntityEngineer> type, Level p_i1738_1_) {
+		super(type, p_i1738_1_);
 		// this.ammoLeft = 24;
 		this.xpReward = 15;
 		this.rotation = 15;

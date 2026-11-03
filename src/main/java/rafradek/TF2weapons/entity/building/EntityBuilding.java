@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 
@@ -103,8 +104,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	private int disposableID = -1;
 	public UUID ownerEntityID;
 
-	public EntityBuilding(Level world) {
-		super(world);
+	protected EntityBuilding(EntityType<? extends EntityBuilding> type, Level world) {
+		super(type, world);
 		this.applyTasks();
 		this.setHealth(0.1f);
 		this.energy = new EnergyStorage(40000);

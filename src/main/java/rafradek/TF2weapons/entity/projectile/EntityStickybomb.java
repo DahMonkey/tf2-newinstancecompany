@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -19,7 +20,11 @@ public class EntityStickybomb extends EntityProjectileBase {
 	public int stickCooldown;
 
 	public EntityStickybomb(Level p_i1756_1_) {
-		super(p_i1756_1_);
+		this(TF2weapons.STICKYBOMB, p_i1756_1_);
+	}
+
+	public EntityStickybomb(EntityType<? extends EntityStickybomb> type, Level p_i1756_1_) {
+		super(type, p_i1756_1_);
 		this.setSize(0.3f, 0.3f);
 	}
 
@@ -27,7 +32,7 @@ public class EntityStickybomb extends EntityProjectileBase {
 	public void initProjectile(LivingEntity shooter, InteractionHand hand, ItemStack weapon) {
 		super.initProjectile(shooter, hand, weapon);
 		this.setSize(0.3f, 0.3f);
-		this.setType((int) TF2Attribute.getModifier("Weapon Mode", this.usedWeapon, 0, shooter));
+		this.setProjType((int) TF2Attribute.getModifier("Weapon Mode", this.usedWeapon, 0, shooter));
 	}
 
 	@Override
@@ -151,7 +156,7 @@ public class EntityStickybomb extends EntityProjectileBase {
 
 	@Override
 	public boolean isGlowing() {
-		return super.isGlowing() || (this.getType() == 1 && this.level.isClientSide
+		return super.isGlowing() || (this.getProjType() == 1 && this.level.isClientSide
 				&& this.shootingEntity == ClientProxy.getLocalPlayer() && this.tickCount >= this.getArmTime()
 				&& TF2Util.lookingAt(this.shootingEntity, 30, this.getX(), this.getY(), this.getZ()));
 	}

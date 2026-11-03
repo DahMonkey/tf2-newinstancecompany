@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import java.util.Optional;
 import net.minecraft.core.particles.ParticleTypes;
@@ -9,9 +11,11 @@ import net.minecraft.world.level.Level;
 public class EntityFlare extends EntityProjectileSimple {
 
 	public EntityFlare(Level world) {
-		super(world);
-		if (TF2ConfigVars.dynamicLights)
-			this.makeLit();
+		this(TF2weapons.FLARE, world);
+	}
+
+	public EntityFlare(EntityType<? extends EntityFlare> type, Level world) {
+		super(type, world);
 	}
 
 	@Override
@@ -45,11 +49,5 @@ public class EntityFlare extends EntityProjectileSimple {
 	@Override
 	public float getExplosionSize() {
 		return 2.1f;
-	}
-
-	@Optional.Method(modid = "dynamiclights")
-	@Override
-	public int getLightLevel() {
-		return 11;
 	}
 }

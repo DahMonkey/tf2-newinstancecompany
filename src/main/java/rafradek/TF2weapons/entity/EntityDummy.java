@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import javax.annotation.Nullable;
@@ -13,7 +14,11 @@ public class EntityDummy extends Mob {
 	public WeaponsCapability cap;
 
 	public EntityDummy(Level world) {
-		super(world);
+		this(TF2weapons.DUMMY, world);
+	}
+
+	public EntityDummy(EntityType<? extends EntityDummy> type, Level world) {
+		super(type, world);
 		cap = new WeaponsCapability(this);
 		this.setSize(0, 0);
 		this.discard();

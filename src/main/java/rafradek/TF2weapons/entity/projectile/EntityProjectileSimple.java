@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -21,7 +22,11 @@ public class EntityProjectileSimple extends EntityProjectileBase {
 	boolean impact = false;
 
 	public EntityProjectileSimple(Level world) {
-		super(world);
+		this(TF2weapons.PROJECTILE_SIMPLE, world);
+	}
+
+	public EntityProjectileSimple(EntityType<? extends EntityProjectileSimple> type, Level world) {
+		super(type, world);
 		this.setSize(0.3F, 0.3F);
 	}
 
@@ -29,17 +34,17 @@ public class EntityProjectileSimple extends EntityProjectileBase {
 	public void initProjectile(LivingEntity shooter, InteractionHand hand, ItemStack weapon) {
 		String name = ItemFromData.getData(weapon).getString(PropertyType.PROJECTILE);
 		if (name.equals("repairclaw"))
-			this.setType(0);
+			this.setProjType(0);
 		else if (name.equals("syringe"))
-			this.setType(1);
+			this.setProjType(1);
 		else if (name.equals("cleaver"))
-			this.setType(2);
+			this.setProjType(2);
 		else if (name.equals("arrow"))
-			this.setType(3);
+			this.setProjType(3);
 		else if (name.equals("pomson"))
-			this.setType(4);
+			this.setProjType(4);
 		else if (name.equals("hhhaxe"))
-			this.setType(8);
+			this.setProjType(8);
 
 		super.initProjectile(shooter, hand, weapon);
 		this.setSize(0.3F, 0.3F);
@@ -88,18 +93,18 @@ public class EntityProjectileSimple extends EntityProjectileBase {
 
 	@Override
 	public void spawnParticles(double x, double y, double z) {
-		if (this.getType() == 4) {
+		if (this.getProjType() == 4) {
 			ClientProxy.spawnBisonParticle(world, x, y, z, TF2Util.getTeamColor(this.shootingEntity));
 		}
 	}
 
 	@Override
 	public boolean isPushable() {
-		return this.getType() != 1;
+		return this.getProjType() != 1;
 	}
 
 	@Override
 	public double getGravity() {
-		return this.getType() == 4 ? 0 : super.getGravity();
+		return this.getProjType() == 4 ? 0 : super.getGravity();
 	}
 }

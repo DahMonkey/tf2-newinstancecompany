@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -11,8 +13,12 @@ import net.minecraft.world.phys.HitResult;
 public class EntityCleaver extends EntityProjectileSimple {
 
 	public EntityCleaver(Level world) {
-		super(world);
-		this.setType(2);
+		this(TF2weapons.CLEAVER, world);
+	}
+
+	public EntityCleaver(EntityType<? extends EntityCleaver> type, Level world) {
+		super(type, world);
+		this.setProjType(2);
 	}
 
 	@Override

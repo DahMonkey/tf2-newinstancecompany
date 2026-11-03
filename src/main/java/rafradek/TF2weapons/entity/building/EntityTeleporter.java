@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -66,7 +67,11 @@ public class EntityTeleporter extends EntityBuilding {
 			EntityDataSerializers.BYTE);
 
 	public EntityTeleporter(Level world) {
-		super(world);
+		this(TF2weapons.TELEPORTER, world);
+	}
+
+	public EntityTeleporter(EntityType<? extends EntityTeleporter> type, Level world) {
+		super(type, world);
 		this.setSize(1f, 0.2f);
 	}
 

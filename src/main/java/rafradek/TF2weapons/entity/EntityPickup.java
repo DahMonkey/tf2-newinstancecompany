@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.util.TF2Util;
 import net.minecraft.core.BlockPos;
@@ -58,7 +59,11 @@ public class EntityPickup extends Entity {
 	}
 
 	public EntityPickup(Level world) {
-		super(world);
+		this(TF2weapons.PICKUP, world);
+	}
+
+	public EntityPickup(EntityType<? extends EntityPickup> type, Level world) {
+		super(type, world);
 		this.setSize(0.25f, 0.25f);
 		this.hoverStart = (float) (Math.random() * Math.PI * 2.0D);
 	}

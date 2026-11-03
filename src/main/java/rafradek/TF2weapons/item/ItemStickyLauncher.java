@@ -110,7 +110,7 @@ public class ItemStickyLauncher extends ItemProjectileWeapon {
 			}
 			for (int i = 0; i < list.size(); i++) {
 				EntityStickybomb bomb = list.get(i);
-				if (bomb.tickCount > bomb.getArmTime() && (bomb.getType() != 1
+				if (bomb.tickCount > bomb.getArmTime() && (bomb.getProjType() != 1
 						|| living.getBoundingBox().grow(1.5, 0.25, 1.5).move(0, -1.25, 0)
 								.contains(bomb.position())
 						|| TF2Util.lookingAt(living, 30, bomb.getX(), bomb.getY(), bomb.getZ()))) {

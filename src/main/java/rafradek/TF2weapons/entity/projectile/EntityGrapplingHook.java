@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -18,7 +19,11 @@ public class EntityGrapplingHook extends EntityProjectileSimple {
 	public double relativeZ;
 
 	public EntityGrapplingHook(Level world) {
-		super(world);
+		this(TF2weapons.GRAPPLING_HOOK, world);
+	}
+
+	public EntityGrapplingHook(EntityType<? extends EntityGrapplingHook> type, Level world) {
+		super(type, world);
 	}
 
 	@Override

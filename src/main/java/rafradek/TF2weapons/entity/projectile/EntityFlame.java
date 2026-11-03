@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.util.DamageSourceProjectile;
@@ -18,7 +20,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class EntityFlame extends EntityProjectileBase {
 
 	public EntityFlame(Level world) {
-		super(world);
+		this(TF2weapons.FLAME, world);
+	}
+
+	public EntityFlame(EntityType<? extends EntityFlame> type, Level world) {
+		super(type, world);
 	}
 
 	@Override

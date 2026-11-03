@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -74,7 +75,11 @@ public class EntityDispenser extends EntityBuilding {
 	public static final int MAX_METAL = 400;
 
 	public EntityDispenser(Level world) {
-		super(world);
+		this(TF2weapons.DISPENSER, world);
+	}
+
+	public EntityDispenser(EntityType<? extends EntityDispenser> type, Level world) {
+		super(type, world);
 		this.setSize(1f, 1.1f);
 	}
 

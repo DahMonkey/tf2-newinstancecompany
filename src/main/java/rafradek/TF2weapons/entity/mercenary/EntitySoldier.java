@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -26,7 +27,11 @@ public class EntitySoldier extends EntityTF2Character {
 	private boolean activateBackpack;
 
 	public EntitySoldier(Level par1World) {
-		super(par1World);
+		this(TF2weapons.SOLDIER, par1World);
+	}
+
+	public EntitySoldier(EntityType<? extends EntitySoldier> type, Level par1World) {
+		super(type, par1World);
 		// this.rotation=90;
 		if (this.attack != null) {
 			attack.setRange(35);

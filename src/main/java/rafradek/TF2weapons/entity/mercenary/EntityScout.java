@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -20,7 +21,11 @@ public class EntityScout extends EntityTF2Character {
 	public int ballCooldown;
 
 	public EntityScout(Level par1World) {
-		super(par1World);
+		this(TF2weapons.SCOUT, par1World);
+	}
+
+	public EntityScout(EntityType<? extends EntityScout> type, Level par1World) {
+		super(type, par1World);
 		if (this.attack != null) {
 			this.moveAttack.setDodge(true, true);
 			this.attack.jump = true;

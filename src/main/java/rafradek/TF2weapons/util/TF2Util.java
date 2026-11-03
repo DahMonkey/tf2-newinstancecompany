@@ -454,6 +454,11 @@ public class TF2Util {
 		return (lerp - v1) * (1f / (v0 - v1));
 	}
 
+	/** Same as {@link #isOnSameTeam}; the rename pass turned calls into this name. */
+	public static boolean isAlliedTo(Entity entity1, Entity entity2) {
+		return isOnSameTeam(entity1, entity2);
+	}
+
 	public static boolean isOnSameTeam(Entity entity1, Entity entity2) {
 		return entity1 != null && entity2 != null
 				&& ((TF2Util.getTeam(entity1) == TF2Util.getTeam(entity2) && TF2Util.getTeam(entity1) != null)

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -16,7 +17,11 @@ import net.minecraft.world.level.Level;
 public class EntityHeavy extends EntityTF2Character {
 
 	public EntityHeavy(Level par1World) {
-		super(par1World);
+		this(TF2weapons.HEAVY, par1World);
+	}
+
+	public EntityHeavy(EntityType<? extends EntityHeavy> type, Level par1World) {
+		super(type, par1World);
 		if (this.attack != null) {
 			this.moveAttack.setDodge(true, true);
 			this.attack.dodgeSpeed = 1.25f;

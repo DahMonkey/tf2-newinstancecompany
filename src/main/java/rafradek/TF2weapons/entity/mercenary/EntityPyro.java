@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -23,7 +24,11 @@ import net.minecraft.world.level.Level;
 public class EntityPyro extends EntityTF2Character {
 
 	public EntityPyro(Level par1World) {
-		super(par1World);
+		this(TF2weapons.PYRO, par1World);
+	}
+
+	public EntityPyro(EntityType<? extends EntityPyro> type, Level par1World) {
+		super(type, par1World);
 		this.goalSelector.addGoal(3, new EntityAIAirblast(this));
 		if (this.attack != null) {
 			this.moveAttack.setDodge(true, true);

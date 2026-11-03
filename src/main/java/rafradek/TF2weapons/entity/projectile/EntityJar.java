@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.item.ItemFromData;
 import rafradek.TF2weapons.item.ItemUsable;
@@ -23,14 +25,18 @@ public class EntityJar extends EntityProjectileBase {
 	public int gasExplodeCooldown = 40;
 
 	public EntityJar(Level p_i1756_1_) {
-		super(p_i1756_1_);
+		this(TF2weapons.JAR, p_i1756_1_);
+	}
+
+	public EntityJar(EntityType<? extends EntityJar> type, Level p_i1756_1_) {
+		super(type, p_i1756_1_);
 	}
 
 	@Override
 	public void initProjectile(LivingEntity shooter, InteractionHand hand, ItemStack weapon) {
 		String name = ItemFromData.getData(weapon).getString(PropertyType.PROJECTILE);
 		if (name.equals("gas"))
-			this.setType(1);
+			this.setProjType(1);
 		super.initProjectile(shooter, hand, weapon);
 	}
 
@@ -70,7 +76,7 @@ public class EntityJar extends EntityProjectileBase {
 			if (this.isGas()) {
 				this.setDeltaMovement((0.), this.getDeltaMovement().y, this.getDeltaMovement().z);
 				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0.));
-				this.setType(2);
+				this.setProjType(2);
 			} else
 				this.discard();
 		}
@@ -112,11 +118,11 @@ public class EntityJar extends EntityProjectileBase {
 	}
 
 	public boolean isGas() {
-		return this.getType() == 1 || this.getType() == 2;
+		return this.getProjType() == 1 || this.getProjType() == 2;
 	}
 
 	public boolean isGasExploded() {
-		return this.getType() == 2;
+		return this.getProjType() == 2;
 	}
 
 	@Override

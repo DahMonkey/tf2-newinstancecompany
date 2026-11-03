@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.item.ItemWrench;
 import rafradek.TF2weapons.util.TF2DamageSource;
@@ -16,8 +17,8 @@ public class EntitySapper extends EntityBuilding {
 	public EntityBuilding sappedBuilding;
 	public ItemStack sapperItem;
 
-	public EntitySapper(Level world) {
-		super(world);
+	protected EntitySapper(EntityType<? extends EntitySapper> type, Level world) {
+		super(type, world);
 		this.setSize(1f, 1.1f);
 	}
 

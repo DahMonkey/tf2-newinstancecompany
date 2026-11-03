@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 
@@ -10,7 +12,11 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 	public boolean clientSticked;
 
 	public EntityStickProjectile(Level world) {
-		super(world);
+		this(TF2weapons.SYRINGE, world);
+	}
+
+	public EntityStickProjectile(EntityType<? extends EntityStickProjectile> type, Level world) {
+		super(type, world);
 		this.setSize(0.3F, 0.3F);
 
 	}
@@ -43,7 +49,7 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 			EntityStickProjectile ent = new EntityStickProjectile(this.level);
 			ent.absMoveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
 			ent.sticked = true;
-			ent.setType(this.getType());
+			ent.setType(this.getProjType());
 			ent.setThrower(this.getThrower());
 			ent.clientSticked = true;
 			ent.stickedBlock = this.stickedBlock;

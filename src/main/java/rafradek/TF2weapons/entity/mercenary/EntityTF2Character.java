@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.*;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.common.MapList;
@@ -163,8 +164,8 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	private int moneyDrop;
 	// private InventoryWearables wearablesCap;
 
-	public EntityTF2Character(Level p_i1738_1_) {
-		super(p_i1738_1_);
+	protected EntityTF2Character(EntityType<? extends EntityTF2Character> type, Level p_i1738_1_) {
+		super(type, p_i1738_1_);
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(1, new EntityAIMoveTowardsRestriction2(this, 1.25f));
 		this.goalSelector.addGoal(1, avoidSentry = new AvoidEntityGoal<EntitySentry>(this, EntitySentry.class, sentry -> {

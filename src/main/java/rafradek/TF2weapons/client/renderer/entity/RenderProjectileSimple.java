@@ -40,21 +40,21 @@ public class RenderProjectileSimple extends Render<EntityProjectileSimple> {
 	@Override
 	protected ResourceLocation getEntityTexture(EntityProjectileSimple entity) {
 
-		if (entity.getType() == 3)
+		if (entity.getProjType() == 3)
 			return arrow;
 		return TF2Util.getTeamForDisplay(entity.shootingEntity) == 0 ? texturered : textureblu;
 	}
 
 	@Override
 	public void doRender(EntityProjectileSimple entity, double x, double y, double z, float yaw, float partialTick) {
-		if (entity.getType() == 4 || entity.getType() == 5)
+		if (entity.getProjType() == 4 || entity.getProjType() == 5)
 			return;
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 		GlStateManager.color(0.7F, 0.7F, 0.7F, 1F);
-		if (entity.getType() != 2 && entity.getType() != 3)
+		if (entity.getProjType() != 2 && entity.getProjType() != 3)
 			GL11.glScalef(0.25f, 0.25f, 0.25f);
-		if (entity.getType() != 3) {
+		if (entity.getProjType() != 3) {
 			GL11.glRotatef(entity.yRotO + (entity.getYRot() - entity.yRotO) * partialTick, 0.0F,
 					1.0F, 0.0F);
 			GL11.glRotatef(
@@ -70,10 +70,10 @@ public class RenderProjectileSimple extends Render<EntityProjectileSimple> {
 			GlStateManager.disableLighting();
 
 		// GlStateManager.color(0.0F, 0.0F, 1.0F, 1F);
-		if (entity.getType() == 2)
+		if (entity.getProjType() == 2)
 			Minecraft.getInstance().getItemRenderer().renderItem(ItemFromData.getNewStack("cleaver"),
 					ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
-		else if (entity.getType() == 3) {
+		else if (entity.getProjType() == 3) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.pushMatrix();
 			GlStateManager.rotate(
@@ -134,7 +134,7 @@ public class RenderProjectileSimple extends Render<EntityProjectileSimple> {
 
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
-		} else if (entity.getType() == 8) {
+		} else if (entity.getProjType() == 8) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(2, 2, 2);
 			Minecraft.getInstance().getItemRenderer().renderItem(ItemFromData.getNewStack("hhhaxe"),

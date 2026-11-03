@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -8,7 +10,11 @@ import net.minecraft.world.phys.HitResult;
 public class EntityOnyx extends EntityProjectileBase {
 
 	public EntityOnyx(Level p_i1756_1_) {
-		super(p_i1756_1_);
+		this(TF2weapons.ONYX, p_i1756_1_);
+	}
+
+	public EntityOnyx(EntityType<? extends EntityOnyx> type, Level p_i1756_1_) {
+		super(type, p_i1756_1_);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -33,7 +34,11 @@ public class EntitySpy extends EntityTF2Character {
 	public boolean isAmbushing;
 
 	public EntitySpy(Level p_i1738_1_) {
-		super(p_i1738_1_);
+		this(TF2weapons.SPY, p_i1738_1_);
+	}
+
+	public EntitySpy(EntityType<? extends EntitySpy> type, Level p_i1738_1_) {
+		super(type, p_i1738_1_);
 		this.xpReward = 15;
 		this.rotation = 20;
 		this.goalSelector.addGoal(2,

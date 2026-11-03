@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.item.ItemFromData;
 import rafradek.TF2weapons.util.PropertyType;
 import net.minecraft.world.InteractionHand;
@@ -14,13 +16,17 @@ public class EntityProjectileShortCircuitOrb extends EntityProjectileSimple {
 	double struck;
 
 	public EntityProjectileShortCircuitOrb(Level world) {
-		super(world);
+		this(TF2weapons.SHORT_CIRCUIT_ORB, world);
+	}
+
+	public EntityProjectileShortCircuitOrb(EntityType<? extends EntityProjectileShortCircuitOrb> type, Level world) {
+		super(type, world);
 	}
 
 	@Override
 	public void initProjectile(LivingEntity shooter, InteractionHand hand, ItemStack weapon) {
 		super.initProjectile(shooter, hand, weapon);
-		this.setType(5);
+		this.setProjType(5);
 	}
 
 	@Override

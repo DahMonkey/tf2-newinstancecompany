@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
@@ -68,7 +69,11 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 			BossEvent.Overlay.PROGRESS));
 
 	public EntitySaxtonHale(Level world) {
-		super(world);
+		this(TF2weapons.HALE, world);
+	}
+
+	public EntitySaxtonHale(EntityType<? extends EntitySaxtonHale> type, Level world) {
+		super(type, world);
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1F, false));
 		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, EntityTF2Character.class, 8.0F));

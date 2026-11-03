@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import java.util.Optional;
 import net.minecraft.core.particles.ParticleTypes;
@@ -11,9 +13,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class EntityFuryFireball extends EntityProjectileSimple {
 
 	public EntityFuryFireball(Level world) {
-		super(world);
-		if (TF2ConfigVars.dynamicLights)
-			this.makeLit();
+		this(TF2weapons.FURY_FIREBALL, world);
+	}
+
+	public EntityFuryFireball(EntityType<? extends EntityFuryFireball> type, Level world) {
+		super(type, world);
 	}
 
 	@Override
@@ -37,12 +41,6 @@ public class EntityFuryFireball extends EntityProjectileSimple {
 	@Override
 	public boolean isBurning() {
 		return true;
-	}
-
-	@Optional.Method(modid = "dynamiclights")
-	@Override
-	public int getLightLevel() {
-		return 12;
 	}
 
 	@Override

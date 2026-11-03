@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -18,7 +19,11 @@ import net.minecraft.world.level.Level;
 public class EntitySniper extends EntityTF2Character {
 
 	public EntitySniper(Level par1World) {
-		super(par1World);
+		this(TF2weapons.SNIPER, par1World);
+	}
+
+	public EntitySniper(EntityType<? extends EntitySniper> type, Level par1World) {
+		super(type, par1World);
 		// this.ammoLeft = 18;
 		this.xpReward = 15;
 		this.rotation = 3;

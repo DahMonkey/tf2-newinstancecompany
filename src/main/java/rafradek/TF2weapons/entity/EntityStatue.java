@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity;
 
+import net.minecraft.world.entity.EntityType;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.netty.buffer.ByteBuf;
@@ -40,7 +41,11 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	public float armSwing;
 
 	public EntityStatue(Level world) {
-		super(world);
+		this(TF2weapons.STATUE, world);
+	}
+
+	public EntityStatue(EntityType<? extends EntityStatue> type, Level world) {
+		super(type, world);
 	}
 
 	public EntityStatue(Level world, LivingEntity toCopy, boolean isFeign) {

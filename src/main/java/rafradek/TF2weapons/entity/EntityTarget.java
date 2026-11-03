@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import java.text.DecimalFormat;
 import net.minecraft.core.NonNullList;
@@ -18,7 +19,11 @@ import net.minecraftforge.common.ForgeHooks;
 public class EntityTarget extends ArmorStand {
 
 	public EntityTarget(Level world) {
-		super(world);
+		this(TF2weapons.TARGET, world);
+	}
+
+	public EntityTarget(EntityType<? extends EntityTarget> type, Level world) {
+		super(type, world);
 		this.setSize(0.6F, 1.8625F);
 	}
 

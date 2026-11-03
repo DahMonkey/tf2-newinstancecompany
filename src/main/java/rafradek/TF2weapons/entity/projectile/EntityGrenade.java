@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.item.ItemWeapon;
@@ -28,7 +30,11 @@ public class EntityGrenade extends EntityProjectileBase {
 			EntityDataSerializers.BOOLEAN);
 
 	public EntityGrenade(Level p_i1756_1_) {
-		super(p_i1756_1_);
+		this(TF2weapons.GRENADE, p_i1756_1_);
+	}
+
+	public EntityGrenade(EntityType<? extends EntityGrenade> type, Level p_i1756_1_) {
+		super(type, p_i1756_1_);
 		this.setSize(0.3f, 0.3f);
 	}
 

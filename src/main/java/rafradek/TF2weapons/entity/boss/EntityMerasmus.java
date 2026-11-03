@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.block.BlockProp;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -69,7 +70,11 @@ public class EntityMerasmus extends EntityTF2Boss {
 			EntityDataSerializers.BOOLEAN);
 
 	public EntityMerasmus(Level world) {
-		super(world);
+		this(TF2weapons.MERASMUS, world);
+	}
+
+	public EntityMerasmus(EntityType<? extends EntityMerasmus> type, Level world) {
+		super(type, world);
 		this.setSize(1.15f, 3.5f);
 		this.maxUpStep = 1.05f;
 		this.setNoAi(true);

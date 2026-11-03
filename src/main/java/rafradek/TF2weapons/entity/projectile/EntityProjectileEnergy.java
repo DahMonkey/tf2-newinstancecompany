@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,13 +15,17 @@ public class EntityProjectileEnergy extends EntityProjectileSimple {
 	double struck;
 
 	public EntityProjectileEnergy(Level world) {
-		super(world);
+		this(TF2weapons.PROJECTILE_ENERGY, world);
+	}
+
+	public EntityProjectileEnergy(EntityType<? extends EntityProjectileEnergy> type, Level world) {
+		super(type, world);
 	}
 
 	@Override
 	public void initProjectile(LivingEntity shooter, InteractionHand hand, ItemStack weapon) {
 		super.initProjectile(shooter, hand, weapon);
-		this.setType(4);
+		this.setProjType(4);
 
 	}
 

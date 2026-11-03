@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.TF2weapons;
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.item.ItemFromData;
@@ -15,18 +17,20 @@ import net.minecraft.world.phys.HitResult;
 public class EntityRocket extends EntityProjectileBase {
 
 	public EntityRocket(Level p_i1756_1_) {
-		super(p_i1756_1_);
+		this(TF2weapons.ROCKET, p_i1756_1_);
+	}
+
+	public EntityRocket(EntityType<? extends EntityRocket> type, Level p_i1756_1_) {
+		super(type, p_i1756_1_);
 		if (p_i1756_1_.isClientSide)
 			ClientProxy.spawnRocketParticle(this.level, this);
-		if (TF2ConfigVars.dynamicLights)
-			this.makeLit();
 	}
 
 	@Override
 	public void initProjectile(LivingEntity shooter, InteractionHand hand, ItemStack weapon) {
 		String name = ItemFromData.getData(weapon).getString(PropertyType.PROJECTILE);
 		if (name.equals("cowmangler"))
-			this.setType(1);
+			this.setProjType(1);
 		super.initProjectile(shooter, hand, weapon);
 	}
 

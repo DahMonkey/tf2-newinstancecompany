@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -85,7 +86,11 @@ public class EntitySentry extends EntityBuilding {
 			UUID.fromString("1184831d-b1dc-40c8-86e6-34fa8f5abada"), "minisentry", -6, 0);
 
 	public EntitySentry(Level world) {
-		super(world);
+		this(TF2weapons.SENTRY, world);
+	}
+
+	public EntitySentry(EntityType<? extends EntitySentry> type, Level world) {
+		super(type, world);
 		this.setSize(0.8f, 0.8f);
 		try {
 			this.lookControl = new SentryLookHelper(this);

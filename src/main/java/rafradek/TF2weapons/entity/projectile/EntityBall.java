@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -17,7 +18,11 @@ public class EntityBall extends EntityProjectileSimple {
 	public boolean canBePickedUp;
 
 	public EntityBall(Level world) {
-		super(world);
+		this(TF2weapons.BALL, world);
+	}
+
+	public EntityBall(EntityType<? extends EntityBall> type, Level world) {
+		super(type, world);
 		this.throwPos = new Vec3(0, 0, 0);
 	}
 

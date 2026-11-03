@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.boss;
 
+import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
 import rafradek.TF2weapons.common.MapList;
@@ -56,7 +57,11 @@ public class EntityMonoculus extends EntityTF2Boss {
 			EntityDataSerializers.BOOLEAN);
 
 	public EntityMonoculus(Level world) {
-		super(world);
+		this(TF2weapons.MONOCULUS, world);
+	}
+
+	public EntityMonoculus(EntityType<? extends EntityMonoculus> type, Level world) {
+		super(type, world);
 		this.setSize(4, 4);
 		this.setItemInHand(InteractionHand.MAIN_HAND, ItemFromData.getNewStack("mnceye"));
 		this.setItemInHand(InteractionHand.OFF_HAND, ItemFromData.getNewStack("mnclaser"));
