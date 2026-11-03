@@ -12,7 +12,7 @@ start=$(date +%s)
 result=timeout
 while kill -0 $PID 2>/dev/null; do
   sleep 5
-  if grep -q -- "---- Minecraft Crash Report ----\|Failed to load mod\|LoadingFailedException\|ModLoadingException" "$LOG"; then
+  if grep -q -- "---- Minecraft Crash Report ----\|Failed to load mod\|LoadingFailedException\|ModLoadingException\|Failed to create mod instance\|has failed to load correctly" "$LOG"; then
     result=crash; break
   fi
   if grep -Eq "$SUCCESS" "$LOG"; then
@@ -21,6 +21,7 @@ while kill -0 $PID 2>/dev/null; do
   if [ $(( $(date +%s) - start )) -gt "$TIMEOUT" ]; then break; fi
 done
 if ! kill -0 $PID 2>/dev/null && [ "$result" = timeout ]; then result=exited; fi
+if grep -q -- "---- Minecraft Crash Report ----\|Failed to create mod instance\|has failed to load correctly\|Exception caught during firing event" "$LOG"; then result=crash; fi
 pkill -P $PID 2>/dev/null; kill $PID 2>/dev/null; sleep 3; pkill -f GradleWorker 2>/dev/null; pkill -f 'net.minecraftforge.bootstrap\|cpw.mods' 2>/dev/null
 echo "SMOKE RESULT ($TASK): $result"
 echo "==== errors mentioning the mod ===="

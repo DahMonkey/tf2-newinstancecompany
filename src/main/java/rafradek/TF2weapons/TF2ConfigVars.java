@@ -123,6 +123,8 @@ public class TF2ConfigVars {
 	private static ForgeConfigSpec.Builder builder;
 	private static String category;
 
+	private static final Map<String, Object> OVERRIDES = new LinkedHashMap<>();
+
 	static {
 		builder = new ForgeConfigSpec.Builder();
 
@@ -396,8 +398,6 @@ public class TF2ConfigVars {
 		OVERRIDES.clear();
 		bake();
 	}
-
-	private static final Map<String, Object> OVERRIDES = new LinkedHashMap<>();
 
 	private static Object raw(String path) {
 		if (OVERRIDES.containsKey(path))
