@@ -49,7 +49,7 @@ public class EntityFlame extends EntityProjectileBase {
 		if (!this.level.isClientSide && !this.hitEntities.contains(entityHit)) {
 			this.hitEntities.add(entityHit);
 			DamageSourceProjectile src = TF2Util.causeBulletDamage(this.usedWeapon, this.shootingEntity, this);
-			src.setFireDamage();
+			src.setIsFire();
 			int critical = TF2Util.calculateCritPost(entityHit, shootingEntity, this.getCritical(), this.usedWeapon,
 					src);
 			// float distance= (float) new Vec3d(this.shootingEntity.posX,

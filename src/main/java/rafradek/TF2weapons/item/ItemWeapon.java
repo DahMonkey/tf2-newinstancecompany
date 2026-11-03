@@ -197,7 +197,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 		if (world.isClientSide)
 			this.doMuzzleFlash(stack, living, hand);
 
-		if (!living.onGround && living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).fanCool <= 0
+		if (!living.isOnGround() && living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).fanCool <= 0
 				&& TF2Attribute.getModifier("KnockbackFAN", stack, 0, living) != 0) {
 			Vec3 look = living.getViewVector(1f);
 			living.push(-look.x * 0.66, -look.y * 0.58, -look.z * 0.66);
@@ -254,7 +254,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 				&& ((Player) living).getAbilities().instabuild)) {
 			this.setClip(stack, this.getClip(stack) - value);
 			try {
-				((NonNullList<ItemStack>) ReflectionAccess.entityHandInv.get(living)).get(hand.ordinal())
+				TF2Util.getHandStack(living, hand.ordinal())
 						.getTag().putInt("Clip", this.getClip(stack));
 			} catch (Exception e) {}
 		}
@@ -781,7 +781,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			if (TF2Attribute.getModifier("Fire Specialist", stack, 0f, attacker) > 0f) {
 				try {
 					((LivingEntity) target).addEffect(
-							new MobEffectInstance(TF2weapons.viralfire, ReflectionAccess.entityFire.getInt(target),
+							new MobEffectInstance(TF2weapons.viralfire, target.getRemainingFireTicks(),
 									(int) TF2Attribute.getModifier("Fire Specialist", stack, 0f, attacker)));
 				} catch (Exception e) {
 					e.printStackTrace();

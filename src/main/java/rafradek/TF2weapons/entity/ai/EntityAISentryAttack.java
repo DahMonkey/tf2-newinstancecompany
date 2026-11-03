@@ -16,25 +16,25 @@ public class EntityAISentryAttack extends Goal {
 	}
 
 	@Override
-	public void resetTask() {
+	public void stop() {
 		this.host.setSoundState(0);
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		return !this.host.isDisabled() && !this.host.isControlled() && (this.host.getTarget()) != null
-				&& this.host.getSensing().canSee(this.host.getTarget());
+				&& this.host.getSensing().hasLineOfSight(this.host.getTarget());
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 
 		LivingEntity target = this.host.getTarget();
 		if (target == null)
 			return;
 
 		if ((target != null && target.deathTime > 0) || this.host.deathTime > 0) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		LivingEntity owner = this.host.getOwner();

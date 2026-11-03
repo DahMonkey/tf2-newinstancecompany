@@ -43,14 +43,14 @@ public class EntityAISentryBuster extends Goal {
 	 * Returns whether the EntityAIBase should begin execution.
 	 */
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		LivingEntity entitylivingbase = this.attacker.target;
 		BlockPos target = this.attacker.targetpos;
 		if (entitylivingbase != null)
 			target = entitylivingbase.blockPosition();
 
 		if (target != null) {
-			this.path = this.attacker.getNavigation().getPathToPos(target);
+			this.path = this.attacker.getNavigation().createPath(target);
 
 			if (this.path != null) {
 				return true;
@@ -65,7 +65,7 @@ public class EntityAISentryBuster extends Goal {
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
+	public boolean canContinueToUse() {
 		LivingEntity entitylivingbase = this.attacker.target;
 		BlockPos target = this.attacker.targetpos;
 		if (entitylivingbase != null)
@@ -85,8 +85,8 @@ public class EntityAISentryBuster extends Goal {
 	 * Execute a one shot task or start executing a continuous task
 	 */
 	@Override
-	public void startExecuting() {
-		this.attacker.getNavigation().setPath(this.path, 2.4);
+	public void start() {
+		this.attacker.getNavigation().moveTo(this.path, 2.4);
 		this.delayCounter = 0;
 	}
 
@@ -95,7 +95,7 @@ public class EntityAISentryBuster extends Goal {
 	 * another one
 	 */
 	@Override
-	public void resetTask() {
+	public void stop() {
 		LivingEntity entitylivingbase = this.attacker.getTarget();
 
 		if (entitylivingbase instanceof Player && (((Player) entitylivingbase).isSpectator()
@@ -110,7 +110,7 @@ public class EntityAISentryBuster extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	@Override
-	public void updateTask() {
+	public void tick() {
 		LivingEntity entitylivingbase = this.attacker.target;
 		BlockPos target = this.attacker.targetpos;
 		if (entitylivingbase != null)
@@ -140,7 +140,7 @@ public class EntityAISentryBuster extends Goal {
 				this.delayCounter += 5;
 			}
 
-			if (!this.attacker.getNavigation().tryMoveToXYZ(target.getX(), target.getY(), target.getZ(), 2.4f)) {
+			if (!this.attacker.getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), 2.4f)) {
 				this.distanceIncreased += 75;
 				this.delayCounter += 15;
 			}

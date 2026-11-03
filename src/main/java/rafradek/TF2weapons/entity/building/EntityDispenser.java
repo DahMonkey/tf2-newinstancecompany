@@ -155,7 +155,7 @@ public class EntityDispenser extends EntityBuilding {
 					if (!heldItem.isEmpty()) {
 
 						float repairMult = TF2ConfigVars.dispenserRepair;
-						ListTag list = heldItem.getEnchantmentTagList();
+						ListTag list = heldItem.getEnchantmentTags();
 						float enchantCost = 1f;
 						if (list != null) {
 							for (int i = 0; i < list.size(); i++)
@@ -193,7 +193,7 @@ public class EntityDispenser extends EntityBuilding {
 								.setDamageValue(Math.max(cloak.getSecond().getDamageValue() - (2 + this.getLevel()), 0));
 						if (living instanceof ServerPlayer)
 							((ServerPlayer) living).connection
-									.sendPacket(new ClientboundContainerSetSlotPacket(-2, cloak.getFirst(), cloak.getSecond()));
+									.send(new ClientboundContainerSetSlotPacket(-2, cloak.getFirst(), cloak.getSecond()));
 					}
 				}
 				if (this.dispenserTarget != null && !this.dispenserTarget.contains(living))

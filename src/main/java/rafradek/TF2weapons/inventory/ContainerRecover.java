@@ -42,7 +42,7 @@ public class ContainerRecover extends AbstractContainerMenu {
 	public static int getAustraliumCount(Player player) {
 		int count = 0;
 		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-			ItemStack stack = player.getInventory().getStackInSlot(i);
+			ItemStack stack = player.getInventory().getItem(i);
 			if (!stack.isEmpty()) {
 				if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 6)
 					count++;

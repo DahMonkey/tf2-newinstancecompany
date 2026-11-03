@@ -88,13 +88,13 @@ public class EntityTarget extends ArmorStand {
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (!this.level.isClientSide && !this.isRemoved()) {
 			if (DamageSource.OUT_OF_WORLD.equals(source) || (source.getEntity() instanceof LivingEntity
-					&& source.getDamageType().equals("player") && source.getEntity().isShiftKeyDown())) {
+					&& source.getMsgId().equals("player") && source.getEntity().isShiftKeyDown())) {
 				source.setExplosion();
 				Block.spawnAsEntity(world, getPosition().above(), new ItemStack(TF2weapons.itemTarget));
 				super.hurt(source, amount);
 				return false;
 			} else {
-				if (this.invulnerableTime > this.maxHurtResistantTime / 2.0F) {
+				if (this.invulnerableTime > this.invulnerableDuration / 2.0F) {
 					if (amount <= this.lastDamage) {
 						return false;
 					}
@@ -103,7 +103,7 @@ public class EntityTarget extends ArmorStand {
 					this.lastDamage = amount;
 				} else {
 					this.lastDamage = amount;
-					this.invulnerableTime = this.maxHurtResistantTime;
+					this.invulnerableTime = this.invulnerableDuration;
 					this.maxHurtTime = 10;
 					this.hurtTime = this.maxHurtTime;
 				}

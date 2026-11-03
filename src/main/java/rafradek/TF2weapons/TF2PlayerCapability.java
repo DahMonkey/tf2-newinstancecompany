@@ -355,7 +355,7 @@ public class TF2PlayerCapability implements ICapabilityProvider, INBTSerializabl
 				TF2Util.sendTracking(new TF2Message.PlayerCapabilityMessage(this.owner, false, true), this.owner);
 			}
 		} else if (this.owner == Minecraft.getInstance().player) {
-			((LocalPlayer) this.owner).connection.sendPacket(new CPacketInput(owner.xxa, owner.zza,
+			((LocalPlayer) this.owner).connection.send(new CPacketInput(owner.xxa, owner.zza,
 					((LocalPlayer) this.owner).movementInput.jump,
 					((LocalPlayer) this.owner).movementInput.sneak));
 		}

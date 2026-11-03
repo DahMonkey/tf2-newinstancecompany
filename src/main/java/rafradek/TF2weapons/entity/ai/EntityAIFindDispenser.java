@@ -26,13 +26,13 @@ public class EntityAIFindDispenser extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		if (this.host.getAmmo() <= 0 || (this.host.getTarget() == null
 				&& (this.host.getHealth() < this.host.getMaxHealth() || !this.host.isAmmoFull()))) {
 			Entity disp = TF2Util.findAmmoSource(host, range, true);
 			if (disp != null) {
 				this.target = disp;
-				this.path = host.getNavigation().getPathToEntityLiving(disp);
+				this.path = host.getNavigation().createPath(disp);
 				return this.path != null;
 			}
 		}
@@ -40,26 +40,26 @@ public class EntityAIFindDispenser extends Goal {
 	}
 
 	@Override
-	public void startExecuting() {
-		this.host.getNavigation().setPath(path, 1.0f);
+	public void start() {
+		this.host.getNavigation().moveTo(path, 1.0f);
 	}
 
 	@Override
-	public boolean shouldContinueExecuting() {
+	public boolean canContinueToUse() {
 		return this.target != null && target.isAlive()
 				&& !(this.host.isAmmoFull() && this.host.getHealth() >= this.host.getMaxHealth());
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if (this.host.distanceToSqr(target) > 2) {
 			if (this.host.tickCount % 9 == 0)
-				if (!this.host.getNavigation().tryMoveToEntityLiving(host, 1.0f)) {
+				if (!this.host.getNavigation().moveTo(host, 1.0f)) {
 					this.target = null;
 					return;
 				}
 			if (this.host.getTarget() == null)
-				this.host.getLookControl().setLookPositionWithEntity(this.target, 30, 15);
+				this.host.getLookControl().setLookAt(this.target, 30, 15);
 		} else
 			this.host.getNavigation().stop();
 	}

@@ -248,7 +248,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		if (this.owner instanceof Player) {
 			ItemStack ingot = new ItemStack(Items.IRON_INGOT);
 			while (((allowPartial && this.getMetal() == 0) || (!allowPartial && this.getMetal() < metal))
-					&& ((Player) this.owner).getInventory().hasItemStack(ingot)) {
+					&& ((Player) this.owner).getInventory().contains(ingot)) {
 				((Player) this.owner).getInventory().clearMatchingItems(Items.IRON_INGOT, 0, 1, null);
 				this.setMetal(this.getMetal() + 50);
 			}
@@ -481,12 +481,12 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		this.fanCool--;
 		this.ticksTotal++;
 		this.lastFire -= 50;
-		if (this.airJumps > 0 && this.owner.onGround) {
+		if (this.airJumps > 0 && this.owner.isOnGround()) {
 			this.airJumps = 0;
 		}
 
 		if (this.owner.isSprinting() && this.getUsedToken() >= 0) {
-			if (this.owner.onGround) {
+			if (this.owner.isOnGround()) {
 				owner.setDeltaMovement(owner.getDeltaMovement().x * (0.82D), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
 				owner.setDeltaMovement(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z * (0.82D));
 			}
@@ -756,15 +756,15 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		 * this.gravity = owner.motionY/0.98; System.out.println(this.gravity); }
 		 */
 
-		if (!owner.onGround && charging != null)
+		if (!owner.isOnGround() && charging != null)
 			this.setExpJump(true);
 
 		if (this.isExpJump() && this.canExpJump()) {
-			boolean enchanted = TF2ConfigVars.enchantedExplosion && !owner.isElytraFlying() && !this.isUsingParachute()
+			boolean enchanted = TF2ConfigVars.enchantedExplosion && !owner.isFallFlying() && !this.isUsingParachute()
 					&& !(owner instanceof Player && ((Player) owner).getAbilities().flying)
 					&& !owner.getItemBySlot(EquipmentSlot.FEET).getItem().getRegistryName().toString()
 							.equals("tconstruct:slime_boots");
-			if (owner.onGround) {
+			if (owner.isOnGround()) {
 				BlockPos pos = owner.blockPosition().below();
 				BlockState block = owner.level.getBlockState(pos);
 				owner.setDeltaMovement(owner.getDeltaMovement().x * (block.getBlock().getSlipperiness(block, owner.level, pos, owner)), owner.getDeltaMovement().y, owner.getDeltaMovement().z);
@@ -775,7 +775,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				this.expJumpGround--;
 				owner.onGround = false;
 				owner.hasImpulse = true;
-			} else if (owner.onGround || owner.isInWater()) {
+			} else if (owner.isOnGround() || owner.isInWater()) {
 				this.killsAirborne = 0;
 				this.setExpJump(false);
 				if (enchanted && this.oldFactor != 0) {
@@ -814,7 +814,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 					Vec3 moveDir = TF2Util.getMovementVector(owner);
 					double combSpeed = owner.getDeltaMovement().x * moveDir.x + owner.getDeltaMovement().z * moveDir.y;
 
-					double maxSpeed = charging != null ? owner.getAIMoveSpeed() * 2.16 : 0.026;
+					double maxSpeed = charging != null ? owner.getSpeed() * 2.16 : 0.026;
 					double friction = charging != null ? 0.08 : 0.4;
 
 					combSpeed = (maxSpeed) - combSpeed;
@@ -845,7 +845,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		if (this.isExpJump() || charging != null) {
 			Vec3 vec = new Vec3(owner.getDeltaMovement().x, owner.getDeltaMovement().y, owner.getDeltaMovement().z);
 			Vec3 vec2 = new Vec3(owner.getDeltaMovement().x, 0, owner.getDeltaMovement().z);
-			if (owner.onGround)
+			if (owner.isOnGround())
 				vec = vec2;
 			double motion = vec.length();
 			// double motiona = vec2.lengthVector();

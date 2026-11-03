@@ -26,7 +26,7 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 	 * Returns whether the EntityAIBase should begin execution.
 	 */
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 
 		if (this.creature.isWithinHomeDistanceCurrentPosition()) {
 			return false;
@@ -55,7 +55,7 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
+	public boolean canContinueToUse() {
 		return !this.creature.getNavigation().isDone();
 	}
 
@@ -63,8 +63,8 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 	 * Execute a one shot task or start executing a continuous task
 	 */
 	@Override
-	public void startExecuting() {
-		this.creature.getNavigation().tryMoveToXYZ(this.movePosX, this.movePosY, this.movePosZ, this.movementSpeed);
+	public void start() {
+		this.creature.getNavigation().moveTo(this.movePosX, this.movePosY, this.movePosZ, this.movementSpeed);
 	}
 
 }

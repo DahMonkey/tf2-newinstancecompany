@@ -146,7 +146,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 	@Override
 	public void onUpdate(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		if (getData(stack) == BLANK_DATA && par3Entity instanceof Player) {
-			((Player) par3Entity).getInventory().setInventorySlotContents(par4, ItemStack.EMPTY);
+			((Player) par3Entity).getInventory().setItem(par4, ItemStack.EMPTY);
 			stack.setCount(0);
 			return;
 		}

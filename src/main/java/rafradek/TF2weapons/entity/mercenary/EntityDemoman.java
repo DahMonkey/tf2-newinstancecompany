@@ -158,7 +158,7 @@ public class EntityDemoman extends EntityTF2Character {
 				for (LivingEntity target : this.level.getEntitiesOfClass(LivingEntity.class,
 						bomb.getBoundingBox().inflate(5))) {
 					if (this.isValidTarget(target) && target.distanceToSqr(bomb) < 7
-							&& this.getSensing().canSee(target) && target.hasLineOfSight(bomb)) {
+							&& this.getSensing().hasLineOfSight(target) && target.hasLineOfSight(bomb)) {
 						((ItemWeapon) this.loadout.getStackInSlot(1).getItem())
 								.altFireTick(this.loadout.getStackInSlot(1), this, world);
 						break;
@@ -169,7 +169,7 @@ public class EntityDemoman extends EntityTF2Character {
 			if (chargetick && this.loadout.getStackInSlot(1).getItem() instanceof ItemChargingTarge) {
 				this.setItemInHand(InteractionHand.OFF_HAND, this.loadout.getStackInSlot(1));
 				this.switchSlot(2);
-				if (this.getTarget() != null && this.getSensing().canSee(this.getTarget())) {
+				if (this.getTarget() != null && this.getSensing().hasLineOfSight(this.getTarget())) {
 					if (this.chargeCool < 0) {
 						this.moveAttack.setDodge(false, false);
 						this.chargeCool = 300;

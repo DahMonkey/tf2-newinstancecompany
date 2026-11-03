@@ -33,7 +33,7 @@ public class EntityAISetup extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 
 		if (this.engineer.getMainWeapon() != -1)
 			return false;
@@ -85,12 +85,12 @@ public class EntityAISetup extends Goal {
 	}
 
 	@Override
-	public void startExecuting() {
+	public void start() {
 
 	}
 
 	@Override
-	public void resetTask() {
+	public void stop() {
 		this.engineer.getNavigation().stop();
 		this.engineer.switchSlot(0);
 		if (this.engineer.loadout.getStackInSlot(3).getItem() instanceof ItemPDA)
@@ -98,7 +98,7 @@ public class EntityAISetup extends Goal {
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if (this.buildType > 0) {
 			if (this.target != null && this.engineer.distanceToSqr(this.target.x, this.target.y, this.target.z) < 2) {
 				EntityBuilding building = this.spawn();
@@ -124,7 +124,7 @@ public class EntityAISetup extends Goal {
 					List<AABB> list = this.engineer.level.getCollisionBoxes(this.engineer, box);
 
 					if (list.isEmpty() && !this.engineer.level.isMaterialInBB(box, Material.WATER)) {
-						this.engineer.getNavigation().tryMoveToXYZ(Vec3.x, Vec3.y, Vec3.z, 1);
+						this.engineer.getNavigation().moveTo(Vec3.x, Vec3.y, Vec3.z, 1);
 						this.target = Vec3;
 					}
 				}
@@ -185,7 +185,7 @@ public class EntityAISetup extends Goal {
 		this.engineer.level.addFreshEntity(building);
 		this.target = null;
 		this.buildType = 0;
-		this.resetTask();
+		this.stop();
 		this.engineer.buildCount += 1;
 		return building;
 	}

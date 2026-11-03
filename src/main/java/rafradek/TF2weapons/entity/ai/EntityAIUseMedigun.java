@@ -19,8 +19,8 @@ public class EntityAIUseMedigun extends EntityAIUseRangedWeapon {
 	}
 
 	@Override
-	public boolean shouldExecute() {
-		return this.entityHost.getMainHandItem().getItem() instanceof ItemMedigun && super.shouldExecute();
+	public boolean canUse() {
+		return this.entityHost.getMainHandItem().getItem() instanceof ItemMedigun && super.canUse();
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class EntityAIUseMedigun extends EntityAIUseRangedWeapon {
 	 */
 
 	@Override
-	public void resetTask() {
+	public void stop() {
 		this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).setHealTarget(-1);
 		this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state = 0;
 		TF2Util.sendTracking(new TF2Message.ActionMessage(0, entityHost), entityHost);
@@ -49,9 +49,9 @@ public class EntityAIUseMedigun extends EntityAIUseRangedWeapon {
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if ((this.attackTarget != null && this.attackTarget.deathTime > 0) || this.entityHost.deathTime > 0) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		if (this.attackTarget == null)

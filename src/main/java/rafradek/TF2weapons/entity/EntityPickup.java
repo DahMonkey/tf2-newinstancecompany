@@ -99,7 +99,7 @@ public class EntityPickup extends Entity {
 		double d1 = this.getDeltaMovement().y;
 		double d2 = this.getDeltaMovement().z;
 
-		if (!this.hasNoGravity()) {
+		if (!this.isNoGravity()) {
 			this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - (0.03999999910593033D), this.getDeltaMovement().z);
 		}
 

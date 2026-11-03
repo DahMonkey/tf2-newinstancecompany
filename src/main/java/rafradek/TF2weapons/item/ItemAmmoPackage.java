@@ -54,7 +54,7 @@ public class ItemAmmoPackage extends Item {
 			ItemStack out = convertPackage(itemStackIn, player, ammoType);
 			out = TF2Util.mergeStackByDamage(
 					player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null), out);
-			if (!player.getInventory().addItemStackToInventory(out))
+			if (!player.getInventory().add(out))
 				player.spawnAtLocation(out, 0);
 			itemStackIn.shrink(1);
 		}

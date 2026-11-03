@@ -41,8 +41,11 @@ public class MapList {
 		 */
 		// classNumbers = new HashMap<>();
 
-		// classNumbers.put(EntityScout.class, 0);
-		// scoutSpawn=new HashMap<List<SpawnListEntry>, SpawnListEntry>();
+		initProjectiles();
+	}
+
+	/** Creates the weapon items. 1.19 only allows constructing items while the item registry is open. */
+	public static void initWeaponItems() {
 		weaponClasses.put("sniperrifle", new ItemSniperRifle());
 		weaponClasses.put("bullet", new ItemBulletWeapon());
 		weaponClasses.put("minigun", new ItemMinigun());
@@ -73,6 +76,9 @@ public class MapList {
 		weaponClasses.put("airblast", new ItemAirblast());
 		weaponClasses.put("backpackgeneric", new ItemBackpack());
 		weaponClasses.put("grapplinghook", new ItemGrapplingHook());
+	}
+
+	private static void initProjectiles() {
 		/*
 		 * weaponDatas.put("sniperrifle", ); weaponDatas.put("bullet", new
 		 * ItemBulletWeapon()); weaponDatas.put("minigun", new ItemMinigun());

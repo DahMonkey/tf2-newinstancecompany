@@ -32,7 +32,7 @@ public class EntityNBTCondition implements LootItemCondition {
 	public boolean testCondition(RandomSource random, LootContext context) {
 
 		Entity test = context.getEntity(EntityTarget.THIS);
-		CompoundTag tag = test.writeToNBT(new CompoundTag());
+		CompoundTag tag = test.save(new CompoundTag());
 		CompoundTag tagmerge = new CompoundTag();
 		for (String key : tagValue.getAllKeys())
 			tagmerge.put(key, tag.getTag(key));

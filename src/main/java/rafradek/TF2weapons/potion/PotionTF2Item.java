@@ -1,56 +1,32 @@
 package rafradek.TF2weapons.potion;
 
-import rafradek.TF2weapons.client.compat.Tessellator;
-import rafradek.TF2weapons.client.compat.BufferBuilder;
-import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
+import rafradek.TF2weapons.client.TF2EffectIcons;
 
+import java.util.function.Consumer;
+
+/** Status effect whose icon is one of the mod's item textures. */
 public class PotionTF2Item extends MobEffect {
 
-	public ResourceLocation texture;
+	public final ResourceLocation texture;
+	private final String legacyName;
 
-	public PotionTF2Item(boolean isBadEffectIn, int liquidColorIn, ResourceLocation texture) {
-		super(isBadEffectIn, liquidColorIn);
+	public PotionTF2Item(boolean isBadEffectIn, int liquidColorIn, ResourceLocation texture, String legacyName) {
+		super(isBadEffectIn ? MobEffectCategory.HARMFUL : MobEffectCategory.BENEFICIAL, liquidColorIn);
 		this.texture = texture;
+		this.legacyName = legacyName;
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void renderInventoryEffect(int x, int y, MobEffectInstance effect, Minecraft mc) {
-		mc.RenderSystem.setShaderTexture(0, texture);
-		// mc.ingameGUI.drawTexturedModalRect(x+6,y+7,0,0,16,16);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder renderer = tessellator.getBuffer();
-		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-
-		renderer.pos(x + 7, y + 23, 0.0D).tex(0.0D, 1D).endVertex();
-		renderer.pos(x + 23, y + 23, 0.0D).tex(1.0D, 1D).endVertex();
-		renderer.pos(x + 23, y + 7, 0.0D).tex(1.0D, 0.0D).endVertex();
-		renderer.pos(x + 7, y + 7, 0.0D).tex(0.0D, 0.0D).endVertex();
-		tessellator.draw();
+	public String getDescriptionId() {
+		return legacyName;
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void renderHUDEffect(int x, int y, MobEffectInstance effect, Minecraft mc, float alpha) {
-		mc.RenderSystem.setShaderTexture(0, texture);
-		// mc.ingameGUI.drawTexturedModalRect(x+3,y+3,0,0,16,16);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder renderer = tessellator.getBuffer();
-
-		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-
-		renderer.pos(x + 4, y + 20, 0.0D).tex(0.0D, 1D).endVertex();
-		renderer.pos(x + 20, y + 20, 0.0D).tex(1.0D, 1D).endVertex();
-		renderer.pos(x + 20, y + 4, 0.0D).tex(1.0D, 0.0D).endVertex();
-		renderer.pos(x + 4, y + 4, 0.0D).tex(0.0D, 0.0D).endVertex();
-		tessellator.draw();
+	public void initializeClient(Consumer<IClientMobEffectExtensions> consumer) {
+		consumer.accept(TF2EffectIcons.forTexture(texture));
 	}
 }

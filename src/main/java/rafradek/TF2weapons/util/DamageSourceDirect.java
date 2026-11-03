@@ -61,7 +61,7 @@ public class DamageSourceDirect extends EntityDamageSource implements TF2DamageS
 		// EntityLivingBase ?
 		// ((EntityLivingBase)this.damageSourceEntity).getHeldItem(EnumHand.MAIN_HAND)
 		// : null;
-		String s = "death.attack." + this.damageType;
+		String s = "death.attack." + this.msgId;
 		String s1 = s + ".item";
 		return !weapon.isEmpty() && TF2Util.canTranslate(s1)
 				? Component.translatable(s1,

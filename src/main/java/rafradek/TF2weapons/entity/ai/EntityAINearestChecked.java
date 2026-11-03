@@ -72,7 +72,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		double d0 = this.getTargetDistance() / 2;
 		if (((this.mob.getTarget() == null)
 				|| this.mob.getTarget().distanceToSqr(mob) > d0 * d0))
@@ -100,7 +100,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 	}
 
 	@Override
-	public void startExecuting() {
+	public void start() {
 		this.mob.setTarget(this.targetEntity);
 		if (this.mob instanceof EntityTF2Character && this.mob.getTarget() != null) {
 			EntityTF2Character shooter = ((EntityTF2Character) this.mob);
@@ -108,7 +108,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 			shooter.targetPrevPos[2] = shooter.getTarget().getY();
 			shooter.targetPrevPos[4] = shooter.getTarget().getZ();
 		}
-		super.startExecuting();
+		super.start();
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 	 * checks. Args : entity, canTargetInvinciblePlayer
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
+	public boolean canContinueToUse() {
 		LivingEntity entitylivingbase = this.mob.getTarget();
 
 		if (entitylivingbase == null)
@@ -124,7 +124,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 		else if (!entitylivingbase.isAlive())
 			return false;
 		else if (!this.targetLock && this.mob.tickCount % 13 == 0)
-			return this.shouldExecute();
+			return this.canUse();
 		else {
 			Team team = this.mob.getTeam();
 			Team team1 = entitylivingbase.getTeam();
@@ -138,7 +138,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 					return false;
 				else {
 					if (this.shouldCheckSight)
-						if (this.mob.getSensing().canSee(entitylivingbase))
+						if (this.mob.getSensing().hasLineOfSight(entitylivingbase))
 							this.targetUnseenTicks = 0;
 						else if (++this.targetUnseenTicks > 60)
 							return false;
@@ -180,7 +180,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 						&& ((Player) target).getAbilities().disableDamage)
 					return false;
 
-				return !this.shouldCheckSight || this.mob.getSensing().canSee(target);
+				return !this.shouldCheckSight || this.mob.getSensing().hasLineOfSight(target);
 			}
 		}
 	}

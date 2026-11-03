@@ -259,7 +259,7 @@ public class EntitySoldier extends EntityTF2Character {
 	public class UseBackpack extends Goal {
 
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			if (getOwner() == null && getDiff() > 1 && (getTarget() != null || isGiant())
 					&& activeItemStack.isEmpty()) {
 				ItemStack backpack = ItemBackpack.getBackpack(EntitySoldier.this);
@@ -270,7 +270,7 @@ public class EntitySoldier extends EntityTF2Character {
 		}
 
 		@Override
-		public void updateTask() {
+		public void tick() {
 			activateBackpack();
 		}
 	}

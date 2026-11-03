@@ -248,7 +248,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 
 	@Override
 	public Team getTeam() {
-		return this.level.getScoreboard().getTeam("TF2Bosses");
+		return this.level.getScoreboard().getPlayerTeam("TF2Bosses");
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 
 	@Override
 	public void travel(float m1, float m2, float m3) {
-		float move = this.getAIMoveSpeed();
+		float move = this.getSpeed();
 		super.travel(m1 / move, m2, m3 / move);
 	}
 

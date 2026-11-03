@@ -80,12 +80,12 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 
 	public static ItemStack getReplacement(Player player, ItemStack stack) {
 		if (!stack.isEmpty() && stack.getItem() instanceof ItemBuildingBox
-				&& player.getTeam() == player.level.getScoreboard().getTeam("BLU"))
+				&& player.getTeam() == player.level.getScoreboard().getPlayerTeam("BLU"))
 			stack.setDamageValue(stack.getDamageValue() + 1);
 		if (!stack.isEmpty() && stack.getItem() instanceof BannerItem
 				&& stack.getDamageValue() == DyeColor.RED.getDyeDamage()) {
 			CompoundTag pattern = new CompoundTag();
-			if (player.getTeam() == player.level.getScoreboard().getTeam("BLU")) {
+			if (player.getTeam() == player.level.getScoreboard().getPlayerTeam("BLU")) {
 				stack.setDamageValue(DyeColor.BLUE.getDyeDamage());
 				pattern.putString("Pattern", "bb");
 				pattern.putInt("Color", 15);

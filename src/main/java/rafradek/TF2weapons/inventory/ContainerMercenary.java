@@ -248,7 +248,7 @@ public class ContainerMercenary extends MerchantMenu {
 				ItemHandlerHelper.giveItemToPlayer(player, TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
 				this.mercenary.setOwner(null);
 			} else if (mercenary.getOwnerUUID() == null
-					&& player.getInventory().hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2))) {
+					&& player.getInventory().contains(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2))) {
 				player.getInventory().clearMatchingItems(TF2weapons.itemTF2, 2, 1, null);
 				this.mercenary.setOwner(player);
 			}

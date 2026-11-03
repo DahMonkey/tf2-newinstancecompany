@@ -84,7 +84,7 @@ public class EntityAIMoveAttack extends Goal {
 	 * Returns whether the EntityAIBase should begin execution.
 	 */
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		LivingEntity LivingEntity = this.entityHost.getTarget();
 
 		if (LivingEntity == null)
@@ -101,15 +101,15 @@ public class EntityAIMoveAttack extends Goal {
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.entityHost.getNavigation().isDone();
+	public boolean canContinueToUse() {
+		return this.canUse() || !this.entityHost.getNavigation().isDone();
 	}
 
 	/**
 	 * Resets the task
 	 */
 	@Override
-	public void resetTask() {
+	public void stop() {
 		if (this.jump)
 			this.entityHost.jump = false;
 		this.entityHost.getNavigation().stop();
@@ -124,9 +124,9 @@ public class EntityAIMoveAttack extends Goal {
 	 */
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if ((this.attackTarget != null && this.attackTarget.deathTime > 0) || this.entityHost.deathTime > 0) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		if (this.attackTarget == null)
@@ -139,7 +139,7 @@ public class EntityAIMoveAttack extends Goal {
 		double d0 = this.entityHost.distanceToSqr(this.attackTarget.getX(), this.attackTarget.getBoundingBox().minY,
 				this.attackTarget.getZ());
 
-		boolean stay = this.entityHost.getSensing().canSee(this.attackTarget)
+		boolean stay = this.entityHost.getSensing().hasLineOfSight(this.attackTarget)
 				|| (this.projSpeed > 0 && this.attackTarget.getDeltaMovement().y > 0);
 		// this.entityHost.setJumping(true);
 
@@ -166,7 +166,7 @@ public class EntityAIMoveAttack extends Goal {
 			 * getItemDamage()<this.entityHost.getHeldItem(EnumHand.MAIN_HAND).
 			 * getMaxDamage()-1){ ((EntitySoldier)this.entityHost).rocketJump=true; }
 			 */
-			this.entityHost.getNavigation().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+			this.entityHost.getNavigation().moveTo(this.attackTarget, this.entityMoveSpeed);
 			this.backpath = false;
 		}
 		// this.entityHost.getLookHelper().setLookPosition(lookX, lookY, lookZ,
@@ -193,7 +193,7 @@ public class EntityAIMoveAttack extends Goal {
 					double offsetX = off.x * 3;
 					double offsetY = 0;
 					double offsetZ = off.z * 3;
-					this.entityHost.getNavigation().tryMoveToXYZ(Vec3.x + offsetX, Vec3.y + offsetY, Vec3.z + offsetZ,
+					this.entityHost.getNavigation().moveTo(Vec3.x + offsetX, Vec3.y + offsetY, Vec3.z + offsetZ,
 							this.entityMoveSpeed * this.dodgeSpeed);
 					backpath = true;
 					break;
@@ -207,7 +207,7 @@ public class EntityAIMoveAttack extends Goal {
 				double offsetX = this.dodgeHeadFor ? this.attackTarget.getX() - this.entityHost.getX() : 0;
 				double offsetY = this.dodgeHeadFor ? this.attackTarget.getY() - this.entityHost.getY() : 0;
 				double offsetZ = this.dodgeHeadFor ? this.attackTarget.getZ() - this.entityHost.getZ() : 0;
-				this.entityHost.getNavigation().tryMoveToXYZ(Vec3.x + offsetX, Vec3.y + offsetY, Vec3.z + offsetZ,
+				this.entityHost.getNavigation().moveTo(Vec3.x + offsetX, Vec3.y + offsetY, Vec3.z + offsetZ,
 						this.entityMoveSpeed * this.dodgeSpeed);
 			}
 		}

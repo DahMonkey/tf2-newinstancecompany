@@ -115,7 +115,7 @@ public class MannCoBuilding extends StructureComponent {
 			EntitySaxtonHale shopkeeper = new EntitySaxtonHale(world);
 			shopkeeper.moveTo(this.getXWithOffset(7, 5), this.getYWithOffset(1),
 					this.getZWithOffset(7, 5), 0.0F, 0.0F);
-			shopkeeper.enablePersistence();
+			shopkeeper.setPersistenceRequired();
 			this.haleSpawned = true;
 			world.addFreshEntity(shopkeeper);
 		}

@@ -98,7 +98,7 @@ public class EntityTeleporter extends EntityBuilding {
 								Level destworld = this.level.getServer().getLevel(exit.dimension);
 								Entity newent = EntityList.newEntity(entityIn.getClass(), destworld);
 								if (newent != null) {
-									CompoundTag data = entityIn.writeToNBT(new CompoundTag());
+									CompoundTag data = entityIn.save(new CompoundTag());
 									data.remove("Dimension");
 									newent.readFromNBT(data);
 									entityIn.discard();

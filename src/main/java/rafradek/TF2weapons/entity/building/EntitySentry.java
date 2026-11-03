@@ -88,7 +88,7 @@ public class EntitySentry extends EntityBuilding {
 		super(world);
 		this.setSize(0.8f, 0.8f);
 		try {
-			ReflectionAccess.entityLookHelper.set(this, new SentryLookHelper(this));
+			this.lookControl = new SentryLookHelper(this);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

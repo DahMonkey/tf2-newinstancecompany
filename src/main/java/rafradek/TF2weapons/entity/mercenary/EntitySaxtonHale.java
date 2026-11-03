@@ -214,7 +214,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
 	@Override
 	public void travel(float m1, float m2, float m3) {
-		float move = this.getAIMoveSpeed();
+		float move = this.getSpeed();
 		super.travel(m1 / move, m2, m3 / move);
 	}
 
@@ -235,13 +235,13 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 				this.heal(0.35f);
 			else if (this.getTarget().isAlive()) {
 
-				if (!this.getTarget().onGround) {
+				if (!this.getTarget().isOnGround()) {
 					this.targetAirborneTicks++;
 				}
 
 				if (!this.onGround) {
 					Vec3 forward = new Vec3(this.getTarget().getX() - this.getX(), 0.,
-							this.getTarget().getZ() - this.getZ()).normalize().scale(this.getAIMoveSpeed() * 0.42);
+							this.getTarget().getZ() - this.getZ()).normalize().scale(this.getSpeed() * 0.42);
 					this.setDeltaMovement(this.getDeltaMovement().x + (forward.x), this.getDeltaMovement().y, this.getDeltaMovement().z);
 					this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z + (forward.z));
 				}
@@ -271,7 +271,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
 			if (this.tickCount % 3 == 0) {
 				if (this.getTarget() != null && this.getTarget().isAlive()
-						&& this.getNavigation().getPathToEntityLiving(this.getTarget()) == null) {
+						&& this.getNavigation().createPath(this.getTarget()) == null) {
 					this.noPathTime += 1;
 					Vec3 forward = this.getVectorForRotation(0, this.yHeadRot);
 					if (this.noPathTime > 2) {
@@ -280,7 +280,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 									+ 2; y++) {
 								for (int z = (int) this.getZ(); z <= this.getZ() + forward.z; z++) {
 									BlockPos pos = new BlockPos(x, y, z);
-									if (this.level.getBlockState(pos).getBlockHardness(world, pos) != -1)
+									if (this.level.getBlockState(pos).getDestroySpeed(world, pos) != -1)
 										this.level.destroyBlock(pos, true);
 								}
 							}
@@ -342,7 +342,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
 	@Override
 	public Team getTeam() {
-		return this.hostile ? this.level.getScoreboard().getTeam("TF2Bosses") : null;
+		return this.hostile ? this.level.getScoreboard().getPlayerTeam("TF2Bosses") : null;
 	}
 
 	@Override

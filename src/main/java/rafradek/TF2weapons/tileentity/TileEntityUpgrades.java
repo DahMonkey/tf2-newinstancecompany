@@ -109,7 +109,7 @@ public class TileEntityUpgrades extends BlockEntity {
 
 	@Override
 	public CompoundTag getUpdateTag() {
-		return this.writeToNBT(new CompoundTag());
+		return this.save(new CompoundTag());
 	}
 
 	@Override

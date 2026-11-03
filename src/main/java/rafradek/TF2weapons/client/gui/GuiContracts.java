@@ -27,7 +27,7 @@ public class GuiContracts extends Screen {
 
 	@Override
 	public void initGui() {
-		mc.getConnection().sendPacket(new CPacketClientStatus(CPacketClientStatus.State.REQUEST_STATS));
+		mc.getConnection().send(new CPacketClientStatus(CPacketClientStatus.State.REQUEST_STATS));
 		mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newContracts = false;
 		mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = false;
 		super.initGui();

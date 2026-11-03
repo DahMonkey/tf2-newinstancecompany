@@ -70,7 +70,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 
 				ItemStack ingot = new ItemStack(Items.IRON_INGOT);
 				if (metalLeft == 0 && attacker instanceof Player
-						&& ((Player) attacker).getInventory().hasItemStack(ingot)) {
+						&& ((Player) attacker).getInventory().contains(ingot)) {
 					metalLeft = 50;
 					attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).setMetal(50);
 					useIgnot = true;
@@ -145,7 +145,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 
 				ItemStack ingot = new ItemStack(Items.IRON_INGOT);
 				if (metalLeft == 0 && attacker instanceof Player
-						&& ((Player) attacker).getInventory().hasItemStack(ingot)) {
+						&& ((Player) attacker).getInventory().contains(ingot)) {
 					metalLeft = 50;
 					attacker.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).setMetal(50);
 					useIgnot = true;

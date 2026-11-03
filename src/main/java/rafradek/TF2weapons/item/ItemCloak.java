@@ -56,7 +56,7 @@ public class ItemCloak extends ItemFromData {
 				par1ItemStack.setDamageValue(Math.min(maxdamage, par1ItemStack.getDamageValue() + 3));
 				if (par5 || par1ItemStack == ((LivingEntity) par3Entity).getOffhandItem())
 					try {
-						((NonNullList<ItemStack>) ReflectionAccess.entityHandInv.get(par3Entity)).get(par5 ? 0 : 1)
+						TF2Util.getHandStack(par3Entity, par5 ? 0 : 1)
 								.setDamageValue(par1ItemStack.getDamageValue());
 					} catch (Exception e) {}
 			}
@@ -83,7 +83,7 @@ public class ItemCloak extends ItemFromData {
 							0));
 			if (par5 || par1ItemStack == ((LivingEntity) par3Entity).getOffhandItem())
 				try {
-					((NonNullList<ItemStack>) ReflectionAccess.entityHandInv.get(par3Entity)).get(par5 ? 0 : 1)
+					TF2Util.getHandStack(par3Entity, par5 ? 0 : 1)
 							.setDamageValue(par1ItemStack.getDamageValue());
 				} catch (Exception e) {}
 		}

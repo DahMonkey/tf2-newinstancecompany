@@ -16,12 +16,12 @@ public class EntityAIOwnerHurt extends TargetGoal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		Player owner=(Player) ((EntityTF2Character) this.mob).getOwner();
 		return owner != null && (owner.getLastHurtByMob() != null || owner.getLastHurtMob() != null);
 	}
 
-	public void startExecuting()
+	public void start()
     {
 		Player owner=(Player) ((EntityTF2Character) this.mob).getOwner();
 		if(owner.getLastHurtByMob() != null && this.isSuitableTarget(owner.getLastHurtByMob(), false))
@@ -59,7 +59,7 @@ public class EntityAIOwnerHurt extends TargetGoal {
 						&& ((Player) target).getAbilities().disableDamage)
 					return false;
 
-				return !this.shouldCheckSight || this.mob.getSensing().canSee(target);
+				return !this.shouldCheckSight || this.mob.getSensing().hasLineOfSight(target);
 			}
 		}
 	}

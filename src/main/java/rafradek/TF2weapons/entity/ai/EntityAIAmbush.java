@@ -23,7 +23,7 @@ public class EntityAIAmbush extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		LivingEntity target = this.host.getTarget();
 		if (!this.host.hasWatch() || target == null) {
 			this.host.isAmbushing = false;
@@ -35,7 +35,7 @@ public class EntityAIAmbush extends Goal {
 				&& this.host.tickCount - this.host.getRevengeTimer() < 45;
 		boolean enemyLooking = !this.host.getWepCapability().isDisguised()
 				&& !this.host.loadout.getStackInSlot(3).getTag().getBoolean("Active")
-				&& this.host.getSensing().canSee(target)
+				&& this.host.getSensing().hasLineOfSight(target)
 				&& TF2Util.lookingAtFast(target, dist > 400 ? 50 : 105, this.host.getX(), this.host.getY(), this.host.getZ());
 		boolean isAtEnemy = dist < 9
 				&& !TF2Util.lookingAtFast(target, 105, this.host.getX(), this.host.getY(), this.host.getZ());
@@ -43,7 +43,7 @@ public class EntityAIAmbush extends Goal {
 	}
 
 	@Override
-	public void resetTask() {
+	public void stop() {
 		// System.out.println("Stop");
 		this.host.getNavigation().stop();
 		if (this.host.loadout.getStackInSlot(3).getTag().getBoolean("Active"))
@@ -58,11 +58,11 @@ public class EntityAIAmbush extends Goal {
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		// System.out.println("Tick");
 		LivingEntity target = this.host.getTarget();
 		if ((target != null && target.deathTime > 0) || host.deathTime > 0) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		if (target == null)
@@ -76,7 +76,7 @@ public class EntityAIAmbush extends Goal {
 		ItemStack cloak = this.host.loadout.getStackInSlot(3);
 		double dist = target.distanceToSqr(this.host);
 		boolean enemyLooking = !cloak.getTag().getBoolean("Active")
-				&& this.host.getSensing().canSee(target)
+				&& this.host.getSensing().hasLineOfSight(target)
 				&& TF2Util.lookingAtFast(target, 105, this.host.getX(), this.host.getY(), this.host.getZ());
 
 		if (cloak.getDamageValue() < cloak.getMaxDamage() - 72 && !cloak.getTag().getBoolean("Active")
@@ -98,12 +98,12 @@ public class EntityAIAmbush extends Goal {
 			float x = -Mth.sin(target.getYRot() / 180.0F * (float) Math.PI);
 			float z = Mth.cos(target.getYRot() / 180.0F * (float) Math.PI);
 			Vec3 pos = new Vec3(target.getX() - x * 2, target.getY(), target.getZ() - z * 2);
-			host.getNavigation().tryMoveToXYZ(target.getX() - x * 2, target.getY(), target.getZ() - z * 2, 1);
+			host.getNavigation().moveTo(target.getX() - x * 2, target.getY(), target.getZ() - z * 2, 1);
 		} else {
 			float x = -Mth.sin(target.getYRot() / 180.0F * (float) Math.PI);
 			float z = Mth.cos(target.getYRot() / 180.0F * (float) Math.PI);
 			Vec3 pos = new Vec3(x, 0, z).cross(new Vec3(0, 1, 0));
-			host.getNavigation().tryMoveToXYZ(target.getX() + pos.x * 3 - x * 2, target.getY(),
+			host.getNavigation().moveTo(target.getX() + pos.x * 3 - x * 2, target.getY(),
 					target.getZ() + pos.z * 3 - z * 2, 1f);
 		}
 		// this.host.getLookHelper().setLookPosition(target.posX+x*2,target.posY+target.getEyeHeight(),target.posZ+z*2,

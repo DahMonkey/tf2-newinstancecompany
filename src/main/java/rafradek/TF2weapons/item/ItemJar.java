@@ -117,9 +117,9 @@ public class ItemJar extends ItemProjectileWeapon {
 				newStack.setCount(1);
 				newStack.getTag().remove("IsEmpty");
 				String name = getData(stack).getName();
-				if (((Player) par3Entity).getInventory().addItemStackToInventory(newStack) || stack.getCount() == 1) {
+				if (((Player) par3Entity).getInventory().add(newStack) || stack.getCount() == 1) {
 					if (stack.getCount() == 1)
-						((Player) par3Entity).getInventory().setInventorySlotContents(par4, newStack);
+						((Player) par3Entity).getInventory().setItem(par4, newStack);
 					stack.shrink(1);
 					WeaponsCapability.get(par3Entity).addEffectCooldown(name, 1600);
 				}

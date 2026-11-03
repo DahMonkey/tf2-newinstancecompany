@@ -65,7 +65,7 @@ public class EntityJar extends EntityProjectileBase {
 				this.level.levelEvent(2002, new BlockPos(this),
 						MobEffect.getPotionFromResourceLocation(
 								ItemFromData.getData(this.usedWeapon).getString(PropertyType.EFFECT_TYPE))
-								.getLiquidColor());
+								.getColor());
 			}
 			if (this.isGas()) {
 				this.setDeltaMovement((0.), this.getDeltaMovement().y, this.getDeltaMovement().z);

@@ -18,15 +18,15 @@ public class EntityAISwitchWeapons extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		return ++this.counter > 2 && this.host.getDiff() > 2 && this.host.getTarget() != null;
 	}
 
 	@Override
-	public void resetTask() {}
+	public void stop() {}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		this.counter = 0;
 		// System.out.println("Tick");
 		LivingEntity target = this.host.getTarget();

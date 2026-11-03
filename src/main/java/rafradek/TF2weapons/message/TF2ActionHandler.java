@@ -331,14 +331,14 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 								for (EntityTF2Character living4 : list3) {
 									if (living4.getOrder() == Order.FOLLOW) {
 										living4.setHomePosAndDistance(pos3, 0);
-										living4.getNavigation().tryMoveToXYZ(pos3.getX(), pos3.getY(), pos3.getZ(), 1);
+										living4.getNavigation().moveTo(pos3.getX(), pos3.getY(), pos3.getZ(), 1);
 										living4.setOrder(Order.HOLD);
 										hasFollow = true;
 									}
 								}
 								if (!hasFollow && !list3.isEmpty()) {
 									list3.get(0).setHomePosAndDistance(pos3, 0);
-									list3.get(0).getNavigation().tryMoveToXYZ(pos3.getX(), pos3.getY(), pos3.getZ(), 1);
+									list3.get(0).getNavigation().moveTo(pos3.getX(), pos3.getY(), pos3.getZ(), 1);
 									list3.get(0).setOrder(Order.HOLD);
 								}
 							}

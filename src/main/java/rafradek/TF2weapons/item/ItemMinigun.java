@@ -210,7 +210,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 											&& input.distanceToSqr(living) < 16)) {
 
 								TF2Util.dealDamage(target, world, living, stack, 0, flamedmg,
-										TF2Util.causeDirectDamage(stack, living).setFireDamage());
+										TF2Util.causeDirectDamage(stack, living).setIsFire());
 								TF2Util.igniteAndAchievement(target, living, 6, 1);
 							}
 						}

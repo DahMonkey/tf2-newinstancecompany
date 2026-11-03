@@ -63,7 +63,7 @@ public class EntityBall extends EntityProjectileSimple {
 	@Override
 	public void onCollideWithPlayer(Player entityIn) {
 		if (!this.level.isClientSide && this.canBePickedUp) {
-			if (!this.infinite && entityIn.getInventory().addItemStackToInventory(TF2Util.metaStack(TF2weapons.itemAmmo, 1, 14)))
+			if (!this.infinite && entityIn.getInventory().add(TF2Util.metaStack(TF2weapons.itemAmmo, 1, 14)))
 				this.discard();
 
 		}

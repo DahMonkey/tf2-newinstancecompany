@@ -44,15 +44,15 @@ public class EntityMedic extends EntityTF2Character {
 						false, true) {
 
 					@Override
-					public boolean shouldExecute() {
-						return canHeal() && super.shouldExecute();
+					public boolean canUse() {
+						return canHeal() && super.canUse();
 					}
 				});
 		this.targetSelector.addGoal(2, new EntityAINearestChecked<LivingEntity>(this, LivingEntity.class, true,
 				false, this::isValidTarget, false, false) {
 			@Override
-			public boolean shouldExecute() {
-				return canHeal() && super.shouldExecute();
+			public boolean canUse() {
+				return canHeal() && super.canUse();
 			}
 		});
 		this.targetSelector.addGoal(3, new HurtByTargetGoal(this, true));
@@ -93,7 +93,7 @@ public class EntityMedic extends EntityTF2Character {
 				int type = 0;
 				if (source.isExplosion())
 					type = 1;
-				else if (source.isFireDamage())
+				else if (source.isFire())
 					type = 2;
 				if (type != this.getMainHandItem().getTag().getByte("ResType"))
 					return true;

@@ -165,7 +165,7 @@ public class ItemWearable extends ItemFromData {
 
 				if (entityplayer.distanceToSqr(living.getX(), living.getY() + 0.5, living.getZ()) < 4096.0D) {
 					((ServerPlayer) entityplayer).connection
-							.sendPacket(new ClientboundExplodePacket(living.getX(), living.getY() + 0.5, living.getZ(), 4,
+							.send(new ClientboundExplodePacket(living.getX(), living.getY() + 0.5, living.getZ(), 4,
 									explosion.affectedBlockPositions, explosion.getKnockbackMap().get(entityplayer)));
 				}
 			}

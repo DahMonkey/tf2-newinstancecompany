@@ -64,7 +64,7 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 		// : null;
 		if (this.getEntity() == TF2weapons.dummyEnt)
 			return Component.translatable("death.attack.explosion", p_151519_1_.getHoverName());
-		String s = "death.attack." + this.damageType;
+		String s = "death.attack." + this.msgId;
 		String s1 = s + ".item";
 		return weapon != null && TF2Util.canTranslate(s1)
 				? Component.translatable(s1,

@@ -16,12 +16,12 @@ public class EntityAISentryIdle extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		return this.host.getTarget() == null && !this.host.isDisabled();
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		// System.out.println("Rotating "+this.host.rotationYaw+"
 		// "+this.host.rotationYawHead);
 		if (this.direction) {

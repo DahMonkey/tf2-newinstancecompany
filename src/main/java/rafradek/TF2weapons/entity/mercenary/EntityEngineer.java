@@ -48,8 +48,8 @@ public class EntityEngineer extends EntityTF2Character {
 				false, this::isValidTarget, true, false) {
 
 			@Override
-			public boolean shouldExecute() {
-				return loadout.getStackInSlot(1).getItem() instanceof ItemWrangler && super.shouldExecute();
+			public boolean canUse() {
+				return loadout.getStackInSlot(1).getItem() instanceof ItemWrangler && super.canUse();
 			}
 
 			@Override

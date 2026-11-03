@@ -68,7 +68,7 @@ public class SlotCraftingTF2 extends ResultSlot {
 						&& ItemStack.tagMatches(itemstack, itemstack1)) {
 					itemstack1.grow(itemstack.getCount());
 					this.craftMatrix.setInventorySlotContents(i, itemstack1);
-				} else if (!this.player.getInventory().addItemStackToInventory(itemstack1))
+				} else if (!this.player.getInventory().add(itemstack1))
 					this.player.dropItem(itemstack1, false);
 		}
 		return stack;

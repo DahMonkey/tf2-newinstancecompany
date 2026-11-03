@@ -220,7 +220,7 @@ public abstract class ItemUsable extends ItemFromData {
 		if (TF2Attribute.getModifier("Fire Rate Health", stack, 1f, living) != 1f)
 			speed *= this.getHealthBasedBonus(stack, living,
 					TF2Attribute.getModifier("Fire Rate Health", stack, 1f, living));
-		if (living != null && (WeaponsCapability.get(living).isExpJump() || living.isElytraFlying())
+		if (living != null && (WeaponsCapability.get(living).isExpJump() || living.isFallFlying())
 				&& TF2Attribute.getModifier("Airborne Bonus", stack, 0, living) != 0)
 			speed *= 0.35f;
 		if (living != null && living.getAttribute(Attributes.ATTACK_SPEED) != null) {

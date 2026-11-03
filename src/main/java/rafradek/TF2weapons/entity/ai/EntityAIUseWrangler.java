@@ -18,8 +18,8 @@ public class EntityAIUseWrangler extends EntityAIUseRangedWeapon {
 	}
 
 	@Override
-	public boolean shouldExecute() {
-		return ((EntityEngineer) this.entityHost).shouldUseWrangler() && super.shouldExecute();
+	public boolean canUse() {
+		return ((EntityEngineer) this.entityHost).shouldUseWrangler() && super.canUse();
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class EntityAIUseWrangler extends EntityAIUseRangedWeapon {
 	 */
 
 	@Override
-	public void resetTask() {
+	public void stop() {
 		if (this.entityHost.usedSlot == 1) {
 			this.entityHost.switchSlot(0);
 			this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state = 0;
@@ -51,10 +51,10 @@ public class EntityAIUseWrangler extends EntityAIUseRangedWeapon {
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if ((this.attackTarget != null && this.attackTarget.deathTime > 0) || this.entityHost.deathTime > 0
 				|| !((EntityEngineer) this.entityHost).shouldUseWrangler()) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		if (this.attackTarget == null)
@@ -92,7 +92,7 @@ public class EntityAIUseWrangler extends EntityAIUseRangedWeapon {
 
 		if (overlap) {
 			Vec3 movevec = Vec3.fromPitchYaw(0, sentry.yHeadRot + 90);
-			this.entityHost.getNavigation().tryMoveToXYZ(this.entityHost.getX() + movevec.x,
+			this.entityHost.getNavigation().moveTo(this.entityHost.getX() + movevec.x,
 					this.entityHost.getY() + movevec.y, this.entityHost.getZ() + movevec.z, 1f);
 		}
 

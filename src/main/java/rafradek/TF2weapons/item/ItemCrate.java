@@ -84,7 +84,7 @@ public class ItemCrate extends ItemFromData {
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 		ItemStack itemStackIn = player.getItemInHand(hand);
 		if (!world.isClientSide && !itemStackIn.getTag().getBoolean("Open")) {
-			if (player.getInventory().hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 7))) {
+			if (player.getInventory().contains(TF2Util.metaStack(TF2weapons.itemTF2, 1, 7))) {
 				itemStackIn.getTag().putBoolean("Open", true);
 				player.getInventory().clearMatchingItems(TF2weapons.itemTF2, 7, 1, null);
 			}
@@ -114,7 +114,7 @@ public class ItemCrate extends ItemFromData {
 			if (!(stack.getItem() instanceof ItemWearable))
 				stack.getTag().putBoolean("Strange", true);
 
-			if (!player.getInventory().addItemStackToInventory(stack))
+			if (!player.getInventory().add(stack))
 				player.dropItem(stack, true);
 			// player.addStat(TF2Achievements.LOOT_CRATE);
 			player.addStat(TF2weapons.cratesOpened);

@@ -78,8 +78,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	public static final UUID UPGRADE_HEALTH_UUID = UUID.fromString("1184831d-b1dc-40c8-86e6-34fa8f30bada");
 
-	public static final DamageSource DETONATE = new DamageSource("detonate").setDamageBypassesArmor()
-			.setDamageIsAbsolute();
+	public static final DamageSource DETONATE = new DamageSource("detonate").bypassArmor()
+			.bypassMagic();
 	public static final int SENTRY_COST = 130;
 	public static final int DISPENSER_COST = 100;
 	public static final int TELEPORTER_COST = 50;
@@ -484,13 +484,13 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		} else {
 			switch (this.getEntTeam()) {
 			case 0:
-				return this.level.getScoreboard().getTeam("RED");
+				return this.level.getScoreboard().getPlayerTeam("RED");
 			case 1:
-				return this.level.getScoreboard().getTeam("BLU");
+				return this.level.getScoreboard().getPlayerTeam("BLU");
 			case 2:
-				return this.level.getScoreboard().getTeam("Robots");
+				return this.level.getScoreboard().getPlayerTeam("Robots");
 			default:
-				return this.level.getScoreboard().getTeam("RED");
+				return this.level.getScoreboard().getPlayerTeam("RED");
 			}
 		}
 	}
@@ -614,7 +614,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 			this.entityData.set(OWNER_UUID, Optional.of(ownerID));
 			this.ownerName = tag.getString("OwnerName");
 			this.getOwner();
-			this.enablePersistence();
+			this.setPersistenceRequired();
 		}
 		if (owner != null) {
 			this.setEntTeam(TF2Util.getTeamForDisplay(owner));

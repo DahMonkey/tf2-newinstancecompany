@@ -20,6 +20,6 @@ public class PlayerContractsProxy extends ServerGamePacketListenerImpl {
 	@Override
 	public void sendPacket(Packet<?> packet) {
 		TF2weapons.network.sendTo(new TF2Message.ContractNewMessage(packet), player);
-		origin.sendPacket(packet);
+		origin.send(packet);
 	}
 }

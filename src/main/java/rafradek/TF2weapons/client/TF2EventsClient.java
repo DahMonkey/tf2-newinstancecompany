@@ -156,10 +156,10 @@ public class TF2EventsClient {
 			ItemStack stack = minecraft.player.getMainHandItem();
 			if (minecraft.options.keyBindJump.consumeClick()) {
 				ItemStack chest = ItemBackpack.getBackpack(minecraft.player);
-				if (!minecraft.player.onGround && WeaponsCapability.get(minecraft.player).airJumps < WeaponsCapability
+				if (!minecraft.player.isOnGround() && WeaponsCapability.get(minecraft.player).airJumps < WeaponsCapability
 						.get(minecraft.player).getMaxAirJumps()) {
 					minecraft.player.jump();
-					float speedmult = minecraft.player.getAIMoveSpeed() * (minecraft.player.isSprinting() ? 2 : 1);
+					float speedmult = minecraft.player.getSpeed() * (minecraft.player.isSprinting() ? 2 : 1);
 					Vec3 moveDir = TF2Util.getMovementVector(minecraft.player);
 					minecraft.player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).airJumps += 1;
 					minecraft.player.setDeltaMovement((moveDir.x * speedmult), minecraft.player.getDeltaMovement().y, minecraft.player.getDeltaMovement().z);
@@ -192,7 +192,7 @@ public class TF2EventsClient {
 				ItemStack backpack = ItemBackpack.getBackpack(minecraft.player);
 				if (!backpack.isEmpty() && !((ItemBackpack) backpack.getItem())
 						.getBackpackItemToUse(backpack, minecraft.player).isEmpty()) {
-					minecraft.player.connection.sendPacket(new CPacketHeldItemChange(8));
+					minecraft.player.connection.send(new CPacketHeldItemChange(8));
 					minecraft.player.getInventory().selected = 8;
 					if (!TF2PlayerCapability.get(minecraft.player).isBackpackItemEquipped()) {
 						TF2PlayerCapability.get(minecraft.player).setEquipBackpackItem(true);
@@ -1469,7 +1469,7 @@ public class TF2EventsClient {
 				} else {
 					if (seeDisguise && disguiseType.startsWith("T:")) {
 						mainhanditem = player.getMainHandItem();
-						player.getInventory().setInventorySlotContents(player.getInventory().selected,
+						player.getInventory().setItem(player.getInventory().selected,
 								ItemFromData.getRandomWeaponOfSlotMob(TF2Class.getClass(disguiseType.substring(2)),
 										player.getInventory().selected % 3, event.getEntity().getRandom(), false, 1f, true));
 						render = ClientProxy.disguiseRenderPlayer;
@@ -1487,7 +1487,7 @@ public class TF2EventsClient {
 					((Player) event.getEntity()).inventory = origStack;
 				}
 				if (mainhanditem != null)
-					((Player) event.getEntity()).getInventory().setInventorySlotContents(
+					((Player) event.getEntity()).getInventory().setItem(
 							((Player) event.getEntity()).getInventory().selected, mainhanditem);
 			}
 		}

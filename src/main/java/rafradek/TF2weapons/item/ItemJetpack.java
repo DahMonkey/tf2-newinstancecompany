@@ -55,7 +55,7 @@ public class ItemJetpack extends ItemBackpack {
 				}
 			}
 			if (itemStack.getTag().getBoolean("Active")) {
-				if (player.onGround) {
+				if (player.isOnGround()) {
 					TF2Util.playSound(player, getSound(itemStack, PropertyType.FIRE_STOP_SOUND), 1f, 1f);
 					itemStack.getTag().putBoolean("Active", false);
 				}
@@ -75,7 +75,7 @@ public class ItemJetpack extends ItemBackpack {
 					TF2Util.playSound(player, getSound(itemStack, PropertyType.FIRE_SOUND), 1f, 1f);
 					itemStack.getTag().putBoolean("Active", true);
 					if (player instanceof ServerPlayer)
-						((ServerPlayer) player).connection.sendPacket(new ClientboundSetEntityMotionPacket(player));
+						((ServerPlayer) player).connection.send(new ClientboundSetEntityMotionPacket(player));
 				}
 			}
 			if (itemStack.getTag().getShort("Charge") == 0

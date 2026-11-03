@@ -124,7 +124,7 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 		this.getOutputManager().readConfig(compound.getCompound("Config"));
 		this.enabled = compound.getBoolean("Enabled");
 		if (this.hasWorld() && compound.contains("Team"))
-			this.team = this.level.getScoreboard().getTeam(compound.getString("Team"));
+			this.team = this.level.getScoreboard().getPlayerTeam(compound.getString("Team"));
 	}
 
 	@Override
@@ -212,7 +212,7 @@ public class TileEntityCapturePoint extends BlockEntity implements BlockEntityTi
 		this.pointId = tag.getInt("Control Point ID");
 		this.nextPointId = tag.getInt("Next Control Point ID");
 		if (this.hasWorld() && tag.contains("T:Default Team"))
-			this.defaultTeam = this.level.getScoreboard().getTeam(tag.getString("T:Default Team"));
+			this.defaultTeam = this.level.getScoreboard().getPlayerTeam(tag.getString("T:Default Team"));
 	}
 
 	@Override

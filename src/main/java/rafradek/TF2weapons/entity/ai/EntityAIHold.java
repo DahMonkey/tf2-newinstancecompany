@@ -17,38 +17,38 @@ public class EntityAIHold extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		return this.owner.getOwner() != null && this.owner.distanceToSqr(this.owner.getOwner()) > 100
 				&& this.owner.isAlive() && this.owner.getOrder() == Order.FOLLOW
 				&& !(this.owner.getTarget() != null && this.owner.getOwner().distanceToSqr(this.owner) < 600);
 	}
 
 	@Override
-	public void startExecuting() {
+	public void start() {
 		this.timeToRecalcPath = 0;
 	}
 
 	@Override
-	public void resetTask() {
+	public void stop() {
 		this.owner.getNavigation().stop();
 	}
 
 	@Override
-	public boolean shouldContinueExecuting() {
+	public boolean canContinueToUse() {
 		return !this.owner.getNavigation().isDone() && this.owner.distanceToSqr(this.owner.getOwner()) > 100;
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 
 		if (this.owner.getTarget() == null || (this.owner.getTarget().distanceToSqr(this.owner) < this.owner
 				.getTarget().distanceToSqr(this.owner.getOwner())))
-			this.owner.getLookControl().setLookPositionWithEntity(this.owner.getOwner(), 10.0F, 10F);
+			this.owner.getLookControl().setLookAt(this.owner.getOwner(), 10.0F, 10F);
 
 		if (--this.timeToRecalcPath <= 0) {
 			this.timeToRecalcPath = 8;
 
-			this.owner.getNavigation().tryMoveToEntityLiving(this.owner.getOwner(), 1.2f);
+			this.owner.getNavigation().moveTo(this.owner.getOwner(), 1.2f);
 		}
 	}
 }

@@ -61,7 +61,7 @@ public class Contract {
 		if ((this.rewards & 1) == 1) {
 			ItemStack reward = player.getRandom().nextBoolean() ? TF2Util.metaStack(TF2weapons.itemTF2, 1, 2)
 					: ItemFromData.getRandomWeapon(player.getRandom(), ItemFromData.VISIBLE_WEAPON);
-			if (!player.getInventory().addItemStackToInventory(reward))
+			if (!player.getInventory().add(reward))
 				player.dropItem(reward, true);
 			player.addExperience(120);
 			TF2Util.setExperiencePoints(player, TF2Util.getExperiencePoints(player) + 240);
@@ -69,7 +69,7 @@ public class Contract {
 		if ((this.rewards & 2) == 2) {
 			ItemStack reward = player.getRandom().nextBoolean() ? TF2Util.metaStack(TF2weapons.itemTF2, 4, 2)
 					: TF2Util.metaStack(TF2weapons.itemTF2, 1, 7);
-			if (!player.getInventory().addItemStackToInventory(reward))
+			if (!player.getInventory().add(reward))
 				player.dropItem(reward, true);
 			player.addExperience(600);
 			TF2Util.setExperiencePoints(player, TF2Util.getExperiencePoints(player) + 1200);

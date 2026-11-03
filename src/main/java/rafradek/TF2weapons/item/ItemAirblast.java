@@ -44,7 +44,7 @@ public class ItemAirblast extends ItemProjectileWeapon {
 	public static boolean isPushable(LivingEntity living, Entity target) {
 		return !(target instanceof EntityBuilding)
 				&& !(target instanceof EntityProjectileBase && !((EntityProjectileBase) target).isPushable())
-				&& !(target instanceof AbstractArrow && target.onGround)
+				&& !(target instanceof AbstractArrow && target.isOnGround())
 				&& !(target instanceof Projectile && ((Projectile) target).getThrower() == living)
 				&& !TF2Util.isAlliedTo(living, target);
 	}

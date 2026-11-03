@@ -227,7 +227,7 @@ public class ItemMonsterPlacerPlus extends Item {
 						Mth.wrapDegrees(par0World.random.nextFloat() * 360.0F), 0.0F);
 				entityliving.yHeadRot = entityliving.getYRot();
 				entityliving.yBodyRot = entityliving.getYRot();
-				entityliving.enablePersistence();
+				entityliving.setPersistenceRequired();
 				TF2CharacterAdditionalData data = new TF2CharacterAdditionalData();
 				data.team = team;
 				data.noEquipment = team < 2 && spawner != null && spawner.isShiftKeyDown();

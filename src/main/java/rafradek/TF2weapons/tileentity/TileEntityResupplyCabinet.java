@@ -67,7 +67,7 @@ public class TileEntityResupplyCabinet extends BlockEntity implements BlockEntit
 					living.setHealth(living.getMaxHealth());
 					ArrayList<MobEffect> badEffects = new ArrayList<>();
 					for (Entry<MobEffect, MobEffectInstance> entry : living.getActiveEffectsMap().entrySet()) {
-						if (entry.getKey().isBadEffect())
+						if (entry.getKey().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL)
 							badEffects.add(entry.getKey());
 					}
 					for (MobEffect potion : badEffects) {
@@ -80,7 +80,7 @@ public class TileEntityResupplyCabinet extends BlockEntity implements BlockEntit
 						Player player = ((Player) living);
 						player.getFoodStats().addStats(20, 20);
 						for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-							ItemStack stack = player.getInventory().getStackInSlot(i);
+							ItemStack stack = player.getInventory().getItem(i);
 							if (stack.getItem() instanceof ItemFromData) {
 								int ammotype = ((ItemFromData) stack.getItem()).getAmmoType(stack);
 								int ammocount = ItemFromData.getAmmoAmountType(player, ammotype);
@@ -207,7 +207,7 @@ public class TileEntityResupplyCabinet extends BlockEntity implements BlockEntit
 		this.getOutputManager().loadOutputs(tag.getCompound("Outputs"));
 		this.redstoneActivate = tag.getBoolean("Redstone Activates");
 		if (this.hasWorld() && tag.contains("T:Team"))
-			this.team = this.level.getScoreboard().getTeam(tag.getString("T:Team"));
+			this.team = this.level.getScoreboard().getPlayerTeam(tag.getString("T:Team"));
 	}
 
 	@Override

@@ -9,7 +9,7 @@ public class OnFireSound extends AbstractTickableSoundInstance {
 	public Entity target;
 
 	public OnFireSound(SoundEvent soundIn, Entity target) {
-		super(soundIn, target.getSoundCategory());
+		super(soundIn, target.getSoundSource());
 		xPosF = (float) target.getX();
 		yPosF = (float) target.getY();
 		zPosF = (float) target.getZ();

@@ -51,7 +51,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 		entity = toCopy;
 		if (!world.isClientSide) {
 			if (toCopy instanceof Player) {
-				data = toCopy.writeToNBT(new CompoundTag());
+				data = toCopy.save(new CompoundTag());
 				player = true;
 				profile = ((Player) toCopy).getGameProfile();
 			} else data = toCopy.serializeNBT();
@@ -94,7 +94,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 
 	@Override
 	public void onUpdate() {
-		if (onGround) {
+		if (isOnGround()) {
 			setDeltaMovement(getDeltaMovement().x * (0.1), getDeltaMovement().y, getDeltaMovement().z);
 			setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z * (0.1));
 		}

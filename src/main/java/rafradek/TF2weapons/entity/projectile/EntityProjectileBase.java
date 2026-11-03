@@ -961,7 +961,7 @@ implements Projectile, Projectile, IDynamicLightSource, IEntityAdditionalSpawnDa
 			return false;
 		} else if (source.getEntity() != null && source.getEntity() instanceof LivingEntity
 				&& !TF2Util.isAlliedTo(source.getEntity(), this.shootingEntity)
-				&& !(source.isExplosion() || source.isFireDamage())) {
+				&& !(source.isExplosion() || source.isFire())) {
 			if (source instanceof TF2DamageSource) {
 				damage *= Math.max(1f, TF2Attribute.getModifier("Destroy Projectiles",
 						((TF2DamageSource) source).getWeapon(), 0, (LivingEntity) source.getEntity()));

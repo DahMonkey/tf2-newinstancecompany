@@ -81,7 +81,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 	 * Returns whether the EntityAIBase should begin execution.
 	 */
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		LivingEntity LivingEntity = this.entityHost.getTarget();
 
 		if (LivingEntity == null)
@@ -99,8 +99,8 @@ public class EntityAIUseRangedWeapon extends Goal {
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
-		return this.shouldExecute();
+	public boolean canContinueToUse() {
+		return this.canUse();
 	}
 
 	private int getPosUpdateTime() {
@@ -111,7 +111,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 	 * Resets the task
 	 */
 	@Override
-	public void resetTask() {
+	public void stop() {
 		if ((this.entityHost.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemWeapon)
 				&& this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state != 0) {
 			pressed = false;
@@ -131,9 +131,9 @@ public class EntityAIUseRangedWeapon extends Goal {
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if ((this.attackTarget != null && this.attackTarget.deathTime > 0) || this.entityHost.deathTime > 0) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		if (this.attackTarget == null)
@@ -179,12 +179,12 @@ public class EntityAIUseRangedWeapon extends Goal {
 					this.entityHost.getY() + this.entityHost.getEyeHeight(), this.entityHost.getZ()),
 					new Vec3(lookX, lookY, lookZ), false, true, false) != null)
 				lookY += this.attackTarget.getEyeHeight() - this.attackTarget.getBbHeight() / 2;
-			double yFall = !this.attackTarget.onGround ? -this.attackTarget.getDeltaMovement().y : 0;
+			double yFall = !this.attackTarget.isOnGround() ? -this.attackTarget.getDeltaMovement().y : 0;
 			if (!this.attackTarget.isInWater()) {
 				int ticksGrav = ticksToReach - 1;
 				int i = (ticksGrav * ticksGrav + ticksGrav) / 2;
 				lookY += gravity * i;
-				if (!this.attackTarget.onGround && this.attackTarget.getDeltaMovement().y < 0)
+				if (!this.attackTarget.isOnGround() && this.attackTarget.getDeltaMovement().y < 0)
 					yFall += Mth.clamp(this.lastMotionY - this.attackTarget.getDeltaMovement().y, 0, 0.1) * i;
 				/*
 				 * for (int i = 1; i <= ticksToReach; i++) { lookY += gravity * i;
@@ -221,7 +221,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 		boolean charged = weapon.holdingMode(item, entityHost) > 0
 				&& weapon.getCharge(entityHost, item) >= this.releaseAt;
 		// System.out.println("charge: "+weapon.getCharge(entityHost, item));
-		boolean stay = this.entityHost.getSensing().canSee(this.attackTarget)
+		boolean stay = this.entityHost.getSensing().hasLineOfSight(this.attackTarget)
 				|| (this.projSpeed > 0 && this.attackTarget.getDeltaMovement().y > 0);
 
 		boolean fire = stay && this.entityHost.getEffect(TF2weapons.stun) == null && shouldFireProj

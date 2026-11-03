@@ -397,7 +397,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Returns whether the EntityAIBase should begin execution.
 		 */
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			return this.parentEntity.begin <= 0
 					&& (this.parentEntity.getTarget() != null || this.parentEntity.envDamage > 0);
 		}
@@ -406,7 +406,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Execute a one shot task or start executing a continuous task
 		 */
 		@Override
-		public void startExecuting() {
+		public void start() {
 			// this.attackTimer = 0;
 		}
 
@@ -421,7 +421,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Updates the task
 		 */
 		@Override
-		public void updateTask() {
+		public void tick() {
 			LivingEntity entitylivingbase = this.parentEntity.getTarget();
 			if (entitylivingbase == null)
 				entitylivingbase = this.parentEntity;
@@ -475,14 +475,14 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Returns whether the EntityAIBase should begin execution.
 		 */
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			return this.parentEntity.begin <= 0 && this.parentEntity.laserCooldown <= 0
 					&& (this.parentEntity.getTarget() != null
 							&& TF2Util.lookingAt(this.parentEntity, 13, this.parentEntity.getTarget()));
 		}
 
 		@Override
-		public boolean shouldContinueExecuting() {
+		public boolean canContinueToUse() {
 			return this.parentEntity.begin <= 0 && this.parentEntity.laserCooldown <= 0
 					&& (this.parentEntity.getTarget() != null || this.parentEntity.envDamage > 0);
 		}
@@ -491,7 +491,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Execute a one shot task or start executing a continuous task
 		 */
 		@Override
-		public void startExecuting() {
+		public void start() {
 			this.parentEntity.laserTime = LASER_DURATION + this.parentEntity.level * 10;
 		}
 
@@ -500,7 +500,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 */
 
 		@Override
-		public void resetTask() {
+		public void stop() {
 			this.parentEntity.setLaser(false);
 			this.parentEntity.laserCooldown = 140;
 		}
@@ -509,7 +509,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Updates the task
 		 */
 		@Override
-		public void updateTask() {
+		public void tick() {
 			if (this.parentEntity.laserTime <= 0) {
 				this.parentEntity.laserCooldown = 260;
 				this.parentEntity.setLaser(false);
@@ -544,7 +544,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Returns whether the EntityAIBase should begin execution.
 		 */
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			return this.parentEntity.begin <= 0;
 		}
 
@@ -552,7 +552,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Updates the task
 		 */
 		@Override
-		public void updateTask() {
+		public void tick() {
 			/*
 			 * if (this.parentEntity.getAttackTarget() == null) { double f =
 			 * MathHelper.sqrt(this.parentEntity.motionX * this.parentEntity.motionX +
@@ -595,7 +595,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Returns whether the EntityAIBase should begin execution.
 		 */
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			if (this.parentEntity.begin > 0)
 				return false;
 			MoveControl entitymovehelper = this.parentEntity.getMoveControl();
@@ -616,7 +616,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Returns whether an in-progress EntityAIBase should continue executing
 		 */
 		@Override
-		public boolean shouldContinueExecuting() {
+		public boolean canContinueToUse() {
 			return false;
 		}
 
@@ -624,7 +624,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		 * Execute a one shot task or start executing a continuous task
 		 */
 		@Override
-		public void startExecuting() {
+		public void start() {
 			Random random = this.parentEntity.getRandom();
 			double d0 = this.parentEntity.getX() + (random.nextFloat() * 2.0F - 1.0F) * 16.0F;
 			BlockPos pos = this.parentEntity.level.getTopSolidOrLiquidBlock(this.parentEntity.blockPosition());
@@ -637,7 +637,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 			if ((!flyToPlayer || target.distanceToSqr(d0, d1, d2) < target.distanceToSqr(this.parentEntity))
 					&& (flyToPlayer || (this.parentEntity.isWithinHomeDistanceCurrentPosition() || movingToHome)))
-				this.parentEntity.getMoveControl().setMoveTo(d0, d1, d2, 0.3d);
+				this.parentEntity.getMoveControl().setWantedPosition(d0, d1, d2, 0.3d);
 		}
 	}
 

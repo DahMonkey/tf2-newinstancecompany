@@ -289,7 +289,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 		super.readFromNBT(compound);
 		// this.master = compound.getBoolean("Master");
 		if (this.hasWorld() && compound.contains("Team"))
-			this.team = this.level.getScoreboard().getTeam(compound.getString("Team"));
+			this.team = this.level.getScoreboard().getPlayerTeam(compound.getString("Team"));
 		if (compound.contains("Allow"))
 			this.allow = Allow.values()[compound.getByte("Allow")];
 	}
@@ -301,7 +301,7 @@ public class TileEntityOverheadDoor extends BlockEntity implements BlockEntityTi
 		else if (string.equals("mobs"))
 			allow = Allow.ENTITY;
 		else {
-			Team target = this.level.getScoreboard().getTeam(string);
+			Team target = this.level.getScoreboard().getPlayerTeam(string);
 			if (target == null)
 				return false;
 			allow = Allow.TEAM;

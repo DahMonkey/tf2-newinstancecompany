@@ -98,16 +98,16 @@ public class EntityMerasmus extends EntityTF2Boss {
 			}
 
 			@Override
-			public boolean shouldExecute() {
+			public boolean canUse() {
 
-				return super.shouldExecute();
+				return super.canUse();
 			}
 		});
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<Player>(this, Player.class, 5,
 				false, false, input -> input instanceof Player) {
 			@Override
-			public boolean shouldExecute() {
-				boolean ex = super.shouldExecute();
+			public boolean canUse() {
+				boolean ex = super.canUse();
 				return ex;
 			}
 		});
@@ -180,14 +180,14 @@ public class EntityMerasmus extends EntityTF2Boss {
 				living.removeEffect(TF2weapons.stun);
 				living.removeEffect(MobEffects.CONFUSION);
 				this.playSound(TF2Sounds.MOB_MERASMUS_STUN, 1F, 1f);
-				this.hurt(new EntityDamageSource("magicb", living).setMagicDamage(), 15);
+				this.hurt(new EntityDamageSource("magicb", living).setMagic(), 15);
 				this.addEffect(new MobEffectInstance(TF2weapons.stun, 120, 3));
 				this.teleportCooldown = 120;
 			}
 			if (!this.hidden) {
 
 				if (this.tickCount % 5 == 0) {
-					if (this.getTarget() != null && !this.getSensing().canSee(this.getTarget())) {
+					if (this.getTarget() != null && !this.getSensing().hasLineOfSight(this.getTarget())) {
 						TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[39], 0.35f);
 					} else
 						TF2Attribute.setAttribute(this.getMainHandItem(), TF2Attribute.attributes[39], 0f);
@@ -203,8 +203,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 						living.addEffect(new MobEffectInstance(TF2weapons.bombmrs, 300));
 						TF2Util.stun(living, 300, false);
 						((ServerPlayer) living).connection
-								.sendPacket(new ClientboundSoundPacket(TF2Sounds.MOB_MERASMUS_HEADBOMB,
-										this.getSoundCategory(), living.getX(), living.getY(), living.getZ(), 4F, 1f));
+								.send(new ClientboundSoundPacket(TF2Sounds.MOB_MERASMUS_HEADBOMB,
+										this.getSoundSource(), living.getX(), living.getY(), living.getZ(), 4F, 1f));
 						// this.teleportCooldown=90;
 					}
 					this.bombCooldown = Math.max(680 - this.playersAttacked * 60, 480);
@@ -240,7 +240,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 							d2 += (random.nextFloat() * 2.0F - 1.0F) * 16.0F;
 						}
 						double d1 = pos.getY() + 7 + random.nextInt(3);
-						this.getMoveControl().setMoveTo(d0, this.topBlock, d2, 1.0D);
+						this.getMoveControl().setWantedPosition(d0, this.topBlock, d2, 1.0D);
 
 					}
 					this.setXRot((prevPitch));
@@ -498,20 +498,20 @@ public class EntityMerasmus extends EntityTF2Boss {
 		}
 
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			return (this.host.getTarget() != null && this.host.getEffect(TF2weapons.stun) == null)
 					|| host.envDamage > 0;
 		}
 
 		@Override
-		public void updateTask() {
+		public void tick() {
 			LivingEntity target = this.host.getTarget();
 			if (target == null)
 				target = this.host;
 			Level world = this.host.level;
-			this.host.getLookControl().setLookPositionWithEntity(target, 30F, 90F);
+			this.host.getLookControl().setLookAt(target, 30F, 90F);
 			if (attackDuration < 20) {
-				this.host.getNavigation().tryMoveToEntityLiving(target, 1f);
+				this.host.getNavigation().moveTo(target, 1f);
 			}
 			if (--this.attackDuration <= 0) {
 				if (host.envDamage > 0)
@@ -564,7 +564,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 								this.host.getY() + this.host.getBbHeight() / 2, this.host.getZ(), living.getX(),
 								living.getY() + living.getBbHeight() / 2, living.getZ(), 1, 0, 0x60FF60, 10000);
 						living.hurt(
-								new EntityDamageSource("magicm", this.host).setMagicDamage().setDifficultyScaled(),
+								new EntityDamageSource("magicm", this.host).setMagic().setDifficultyScaled(),
 								4.4f + this.host.level * 0.7f);
 						living.push(0, 0.7, 0);
 						living.onGround = false;

@@ -13,7 +13,7 @@ public class EntityAISeek extends RandomLookAroundGoal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		return this.host.getRandom().nextFloat() < 0.13F;
 	}
 }

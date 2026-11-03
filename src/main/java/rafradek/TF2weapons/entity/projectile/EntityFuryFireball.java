@@ -26,7 +26,7 @@ public class EntityFuryFireball extends EntityProjectileSimple {
 
 	@Override
 	public void addDamageTypes(DamageSource source) {
-		source.setFireDamage();
+		source.setIsFire();
 	}
 
 	@Override

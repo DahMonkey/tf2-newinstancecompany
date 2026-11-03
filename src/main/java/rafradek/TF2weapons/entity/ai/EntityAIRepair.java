@@ -69,7 +69,7 @@ public class EntityAIRepair extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		this.searchTimer--;
 		if (this.entityHost.getMainWeapon() != -1 && this.entityHost.getMainWeapon() != 2)
 			return false;
@@ -109,15 +109,15 @@ public class EntityAIRepair extends Goal {
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.entityHost.getNavigation().isDone();
+	public boolean canContinueToUse() {
+		return this.canUse() || !this.entityHost.getNavigation().isDone();
 	}
 
 	/**
 	 * Resets the task
 	 */
 	@Override
-	public void resetTask() {
+	public void stop() {
 		if (this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state != 0) {
 			pressed = false;
 			if (this.entityHost.getMainHandItem().getItem() instanceof ItemWeapon)
@@ -138,11 +138,11 @@ public class EntityAIRepair extends Goal {
 	 */
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if (!this.isValidTarget(attackTarget))
 			this.attackTarget = null;
 		if (this.attackTarget == null) {
-			this.resetTask();
+			this.stop();
 			return;
 		}
 		double d0 = this.entityHost.distanceToSqr(this.attackTarget.getX(), this.attackTarget.getBoundingBox().minY,
@@ -151,7 +151,7 @@ public class EntityAIRepair extends Goal {
 		double lookX = this.attackTarget.getX();
 		double lookY = this.attackTarget.getY() + this.attackTarget.getEyeHeight();
 		double lookZ = this.attackTarget.getZ();
-		boolean comeCloser = this.entityHost.getSensing().canSee(this.attackTarget);
+		boolean comeCloser = this.entityHost.getSensing().hasLineOfSight(this.attackTarget);
 
 		this.entityHost.setJumping(true);
 		if (comeCloser)
@@ -166,7 +166,7 @@ public class EntityAIRepair extends Goal {
 			}
 		} else {
 			this.dodging = false;
-			this.entityHost.getNavigation().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+			this.entityHost.getNavigation().moveTo(this.attackTarget, this.entityMoveSpeed);
 		}
 
 		this.entityHost.getLookControl().setLookPosition(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);

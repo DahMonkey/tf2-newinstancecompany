@@ -34,7 +34,7 @@ public class EntityFlare extends EntityProjectileSimple {
 
 	@Override
 	public void addDamageTypes(DamageSource source) {
-		source.setFireDamage();
+		source.setIsFire();
 	}
 
 	@Override

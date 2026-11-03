@@ -47,7 +47,7 @@ public class ItemFireAmmo extends ItemAmmo {
 	@Override
 	@SuppressWarnings("deprecation")
 	public int getItemStackLimit(ItemStack stack) {
-		return this.getItemStackLimit();
+		return this.getMaxStackSize();
 	}
 
 	public int restoreAmmo(ItemStack stack, int amount) {

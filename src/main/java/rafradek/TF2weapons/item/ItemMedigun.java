@@ -107,7 +107,7 @@ public class ItemMedigun extends ItemUsable {
 			heal = heal * (0.8f + TF2Attribute.getModifier("Life Steal", stack, 0, living) * 0.2f) * (1f
 					- (float) target.getAttribute(Attributes.ARMOR).getValue() * 0.03f);
 			TF2Util.dealDamage(target, world, living, stack, 0, heal,
-					TF2Util.causeDirectDamage(stack, living).setCritical(0).setDamageBypassesArmor());
+					TF2Util.causeDirectDamage(stack, living).setCritical(0).bypassArmor());
 			float lifesteal = TF2Util.getReducedHealing(living, target,
 					heal * TF2Attribute.getModifier("Life Steal", stack, 0, living) * 0.15f);
 			if (!TF2Util.isEnemy(living, target))
@@ -285,7 +285,7 @@ public class ItemMedigun extends ItemUsable {
 			}
 			if (par5 || par4 == 40) {
 				try {
-					((NonNullList<ItemStack>) ReflectionAccess.entityHandInv.get(par3Entity)).get(par5 ? 0 : 1)
+					TF2Util.getHandStack(par3Entity, par5 ? 0 : 1)
 							.getTag()
 							.putFloat("ubercharge", par1ItemStack.getTag().getFloat("ubercharge"));
 				} catch (Exception e) {}

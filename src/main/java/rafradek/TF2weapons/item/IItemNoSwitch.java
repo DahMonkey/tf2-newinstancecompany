@@ -15,13 +15,13 @@ public interface IItemNoSwitch {
 		if (!world.isClientSide) {
 			if (!isSelected && this.stopSlotSwitch(stack, (Player) entityIn)) {
 				ItemStack old = ((Player) entityIn).getMainHandItem();
-				if (stack == ((Player) entityIn).getInventory().getStackInSlot(itemSlot)) {
+				if (stack == ((Player) entityIn).getInventory().getItem(itemSlot)) {
 					if (old.getItem() instanceof IItemNoSwitch
 							&& ((IItemNoSwitch) old.getItem()).stopSlotSwitch(old, (Player) entityIn)) {
-						((Player) entityIn).getInventory().setInventorySlotContents(itemSlot, ItemStack.EMPTY);
+						((Player) entityIn).getInventory().setItem(itemSlot, ItemStack.EMPTY);
 						((Player) entityIn).dropItem(stack, true);
 					} else {
-						((Player) entityIn).getInventory().setInventorySlotContents(itemSlot, old);
+						((Player) entityIn).getInventory().setItem(itemSlot, old);
 						((Player) entityIn).setItemInHand(InteractionHand.MAIN_HAND, stack);
 					}
 				} else if (stack == ((Player) entityIn).getOffhandItem()) {

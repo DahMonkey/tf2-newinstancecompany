@@ -92,6 +92,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.function.Predicate;
+import net.minecraftforge.entity.PartEntity;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.util.RandomSource;
 
 public class TF2Util {
 
@@ -106,18 +111,28 @@ public class TF2Util {
 	public static int[] colorCode = new int[32];
 	public static final float[] ASIN_VALUES = new float[512];
 
+	/** Block ray trace that returns null on a miss, like 1.12's World.rayTraceBlocks. */
+	public static BlockHitResult rayTraceBlocks(Level world, Vec3 start, Vec3 end, Entity entity, boolean stopOnLiquid) {
+		BlockHitResult result = world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER,
+				stopOnLiquid ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, entity));
+		return result.getType() == HitResult.Type.MISS ? null : result;
+	}
+
+	public static BlockHitResult rayTraceBlocks(Level world, Vec3 start, Vec3 end) {
+		return rayTraceBlocks(world, start, end, null, false);
+	}
+
 	public static List<HitResult> pierce(Level world, Entity living, double startX, double startY, double startZ,
 			double endX, double endY, double endZ, boolean headshot, float size, boolean pierce,
 			Predicate<Entity> selector) {
 		ArrayList<HitResult> targets = new ArrayList<>();
 		Vec3 var17 = new Vec3(startX, startY, startZ);
 		Vec3 var3 = new Vec3(endX, endY, endZ);
-		boolean split = var3.subtract(var17).lengthSqr() > 16384D;
 		Vec3 mid = new Vec3((startX + endX) / 2D, (startY + endY) / 2D, (startZ + endZ) / 2D);
-		HitResult var4 = world.rayTraceBlocks(var17, var3, false, true, false);
+		BlockHitResult var4 = rayTraceBlocks(world, var17, var3, living, false);
 
-		if (var4 != null/* || (var4 = world.rayTraceBlocks(mid, var3, false, true, false)) != null */)
-			var3 = new Vec3(var4.getLocation().x, var4.getLocation().y, var4.getLocation().z);
+		if (var4 != null)
+			var3 = var4.getLocation();
 		else
 			var3 = new Vec3(endX, endY, endZ);
 		Entity var5 = null;
@@ -131,12 +146,10 @@ public class TF2Util {
 		else
 			var6 = living.level.getEntities(living,
 					new AABB(startX, startY, startZ, endX, endY, endZ).inflate(2D, 2D, 2D));
-		// System.out.println("shoot: "+startX+","+startY+","+startZ+", do:
-		// "+endX+","+endY+","+endZ+" Count: "+var6.size());
 		double var7 = 0.0D;
-		HitResult collideVec = new HitResult((Entity) null, null);
+		Vec3 collideVec = null;
 		for (Entity target : var6)
-			if (selector.apply(target)) {
+			if (selector.test(target)) {
 				AABB oldBB = target.getBoundingBox();
 				if (world.isClientSide && TF2EventsClient.moveEntities) {
 					float ticktime = TF2EventsClient.tickTime;
@@ -145,15 +158,15 @@ public class TF2Util {
 									(target.yo - target.getY()) * (1 - ticktime),
 									(target.zo - target.getZ()) * (1 - ticktime)));
 				}
-				AABB var12 = target.getBoundingBox().grow(size, size, size);
-				HitResult var13 = var12.clip(var17, var3);
+				AABB var12 = target.getBoundingBox().inflate(size, size, size);
+				Vec3 var13 = var12.clip(var17, var3).orElse(null);
 
 				if (var13 == null && var12.contains(var3)) {
-					var13 = new HitResult(var3, Direction.EAST);
+					var13 = var3;
 				}
 
 				if (var13 != null) {
-					double var14 = var17.distanceToSqr(var13.getLocation());
+					double var14 = var17.distanceToSqr(var13);
 
 					if (!pierce && (var14 < var7 || var7 == 0.0D)) {
 						var5 = target;
@@ -165,14 +178,12 @@ public class TF2Util {
 
 				target.setBoundingBox(oldBB);
 			}
-		// var4.hitInfo=false;
-		if (!pierce && var5 != null
-				&& !(var5 instanceof LivingEntity && ((LivingEntity) var5).getHealth() <= 0))
+		if (!pierce && var5 != null && !(var5 instanceof LivingEntity && ((LivingEntity) var5).getHealth() <= 0))
 			targets.add(TF2Util.getTraceResult(var5, collideVec, size, headshot, var17, var3));
-		if ((pierce || targets.isEmpty()) && var4 != null && var4.getType() == Type.BLOCK)
+		if ((pierce || targets.isEmpty()) && var4 != null && var4.getType() == HitResult.Type.BLOCK)
 			targets.add(var4);
 		else if (targets.isEmpty())
-			targets.add(new HitResult(Type.MISS, var3, null, null));
+			targets.add(BlockHitResult.miss(var3, Direction.UP, new BlockPos(var3)));
 		return targets;
 	}
 
@@ -189,17 +200,15 @@ public class TF2Util {
 				size, pierce, TARGETABLE);
 	}
 
-	public static HitResult getTraceResult(Entity target, HitResult hitVec, float size, boolean headshot,
-			Vec3 start, Vec3 end) {
-		HitResult result = new HitResult(target, hitVec.getLocation());
+	public static TF2HitResult getTraceResult(Entity target, Vec3 hitVec, float size, boolean headshot, Vec3 start,
+			Vec3 end) {
+		TF2HitResult result = new TF2HitResult(target, hitVec);
 
 		if (headshot && target instanceof LivingEntity
 				&& !(target instanceof IEntityTF2 && !((IEntityTF2) target).hasHead())) {
-			Boolean var13 = TF2Util.getHead((LivingEntity) target).clip(start,
-					end.add(end.subtract(start).normalize())) != null;
-			result.hitInfo = var13;
+			result.hitInfo = TF2Util.getHead((LivingEntity) target).clip(start, end.add(end.subtract(start).normalize()))
+					.isPresent();
 		}
-		result.getDirection() = hitVec.getDirection();
 		return result;
 	}
 
@@ -285,13 +294,13 @@ public class TF2Util {
 	}
 
 	public static boolean isUsingShield(Entity shielded, DamageSource source) {
-		if (shielded instanceof LivingEntity && ((LivingEntity) shielded).isActiveItemStackBlocking()) {
-			Vec3 location = source.getDamageLocation();
+		if (shielded instanceof LivingEntity && ((LivingEntity) shielded).isBlocking()) {
+			Vec3 location = source.getSourcePosition();
 			if (location == null)
 				location = source.getDirectEntity().position();
 			if (location != null) {
 				Vec3 vec3d1 = shielded.getViewVector(1.0F);
-				Vec3 vec3d2 = location.subtractReverse(shielded.position()).normalize();
+				Vec3 vec3d2 = location.vectorTo(shielded.position()).normalize();
 				vec3d2 = new Vec3(vec3d2.x, 0.0D, vec3d2.z);
 
 				if (vec3d2.dot(vec3d1) < 0.0D)
@@ -309,7 +318,7 @@ public class TF2Util {
 				|| ((LivingEntity) target).getEffect(TF2weapons.jarate) != null)))
 			initial = 1;
 
-		if (initial == 0 && !stack.isEmpty() && !target.onGround && !target.isInWater()
+		if (initial == 0 && !stack.isEmpty() && !target.isOnGround() && !target.isInWater()
 				&& TF2Attribute.getModifier("Minicrit Airborne", stack, 0, shooter) != 0) {
 			if (!(WeaponsCapability.get(target) != null && !WeaponsCapability.get(target).isExpJump()))
 				initial = 1;
@@ -335,7 +344,7 @@ public class TF2Util {
 			initial = 2;
 
 		if (initial < 2 && (!stack.isEmpty() && shooter != null && shooter instanceof Player
-				&& (shooter.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isExpJump() || shooter.isElytraFlying())
+				&& (shooter.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isExpJump() || shooter.isFallFlying())
 				&& TF2Attribute.getModifier("Crit Rocket", stack, 0, shooter) != 0))
 			initial = 2;
 
@@ -347,8 +356,8 @@ public class TF2Util {
 				&& ((LivingEntity) target).getEffect(TF2weapons.backup) != null))
 			initial = 0;
 
-		if (initial > 0 && source.isProjectile() && !source.isExplosion() && !source.isFireDamage()
-				&& !source.isMagicDamage()
+		if (initial > 0 && source.isProjectile() && !source.isExplosion() && !source.isFire()
+				&& !source.isMagic()
 				&& (target instanceof LivingEntity
 						&& ((LivingEntity) target).getEffect(TF2weapons.shieldBullet) != null
 						&& ((LivingEntity) target).getEffect(TF2weapons.shieldBullet)
@@ -360,7 +369,7 @@ public class TF2Util {
 				&& ((LivingEntity) target).getEffect(TF2weapons.shieldExplosive).getAmplifier() > 0))
 			initial = 0;
 
-		if (initial > 0 && source.isFireDamage()
+		if (initial > 0 && source.isFire()
 				&& (target instanceof LivingEntity
 						&& ((LivingEntity) target).getEffect(TF2weapons.shieldFire) != null
 						&& ((LivingEntity) target).getEffect(TF2weapons.shieldFire).getAmplifier() > 0))
@@ -460,7 +469,7 @@ public class TF2Util {
 		else if (!(living instanceof Projectile))
 			return living.getTeam();
 		else
-			return getTeam(((Projectile) living).getThrower());
+			return getTeam(((Projectile) living).getOwner());
 	}
 
 	public static int getTeamColor(Entity living) {
@@ -482,15 +491,15 @@ public class TF2Util {
 		else if (living instanceof EntityBuilding)
 			return ((EntityBuilding) living).getEntTeam();
 		else if (living instanceof Player)
-			return ((Player) living).getTeam() == living.level.getScoreboard().getTeam("BLU") ? 1 : 0;
+			return ((Player) living).getTeam() == living.level.getScoreboard().getPlayerTeam("BLU") ? 1 : 0;
 		else if (living instanceof Projectile)
-			return getTeamForDisplay(((Projectile) living).getThrower());
+			return getTeamForDisplay(((Projectile) living).getOwner());
 		return 0;
 	}
 
 	public static int getTeamColorNumber(Entity living) {
-		if (living.isAlive() && getTeam(living) != null && getTeam(living).getColor().getColorIndex() >= 0)
-			return getTeam(living).getColor().getColorIndex();
+		if (living.isAlive() && getTeam(living) != null && getTeam(living).getColor().getId() >= 0)
+			return getTeam(living).getColor().getId();
 		else
 			return 7;
 	}
@@ -501,7 +510,7 @@ public class TF2Util {
 		// "+(ent!=shooter)+" "+!(shooter instanceof
 		// EntityBuilding&&((EntityBuilding)shooter).getOwner()==ent));
 		return ent.isAlive() && !(ent instanceof LivingEntity && isOnSameTeam(shooter, ent)
-				&& !(shooter.getTeam() != null && shooter.getTeam().getAllowFriendlyFire())
+				&& !(shooter.getTeam() != null && shooter.getTeam().isAllowFriendlyFire())
 				&& (ent != shooter) /*
 				 * && !(shooter instanceof IEntityOwnable && ((IEntityOwnable)
 				 * shooter).getOwner() == ent)
@@ -577,12 +586,12 @@ public class TF2Util {
 
 		if (TF2ConfigVars.batchDamage == 0) {
 			entity.invulnerableTime = 0;
-			if (entity instanceof MultiPartEntityPart
-					&& !(((MultiPartEntityPart) entity).parent instanceof EnderDragon))
-				((Entity) (((MultiPartEntityPart) entity).parent)).invulnerableTime = 0;
+			if (entity instanceof PartEntity
+					&& !(((PartEntity<?>) entity).getParent() instanceof EnderDragon))
+				((Entity) (((PartEntity<?>) entity).getParent())).invulnerableTime = 0;
 		}
 
-		if (entity instanceof Player && !(living instanceof Player) && !source.isDifficultyScaled()
+		if (entity instanceof Player && !(living instanceof Player) && !source.scalesWithDifficulty()
 				&& TF2ConfigVars.scaleAttributes) {
 			if (world.getDifficulty() == Difficulty.NORMAL) {
 				damage *= 0.7f;
@@ -603,15 +612,16 @@ public class TF2Util {
 				&& ItemFromData.getData(stack).hasProperty(PropertyType.HIT_SOUND))
 			((ItemWeapon) stack.getItem()).playHitSound(stack, living, entity);
 		boolean knockback = canHit(living, entity);
-		if (knockback && isUsingShield(entity, source) && source.getDamageLocation() == null
+		if (knockback && isUsingShield(entity, source) && source.getSourcePosition() == null
 				&& TF2Attribute.getModifier("Unblockable", stack, 0, living) != 1) {
-			((LivingEntity) entity).getUseItem()
-			.hurtAndBreak((int) (damage * (source.isExplosion() ? 4f : 2f)), (LivingEntity) entity);
+			LivingEntity blocker = (LivingEntity) entity;
+			blocker.getUseItem().hurtAndBreak((int) (damage * (source.isExplosion() ? 4f : 2f)), blocker,
+					e -> e.broadcastBreakEvent(e.getUsedItemHand()));
 			damage *= source.isExplosion() ? 0.3f : 0.45f;
 		}
 
 		boolean invPeriod = entity.invulnerableTime > (entity instanceof LivingEntity
-				? ((LivingEntity) entity).maxHurtResistantTime / 2f
+				? ((LivingEntity) entity).invulnerableDuration / 2f
 						: 10f);
 
 		if (TF2ConfigVars.batchDamage == 1
@@ -640,8 +650,8 @@ public class TF2Util {
 		double lvelocityY = entity.getDeltaMovement().y;
 		double lvelocityZ = entity.getDeltaMovement().z;
 		boolean lairborne = entity.hasImpulse;
-		if (entity instanceof MultiPartEntityPart) {
-			Entity parent = (Entity) ((MultiPartEntityPart) entity).parent;
+		if (entity instanceof PartEntity) {
+			Entity parent = (Entity) ((PartEntity<?>) entity).getParent();
 			lairborne = parent.hasImpulse;
 			lvelocityX = parent.getDeltaMovement().x;
 			lvelocityY = parent.getDeltaMovement().y;
@@ -667,16 +677,10 @@ public class TF2Util {
 				}
 				LivingEntity livingTarget = (LivingEntity) entity;
 
-				try {
-					if (living instanceof EntityTF2Character && ((EntityTF2Character) living).isSharing()) {
-						ReflectionAccess.entityRecentlyHit.setInt(entity, 100);
-						if (((EntityTF2Character) living).getOwner() != null) {
-							ReflectionAccess.entityAttackingPlayer.set(entity,
-									((EntityTF2Character) living).getOwner());
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (living instanceof EntityTF2Character && ((EntityTF2Character) living).isSharing()) {
+					// Lets the mercenary's owner get player-only drops and XP from this kill.
+					if (((EntityTF2Character) living).getOwner() instanceof Player)
+						livingTarget.setLastHurtByPlayer((Player) ((EntityTF2Character) living).getOwner());
 				}
 				livingTarget.invulnerableTime = 20;
 				if (TF2Attribute.getModifier("Silent Kill", stack, 0, living) == 0) {
@@ -696,8 +700,8 @@ public class TF2Util {
 				livingTarget.setDeltaMovement(livingTarget.getDeltaMovement().x, livingTarget.getDeltaMovement().y, (lvelocityZ));
 				livingTarget.hurtMarked = false;
 			}
-			if (entity instanceof MultiPartEntityPart) {
-				Entity parent = (Entity) ((MultiPartEntityPart) entity).parent;
+			if (entity instanceof PartEntity) {
+				Entity parent = (Entity) ((PartEntity<?>) entity).getParent();
 				parent.hasImpulse = lairborne;
 				parent.setDeltaMovement((lvelocityX), parent.getDeltaMovement().y, parent.getDeltaMovement().z);
 				parent.setDeltaMovement(parent.getDeltaMovement().x, (lvelocityY), parent.getDeltaMovement().z);
@@ -717,7 +721,7 @@ public class TF2Util {
 			float damage, Vec3 forwardVec, Explosion explosion) {
 		BlockState state = world.getBlockState(pos);
 		Block block = state.getBlock();
-		if (block.isAir(state, world, pos) || TF2ConfigVars.destTerrain == 0 || state.getBlockHardness(world, pos) < 0
+		if (block.isAir(state, world, pos) || TF2ConfigVars.destTerrain == 0 || state.getDestroySpeed(world, pos) < 0
 				|| (!(living instanceof Player) && !world.getGameRules().getBoolean("mobGriefing"))
 				|| (living instanceof Player && !world.isBlockModifiable((Player) living, pos)))
 			return 0;
@@ -797,7 +801,7 @@ public class TF2Util {
 	}
 
 	public static float getHardness(BlockState state, Level world, BlockPos pos) {
-		return state.getBlockHardness(world, pos)
+		return state.getDestroySpeed(world, pos)
 				* (!state.getMaterial().isToolNotRequired() && !(state.getBlock() instanceof BlockStone) ? 12f : 5.5f);
 	}
 
@@ -1024,7 +1028,7 @@ public class TF2Util {
 			thisCritical = 1;
 		if (thisCritical == 0 && (cap.focusedShot(stack) || cap.focusShotRemaining > 0))
 			thisCritical = 1;
-		if (thisCritical == 0 && !living.onGround
+		if (thisCritical == 0 && !living.isOnGround()
 				&& TF2Attribute.getModifier("Minicrit Airborne Self", stack, 0, living) == 1f)
 			thisCritical = 1;
 		if (!stack.isEmpty() && stack.getItem() instanceof ItemWeapon) {
@@ -1094,7 +1098,7 @@ public class TF2Util {
 	}
 
 	public static void playSound(Entity entity, SoundEvent event, float volume, float pitch) {
-		entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), event, entity.getSoundCategory(), volume,
+		entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), event, entity.getSoundSource(), volume,
 				pitch);
 	}
 
@@ -1119,7 +1123,7 @@ public class TF2Util {
 		 */
 
 		try {
-			int fire = ReflectionAccess.entityFire.getInt(target);
+			int fire = target.getRemainingFireTicks();
 			if (target instanceof LivingEntity) {
 				upgrade *= TF2Attribute.getModifier("Afterburn Reduction",
 						ItemBackpack.getBackpack((LivingEntity) target), 1, living);
@@ -1133,13 +1137,13 @@ public class TF2Util {
 
 				target.setSecondsOnFire(Math.min(Mth.floor(fire / 20f) + Math.round(sec * upgrade),
 						Mth.ceil(8 * upgrade)));
-				ReflectionAccess.entityFire.setInt(target, ReflectionAccess.entityFire.getInt(target) + fire % 20);
+				target.setRemainingFireTicks(target.getRemainingFireTicks() + fire % 20);
 
 			}
 			// ReflectionAccess.entityFire.setInt(target, Math.min(fire +
 			// MathHelper.ceil(sec * upgrade) * 20, 20 * MathHelper.ceil(8 * upgrade) + fire
 			// % 20));
-			// fire = ReflectionAccess.entityFire.getInt(target);
+			// fire = target.getRemainingFireTicks();
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
@@ -1156,7 +1160,7 @@ public class TF2Util {
 			double offsetY, double offsetZ, int count, int... params) {
 		TF2weapons.network.sendToAllAround(
 				new TF2Message.ParticleSpawnMessage(type.ordinal(), x, y, z, offsetX, offsetY, offsetZ, count, params),
-				new TargetPoint(world.provider.getDimension(), x, y, z, type.getRange()));
+				new TargetPoint(world.dimension(), x, y, z, type.getRange()));
 	}
 
 	public static void sendTracking(IMessage message, Entity entity) {
@@ -1322,15 +1326,15 @@ public class TF2Util {
 	}
 
 	public static void attractMobs(LivingEntity living, Level world) {
-		if (!world.isClientSide && TF2ConfigVars.shootAttract && world.getDifficulty().getDifficultyId() > 1) {
+		if (!world.isClientSide && TF2ConfigVars.shootAttract && world.getDifficulty().getId() > 1) {
 
 			int range = world.getDifficulty() == Difficulty.HARD ? 60 : 38;
 			for (PathfinderMob mob : world.getEntitiesOfClass(PathfinderMob.class,
 					living.getBoundingBox().inflate(range, range, range),
 					input -> input.getTarget() == null && input.canChangeDimensions() && TF2Util.isHostile(input))) {
-				mob.getLookControl().setLookPositionWithEntity(living, 60, 30);
+				mob.getLookControl().setLookAt(living, 60, 30);
 				if (!TF2Util.isAlliedTo(living, mob)) {
-					if (mob.getSensing().canSee(living) || mob.distanceToSqr(living) < 150) {
+					if (mob.getSensing().hasLineOfSight(living) || mob.distanceToSqr(living) < 150) {
 						mob.setTarget(living);
 						if (mob.getTarget() != null
 								&& mob.getAttribute(Attributes.FOLLOW_RANGE)
@@ -1425,7 +1429,7 @@ public class TF2Util {
 	}
 
 	public static float getGravity(LivingEntity living) {
-		if (living.isInWater() || living.hasNoGravity() || living.isElytraFlying() || living instanceof WitherBoss
+		if (living.isInWater() || living.isNoGravity() || living.isFallFlying() || living instanceof WitherBoss
 				|| living instanceof EntityMonoculus || living instanceof Ghast)
 			return 0;
 		else
@@ -1436,7 +1440,7 @@ public class TF2Util {
 		living.addEffect(effect);
 		if (!living.level.isClientSide)
 			for (Player player : ((ServerLevel) living.level).getEntityTracker().getTrackingPlayers(living)) {
-				((ServerPlayer) player).connection.sendPacket(new ClientboundUpdateMobEffectPacket(living.getId(), effect));
+				((ServerPlayer) player).connection.send(new ClientboundUpdateMobEffectPacket(living.getId(), effect));
 			}
 	}
 
@@ -1470,7 +1474,7 @@ public class TF2Util {
 		case DOWN:
 			return new Vec2(0, 90);
 		default:
-			return new Vec2(facing.getHorizontalAngle(), 0);
+			return new Vec2(facing.toYRot(), 0);
 		}
 	}
 
@@ -1606,7 +1610,7 @@ public class TF2Util {
 		entity.setDeltaMovement(entity.getDeltaMovement().x, entity.getDeltaMovement().y, (motionZ));
 		entity.hurtMarked = true;
 		if (entity instanceof ServerPlayer) {
-			((ServerPlayer) entity).connection.sendPacket(new ClientboundSetEntityMotionPacket(entity));
+			((ServerPlayer) entity).connection.send(new ClientboundSetEntityMotionPacket(entity));
 		}
 	}
 
@@ -1683,7 +1687,7 @@ public class TF2Util {
 	}
 
 	public static double getHeightAboveGround(Entity entity, Level world, boolean checkWater) {
-		if (entity.onGround)
+		if (entity.isOnGround())
 			return 0.;
 		else
 			return getHeightAboveGround(new Vec3(entity.getX(), entity.getBoundingBox().minY, entity.getZ()), world,
@@ -1751,7 +1755,7 @@ public class TF2Util {
 			double y, double z, float volume, float pitch) {
 		if (player instanceof ServerPlayer)
 			((ServerPlayer) player).connection
-			.sendPacket(new ClientboundSoundPacket(event, category, x, y, z, volume, pitch));
+			.send(new ClientboundSoundPacket(event, category, x, y, z, volume, pitch));
 		else if (player.getLevel().isClientSide && player == Minecraft.getInstance().player)
 			player.getLevel().playSound(x, y, z, event, category, volume, pitch, false);
 	}
@@ -1759,7 +1763,7 @@ public class TF2Util {
 	public static boolean restoreAmmoToWeapons(Player player, float ammo) {
 		boolean restored = false;
 		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-			ItemStack stack = player.getInventory().getStackInSlot(i);
+			ItemStack stack = player.getInventory().getItem(i);
 			if (stack.getItem() instanceof ItemFromData) {
 				int ammotype = ((ItemFromData) stack.getItem()).getAmmoType(stack);
 				int ammocount = ItemFromData.getAmmoAmountType(player, ammotype);
@@ -1785,7 +1789,7 @@ public class TF2Util {
 		ListTag nbtlist = (ListTag) nbttag;
 		if (clazz == Tag.class)
 			addNBTBaseToList(nbtlist, (List<Tag>) list);
-		if (nbtlist.getTagType() == 8)
+		if (nbtlist.getElementType() == 8)
 			addStringToList(nbtlist, (List<String>) list);
 		return list;
 	}
@@ -1830,4 +1834,71 @@ public class TF2Util {
 		return stack1.sameItem(stack2) && ItemStack.tagMatches(stack1, stack2) && stack1.getCount() <= stack2.getCount();
 	}
 
+
+	/* ------------------------------------------------------------------ */
+	/* 1.12 -> 1.19 port helpers */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * Creates a stack of an item that used metadata subtypes in 1.12. The metadata is stored as the
+	 * stack's damage value (see PORTING_NOTES.md).
+	 */
+	public static ItemStack metaStack(net.minecraft.world.level.ItemLike item, int count, int meta) {
+		ItemStack stack = new ItemStack(item, count);
+		if (meta != 0)
+			stack.setDamageValue(meta);
+		return stack;
+	}
+
+	/** The 1.12 metadata of a stack (stored as its damage value). */
+	public static int getMeta(ItemStack stack) {
+		return stack.getDamageValue();
+	}
+
+	/** Server-safe translation (1.12's deprecated server-side I18n). */
+	public static String translate(String key, Object... args) {
+		String format = net.minecraft.locale.Language.getInstance().getOrDefault(key);
+		if (args.length == 0)
+			return format;
+		try {
+			return String.format(format, args);
+		} catch (java.util.IllegalFormatException e) {
+			return format;
+		}
+	}
+
+	public static boolean canTranslate(String key) {
+		return net.minecraft.locale.Language.getInstance().has(key);
+	}
+
+	/** Converts 1.12 AI mutex bits (1 move, 2 look, 4 jump) to 1.19 goal flags. */
+	public static EnumSet<net.minecraft.world.entity.ai.goal.Goal.Flag> mutexFlags(int bits) {
+		EnumSet<net.minecraft.world.entity.ai.goal.Goal.Flag> flags = EnumSet
+				.noneOf(net.minecraft.world.entity.ai.goal.Goal.Flag.class);
+		if ((bits & 1) != 0)
+			flags.add(net.minecraft.world.entity.ai.goal.Goal.Flag.MOVE);
+		if ((bits & 2) != 0)
+			flags.add(net.minecraft.world.entity.ai.goal.Goal.Flag.LOOK);
+		if ((bits & 4) != 0)
+			flags.add(net.minecraft.world.entity.ai.goal.Goal.Flag.JUMP);
+		if ((bits & 8) != 0)
+			flags.add(net.minecraft.world.entity.ai.goal.Goal.Flag.TARGET);
+		return flags;
+	}
+
+	/** Item in a hand slot (0 main, 1 off hand) without the equipment-change side effects. */
+	public static ItemStack getHandStack(Entity entity, int hand) {
+		if (!(entity instanceof LivingEntity))
+			return ItemStack.EMPTY;
+		return ((LivingEntity) entity).getItemBySlot(hand == 0 ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+	}
+
+	/** Owner of a thrown entity or projectile, or null. */
+	public static Entity getThrower(Entity entity) {
+		if (entity instanceof EntityProjectileBase)
+			return ((EntityProjectileBase) entity).getThrower();
+		if (entity instanceof Projectile)
+			return ((Projectile) entity).getOwner();
+		return null;
+	}
 }

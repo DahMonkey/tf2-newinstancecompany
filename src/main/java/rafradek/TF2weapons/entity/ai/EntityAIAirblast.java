@@ -31,7 +31,7 @@ public class EntityAIAirblast extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		// System.out.println("executing
 		// "+TF2ActionHandler.playerAction.server.get(host));
 		// System.out.println("should execute:
@@ -39,12 +39,12 @@ public class EntityAIAirblast extends Goal {
 		return this.host.getMainHandItem().getItem() instanceof ItemFlameThrower
 				&& ((ItemFlameThrower) this.host.getMainHandItem().getItem()).canAltFire(this.host.level, host,
 						this.host.getMainHandItem())
-				&& host.level.getDifficulty().getDifficultyId() >= 2;
+				&& host.level.getDifficulty().getId() >= 2;
 
 	}
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		// System.out.println("executing
 		// "+TF2ActionHandler.playerAction.server.get(host));
 		boolean easier = host.level.getDifficulty() == Difficulty.NORMAL;

@@ -89,8 +89,8 @@ public class GameArena implements INBTSerializable<CompoundTag> {
 	public void tick() {
 		if (first) {
 			this.allowedTeams = new ArrayList<>();
-			this.allowedTeams.add(this.level.getScoreboard().getTeam("RED"));
-			this.allowedTeams.add(this.level.getScoreboard().getTeam("BLU"));
+			this.allowedTeams.add(this.level.getScoreboard().getPlayerTeam("RED"));
+			this.allowedTeams.add(this.level.getScoreboard().getPlayerTeam("BLU"));
 			this.first = false;
 			if (!(confPos != null && this.level.getBlockEntity(confPos) instanceof TileEntityGameConfigure
 					&& ((TileEntityGameConfigure) this.level.getBlockEntity(confPos)).getName().equals(this.name))) {
@@ -351,7 +351,7 @@ public class GameArena implements INBTSerializable<CompoundTag> {
 		this.showClassSelection = tag.getBoolean("Show Class Selection");
 		this.showTeamSelection = tag.getBoolean("Show Team Selection");
 		if (tag.contains("T:Default Team"))
-			this.defaultTeam = this.level.getScoreboard().getTeam(tag.getString("T:Default Team"));
+			this.defaultTeam = this.level.getScoreboard().getPlayerTeam(tag.getString("T:Default Team"));
 
 		this.disableHunger = tag.getBoolean("Disable Hunger");
 		this.forceClassTexture = tag.getBoolean("Force Class Texture");

@@ -54,7 +54,7 @@ public class EntityAIStickybomb extends Goal {
 	}
 
 	@Override
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		if (this.entityHost.getMainWeapon() != -1 && this.entityHost.getMainWeapon() != 1)
 			return false;
 		if (this.entityHost.isRobot() || this.entityHost.getTarget() != null
@@ -69,15 +69,15 @@ public class EntityAIStickybomb extends Goal {
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
 	@Override
-	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.entityHost.getNavigation().isDone();
+	public boolean canContinueToUse() {
+		return this.canUse() || !this.entityHost.getNavigation().isDone();
 	}
 
 	/**
 	 * Resets the task
 	 */
 	@Override
-	public void resetTask() {
+	public void stop() {
 		if (this.entityHost.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).state != 0) {
 			pressed = false;
 			if (this.entityHost.getMainHandItem().getItem() instanceof ItemWeapon)
@@ -97,7 +97,7 @@ public class EntityAIStickybomb extends Goal {
 	 */
 
 	@Override
-	public void updateTask() {
+	public void tick() {
 		if (this.attackTarget == null)
 			this.attackTarget = DefaultRandomPos.findRandomTarget(this.entityHost, 10, 4);
 		if (this.attackTarget == null)
@@ -119,7 +119,7 @@ public class EntityAIStickybomb extends Goal {
 		} else {
 			this.dodging = false;
 
-			this.entityHost.getNavigation().tryMoveToXYZ(this.attackTarget.x, this.attackTarget.y, this.attackTarget.z,
+			this.entityHost.getNavigation().moveTo(this.attackTarget.x, this.attackTarget.y, this.attackTarget.z,
 					this.entityMoveSpeed);
 		}
 		this.entityHost.getLookControl().setLookPosition(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);

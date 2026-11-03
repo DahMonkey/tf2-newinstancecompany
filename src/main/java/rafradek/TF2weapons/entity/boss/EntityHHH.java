@@ -73,7 +73,7 @@ public class EntityHHH extends EntityTF2Boss {
 		this.setNoAi(true);
 		this.setPathPriority(BlockPathTypes.LAVA, 8.0F);
 		this.setItemInHand(InteractionHand.MAIN_HAND, ItemFromData.getNewStack("headtaker"));
-		this.getMainHandItem().addEnchantment(Enchantments.KNOCKBACK, 10);
+		this.getMainHandItem().enchant(Enchantments.KNOCKBACK, 10);
 	}
 
 	@Override
@@ -208,7 +208,7 @@ public class EntityHHH extends EntityTF2Boss {
 				}
 			}
 			if (this.getTarget() != null) {
-				if (!this.getTarget().onGround)
+				if (!this.getTarget().isOnGround())
 					this.targetInAir += 1;
 				if (this.level > 1) {
 					if (this.dashCool-- <= 0) {
@@ -234,7 +234,7 @@ public class EntityHHH extends EntityTF2Boss {
 
 			}
 			if (--this.teleportTime <= 0 && this.getTarget() != null && this.tickCount % 5 == 0) {
-				Path path = this.getNavigation().getPathToEntityLiving(this.getTarget());
+				Path path = this.getNavigation().createPath(this.getTarget());
 				boolean shouldTeleport = false;
 				if (path == null)
 					shouldTeleport = this.distanceToSqr(this.getTarget()) > 1.5 && this
@@ -248,7 +248,7 @@ public class EntityHHH extends EntityTF2Boss {
 					}
 					if (!shouldTeleport)
 						shouldTeleport = Math.abs(path.getFinalPathPoint().y - this.getTarget().getY()) > 1.5
-								&& this.getTarget().onGround;
+								&& this.getTarget().isOnGround();
 				}
 				if (shouldTeleport) {
 					this.toTeleportTime = 40;
@@ -464,16 +464,16 @@ public class EntityHHH extends EntityTF2Boss {
 		public int attackCooldown;
 
 		@Override
-		public boolean shouldExecute() {
+		public boolean canUse() {
 			return getTarget() != null;
 		}
 
 		@Override
-		public void updateTask() {
+		public void tick() {
 			if (getTarget() == null)
 				return;
 			LivingEntity target = getTarget();
-			if (!target.onGround) {
+			if (!target.isOnGround()) {
 				this.ticksInAir++;
 				if (this.ticksInAir > 30) {
 					this.attackTime = 60;
@@ -485,7 +485,7 @@ public class EntityHHH extends EntityTF2Boss {
 				this.setFlags(TF2Util.mutexFlags(3));
 				this.ticksInAir = 0;
 				EntityHHH.this.faceEntity(target, 45, 90);
-				EntityHHH.this.getLookControl().setLookPositionWithEntity(target, 90, 90);
+				EntityHHH.this.getLookControl().setLookAt(target, 90, 90);
 				if (this.attackTime == 30) {
 					ItemStack stack = ItemFromData.getNewStack("hhhaxe");
 					try {
