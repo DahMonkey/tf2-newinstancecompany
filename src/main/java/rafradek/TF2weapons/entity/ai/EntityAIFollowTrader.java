@@ -12,7 +12,7 @@ public class EntityAIFollowTrader extends Goal {
 
 	public EntityAIFollowTrader(EntityTF2Character entity) {
 		this.owner = entity;
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 	}
 
 	@Override

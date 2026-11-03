@@ -22,7 +22,7 @@ public class EntityAIFindDispenser extends Goal {
 		this.host = host;
 		this.range = range;
 		this.rangeSq = range * range;
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 	}
 
 	@Override

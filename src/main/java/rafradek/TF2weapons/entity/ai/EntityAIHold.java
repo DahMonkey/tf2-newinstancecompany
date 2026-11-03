@@ -11,7 +11,7 @@ public class EntityAIHold extends Goal {
 
 	public EntityAIHold(EntityTF2Character entity) {
 		this.owner = entity;
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 	}
 
 	@Override

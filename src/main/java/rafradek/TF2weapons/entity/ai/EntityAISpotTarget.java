@@ -63,7 +63,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 		this.mob = p_i1665_1_;
 		this.targetClass = p_i1665_2_;
 		this.theNearestAttackableTargetSorter = new NearestAttackableTargetGoal.Sorter(p_i1665_1_);
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 		this.targetLock = targetLock;
 		this.targetEntitySelector = target -> {
 			if (p_i1665_6_ != null && !p_i1665_6_.apply(target))

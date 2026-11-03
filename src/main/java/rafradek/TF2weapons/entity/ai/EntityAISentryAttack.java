@@ -12,7 +12,7 @@ public class EntityAISentryAttack extends Goal {
 
 	public EntityAISentryAttack(EntitySentry sentry) {
 		this.host = sentry;
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 	}
 
 	@Override

@@ -34,7 +34,7 @@ public class EntityAISentryBuster extends Goal {
 
 	public EntityAISentryBuster(EntityDemoman creature) {
 		this.attacker = creature;
-		this.setFlags(TF2Util.mutexFlags(3);
+		this.setFlags(TF2Util.mutexFlags(3));
 	}
 
 	/**

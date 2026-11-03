@@ -10,7 +10,7 @@ public class EntityAISentryIdle extends Goal {
 
 	public EntityAISentryIdle(EntitySentry sentry) {
 		this.host = sentry;
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class EntityAIAirblast extends Goal {
 
 	public EntityAIAirblast(EntityTF2Character entity) {
 		host = entity;
-		this.setFlags(TF2Util.mutexFlags(0);
+		this.setFlags(TF2Util.mutexFlags(0));
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class EntityAIStickybomb extends Goal {
 		this.entityMoveSpeed = par2;
 		this.attackRangeSquared = par5 * par5;
 
-		this.setFlags(TF2Util.mutexFlags(3);
+		this.setFlags(TF2Util.mutexFlags(3));
 	}
 
 	public void setRange(float range) {

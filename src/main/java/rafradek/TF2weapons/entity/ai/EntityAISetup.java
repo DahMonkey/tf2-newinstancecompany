@@ -29,7 +29,7 @@ public class EntityAISetup extends Goal {
 
 	public EntityAISetup(EntityEngineer engineer) {
 		this.engineer = engineer;
-		this.setFlags(TF2Util.mutexFlags(3);
+		this.setFlags(TF2Util.mutexFlags(3));
 	}
 
 	@Override

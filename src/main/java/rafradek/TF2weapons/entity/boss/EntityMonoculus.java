@@ -390,7 +390,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AIFireballAttack(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setFlags(TF2Util.mutexFlags(4);
+			this.setFlags(TF2Util.mutexFlags(4));
 		}
 
 		/**
@@ -468,7 +468,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AILaserAttack(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setFlags(TF2Util.mutexFlags(4);
+			this.setFlags(TF2Util.mutexFlags(4));
 		}
 
 		/**
@@ -537,7 +537,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AILookAround(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setFlags(TF2Util.mutexFlags(2);
+			this.setFlags(TF2Util.mutexFlags(2));
 		}
 
 		/**
@@ -588,7 +588,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 		public AIRandomFly(EntityMonoculus ghast) {
 			this.parentEntity = ghast;
-			this.setFlags(TF2Util.mutexFlags(1);
+			this.setFlags(TF2Util.mutexFlags(1));
 		}
 
 		/**

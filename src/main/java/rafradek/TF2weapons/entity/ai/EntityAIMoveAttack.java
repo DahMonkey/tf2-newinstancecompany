@@ -67,7 +67,7 @@ public class EntityAIMoveAttack extends Goal {
 		this.attackRangeMin = 3;
 		this.attackRangeMinSquared = 9;
 
-		this.setFlags(TF2Util.mutexFlags(1);
+		this.setFlags(TF2Util.mutexFlags(1));
 	}
 
 	public void setRange(float range, float minrange) {

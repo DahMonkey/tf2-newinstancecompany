@@ -60,7 +60,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 		this.attackRange = par5;
 		this.attackRangeSquared = par5 * par5;
 
-		this.setFlags(TF2Util.mutexFlags(2);
+		this.setFlags(TF2Util.mutexFlags(2));
 	}
 
 	public void setRange(float range) {

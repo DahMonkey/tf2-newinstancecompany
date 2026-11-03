@@ -19,7 +19,7 @@ public class EntityAIAmbush extends Goal {
 
 	public EntityAIAmbush(EntitySpy entitySpy) {
 		this.host = entitySpy;
-		this.setFlags(TF2Util.mutexFlags(3);
+		this.setFlags(TF2Util.mutexFlags(3));
 	}
 
 	@Override

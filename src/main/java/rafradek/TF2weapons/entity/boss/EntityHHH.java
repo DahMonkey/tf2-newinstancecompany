@@ -482,7 +482,7 @@ public class EntityHHH extends EntityTF2Boss {
 				this.ticksInAir--;
 
 			if (--this.attackTime > 0) {
-				this.setFlags(TF2Util.mutexFlags(3);
+				this.setFlags(TF2Util.mutexFlags(3));
 				this.ticksInAir = 0;
 				EntityHHH.this.faceEntity(target, 45, 90);
 				EntityHHH.this.getLookControl().setLookPositionWithEntity(target, 90, 90);
@@ -506,7 +506,7 @@ public class EntityHHH extends EntityTF2Boss {
 					}
 				}
 			} else
-				this.setFlags(TF2Util.mutexFlags(0);
+				this.setFlags(TF2Util.mutexFlags(0));
 		}
 
 	}

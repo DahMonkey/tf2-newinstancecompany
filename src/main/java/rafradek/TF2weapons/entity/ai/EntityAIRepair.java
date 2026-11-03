@@ -49,7 +49,7 @@ public class EntityAIRepair extends Goal {
 		this.attackRange = par5;
 		this.attackRangeSquared = par5 * par5;
 
-		this.setFlags(TF2Util.mutexFlags(3);
+		this.setFlags(TF2Util.mutexFlags(3));
 	}
 
 	public void setRange(float range) {
