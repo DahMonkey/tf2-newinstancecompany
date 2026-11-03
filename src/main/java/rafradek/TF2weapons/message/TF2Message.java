@@ -873,14 +873,14 @@ public abstract class TF2Message implements IMessage {
 	}
 
 	public static class NetworkedSoundMessage extends TF2Message {
-		SoundEvent event;
-		int target;
-		Vec3 pos;
-		float volume;
-		float pitch;
-		SoundSource category;
-		int id;
-		boolean repeat;
+		public SoundEvent event;
+		public int target;
+		public Vec3 pos;
+		public float volume;
+		public float pitch;
+		public SoundSource category;
+		public int id;
+		public boolean repeat;
 
 		public NetworkedSoundMessage() {
 
