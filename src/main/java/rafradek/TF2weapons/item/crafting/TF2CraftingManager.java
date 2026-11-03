@@ -33,11 +33,11 @@ public class TF2CraftingManager {
 
 	public TF2CraftingManager() {
 
-		Ingredient sentrybuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 18),
+		TF2Ingredient sentrybuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 18),
 				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 19));
-		Ingredient dispenserbuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 20),
+		TF2Ingredient dispenserbuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 20),
 				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 21));
-		Ingredient teleporterbuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 22),
+		TF2Ingredient teleporterbuilding = TF2Ingredient.fromStacks(TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 22),
 				TF2Util.metaStack(TF2weapons.itemBuildingBox, 1, 23));
 
 		ItemStack bonk = ItemFromData.getNewStack("bonk");
@@ -110,12 +110,9 @@ public class TF2CraftingManager {
 				new Object[] { "SDT", "AGA", "BRB", 'G', "paneGlass", 'A', TF2Util.metaStack(TF2weapons.itemTF2, 1, 2), 'R',
 						TF2Util.metaStack(TF2weapons.itemTF2, 1, 3), 'B', new ItemStack(Blocks.STONE_BUTTON), 'S',
 						sentrybuilding, 'D', dispenserbuilding, 'T', teleporterbuilding }));
-		addRecipe(new ShapedOreRecipe(null,new
-				ItemStack(TF2weapons.blockAmmoFurnace), new Object[] { "RIG", "SFr", "sIM",
-						'F', new ItemStack(Blocks.FURNACE), 'I', "ingotIron", 'M', new
-						ItemStack(TF2weapons.itemAmmoMinigun), 'G', TF2Util.metaStack(TF2weapons.itemAmmo,
-								1, 8), 'R', TF2Util.metaStack(TF2weapons.itemAmmo, 1, 7), 'r', new
-						ItemStack(TF2weapons.itemAmmo, 1, 6), 's', TF2Util.metaStack(TF2weapons.itemAmmo,
+		addRecipe(new ShapedOreRecipe(null,new ItemStack(TF2weapons.blockAmmoFurnace), new Object[] { "RIG", "SFr", "sIM",
+						'F', new ItemStack(Blocks.FURNACE), 'I', "ingotIron", 'M', new ItemStack(TF2weapons.itemAmmoMinigun), 'G', TF2Util.metaStack(TF2weapons.itemAmmo,
+								1, 8), 'R', TF2Util.metaStack(TF2weapons.itemAmmo, 1, 7), 'r', TF2Util.metaStack(TF2weapons.itemAmmo, 1, 6), 's', TF2Util.metaStack(TF2weapons.itemAmmo,
 								1, 1), 'S', TF2Util.metaStack(TF2weapons.itemAmmo, 1, 11) }));
 
 		addRecipe(new ShapedOreRecipe(null, new ItemStack(TF2weapons.itemAmmoBelt),

@@ -64,7 +64,7 @@ public class EntityScout extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootScout;
 	}
 
@@ -113,8 +113,8 @@ public class EntityScout extends EntityTF2Character {
 	}
 
 	@Override
-	protected void jump() {
-		super.jump();
+	protected void jumpFromGround() {
+		super.jumpFromGround();
 		/*
 		 * double speed=Math.sqrt(motionX*motionX+motionZ*motionZ); if(speed!=0){
 		 *
@@ -178,8 +178,8 @@ public class EntityScout extends EntityTF2Character {
 	/**
 	 * Plays step sound at given x, y, z for the entity
 	 */
-	@Override
-	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
+	/** 1.12 dropFewItems; unused while the loot table exists. */
+	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
 		if (this.random.nextFloat() < 0.60f + p_70628_2_ * 0.30f)
 			this.spawnAtLocation(ItemFromData.getNewStack("bonk"), 0);
 		if (this.random.nextFloat() < 0.12f + p_70628_2_ * 0.075f)

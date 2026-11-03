@@ -23,8 +23,8 @@ public class TF2CapabilityHandler implements IMessageHandler<TF2Message.Capabili
 					WeaponsCapability cap = ent.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
 					int prevHealTarget = cap.getHealTarget();
 					if (message.entries != null) {
-						for (DataEntry<?> param : message.entries) {
-							cap.onChangeValue(param.getKey(), param.getValue());
+						for (net.minecraft.network.syncher.SynchedEntityData.DataItem<?> param : message.entries) {
+							cap.onChangeValue(param.getAccessor(), param.getValue());
 						}
 						cap.entityData.assignValues(message.entries);
 					}

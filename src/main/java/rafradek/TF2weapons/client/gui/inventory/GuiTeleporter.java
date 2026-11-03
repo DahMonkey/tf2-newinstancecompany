@@ -58,7 +58,7 @@ public class GuiTeleporter extends GuiContainer {
 		buttonList.add(exitToggle = new GuiButton(3, width / 2 + 10, height / 2 - 40, 50, 20, "Exit"));
 		buttonList.add(grab = new GuiButton(4, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
 		if (channel == 127) {
-			teleportField.setEnabled(false);
+			teleportField.setEditable(false);
 			teleportUpBtn.enabled = false;
 			teleportDownBtn.enabled = false;
 			exitToggle.enabled = false;
@@ -136,7 +136,7 @@ public class GuiTeleporter extends GuiContainer {
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
-		teleportField.updateCursorCounter();
+		teleportField.tick();
 	}
 
 	@Override

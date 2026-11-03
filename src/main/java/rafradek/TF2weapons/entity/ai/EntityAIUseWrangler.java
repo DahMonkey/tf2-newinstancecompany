@@ -84,14 +84,15 @@ public class EntityAIUseWrangler extends EntityAIUseRangedWeapon {
 		// this.entityHost.getLookHelper().setLookPositionWithEntity(this.attackTarget,
 		// 1.0F, 90.0F);
 		double range = 60;
-		Entity entityhit = TF2Util.pierce(this.entityHost.level, sentry, sentry.getX(),
+		java.util.List<net.minecraft.world.phys.HitResult> hits = TF2Util.pierce(this.entityHost.level, sentry, sentry.getX(),
 				sentry.getY() + sentry.getEyeHeight(), sentry.getZ(), entityHost.getTarget().getX(),
 				entityHost.getTarget().getY() + entityHost.getTarget().getEyeHeight(),
-				entityHost.getTarget().getZ(), false, 0, false).get(0).getEntity();
+				entityHost.getTarget().getZ(), false, 0, false);
+		Entity entityhit = hits.isEmpty() ? null : rafradek.TF2weapons.util.TF2HitResult.getEntity(hits.get(0));
 		boolean overlap = entityhit == this.entityHost;
 
 		if (overlap) {
-			Vec3 movevec = Vec3.fromPitchYaw(0, sentry.yHeadRot + 90);
+			Vec3 movevec = Vec3.directionFromRotation(0, sentry.yHeadRot + 90);
 			this.entityHost.getNavigation().moveTo(this.entityHost.getX() + movevec.x,
 					this.entityHost.getY() + movevec.y, this.entityHost.getZ() + movevec.z, 1f);
 		}

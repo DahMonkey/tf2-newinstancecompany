@@ -30,7 +30,7 @@ public class GuiConfirm extends GuiScreen {
 	 */
 	@Override
 	public void initGui() {
-		buttonList.add(new GuiOptionButton(0, width / 2 - 75, height / 6 + 96, confirmButtonText));
+		buttonList.add(new GuiButton(0, width / 2 - 75, height / 6 + 96, 150, 20, confirmButtonText));
 		listLines.clear();
 		listLines.addAll(fontRenderer.listFormattedStringToWidth(messageLine2, width - 50));
 	}

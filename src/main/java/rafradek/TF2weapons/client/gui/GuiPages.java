@@ -44,9 +44,9 @@ public class GuiPages extends GuiScreen {
 		topPos = height / 2 - 120;
 		buttonsItem = new GuiButtonToggleItem[16 * 6];
 		itemsToRender = NonNullList.<ItemStack>create();
-		TF2weapons.tabweapontf2.displayAllRelevantItems(itemsToRender);
-		TF2weapons.tabutilitytf2.displayAllRelevantItems(itemsToRender);
-		TF2weapons.tabsurvivaltf2.displayAllRelevantItems(itemsToRender);
+		TF2weapons.tabweapontf2.fillItemList(itemsToRender);
+		TF2weapons.tabutilitytf2.fillItemList(itemsToRender);
+		TF2weapons.tabsurvivaltf2.fillItemList(itemsToRender);
 		for (int x = 0; x < 16; x++) for (int y = 0; y < 6; y++) if (x + y * 16 < itemsToRender.size()) {
 					GuiButtonToggleItem button = buttonsItem[x + y * 16] = new GuiButtonToggleItem(x + y * 16,
 							leftPos + 4 + x * 18, topPos + 34 + y * 18, 18, 18);
@@ -87,7 +87,7 @@ public class GuiPages extends GuiScreen {
 		} else displayItem(itemsToRender.get(selectedIndex));
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		for (int i = 0; i < 16 * 6; i++) if (buttonsItem[i].stackToDraw != null && buttonsItem[i].isMouseOver() && buttonsItem[i].visible)
-				drawHoveringText(buttonsItem[i].stackToDraw.getTooltip(mc.player, TooltipFlag.TooltipFlags.NORMAL), mouseX, mouseY);
+				renderToolTip(buttonsItem[i].stackToDraw, mouseX, mouseY);
 	}
 
 	public void setButtons() {
@@ -113,11 +113,14 @@ public class GuiPages extends GuiScreen {
 
 	public void displayItem(ItemStack stack) {
 		ArrayList<String> list = new ArrayList<>();
-		list.add(stack.getHoverName());
-		stack.getItem().appendHoverText(stack, Minecraft.getInstance().level, list, TooltipFlag.TooltipFlags.NORMAL);
+		list.add(stack.getHoverName().getString());
+		java.util.List<net.minecraft.network.chat.Component> lines = new ArrayList<>();
+		stack.getItem().appendHoverText(stack, Minecraft.getInstance().level, lines, TooltipFlag.Default.NORMAL);
+		for (net.minecraft.network.chat.Component line : lines)
+			list.add(line.getString());
 		for (int i = 0; i < list.size(); i++) fontRenderer.drawStringWithShadow(list.get(i), leftPos + 70, topPos + 34 + 10 * i, 0xFFFFFF);
 		int yStart = topPos + 36 + Math.max(64, list.size() * 10);
-		this.drawHorizontalLine(leftPos + 4, leftPos + 292, yStart, 0xFFFFFF);
+		drawRect(leftPos + 4, yStart, leftPos + 293, yStart + 1, 0xFFFFFFFF);
 		list.clear();
 		list.add("Tips:");
 		if (stack.getItem() instanceof ItemSniperRifle) {
@@ -181,13 +184,13 @@ public class GuiPages extends GuiScreen {
 			}
 		}
 		for (int i = 0; i < list.size(); i++) fontRenderer.drawStringWithShadow(list.get(i), leftPos + 4, yStart + 14 + i * 10, 0xFFFFFF);
-		GlStateManager.enableLighting();
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.scale(4, 4, 4);
-		mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, (leftPos + 4) / 4, (topPos + 36) / 4);
-		mc.getItemRenderer().renderItemOverlays(mc.font, stack, leftPos + 4, topPos + 36);
-		GlStateManager.scale(0.25, 0.25, 0.25);
-		GlStateManager.disableLighting();
-		RenderHelper.disableStandardItemLighting();
+		com.mojang.blaze3d.vertex.PoseStack modelView = com.mojang.blaze3d.systems.RenderSystem.getModelViewStack();
+		modelView.pushPose();
+		modelView.scale(4, 4, 4);
+		com.mojang.blaze3d.systems.RenderSystem.applyModelViewMatrix();
+		rafradek.TF2weapons.client.compat.LegacyGui.renderItemAndEffectIntoGUI(stack, (leftPos + 4) / 4, (topPos + 36) / 4);
+		modelView.popPose();
+		com.mojang.blaze3d.systems.RenderSystem.applyModelViewMatrix();
+		rafradek.TF2weapons.client.compat.LegacyGui.renderItemOverlays(mc.font, stack, leftPos + 4, topPos + 36);
 	}
 }

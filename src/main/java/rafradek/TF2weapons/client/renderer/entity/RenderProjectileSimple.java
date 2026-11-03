@@ -71,8 +71,7 @@ public class RenderProjectileSimple extends Render<EntityProjectileSimple> {
 
 		// GlStateManager.color(0.0F, 0.0F, 1.0F, 1F);
 		if (entity.getProjType() == 2)
-			Minecraft.getInstance().getItemRenderer().renderItem(ItemFromData.getNewStack("cleaver"),
-					ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
+			rafradek.TF2weapons.client.compat.LegacyRender.renderItem(ItemFromData.getNewStack("cleaver"), ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
 		else if (entity.getProjType() == 3) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.pushMatrix();
@@ -96,10 +95,6 @@ public class RenderProjectileSimple extends Render<EntityProjectileSimple> {
 			GlStateManager.scale(0.05625F, 0.05625F, 0.05625F);
 			GlStateManager.translate(-4.0F, 0.0F, 0.0F);
 
-			if (this.renderOutlines) {
-				GlStateManager.enableColorMaterial();
-				GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-			}
 
 			GlStateManager.glNormal3f(0.05625F, 0.0F, 0.0F);
 			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -127,18 +122,13 @@ public class RenderProjectileSimple extends Render<EntityProjectileSimple> {
 				tessellator.draw();
 			}
 
-			if (this.renderOutlines) {
-				GlStateManager.disableOutlineMode();
-				GlStateManager.disableColorMaterial();
-			}
 
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
 		} else if (entity.getProjType() == 8) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(2, 2, 2);
-			Minecraft.getInstance().getItemRenderer().renderItem(ItemFromData.getNewStack("hhhaxe"),
-					ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
+			rafradek.TF2weapons.client.compat.LegacyRender.renderItem(ItemFromData.getNewStack("hhhaxe"), ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
 			GlStateManager.popMatrix();
 		} else
 			model.render(entity, 0F, 0F, 0.0F, 0.0F, 0.0F, 0.0625F);

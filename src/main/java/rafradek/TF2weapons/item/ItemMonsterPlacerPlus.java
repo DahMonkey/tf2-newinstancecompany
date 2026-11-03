@@ -231,7 +231,7 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 			if (entity != null) {
 				Mob entityliving = entity;
 				if (nbtdata != null)
-					entityliving.readFromNBT(nbtdata);
+					entityliving.load(nbtdata);
 				// System.out.println("read");
 				entity.moveTo(par2, par4, par6,
 						Mth.wrapDegrees(par0World.random.nextFloat() * 360.0F), 0.0F);
@@ -243,7 +243,7 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 				data.noEquipment = team < 2 && spawner != null && spawner.isShiftKeyDown();
 				data.isGiant = team == 2 && spawner != null && spawner.isShiftKeyDown();
 				if (nbtdata == null)
-					TF2Util.initialSpawn(entityliving, par0World.getCurrentDifficultyAt(new BlockPos(entityliving)), data);
+					TF2Util.initialSpawn(entityliving, par0World.getCurrentDifficultyAt(entityliving.blockPosition()), data);
 				entityliving.playAmbientSound();
 				if (entity instanceof EntityBuilding)
 					((EntityBuilding) entity).setEntTeam(team);

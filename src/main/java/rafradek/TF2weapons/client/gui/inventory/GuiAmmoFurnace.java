@@ -23,7 +23,7 @@ public class GuiAmmoFurnace extends GuiContainer {
 
 	public GuiAmmoFurnace(ContainerAmmoFurnace container) {
 		super(container);
-		inventory = Minecraft.getInstance().player.getInventory();
+		inventory = net.minecraft.client.Minecraft.getInstance().player.getInventory();
 		tileFurnace = container.tileFurnace;
 	}
 
@@ -40,9 +40,9 @@ public class GuiAmmoFurnace extends GuiContainer {
 	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		String s = tileFurnace.getHoverName().getString();
+		String s = TF2weapons.blockAmmoFurnace.getName().getString();
 		fontRenderer.drawString(s, this.imageWidth / 2 - this.fontRenderer.width(s) / 2, 6, 4210752);
-		fontRenderer.drawString(this.getInventory().getHoverName().getString(), 8, this.imageHeight - 96 + 2, 4210752);
+		fontRenderer.drawString(this.inventory.getDisplayName().getString(), 8, this.imageHeight - 96 + 2, 4210752);
 	}
 
 	/**
@@ -64,15 +64,21 @@ public class GuiAmmoFurnace extends GuiContainer {
 	}
 
 	private int getCookProgressScaled(int pixels) {
-		int i = tileFurnace.getField(2);
-		int j = tileFurnace.getField(3);
+		int i = field(2);
+		int j = field(3);
 		return j != 0 && i != 0 ? i * pixels / j : 0;
 	}
 
 	private int getBurnLeftScaled(int pixels) {
-		int i = tileFurnace.getField(1);
+		int i = field(1);
 		if (i == 0) i = 200;
-		return tileFurnace.getField(0) * pixels / i;
+		return field(0) * pixels / i;
 	}
 
+
+	private int field(int id) {
+		return this.tileFurnace instanceof rafradek.TF2weapons.inventory.IFieldHolder
+				? ((rafradek.TF2weapons.inventory.IFieldHolder) this.tileFurnace).getField(id)
+				: 0;
+	}
 }

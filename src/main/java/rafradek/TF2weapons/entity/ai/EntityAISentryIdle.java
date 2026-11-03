@@ -23,13 +23,13 @@ public class EntityAISentryIdle extends Goal {
 	@Override
 	public void tick() {
 		// System.out.println("Rotating "+this.host.rotationYaw+"
-		// "+this.host.rotationYawHead);
+		// "+this.host.yHeadRot);
 		if (this.direction) {
-			this.host.rotationYawHead += 2.5f;
+			this.host.yHeadRot += 2.5f;
 			if (this.host.yHeadRot >= this.host.getYRot() + 50)
 				this.direction = false;
 		} else {
-			this.host.rotationYawHead -= 2.5f;
+			this.host.yHeadRot -= 2.5f;
 			if (this.host.yHeadRot <= this.host.getYRot() - 50)
 				this.direction = true;
 		}

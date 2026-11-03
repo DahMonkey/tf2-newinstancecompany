@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client;
 
+import rafradek.TF2weapons.client.compat.LegacyRender;
+
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -33,8 +35,8 @@ public class ClientRender {
 	}
 
 	public static void renderIconWorld(TextureAtlasSprite sprite) {
-		renderIconWorld(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), sprite.getIconWidth(),
-				sprite.getIconHeight());
+		renderIconWorld(sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1(), sprite.getWidth(),
+				sprite.getHeight());
 	}
 
 	public static void renderIconWorld(double minu, double minv, double maxu, double maxv, double xsize, double ysize) {
@@ -42,9 +44,8 @@ public class ClientRender {
 		GlStateManager.enableRescaleNormal();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		GlStateManager.rotate(180.0F - Minecraft.getInstance().getEntityRenderDispatcher().playerViewY, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate((Minecraft.getInstance().getEntityRenderDispatcher().options.thirdPersonView == 2 ? -1 : 1)
-				* -Minecraft.getInstance().getEntityRenderDispatcher().playerViewX, 1.0F, 0.0F, 0.0F);
+		LegacyRender.pose().mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+		GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
 
 		double xsizeh = xsize / 2D;
 		double ysizeh = ysize / 2D;

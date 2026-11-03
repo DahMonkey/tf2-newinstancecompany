@@ -7,6 +7,14 @@ public final class PredicateUtil {
 	private PredicateUtil() {
 	}
 
+	private static final Predicate<Object> ALWAYS_FALSE = input -> false;
+
+	/** Shared instance, so it can be compared by identity like Guava's rafradek.TF2weapons.util.PredicateUtil.alwaysFalse(). */
+	@SuppressWarnings("unchecked")
+	public static <T> Predicate<T> alwaysFalse() {
+		return (Predicate<T>) ALWAYS_FALSE;
+	}
+
 	@SafeVarargs
 	public static <T> Predicate<T> and(Predicate<? super T>... predicates) {
 		return input -> {

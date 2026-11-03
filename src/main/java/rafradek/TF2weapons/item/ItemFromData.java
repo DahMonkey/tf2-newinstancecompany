@@ -223,7 +223,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 
 		ArrayList<WeaponData> weapons = new ArrayList<>();
 		for (Entry<String, WeaponData> entry : MapList.nameToData.entrySet())
-			if (predicate.apply(entry.getValue())) {
+			if (predicate.test(entry.getValue())) {
 				weapons.add(entry.getValue());
 			}
 		ArrayList<ItemStack> ret = new ArrayList<>();

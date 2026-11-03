@@ -57,7 +57,7 @@ public class DamageSourceProjectile extends IndirectEntityDamageSource implement
 	 * Returns the message to be displayed on player death.
 	 */
 	@Override
-	public Component getDeathMessage(LivingEntity p_151519_1_) {
+	public Component getLocalizedDeathMessage(LivingEntity p_151519_1_) {
 		// ItemStack itemstack = this.damageSourceEntity instanceof
 		// EntityLivingBase ?
 		// ((EntityLivingBase)this.damageSourceEntity).getHeldItem(EnumHand.MAIN_HAND)

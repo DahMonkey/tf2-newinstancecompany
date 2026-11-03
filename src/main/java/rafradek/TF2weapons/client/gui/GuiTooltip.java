@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 public class GuiTooltip extends GuiButton {
 
@@ -32,6 +33,11 @@ public class GuiTooltip extends GuiButton {
 	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (!visible) return;
 		hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-		if (hovered) screen.drawHoveringText(list, mouseX, mouseY);
+		if (hovered) {
+			java.util.List<net.minecraft.network.chat.Component> lines = new java.util.ArrayList<>();
+			for (String line : list)
+				lines.add(net.minecraft.network.chat.Component.literal(line));
+			screen.renderComponentTooltip(rafradek.TF2weapons.client.compat.LegacyRender.pose(), lines, mouseX, mouseY);
+		}
 	}
 }

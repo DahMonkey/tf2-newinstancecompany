@@ -30,7 +30,7 @@ public class RenderMerasmus extends RenderBiped<EntityMerasmus> {
 
 	@Override
 	public void doRender(EntityMerasmus entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		((ModelMerasmus) this.mainModel).rightArmPose = entity.isBombSpell() ? ArmPose.BOW_AND_ARROW : ArmPose.EMPTY;
+		((ModelMerasmus) this.mainModel).rightArmPose = entity.isBombSpell() ? rafradek.TF2weapons.client.compat.ModelBiped.ArmPose.BOW_AND_ARROW : rafradek.TF2weapons.client.compat.ModelBiped.ArmPose.EMPTY;
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 	}
 

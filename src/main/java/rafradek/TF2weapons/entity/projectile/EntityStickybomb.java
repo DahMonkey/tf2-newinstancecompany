@@ -98,7 +98,7 @@ public class EntityStickybomb extends EntityProjectileBase {
 	}
 
 	@Override
-	public void remove(Entity.RemovalReason removalReason) {
+	public void remove(net.minecraft.world.entity.Entity.RemovalReason removalReason) {
 		super.remove(removalReason);
 		if (!this.level.isClientSide)
 			this.shootingEntity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).activeBomb.remove(this);

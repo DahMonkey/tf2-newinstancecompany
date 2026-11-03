@@ -45,12 +45,12 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void remove(Entity.RemovalReason removalReason) {
+	public void remove(net.minecraft.world.entity.Entity.RemovalReason removalReason) {
 		if (this.level.isClientSide && this.sticked && this.getThrower() != null && !this.clientSticked) {
 			EntityStickProjectile ent = new EntityStickProjectile(this.level);
 			ent.absMoveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
 			ent.sticked = true;
-			ent.setType(this.getProjType());
+			ent.setProjType(this.getProjType());
 			ent.setThrower(this.getThrower());
 			ent.clientSticked = true;
 			ent.stickedBlock = this.stickedBlock;

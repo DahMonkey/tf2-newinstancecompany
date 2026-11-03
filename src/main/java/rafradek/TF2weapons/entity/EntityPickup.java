@@ -38,9 +38,9 @@ public class EntityPickup extends Entity {
 	public boolean rematerialize;
 	private int rematerializeTime = 0;
 	public float hoverStart;
-	private static final EntityDataAccessor<Boolean> DISABLED = SynchedEntityData.<Boolean>createKey(EntityPickup.class,
+	private static final EntityDataAccessor<Boolean> DISABLED = SynchedEntityData.defineId(EntityPickup.class,
 			EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Byte> TYPE = SynchedEntityData.<Byte>createKey(EntityPickup.class,
+	private static final EntityDataAccessor<Byte> TYPE = SynchedEntityData.defineId(EntityPickup.class,
 			EntityDataSerializers.BYTE);
 
 	public enum Type {
@@ -91,12 +91,12 @@ public class EntityPickup extends Entity {
 	@Override
 	public void playerTouch(Player entityIn) {
 		if (!this.level.isClientSide && !this.isDisabled()) {
-			if (this.getType().healthRegen > 0 && entityIn.getHealth() < entityIn.getMaxHealth()) {
-				entityIn.heal(this.getType().healthRegen * entityIn.getMaxHealth());
+			if (this.getPickupType().healthRegen > 0 && entityIn.getHealth() < entityIn.getMaxHealth()) {
+				entityIn.heal(this.getPickupType().healthRegen * entityIn.getMaxHealth());
 				this.setCollected();
 			}
-			if (this.getType().ammoRegen > 0) {
-				if (TF2Util.restoreAmmoToWeapons(entityIn, this.getType().ammoRegen))
+			if (this.getPickupType().ammoRegen > 0) {
+				if (TF2Util.restoreAmmoToWeapons(entityIn, this.getPickupType().ammoRegen))
 					this.setCollected();
 			}
 		}
@@ -124,11 +124,13 @@ public class EntityPickup extends Entity {
 		if (this.level.isClientSide) {
 			this.noPhysics = false;
 		} else {
-			this.noPhysics = this.pushOutOfBlocks(this.getX(),
-					(this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
+			this.noPhysics = !this.level.noCollision(this, this.getBoundingBox().deflate(1.0E-7D));
+			if (this.noPhysics)
+				this.moveTowardsClosestSpace(this.getX(),
+						(this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
 		}
 
-		this.move(MoverType.SELF, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
+		this.move(MoverType.SELF, this.getDeltaMovement());
 		boolean flag = (int) this.xo != (int) this.getX() || (int) this.yo != (int) this.getY()
 				|| (int) this.zo != (int) this.getZ();
 
@@ -137,7 +139,7 @@ public class EntityPickup extends Entity {
 				this.setDeltaMovement(this.getDeltaMovement().x, (0.20000000298023224D), this.getDeltaMovement().z);
 				this.setDeltaMovement(((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), this.getDeltaMovement().y, this.getDeltaMovement().z);
 				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F));
-				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+				this.playSound(SoundEvents.GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
 		}
 
@@ -147,7 +149,7 @@ public class EntityPickup extends Entity {
 			BlockPos underPos = new BlockPos(Mth.floor(this.getX()),
 					Mth.floor(this.getBoundingBox().minY) - 1, Mth.floor(this.getZ()));
 			BlockState underState = this.level.getBlockState(underPos);
-			f = underState.getBlock().getSlipperiness(underState, this.level, underPos, this) * 0.98F;
+			f = underState.getFriction(this.level, underPos, this) * 0.98F;
 		}
 
 		this.setDeltaMovement(this.getDeltaMovement().x * (f), this.getDeltaMovement().y, this.getDeltaMovement().z);
@@ -162,7 +164,6 @@ public class EntityPickup extends Entity {
 			++this.age;
 		}
 
-		this.handleWaterMovement();
 
 		if (!this.level.isClientSide) {
 			double d3 = this.getDeltaMovement().x - d0;
@@ -183,7 +184,7 @@ public class EntityPickup extends Entity {
 		this.entityData.set(TYPE, (byte) type.ordinal());
 	}
 
-	public Type getType() {
+	public Type getPickupType() {
 		return Type.values()[this.entityData.get(TYPE)];
 	}
 
@@ -209,7 +210,7 @@ public class EntityPickup extends Entity {
 
 	@Override
 	protected void addAdditionalSaveData(CompoundTag compound) {
-		compound.putByte("Type", (byte) this.getType().ordinal());
+		compound.putByte("Type", (byte) this.getPickupType().ordinal());
 		compound.putInt("Age", this.age);
 		compound.putInt("Lifespan", this.lifespan);
 		compound.putInt("RematerializeTime", this.rematerializeTime);
@@ -217,4 +218,9 @@ public class EntityPickup extends Entity {
 		compound.putBoolean("Disabled", this.isDisabled());
 	}
 
+
+	@Override
+	public net.minecraft.network.protocol.Packet<?> getAddEntityPacket() {
+		return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+	}
 }

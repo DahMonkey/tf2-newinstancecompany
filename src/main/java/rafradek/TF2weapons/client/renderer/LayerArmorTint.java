@@ -64,7 +64,7 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 		if (itemstack.getItem() instanceof ArmorItem) {
 			ArmorItem itemarmor = (ArmorItem) itemstack.getItem();
 
-			if (itemarmor.getEquipmentSlot() == slotIn) {
+			if (itemarmor.getSlot() == slotIn) {
 				ModelBiped t = this.getModelFromSlot(slotIn);
 				t = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, t);
 				t.setModelAttributes(this.renderer.getMainModel());
@@ -74,9 +74,9 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 				this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
 
 				{
-					if (itemarmor.hasOverlay(itemstack)) // Allow this for anything, not only cloth
+					if (itemarmor instanceof net.minecraft.world.item.DyeableLeatherItem) // Allow this for anything, not only cloth
 					{
-						int i = itemarmor.getColor(itemstack);
+						int i = ((net.minecraft.world.item.DyeableLeatherItem) itemarmor).getColor(itemstack);
 						float f = (i >> 16 & 255) / 255.0F;
 						float f1 = (i >> 8 & 255) / 255.0F;
 						float f2 = (i & 255) / 255.0F;
@@ -92,7 +92,7 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 						t.render(entityLivingBaseIn, limbSwing, animationSpeed, ageInTicks, netHeadYaw, headPitch,
 								scale);
 					} // Default
-					if (!this.skipRenderGlint && itemstack.hasEffect()) {
+					if (!this.skipRenderGlint && itemstack.hasFoil()) {
 						renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, animationSpeed,
 								partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 					}
@@ -114,7 +114,6 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 			float p_188364_7_, float p_188364_8_, float p_188364_9_) {
 		float f = p_188364_1_.tickCount + p_188364_5_;
 		p_188364_0_.bindTexture(ENCHANTED_ITEM_GLINT_RES);
-		Minecraft.getInstance().entityRenderer.setupFogColor(true);
 		GlStateManager.enableBlend();
 		GlStateManager.depthFunc(514);
 		GlStateManager.depthMask(false);
@@ -144,7 +143,6 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 		GlStateManager.depthMask(true);
 		GlStateManager.depthFunc(515);
 		GlStateManager.disableBlend();
-		Minecraft.getInstance().entityRenderer.setupFogColor(false);
 	}
 
 	@Deprecated // Use the more sensitive version getArmorResource below
@@ -154,7 +152,7 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 
 	@Deprecated // Use the more sensitive version getArmorResource below
 	private ResourceLocation getArmorResource(ArmorItem armor, boolean p_177178_2_, String p_177178_3_) {
-		String s = String.format("textures/models/armor/%s_layer_%d%s.png", armor.getArmorMaterial().getName(),
+		String s = String.format("textures/models/armor/%s_layer_%d%s.png", armor.getMaterial().getName(),
 				p_177178_2_ ? 2 : 1, p_177178_3_ == null ? "" : String.format("_%s", p_177178_3_));
 		ResourceLocation resourcelocation = ARMOR_TEXTURE_RES_MAP.get(s);
 
@@ -226,7 +224,7 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 	public ResourceLocation getArmorResource(Entity entity, ItemStack stack,
 			EquipmentSlot slot, String type) {
 		ArmorItem item = (ArmorItem) stack.getItem();
-		String texture = item.getArmorMaterial().getName();
+		String texture = item.getMaterial().getName();
 		String domain = "minecraft";
 		int idx = texture.indexOf(':');
 		if (idx != -1) {
@@ -236,7 +234,7 @@ public class LayerArmorTint implements LayerRenderer<LivingEntity> {
 		String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture,
 				(isLegSlot(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
 
-		s1 = ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
+		s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
 		ResourceLocation resourcelocation = ARMOR_TEXTURE_RES_MAP.get(s1);
 
 		if (resourcelocation == null) {

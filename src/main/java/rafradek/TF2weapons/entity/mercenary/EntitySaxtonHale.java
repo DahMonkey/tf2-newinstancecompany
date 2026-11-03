@@ -129,7 +129,7 @@ public class EntitySaxtonHale extends PathfinderMob implements net.minecraft.wor
 	}
 
 	@Override
-	public ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootHale;
 	}
 

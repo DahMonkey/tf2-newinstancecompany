@@ -301,7 +301,7 @@ public class TF2EventsCommon {
 				int dayNum = (int) (worldTime / 24000);
 				if (dayTime == 1) {
 					if (events != null
-							&& new Random(event.level.getSeed() + worldTime * worldTime * 4987142 + worldTime * 5947611)
+							&& new Random(((net.minecraft.server.level.ServerLevel) event.level).getSeed() + worldTime * worldTime * 4987142 + worldTime * 5947611)
 									.nextFloat() <= TF2ConfigVars.invasionChance) {
 						for (Player player : event.level.players()) {
 							if (player.getTeam() != null && player.getRandom().nextFloat() < (dayNum
@@ -313,7 +313,7 @@ public class TF2EventsCommon {
 					}
 				}
 				if (!TF2ConfigVars.disableBossSpawn && dayTime >= 13000 && dayTime <= 20000 && dayTime % 1000 == 0
-						&& event.level.getCurrentMoonPhaseFactor() == 1 && worldTime > 24000) {
+						&& event.level.getMoonBrightness() == 1 && worldTime > 24000) {
 					for (Player player : event.level.players())
 						if (player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).nextBossTicks <= worldTime
 								&& event.level.getEntitiesOfClass(EntityTF2Boss.class,
@@ -1211,8 +1211,8 @@ public class TF2EventsCommon {
 		if (TF2weapons.dummyEnt == null)
 			TF2weapons.dummyEnt = new EntityDummy(world);
 		if (!world.isClientSide && world.getScoreboard().getPlayerTeam("RED") == null) {
-			PlayerTeam teamRed = world.getScoreboard().createTeam("RED");
-			PlayerTeam teamBlu = world.getScoreboard().createTeam("BLU");
+			PlayerTeam teamRed = world.getScoreboard().addPlayerTeam("RED");
+			PlayerTeam teamBlu = world.getScoreboard().addPlayerTeam("BLU");
 
 			teamRed.setSeeFriendlyInvisibles(true);
 			teamRed.setAllowFriendlyFire(false);
@@ -1223,13 +1223,13 @@ public class TF2EventsCommon {
 
 		}
 		if (!world.isClientSide && world.getScoreboard().getPlayerTeam("TF2Bosses") == null) {
-			PlayerTeam teamBosses = world.getScoreboard().createTeam("TF2Bosses");
+			PlayerTeam teamBosses = world.getScoreboard().addPlayerTeam("TF2Bosses");
 			teamBosses.setSeeFriendlyInvisibles(true);
 			teamBosses.setAllowFriendlyFire(false);
 			teamBosses.setColor(ChatFormatting.DARK_PURPLE);
 		}
 		if (!world.isClientSide && world.getScoreboard().getPlayerTeam("Robots") == null) {
-			PlayerTeam teamRobots = world.getScoreboard().createTeam("Robots");
+			PlayerTeam teamRobots = world.getScoreboard().addPlayerTeam("Robots");
 			teamRobots.setSeeFriendlyInvisibles(true);
 			teamRobots.setAllowFriendlyFire(false);
 			teamRobots.setColor(ChatFormatting.AQUA);

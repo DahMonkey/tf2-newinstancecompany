@@ -59,7 +59,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 			final Predicate<T> p_i1665_6_, boolean targetLock, boolean allowBehind) {
 		super();
 		this.nearbyOnly = p_i1665_4_;
-		this.mustSee = p_i1665_5_;
+		this.shouldCheckSight = p_i1665_5_;
 		this.mob = p_i1665_1_;
 		this.targetClass = p_i1665_2_;
 		this.theNearestAttackableTargetSorter = java.util.Comparator.comparingDouble(e -> p_i1665_1_.distanceToSqr(e));
@@ -183,7 +183,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 				if (this.mob.distanceToSqr(entitylivingbase) > d0 * d0)
 					return false;
 				else {
-					if (this.mustSee)
+					if (this.shouldCheckSight)
 						if (this.mob.getSensing().hasLineOfSight(entitylivingbase))
 							this.targetUnseenTicks = 0;
 						else if (++this.targetUnseenTicks > 60)
@@ -224,7 +224,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 						&& ((Player) target).getAbilities().invulnerable)
 					return false;
 
-				return !this.mustSee || this.mob.getSensing().hasLineOfSight(target);
+				return !this.shouldCheckSight || this.mob.getSensing().hasLineOfSight(target);
 			}
 		}
 	}

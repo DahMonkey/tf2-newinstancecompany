@@ -76,7 +76,6 @@ public class ItemHorn extends LegacyItem implements IBackpackItem {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	@Override
 	public int getBarWidth(ItemStack stack) {
 		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
 	}

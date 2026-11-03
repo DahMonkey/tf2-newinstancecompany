@@ -43,10 +43,10 @@ public class EntitySpy extends EntityTF2Character {
 		this.xpReward = 15;
 		this.rotation = 20;
 		this.goalSelector.addGoal(2,
-				new AvoidEntityGoal<>(this, LivingEntity.class,
+				new AvoidEntityGoal<LivingEntity>(this, LivingEntity.class,
 						entity -> (entity == this.getTarget()
 								&& TF2Util.lookingAtFast(entity, 105, this.getX(), this.getY(), this.getZ())),
-						4, 1.0f, 1.0f));
+						4, 1.0f, 1.0f, entity -> true));
 		this.goalSelector.addGoal(3, new EntityAIAmbush(this));
 		this.goalSelector.removeGoal(avoidSentry);
 		if (this.attack != null) {
@@ -68,12 +68,12 @@ public class EntitySpy extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootSpy;
 	}
 
 	@Override
-	public int getTalkInterval() {
+	public int getAmbientSoundInterval() {
 		return 80;
 	}
 
@@ -99,7 +99,7 @@ public class EntitySpy extends EntityTF2Character {
 						+ TF2weapons.animalsDisguise.get(this.getRandom().nextInt(TF2weapons.animalsDisguise.size())));
 			}
 			if (this.hasWatch()) {
-				this.loadout.getStackInSlot(3).getItem().onUpdate(this.loadout.getStackInSlot(3), this.level, this, 0,
+				this.loadout.getStackInSlot(3).getItem().inventoryTick(this.loadout.getStackInSlot(3), this.level, this, 0,
 						true);
 				/*
 				 * if (target != null &&
@@ -155,19 +155,21 @@ public class EntitySpy extends EntityTF2Character {
 	}
 
 	@Override
-	public String getName() {
+	public net.minecraft.network.chat.Component getName() {
 		if (this.level.isClientSide && ClientProxy.getLocalPlayer() != null && this.getWepCapability().isDisguised()) {
 			String username = this.getWepCapability().getDisguiseType().substring(2);
 
 			if (TF2Util.isAlliedTo(ClientProxy.getLocalPlayer(), this)) {
-				return super.getName() + " [" + username + "]";
+				return net.minecraft.network.chat.Component.literal(super.getName().getString() + " [" + username + "]");
 			} else {
 				if (this.getWepCapability().getDisguiseType().startsWith("M:")) {
-					return ChatFormatting.RESET
-							+ I18n.get(EntityList.getTranslationName(new ResourceLocation(username)));
+					net.minecraft.world.entity.EntityType<?> type = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES
+							.getValue(new ResourceLocation(username));
+					return type != null ? type.getDescription() : net.minecraft.network.chat.Component.literal(username);
 				} else
-					return PlayerTeam.formatPlayerName(
-							Minecraft.getInstance().level.getScoreboard().getPlayersTeam(username), username);
+					return PlayerTeam.formatNameForTeam(
+							Minecraft.getInstance().level.getScoreboard().getPlayersTeam(username),
+							net.minecraft.network.chat.Component.literal(username));
 			}
 		} else
 			return super.getName();

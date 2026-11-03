@@ -38,7 +38,7 @@ public class TF2Attribute {
 	public float defaultValue;
 	public State state;
 
-	private Predicate<ItemStack> canApply = Predicates.alwaysFalse();
+	private Predicate<ItemStack> canApply = rafradek.TF2weapons.util.PredicateUtil.alwaysFalse();
 
 	public int numLevels;
 
@@ -150,7 +150,7 @@ public class TF2Attribute {
 
 	public static void initAttributes() {
 		new TF2Attribute(0, "DamageBonus", "Damage", Type.PERCENTAGE, 1f, State.POSITIVE)
-				.setUpgrade(PredicateUtil.and(ITEM_WEAPON, Predicates.not(KNIFE)), 0.20f, 5, 160, 8).setKillstreak(0.04f)
+				.setUpgrade(PredicateUtil.and(ITEM_WEAPON, java.util.function.Predicate.not(KNIFE)), 0.20f, 5, 160, 8).setKillstreak(0.04f)
 				.setAustralium(1f).setNoCostReduce();
 		new TF2Attribute(1, "DamagePenalty", "Damage", Type.PERCENTAGE, 1f, State.NEGATIVE);
 		new TF2Attribute(2, "ClipSizeBonus", "Clip Size", Type.PERCENTAGE, 1f, State.POSITIVE)
@@ -519,7 +519,7 @@ public class TF2Attribute {
 			return listUpgrades;
 		List<TF2Attribute> list = new ArrayList<>();
 		for (TF2Attribute attr : attributes)
-			if (attr != null && attr.canApply != Predicates.<ItemStack>alwaysFalse() && (attr.state != State.NEGATIVE))
+			if (attr != null && attr.canApply != rafradek.TF2weapons.util.PredicateUtil.<ItemStack>alwaysFalse() && (attr.state != State.NEGATIVE))
 				// for (int i = 0; i < attr.weight; i++)
 				list.add(attr);
 		return list;

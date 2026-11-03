@@ -52,8 +52,7 @@ public class RenderJar extends Render<EntityJar> {
 		bindEntityTexture(entity);
 
 		if (entity.isGas() && !entity.isGasExploded())
-			Minecraft.getInstance().getItemRenderer().renderItem(ItemFromData.getNewStack("gaspasser"),
-					ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
+			rafradek.TF2weapons.client.compat.LegacyRender.renderItem(ItemFromData.getNewStack("gaspasser"), ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND);
 		else if (entity.isGasExploded()) {
 
 		} else {

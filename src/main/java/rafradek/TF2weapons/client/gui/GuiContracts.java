@@ -28,7 +28,7 @@ public class GuiContracts extends GuiScreen {
 
 	@Override
 	public void initGui() {
-		mc.getConnection().send(new CPacketClientStatus(CPacketClientStatus.State.REQUEST_STATS));
+		mc.getConnection().send(new net.minecraft.network.protocol.game.ServerboundClientCommandPacket(net.minecraft.network.protocol.game.ServerboundClientCommandPacket.Action.REQUEST_STATS));
 		mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newContracts = false;
 		mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = false;
 		super.initGui();
@@ -75,7 +75,7 @@ public class GuiContracts extends GuiScreen {
 				}
 			}
 		} else if (button.id == 1 && selectedId >= 0) {
-			mc.setScreen(new GuiYesNo((result, id) -> {
+			mc.setScreen(new net.minecraft.client.gui.screens.ConfirmScreen(result -> {
 				if (result) {
 					TF2weapons.network.sendToServer(new TF2Message.ActionMessage(64 + selectedId));
 					mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.remove(selectedId);
@@ -83,12 +83,14 @@ public class GuiContracts extends GuiScreen {
 					selectedId = -1;
 					buttonList.clear();
 					initGui();
-					mc.player.getStatFileWriter().unlockAchievement(mc.player, TF2Achievements.CONTRACT_DAY,
+					mc.player.getStats().setValue(mc.player,
+							net.minecraft.stats.Stats.CUSTOM.get(TF2Achievements.CONTRACT_DAY),
 							(int) (mc.level.getDayTime() / 24000 + 1));
 
 				}
 				Minecraft.getInstance().setScreen(this);
-			}, "Confirm", "Are you sure you want to decline this contract?", 0));
+			}, net.minecraft.network.chat.Component.literal("Confirm"),
+					net.minecraft.network.chat.Component.literal("Are you sure you want to decline this contract?")));
 		} else if (button.id == 2) mc.setScreen(null);
 		if (selectedContract != null) {
 			buttonList.get(1).enabled = true;
@@ -108,7 +110,7 @@ public class GuiContracts extends GuiScreen {
 		RenderSystem.setShaderTexture(0, CONTRACTS_GUI_TEXTURES);
 		drawTexturedModalRect(leftPos, topPos, 0, 0, 256, 216);
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		int contractDay = mc.player.getStatFileWriter().readStat(TF2Achievements.CONTRACT_DAY);
+		int contractDay = mc.player.getStats().getValue(net.minecraft.stats.Stats.CUSTOM.get(TF2Achievements.CONTRACT_DAY));
 		fontRenderer.drawString(I18n.get("gui.contracts", new Object[0]), leftPos + 8, topPos + 5, 4210752);
 		if (contractDay != 0) {
 			String str = I18n.get("gui.contracts.contractDay", contractDay - mc.level.getDayTime() / 24000);

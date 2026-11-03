@@ -264,7 +264,6 @@ public class TF2weapons {
 	/** Menus, indexed by the 1.12 GUI id (see {@link TF2GuiHandler}). */
 	public static final MenuType<?>[] MENU_TYPES = new MenuType<?>[8];
 
-	public static RecipeSerializer<OpenCrateRecipe> OPEN_CRATE_RECIPE;
 
 	public static LootItemFunctionType SET_META;
 	public static LootItemFunctionType RANDOM_META;
@@ -293,7 +292,8 @@ public class TF2weapons {
 	public static final ResourceLocation cratesOpened = TF2Achievements.CRATES_OPENED;
 	public static BannerPattern redPattern, bluPattern, neutralPattern, fastSpawn;
 	public static final GameRules.Key<GameRules.BooleanValue> DO_TF2_AI = GameRules.register("doTF2AI",
-			GameRules.Category.MOBS, GameRules.BooleanValue.create(true));
+			GameRules.Category.MOBS, GameRules.BooleanValue.create(true, (server, value) -> {
+			}));
 	public static final ResourceLocation robotsKilled = TF2Achievements.ROBOTS_KILLED;
 	public static MinecraftServer server;
 	public static EntityDummy dummyEnt;
@@ -355,7 +355,7 @@ public class TF2weapons {
 		int version = 0;
 		try {
 			if (versionFile.exists())
-				version = Integer.parseInt(Files.readUtf(versionFile.toPath()).trim());
+				version = Integer.parseInt(Files.readString(versionFile.toPath()).trim());
 		} catch (Exception e) {
 			version = 0;
 		}
@@ -366,7 +366,7 @@ public class TF2weapons {
 			extractData("weapons/crates.json", new File(this.weaponDir, "Crates.json"));
 			extractData("robots/robot_squad.json", squadFile);
 			try {
-				Files.writeUtf(versionFile.toPath(), String.valueOf(getCurrentWeaponVersion()));
+				Files.writeString(versionFile.toPath(), String.valueOf(getCurrentWeaponVersion()));
 			} catch (IOException e) {
 				LOGGER.error("Cannot write weapon config version", e);
 			}
@@ -417,7 +417,7 @@ public class TF2weapons {
 	}
 
 	public static void loadConfig(File file, DataOutput output) throws IOException {
-		loadConfig(Files.readUtf(file.toPath(), StandardCharsets.UTF_8), file.getName(), output);
+		loadConfig(Files.readString(file.toPath(), StandardCharsets.UTF_8), file.getName(), output);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -426,7 +426,7 @@ public class TF2weapons {
 		for (WeaponData data : list) {
 			String weaponEntry = data.getName();
 			try {
-				if (PropertyType.BASED_ON.contains(data)
+				if (data.hasProperty(PropertyType.BASED_ON)
 						&& MapList.nameToData.containsKey(data.getString(PropertyType.BASED_ON)))
 					data = attach(MapList.nameToData.get(data.getString(PropertyType.BASED_ON)), data);
 				loadWeapon(weaponEntry, data);
@@ -551,10 +551,6 @@ public class TF2weapons {
 				MENU_TYPES[i] = type;
 				helper.register(id("gui_" + i), type);
 			}
-		});
-		event.register(ForgeRegistries.Keys.RECIPE_SERIALIZERS, helper -> {
-			OPEN_CRATE_RECIPE = new SimpleRecipeSerializer<>(OpenCrateRecipe::new);
-			helper.register(id("open_crate"), OPEN_CRATE_RECIPE);
 		});
 		event.register(Registry.LOOT_FUNCTION_REGISTRY, helper -> {
 			helper.register(id("set_meta"), SET_META = new LootItemFunctionType(new SetMetaFunction.Serializer()));

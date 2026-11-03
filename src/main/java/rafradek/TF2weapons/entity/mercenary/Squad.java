@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Unit;
 
 public class Squad {
 
@@ -56,9 +55,9 @@ public class Squad {
 				for (JsonElement squadEl : entry.getValue().getAsJsonArray()) {
 					Squad squad = new Squad(type);
 					JsonObject squadObj = squadEl.getAsJsonObject();
-					squad.name = GsonHelper.getString(squadObj, "Name", "");
-					squad.minCount = GsonHelper.getInt(squadObj, "Min count", 1);
-					squad.cost = GsonHelper.getInt(squadObj, "Cost", 1);
+					squad.name = GsonHelper.getAsString(squadObj, "Name", "");
+					squad.minCount = GsonHelper.getAsInt(squadObj, "Min count", 1);
+					squad.cost = GsonHelper.getAsInt(squadObj, "Cost", 1);
 					for (JsonElement unitEl : squadObj.getAsJsonArray("Unit")) {
 						JsonObject unitObj = unitEl.getAsJsonObject();
 						Unit unit = new Unit();

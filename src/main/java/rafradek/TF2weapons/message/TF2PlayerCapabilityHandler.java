@@ -15,8 +15,8 @@ public class TF2PlayerCapabilityHandler implements IMessageHandler<PlayerCapabil
 			if (ent != null && ent.getCapability(TF2weapons.WEAPONS_CAP).isPresent()) {
 				TF2PlayerCapability cap = ent.getCapability(TF2weapons.PLAYER_CAP).orElse(null);
 				if (message.entries != null) {
-					for (DataEntry<?> param : message.entries) {
-						cap.onChangeValue(param.getKey(), param.getValue());
+					for (net.minecraft.network.syncher.SynchedEntityData.DataItem<?> param : message.entries) {
+						cap.onChangeValue(param.getAccessor(), param.getValue());
 					}
 					if (message.global)
 						cap.dataManagerGlobal.assignValues(message.entries);

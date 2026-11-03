@@ -166,10 +166,10 @@ public abstract class ItemFabricator extends LegacyItem {
 	@Override
 	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		tooltip.add(Component.literal("When used, this item will produce"));
-		tooltip.addAll(this.getOutputNames(stack));
+		this.getOutputNames(stack).forEach(line -> tooltip.add(Component.literal(line)));
 		tooltip.add(Component.literal(""));
 		tooltip.add(Component.literal("After consuming those items from inventory"));
-		tooltip.addAll(this.getInputNames(stack));
+		this.getInputNames(stack).forEach(line -> tooltip.add(Component.literal(line)));
 	}
 
 	@Override

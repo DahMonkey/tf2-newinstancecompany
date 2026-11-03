@@ -30,7 +30,7 @@ public class RenderMonoculus extends RenderLivingBase<EntityMonoculus> {
 	}
 
 	@Override
-	protected boolean canRenderName(EntityMonoculus entity) {
+	protected boolean shouldShowName(EntityMonoculus entity) {
 		return false;
 	}
 

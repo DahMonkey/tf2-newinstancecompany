@@ -38,11 +38,11 @@ public class EntityMedic extends EntityTF2Character {
 
 	public EntityMedic(EntityType<? extends EntityMedic> type, Level par1World) {
 		super(type, par1World);
-		this.targetTasks.taskEntries.clear();
+		this.targetSelector.getAvailableGoals().clear();
 		this.targetSelector.addGoal(1,
 				this.findplayer = new EntityAINearestChecked<LivingEntity>(this, LivingEntity.class, true,
 						false,
-						Predicates.and(this::isValidTarget,
+						rafradek.TF2weapons.util.PredicateUtil.and(this::isValidTarget,
 								target -> (target.getHealth() < target.getMaxHealth()
 										|| (target == this.getOwner() && this.getAbsorptionAmount() == 0)
 										|| (target instanceof Player
@@ -61,7 +61,7 @@ public class EntityMedic extends EntityTF2Character {
 				return canHeal() && super.canUse();
 			}
 		});
-		this.targetSelector.addGoal(3, new HurtByTargetGoal(this, true));
+		this.targetSelector.addGoal(3, new HurtByTargetGoal(this).setAlertOthers());
 		this.targetSelector.addGoal(4, new EntityAINearestChecked<>(this, LivingEntity.class, true, false,
 				super::isValidTarget, true, false));
 		// this.ammoLeft = 1;
@@ -127,7 +127,7 @@ public class EntityMedic extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootMedic;
 	}
 
@@ -145,9 +145,9 @@ public class EntityMedic extends EntityTF2Character {
 
 		super.aiStep();
 		if (this.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getHealTarget() > 0)
-			this.ignoreFrustumCheck = true;
+			this.noCulling = true;
 		else
-			this.ignoreFrustumCheck = false;
+			this.noCulling = false;
 		if (!this.level.isClientSide) {
 			AttributeInstance speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
 			if (this.tickCount % 4 == 0) {

@@ -27,11 +27,11 @@ public class ItemProjectileWeapon extends ItemWeapon {
 			EntityProjectileBase proj;
 			/*
 			 * double oldX=living.posX; double oldY=living.posY; double oldZ=living.posZ;
-			 * float oldPitch=living.rotationPitch; float oldYaw=living.rotationYawHead;
+			 * float oldPitch=living.rotationPitch; float oldYaw=living.yHeadRot;
 			 * if(this.usePrediction()&&living instanceof EntityPlayer){ PredictionMessage
 			 * message=TF2ProjectileHandler.nextShotPos.get(living); living.posX=message.x;
 			 * living.posY=message.y; living.posZ=message.z;
-			 * living.rotationYawHead=message.yaw; living.rotationPitch=message.pitch; }
+			 * living.yHeadRot=message.yaw; living.rotationPitch=message.pitch; }
 			 */
 			try {
 				proj = MapList.projectileClasses.get(ItemFromData.getData(stack).getString(PropertyType.PROJECTILE))
@@ -52,7 +52,7 @@ public class ItemProjectileWeapon extends ItemWeapon {
 		// living.posY=oldY;
 		// living.posZ=oldZ;
 		// living.rotationPitch=oldPitch;
-		// living.rotationYawHead=oldYaw;
+		// living.yHeadRot=oldYaw;
 	}
 
 	public void onProjectileShoot(ItemStack stack, EntityProjectileBase proj, LivingEntity living, Level world,

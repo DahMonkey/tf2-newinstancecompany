@@ -202,8 +202,8 @@ public class ContainerTF2Workbench extends LegacyContainer {
 	 * was double-clicked.
 	 */
 	@Override
-	public boolean canMergeSlot(ItemStack stack, Slot slotIn) {
-		return slotIn.container != this.craftResult && super.canMergeSlot(stack, slotIn);
+	public boolean canTakeItemForPickAll(ItemStack stack, Slot slotIn) {
+		return slotIn.container != this.craftResult && super.canTakeItemForPickAll(stack, slotIn);
 	}
 
 	@Override

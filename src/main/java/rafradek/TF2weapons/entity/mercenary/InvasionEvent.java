@@ -95,7 +95,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 		this.startTime = world.getDayTime();
 		this.target = targetPos;
 		this.direction = (float) (world.random.nextFloat() * Math.PI * 2 - Math.PI);
-		List<ServerPlayer> players = this.world.getPlayers(ServerPlayer.class,
+		List<ServerPlayer> players = ((ServerLevel) this.world).getPlayers(
 				player -> this.isInRange(player.blockPosition()));
 		for (ServerPlayer player : players) {
 			float killed = rafradek.TF2weapons.common.TF2Achievements.read(player, TF2weapons.robotsKilled);
@@ -160,7 +160,7 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 				players.remove();
 			}
 		}
-		for (Player player : this.world.getPlayers(Player.class,
+		for (Player player : ((ServerLevel) this.world).getPlayers(
 				player -> !playersArea.contains(player) && isInRange(player.blockPosition()))) {
 			this.onPlayerEnter(player);
 		}

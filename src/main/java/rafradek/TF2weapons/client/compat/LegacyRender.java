@@ -54,6 +54,26 @@ public final class LegacyRender {
 			current = STACK.pop();
 	}
 
+	/** 1.12 RenderItem.renderItem(stack, transform) in the current pose. */
+	public static void renderItem(net.minecraft.world.item.ItemStack stack,
+			net.minecraft.client.renderer.block.model.ItemTransforms.TransformType type) {
+		MultiBufferSource b = buffers();
+		if (b == null)
+			b = net.minecraft.client.Minecraft.getInstance().renderBuffers().bufferSource();
+		net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(stack, type, light(), overlay(),
+				pose(), b, 0);
+	}
+
+	/** 1.12 RenderItem.renderItem(entity, stack, transform) in the current pose. */
+	public static void renderItem(net.minecraft.world.entity.LivingEntity entity, net.minecraft.world.item.ItemStack stack,
+			net.minecraft.client.renderer.block.model.ItemTransforms.TransformType type) {
+		MultiBufferSource b = buffers();
+		if (b == null)
+			b = net.minecraft.client.Minecraft.getInstance().renderBuffers().bufferSource();
+		net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(entity, stack, type, false, pose(),
+				b, entity.level, light(), overlay(), entity.getId());
+	}
+
 	public static PoseStack pose() {
 		return current.pose;
 	}

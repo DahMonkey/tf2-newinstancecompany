@@ -47,7 +47,7 @@ public class EntityPyro extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootPyro;
 	}
 
@@ -67,7 +67,7 @@ public class EntityPyro extends EntityTF2Character {
 
 		if (ItemFromData.getData(this.getItemBySlot(EquipmentSlot.HEAD)).getName().equals("head_prize")
 				&& this.random.nextInt(3) == 0)
-			this.setCustomNameTag("Pywwo OwO");
+			this.setCustomName(net.minecraft.network.chat.Component.literal("Pywwo OwO"));
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class EntityPyro extends EntityTF2Character {
 				TF2Util.addAndSendEffect(this, new MobEffectInstance(TF2weapons.uber, 40, 0));
 				this.getWepCapability().setRageActive(RageType.PHLOG, true, 2f);
 				this.playSound(ItemFromData.getSound(weapon, PropertyType.CHARGE_SOUND), this.getSoundVolume(),
-						this.getSoundPitch());
+						this.getVoicePitch());
 			}
 
 			ItemStack backpack = ItemBackpack.getBackpack(this);

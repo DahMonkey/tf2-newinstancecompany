@@ -87,7 +87,7 @@ public class LayerWearables implements LayerRenderer<LivingEntity> {
 				GlStateManager.scale(0.65F, -0.65F, -0.65F);
 
 				ItemWearable.usedModel = 2;
-				minecraft.getItemRenderer().renderItem(living, stack, ItemTransforms.TransformType.HEAD);
+				rafradek.TF2weapons.client.compat.LegacyRender.renderItem(living, stack, ItemTransforms.TransformType.HEAD);
 				GlStateManager.popMatrix();
 			}
 
@@ -99,7 +99,7 @@ public class LayerWearables implements LayerRenderer<LivingEntity> {
 				this.getBody().postRender(0);
 
 				ItemWearable.usedModel = 1;
-				minecraft.getItemRenderer().renderItem(living, stack, ItemTransforms.TransformType.HEAD);
+				rafradek.TF2weapons.client.compat.LegacyRender.renderItem(living, stack, ItemTransforms.TransformType.HEAD);
 				GlStateManager.popMatrix();
 			}
 
@@ -124,7 +124,7 @@ public class LayerWearables implements LayerRenderer<LivingEntity> {
 	public ResourceLocation getArmorResource(Entity entity, ItemStack stack,
 			EquipmentSlot slot, String type) {
 		return new ResourceLocation(
-				ForgeHooksClient.getArmorTexture(entity, stack, "", slot, type));
+				net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, "", slot, type));
 	}
 
 	@Override

@@ -536,7 +536,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 			 * (180F / (float) Math.PI); this.parentEntity.rotationPitch = -((float)
 			 * MathHelper.atan2(this.parentEntity.motionY, f)) (180F / (float) Math.PI);
 			 * this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
-			 * this.parentEntity.rotationYawHead = this.parentEntity.rotationYaw; } else {
+			 * this.parentEntity.yHeadRot = this.parentEntity.rotationYaw; } else {
 			 * EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
 			 * double d0 = 64.0D;
 			 *
@@ -549,7 +549,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 			 * (180F / (float) Math.PI); this.parentEntity.renderYawOffset =
 			 * this.parentEntity.rotationYaw; this.parentEntity.rotationPitch = -((float)
 			 * MathHelper.atan2(d3, f)) * (180F / (float) Math.PI);
-			 * this.parentEntity.rotationYawHead = this.parentEntity.rotationYaw; } }
+			 * this.parentEntity.yHeadRot = this.parentEntity.rotationYaw; } }
 			 */
 			// System.out.println("coto: "+this.parentEntity.rotationPitch);
 		}

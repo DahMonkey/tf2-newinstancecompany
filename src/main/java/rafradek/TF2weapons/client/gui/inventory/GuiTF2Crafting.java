@@ -99,7 +99,7 @@ public class GuiTF2Crafting extends GuiContainer {
 			setButtons();
 		}
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		if (getSlotUnderMouse() != null && getSlotUnderMouse().getItem().isEmpty() && mc.player.getInventory().getItem().isEmpty()
+		if (getSlotUnderMouse() != null && getSlotUnderMouse().getItem().isEmpty() && menu.getCarried().isEmpty()
 				&& getSlotUnderMouse().container instanceof CraftingContainer &! itemsToRender.get(getSlotUnderMouse().index - 1).isEmpty())
 			renderToolTip(itemsToRender.get(getSlotUnderMouse().index - 1), mouseX, mouseY);
 		renderHoveredToolTip(mouseX, mouseY);
@@ -112,7 +112,7 @@ public class GuiTF2Crafting extends GuiContainer {
 		((ContainerTF2Workbench)menu).currentRecipe = currentRecipe;
 		mc.gameMode.handleInventoryButtonClick(menu.containerId, currentRecipe);
 		setButtons();
-		menu.onCraftMatrixChanged(null);
+		((ContainerTF2Workbench) menu).onCraftMatrixChanged(null);
 		itemsToRender = NonNullList.withSize(9, ItemStack.EMPTY);
 		if (currentRecipe < 0 || currentRecipe >= TF2CraftingManager.INSTANCE.getRecipeList().size()) return;
 		TF2Recipe recipe = TF2CraftingManager.INSTANCE.getRecipeList().get(currentRecipe);
@@ -124,13 +124,11 @@ public class GuiTF2Crafting extends GuiContainer {
 			for (int i = 0; i < 9; i++) itemsToRender.set(i, ((IRecipeTF2) recipe).getSuggestion(i));
 			return;
 		}
-		List<Ingredient> input = recipe.getIngredients();
+		List<rafradek.TF2weapons.item.crafting.TF2Ingredient> input = recipe.getIngredients();
 		for (int i = 0; i < input.size(); i++) {
 			int space = 0;
-			if (recipe instanceof ShapedRecipes) space = (3 - ((ShapedRecipes) recipe).recipeWidth)
-						* (i / ((ShapedRecipes) recipe).recipeWidth);
-			else if (recipe instanceof ShapedOreRecipe) space = (3 - ((ShapedOreRecipe) recipe).getRecipeWidth())
-					* (i / ((ShapedOreRecipe) recipe).getRecipeWidth());
+			if (recipe instanceof rafradek.TF2weapons.item.crafting.ShapedOreRecipe) space = (3 - ((rafradek.TF2weapons.item.crafting.ShapedOreRecipe) recipe).getRecipeWidth())
+					* (i / ((rafradek.TF2weapons.item.crafting.ShapedOreRecipe) recipe).getRecipeWidth());
 			if (input.get(i).getMatchingStacks().length > 0) {
 				itemsToRender.set(i + space, input.get(i).getMatchingStacks()[0]);
 				if (itemsToRender.get(i + space).getDamageValue() == 32767) itemsToRender.get(i + space).setDamageValue(0);

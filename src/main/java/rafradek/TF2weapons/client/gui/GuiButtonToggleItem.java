@@ -18,7 +18,7 @@ public class GuiButtonToggleItem extends GuiButton {
 	}
 
 	@Override
-	protected int getHoverState(boolean mouseOver) {
+	protected int getYImage(boolean mouseOver) {
 		int i = 1;
 		if (!enabled) i = 0;
 		else if (mouseOver || selected) i = 2;
@@ -29,21 +29,12 @@ public class GuiButtonToggleItem extends GuiButton {
 	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (!visible || stackToDraw == null || stackToDraw.isEmpty()) return;
 		super.drawButton(mc, mouseX, mouseY, partialTicks);
-		zLevel = 100.0F;
-		mc.getItemRenderer().zLevel = 100.0F;
-		RenderHelper.enableGUIStandardItemLighting();
-		GlStateManager.enableLighting();
-		GlStateManager.enableRescaleNormal();
-		mc.getItemRenderer().renderItemAndEffectIntoGUI(stackToDraw, x + 1, y + 1);
-		mc.getItemRenderer().renderItemOverlays(mc.font, stackToDraw, x + 1, y + 1);
-		GlStateManager.disableLighting();
-		RenderHelper.disableStandardItemLighting();
-		mc.getItemRenderer().zLevel = 0.0F;
-		zLevel = 0.0F;
+		rafradek.TF2weapons.client.compat.LegacyGui.renderItemAndEffectIntoGUI(stackToDraw, x + 1, y + 1);
+		rafradek.TF2weapons.client.compat.LegacyGui.renderItemOverlays(mc.font, stackToDraw, x + 1, y + 1);
 	}
 
 	@Override
-	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-		return super.mousePressed(mc, mouseX, mouseY) && !stackToDraw.isEmpty();
+	protected boolean clicked(double mouseX, double mouseY) {
+		return super.clicked(mouseX, mouseY) && !stackToDraw.isEmpty();
 	}
 }

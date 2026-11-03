@@ -1334,7 +1334,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 	}
 
 	/*
-	 * @Nullable protected ResourceLocation getLootTable() { return
+	 * @Nullable protected ResourceLocation getDefaultLootTable() { return
 	 * TF2weapons.lootTF2Character; }
 	 */
 	@Override

@@ -226,9 +226,32 @@ public class TF2Sounds {
 		 */
 	}
 
+	/** Registers every sound named by the weapon data files (fire, reload, crit variants, ...). */
+	@SuppressWarnings("unchecked")
+	public static void registerWeaponSounds() {
+		for (rafradek.TF2weapons.util.WeaponData weapon : rafradek.TF2weapons.common.MapList.nameToData.values())
+			for (rafradek.TF2weapons.util.PropertyType<?> propType : weapon.properties.keySet())
+				if (propType.name.contains("sound")) {
+					String name = weapon.getString((rafradek.TF2weapons.util.PropertyType<String>) propType);
+					if (name == null || name.isEmpty())
+						continue;
+					ResourceLocation soundLocation = ResourceLocation.tryParse(name);
+					if (soundLocation == null || soundLocation.getPath().isEmpty())
+						continue;
+					register(soundLocation);
+					if (propType == rafradek.TF2weapons.util.PropertyType.FIRE_SOUND
+							|| propType == rafradek.TF2weapons.util.PropertyType.FIRE_LOOP_SOUND
+							|| propType == rafradek.TF2weapons.util.PropertyType.CHARGED_FIRE_SOUND) {
+						ResourceLocation crit = ResourceLocation.tryParse(name + ".crit");
+						if (crit != null)
+							register(crit);
+					}
+				}
+	}
+
 	public static SoundEvent register(ResourceLocation location) {
 		if (SOUND_EVENTS.containsKey(location)) return SOUND_EVENTS.get(location);
-		SoundEvent event = new SoundEvent(location).setRegistryName(location);
+		SoundEvent event = new SoundEvent(location);
 		SOUND_EVENTS.put(location, event);
 		return event;
 	}

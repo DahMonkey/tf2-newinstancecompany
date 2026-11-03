@@ -35,9 +35,9 @@ public class EntityAIMoveTowardsRestriction2 extends Goal {
 			BlockPos blockpos = this.creature.getRestrictCenter();
 
 			Vec3 vec3d = this.creature.getRestrictRadius() == 0 ? Vec3.atBottomCenterOf(blockpos)
-					: DefaultRandomPos.findRandomTargetBlockTowards(this.creature,
+					: DefaultRandomPos.getPosTowards(this.creature,
 							(int) Math.min(this.creature.getRestrictRadius(), 16), 7,
-							new Vec3(blockpos.getX(), blockpos.getY(), blockpos.getZ()));
+							new Vec3(blockpos.getX(), blockpos.getY(), blockpos.getZ()), Math.PI / 2);
 
 			if (vec3d == null) {
 

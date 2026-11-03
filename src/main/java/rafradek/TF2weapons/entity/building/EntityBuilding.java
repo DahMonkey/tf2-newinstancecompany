@@ -648,8 +648,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		return p_110146_2_;
 	}
 
-	@Override
-	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
+	/** 1.12 dropFewItems: iron returned when the building is destroyed. */
+	protected void dropFewItems(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		LivingEntity attacker = this.getKillCredit();
 		if (this.fromPDA || (TF2Util.isAlliedTo(attacker, this) && this.getOwnerUUID() == null))
 			return;
@@ -664,6 +664,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	@Override
 	protected void dropCustomDeathLoot(DamageSource damageSource, int lootingModifier, boolean wasRecentlyHit) {
 		super.dropCustomDeathLoot(damageSource, lootingModifier, wasRecentlyHit);
+		this.dropFewItems(damageSource, lootingModifier, wasRecentlyHit);
 		this.spawnAtLocation(this.charge.getStackInSlot(0), 0);
 	}
 

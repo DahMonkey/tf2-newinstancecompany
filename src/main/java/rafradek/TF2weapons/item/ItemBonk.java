@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.util.TF2Util;
+
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.util.PropertyType;
@@ -43,7 +45,6 @@ public class ItemBonk extends ItemFromData {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	@Override
 	public int getBarWidth(ItemStack stack) {
 		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
 	}

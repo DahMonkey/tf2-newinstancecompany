@@ -41,7 +41,7 @@ public class EntitySniper extends EntityTF2Character {
 	 * this.loadout[1]=ItemFromData.getNewStack("sniperrifle"); }
 	 */
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootSniper;
 	}
 
@@ -75,10 +75,10 @@ public class EntitySniper extends EntityTF2Character {
 					.disableZoom(this.getItemInHand(InteractionHand.MAIN_HAND), this);
 		if (this.getItemInHand(InteractionHand.MAIN_HAND) != null
 				&& !this.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isCharging()) {
-			this.ignoreFrustumCheck = false;
+			this.noCulling = false;
 			this.rotation = 15;
 		} else {
-			this.ignoreFrustumCheck = true;
+			this.noCulling = true;
 			this.rotation = 3;
 		}
 

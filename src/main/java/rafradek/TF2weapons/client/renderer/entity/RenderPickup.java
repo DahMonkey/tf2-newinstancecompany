@@ -1,94 +1,56 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
-import rafradek.TF2weapons.client.compat.RenderItem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 
-import rafradek.TF2weapons.client.compat.Render;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-
-import rafradek.TF2weapons.client.compat.GlStateManager;
-import rafradek.TF2weapons.client.compat.RenderHelper;
-
-import rafradek.TF2weapons.entity.EntityPickup;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import rafradek.TF2weapons.entity.EntityPickup;
 
-public class RenderPickup extends Render<EntityPickup> {
+/** Health/ammo pickups: a bobbing, spinning item like a dropped item. */
+public class RenderPickup extends EntityRenderer<EntityPickup> {
 
-	// if you want a model, be sure to add it here:
+	private final ItemRenderer itemRenderer;
 
-	public RenderPickup(EntityRendererProvider.Context manager) {
-		super(manager);
+	public RenderPickup(EntityRendererProvider.Context context) {
+		super(context);
+		this.itemRenderer = context.getItemRenderer();
+		this.shadowRadius = 0.15F;
+		this.shadowStrength = 0.75F;
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(EntityPickup entity) {
-		return TextureAtlas.LOCATION_BLOCKS_TEXTURE;
+	public ResourceLocation getTextureLocation(EntityPickup entity) {
+		return TextureAtlas.LOCATION_BLOCKS;
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	public void doRender(EntityPickup entity, double x, double y, double z, float yaw, float partialTick) {
-
+	public void render(EntityPickup entity, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers,
+			int light) {
 		if (entity.isDisabled())
 			return;
-		boolean flag = false;
-
-		RenderItem itemRenderer = Minecraft.getInstance().getItemRenderer();
-		if (this.bindEntityTexture(entity)) {
-			this.renderManager.renderEngine.getTexture(this.getEntityTexture(entity)).setBlurMipmap(false, false);
-			flag = true;
-		}
-
-		ItemStack model = entity.getType().model;
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.alphaFunc(516, 0.1F);
-		GlStateManager.enableBlend();
-		RenderHelper.enableStandardItemLighting();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-				GlStateManager.DestFactor.ZERO);
-		GlStateManager.pushMatrix();
-		BakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(model, entity.level, (LivingEntity) null);
-
-		boolean is3d = ibakedmodel.isGui3d();
-		float f1 = /* true ? */ Mth.sin((entity.age + partialTick) / 10.0F + entity.hoverStart) * 0.1F + 0.1F;// :
-																														// 0;
-		float f2 = ibakedmodel.getItemCameraTransforms()
-				.getTransform(ItemTransforms.TransformType.GROUND).scale.y;
-		GlStateManager.translate((float) x, (float) y + f1 + 0.25F * f2, (float) z);
-
-		if (is3d || this.renderManager.options != null) {
-			float f3 = ((entity.age + partialTick) / 20.0F + entity.hoverStart) * (180F / (float) Math.PI);
-			GlStateManager.rotate(f3, 0.0F, 1.0F, 0.0F);
-		}
-
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-		GlStateManager.pushMatrix();
-
-		BakedModel transformedModel = ForgeHooksClient.handleCameraTransforms(ibakedmodel,
-				ItemTransforms.TransformType.GROUND, false);
-		itemRenderer.renderItem(model, transformedModel);
-		GlStateManager.popMatrix();
-		GlStateManager.translate(0.0F, 0.0F, 0.09375F);
-
-		GlStateManager.popMatrix();
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableBlend();
-		this.bindEntityTexture(entity);
-
-		if (flag) {
-			this.renderManager.renderEngine.getTexture(this.getEntityTexture(entity)).restoreLastBlurMipmap();
-		}
-
-		super.doRender(entity, x, y, z, yaw, partialTick);
+		ItemStack model = entity.getPickupType().model;
+		if (model.isEmpty())
+			return;
+		pose.pushPose();
+		BakedModel bakedmodel = this.itemRenderer.getModel(model, entity.level, null, entity.getId());
+		float bob = Mth.sin((entity.age + partialTick) / 10.0F + entity.hoverStart) * 0.1F + 0.1F;
+		float scaleY = bakedmodel.getTransforms().getTransform(ItemTransforms.TransformType.GROUND).scale.y();
+		pose.translate(0.0D, bob + 0.25F * scaleY, 0.0D);
+		float spin = (entity.age + partialTick) / 20.0F + entity.hoverStart;
+		pose.mulPose(Vector3f.YP.rotation(spin));
+		this.itemRenderer.render(model, ItemTransforms.TransformType.GROUND, false, pose, buffers, light,
+				OverlayTexture.NO_OVERLAY, bakedmodel);
+		pose.popPose();
+		super.render(entity, yaw, partialTick, pose, buffers, light);
 	}
-
 }

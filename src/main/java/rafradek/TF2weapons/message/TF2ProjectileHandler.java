@@ -22,7 +22,7 @@ public class TF2ProjectileHandler implements IMessageHandler<TF2Message.Predicti
 	public IMessage onMessage(final PredictionMessage message, MessageContext ctx) {
 		final Player shooter = ctx.getServerHandler().player;
 		// ItemStack stack=shooter.getHeldItem(EnumHand.MAIN_HAND);
-		((ServerLevel) shooter.level).execute(() -> {
+		ctx.context.enqueueWork(() -> {
 			// shooter.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).predictionList.poll();
 			message.target = new ArrayList<>();
 			if (message.readData != null)
@@ -31,15 +31,17 @@ public class TF2ProjectileHandler implements IMessageHandler<TF2Message.Predicti
 
 					if (obj[0] != null) {
 						Entity entity = shooter.level.getEntity((int) obj[0]);
+						if (entity == null)
+							continue;
 						Vec3 hit1 = new Vec3((Byte) obj[6] / 16D + entity.getX(), (Byte) obj[7] / 16D + entity.getY(),
 								(Byte) obj[8] / 16D + entity.getZ());
-						result = new HitResult(entity, hit1);
+						result = new TF2HitResult(entity, hit1);
 						TF2HitResult.setHitInfo(result, new float[] { (Boolean) obj[1] ? 1f : 0f, (Float) obj[2] });
 					} else {
 						BlockPos pos = new BlockPos((Integer) obj[3], (Integer) obj[4], (Integer) obj[5]);
 						Vec3 hit2 = new Vec3((Byte) obj[6] / 16D + pos.getX(), (Byte) obj[7] / 16D + pos.getY(),
 								(Byte) obj[8] / 16D + pos.getZ());
-						result = new HitResult(hit2, Direction.from3DDataValue((Byte) obj[1]), pos);
+						result = new net.minecraft.world.phys.BlockHitResult(hit2, Direction.from3DDataValue((Byte) obj[1]), pos, false);
 						TF2HitResult.setHitInfo(result, new float[] { (Float) obj[2] });
 					}
 					message.target.add(result);

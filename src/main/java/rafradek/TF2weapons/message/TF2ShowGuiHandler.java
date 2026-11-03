@@ -9,7 +9,7 @@ public class TF2ShowGuiHandler implements IMessageHandler<TF2Message.ShowGuiMess
 
 	@Override
 	public IMessage onMessage(final ShowGuiMessage message, MessageContext ctx) {
-		if (ctx.side == Dist.SERVER) {
+		if (!ctx.side.isClient()) {
 			if (message.id != 99)
 				TF2weapons.openGui((net.minecraft.world.entity.player.Player) ctx.getServerHandler().player, message.id,
 						ctx.getServerHandler().player.level, 0, 0, 0);

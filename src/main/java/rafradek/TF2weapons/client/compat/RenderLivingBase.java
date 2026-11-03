@@ -11,7 +11,7 @@ import java.util.List;
 /** 1.12 RenderLivingBase re-implemented on the legacy render context. */
 public abstract class RenderLivingBase<T extends LivingEntity> extends Render<T> {
 	protected ModelBase mainModel;
-	protected List<LayerRenderer<T>> layerRenderers = new ArrayList<>();
+	protected List<LayerRenderer<? super T>> layerRenderers = new ArrayList<>();
 	protected boolean renderMarker;
 
 	protected RenderLivingBase(EntityRendererProvider.Context context, ModelBase model, float shadowSize) {
@@ -20,7 +20,7 @@ public abstract class RenderLivingBase<T extends LivingEntity> extends Render<T>
 		this.shadowSize = shadowSize;
 	}
 
-	public <V extends LayerRenderer<T>> boolean addLayer(V layer) {
+	public boolean addLayer(LayerRenderer<? super T> layer) {
 		return this.layerRenderers.add(layer);
 	}
 
@@ -115,7 +115,7 @@ public abstract class RenderLivingBase<T extends LivingEntity> extends Render<T>
 
 	protected void renderLayers(T entity, float limbSwing, float limbSwingAmount, float partialTicks,
 			float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-		for (LayerRenderer<T> layer : this.layerRenderers) {
+		for (LayerRenderer<? super T> layer : this.layerRenderers) {
 			GlStateManager.pushMatrix();
 			layer.doRenderLayer(entity, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch,
 					scale);

@@ -374,7 +374,7 @@ public class EntityHHH extends EntityTF2Boss {
 	}
 
 	@Override
-	public void remove(Entity.RemovalReason removalReason) {
+	public void remove(net.minecraft.world.entity.Entity.RemovalReason removalReason) {
 		if (this.getTarget() != null) {
 			this.getTarget().removeEffect(TF2weapons.it);
 		}

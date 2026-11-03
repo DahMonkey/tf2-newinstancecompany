@@ -856,7 +856,7 @@ public class TF2EventsClient {
 				}
 				LegacyGui.drawString(Minecraft.getInstance().font, text, resolution.getScaledWidth() / 2 - 28,
 						resolution.getScaledHeight() / 2 + 42, 16777215);
-				LegacyGui.drawString(Minecraft.getInstance().font, living.getHoverName().getString(),
+				LegacyGui.drawString(Minecraft.getInstance().font, living.getDisplayName().getString(),
 						resolution.getScaledWidth() / 2 - 28,
 						resolution.getScaledHeight() / 2 + 54, 16777215);
 

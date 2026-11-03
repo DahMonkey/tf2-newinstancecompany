@@ -112,11 +112,6 @@ public class GuiUpgradeStation extends GuiContainer {
 	}
 
 	@Override
-	public void drawHoveringText(List<String> textLines, int x, int y) {
-		drawHoveringText(textLines, x, y, fontRenderer);
-	}
-
-	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button.id < 12) mc.gameMode.handleInventoryButtonClick(menu.containerId, button.id + firstIndex * 2);
 		else if (button.id == 12) mc.gameMode.handleInventoryButtonClick(menu.containerId, -1);

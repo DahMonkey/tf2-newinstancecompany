@@ -75,7 +75,7 @@ public class EntitySoldier extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootSoldier;
 	}
 
@@ -137,7 +137,7 @@ public class EntitySoldier extends EntityTF2Character {
 			ItemStack backpack = ItemBackpack.getBackpack(this);
 			if (backpack.getItem() instanceof ItemSoldierBackpack && (72000 - this.getUseItemRemainingTicks()) > ItemFromData
 					.getData(backpack).getInt(PropertyType.FIRE_SPEED)) {
-				this.stopActiveHand();
+				this.releaseUsingItem();
 				this.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
 			}
 		}
@@ -194,9 +194,10 @@ public class EntitySoldier extends EntityTF2Character {
 	}
 
 	@Override
-	public void fall(float distance, float damageMultiplier) {
-		super.fall(distance, this.airborne ? damageMultiplier * 0.35f : damageMultiplier);
+	public boolean causeFallDamage(float distance, float damageMultiplier, net.minecraft.world.damagesource.DamageSource source) {
+		boolean result = super.causeFallDamage(distance, this.airborne ? damageMultiplier * 0.35f : damageMultiplier, source);
 		this.airborne = false;
+		return result;
 	}
 
 	@Override
@@ -266,7 +267,7 @@ public class EntitySoldier extends EntityTF2Character {
 		@Override
 		public boolean canUse() {
 			if (getOwner() == null && getDiff() > 1 && (getTarget() != null || isGiant())
-					&& activeItemStack.isEmpty()) {
+					&& this.useItem.isEmpty()) {
 				ItemStack backpack = ItemBackpack.getBackpack(EntitySoldier.this);
 				return backpack.getItem() instanceof ItemSoldierBackpack
 						&& getWepCapability().getRage(RageType.BANNER) >= 1f;

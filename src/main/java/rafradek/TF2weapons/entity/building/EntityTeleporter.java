@@ -79,8 +79,8 @@ public class EntityTeleporter extends EntityBuilding {
 		this.setSize(1f, 0.2f);
 	}
 
-	@Override
-	public AABB getCollisionBox(Entity entityIn) {
+	/** 1.12 getCollisionBox(entity): called for entities standing on the teleporter; sends them to the exit. */
+	private void tryTeleport(Entity entityIn) {
 		if (!this.level.isClientSide && !this.isExit() && this.getTPprogress() <= 0 && entityIn != null
 				&& entityIn instanceof LivingEntity && !(entityIn instanceof EntityBuilding)
 				&& ((this.getOwner() != null && ((WeaponsCapability.get(this.getOwner()).teleporterEntity
@@ -124,7 +124,6 @@ public class EntityTeleporter extends EntityBuilding {
 						}
 					}
 				}
-		return super.getCollisionBox(entityIn);
 	}
 
 	@Override
@@ -150,6 +149,13 @@ public class EntityTeleporter extends EntityBuilding {
 					if (this.linkedTp != null)
 						this.linkedTp.setSoundState(1);
 				}
+				if (this.getTPprogress() <= 0)
+					for (LivingEntity standing : this.level.getEntitiesOfClass(LivingEntity.class,
+							this.getBoundingBox().inflate(0, 0.5, 0).move(0, 0.5D, 0))) {
+						if (this.getTPprogress() > 0)
+							break;
+						this.tryTeleport(standing);
+					}
 				if (this.linkedTp != null && this.getColor() != this.linkedTp.getColor()) {
 					this.getEntityData().set(COLOR, (byte) this.linkedTp.getColor());
 				}
@@ -321,7 +327,7 @@ public class EntityTeleporter extends EntityBuilding {
 	}
 
 	@Override
-	public void remove(Entity.RemovalReason removalReason) {
+	public void remove(net.minecraft.world.entity.Entity.RemovalReason removalReason) {
 		// Chunk
 		// chunk=this.world.getChunkFromBlockCoords(this.getPosition());
 		// if(chunk.isLoaded()){

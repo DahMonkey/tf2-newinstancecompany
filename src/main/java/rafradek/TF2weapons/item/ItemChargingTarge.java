@@ -69,7 +69,6 @@ public class ItemChargingTarge extends ItemFromData {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	@Override
 	public int getBarWidth(ItemStack stack) {
 		return Math.round(13f * (1f - (float) this.getDurabilityForDisplayLegacy(stack)));
 	}
@@ -95,7 +94,8 @@ public class ItemChargingTarge extends ItemFromData {
 	}
 
 	@Override
-	public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
-		return true;
+	public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
+		return net.minecraftforge.common.ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction)
+				|| super.canPerformAction(stack, toolAction);
 	}
 }

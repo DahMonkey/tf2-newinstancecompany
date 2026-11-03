@@ -92,7 +92,7 @@ public class EntityDemoman extends EntityTF2Character {
 		}
 	}
 	/*
-	 * protected ResourceLocation getLootTable() { return TF2weapons.lootDemoman; }
+	 * protected ResourceLocation getDefaultLootTable() { return TF2weapons.lootDemoman; }
 	 */
 	/*
 	 * protected void addWeapons() {
@@ -108,7 +108,7 @@ public class EntityDemoman extends EntityTF2Character {
 
 	private void setBusterInternal() {
 		this.entityData.set(SENTRY_BUSTER, true);
-		this.targetTasks.taskEntries.clear();
+		this.targetSelector.getAvailableGoals().clear();
 		this.goalSelector.removeGoal(attack);
 	}
 
@@ -194,8 +194,8 @@ public class EntityDemoman extends EntityTF2Character {
 	}
 
 	@Override
-	protected void onFinishedPotionEffect(MobEffectInstance effect) {
-		super.onFinishedPotionEffect(effect);
+	protected void onEffectRemoved(MobEffectInstance effect) {
+		super.onEffectRemoved(effect);
 		if (effect.getEffect() == TF2weapons.charging)
 			this.moveAttack.setDodge(true, false);
 	}
@@ -228,7 +228,7 @@ public class EntityDemoman extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootDemoman;
 	}
 

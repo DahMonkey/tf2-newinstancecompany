@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 public class ClientHandler {
 
 	public static void processParticleSpawnMessage(ParticleSpawnMessage message) {
-		IParticleFactory factory = ClientProxy.particleFactories.get(EnumTF2Particles.values()[message.id]);
+		rafradek.TF2weapons.client.compat.IParticleFactory factory = ClientProxy.particleFactories.get(EnumTF2Particles.values()[message.id]);
 		for (int i = 0; i < message.count; i++) {
 			ParticleSpawnMessage message2 = message;
 			Particle particle = factory.createParticle(message.id, Minecraft.getInstance().level, message.x,

@@ -81,7 +81,7 @@ public class RenderTeleporter extends RenderLiving<EntityTeleporter> {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate((float) x, (float) y + 0.23D, (float) z);
 			// GL11.glRotatef((living.prevRotationYawHead +
-			// (living.rotationYawHead - living.prevRotationYawHead) *
+			// (living.yHeadRot - living.prevRotationYawHead) *
 			// p_76986_9_)*-1, 0.0F, 1.0F, 0.0F);
 			// GL11.glRotatef((living.prevRotationPitch + (living.rotationPitch
 			// - living.prevRotationPitch) * p_76986_9_), 1.0F, 0.0F, 0.0F);
@@ -102,7 +102,7 @@ public class RenderTeleporter extends RenderLiving<EntityTeleporter> {
 			tessellator.draw();
 
 			if (living.getColor() != -1) {
-				float[] color = Sheep.getDyeRgb(DyeColor.byId(15 - living.getColor()));
+				float[] color = DyeColor.byId(15 - living.getColor()).getTextureDiffuseColors();
 				GlStateManager.color(color[0], color[1], color[2], 0.85F);
 
 				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);

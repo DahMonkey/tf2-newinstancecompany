@@ -12,7 +12,7 @@ public class TF2DisguiseHandler implements IMessageHandler<TF2Message.DisguiseMe
 	@Override
 	public IMessage onMessage(final DisguiseMessage message, MessageContext ctx) {
 		final ServerPlayer player = ctx.getServerHandler().player;
-		((ServerLevel) player.level).execute(() -> {
+		ctx.context.enqueueWork(() -> {
 			ItemStack stack;
 			if (((stack = player.getMainHandItem()) != null && stack.getItem() instanceof ItemDisguiseKit)
 					|| ((stack = player.getOffhandItem()) != null

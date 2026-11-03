@@ -45,7 +45,6 @@ public class RenderTF2Character extends RenderBiped<EntityTF2Character> {
 		this.addLayer(new LayerHeldItem(this));
 		this.addLayer(new LayerArmorTint(this));
 		this.addLayer(new LayerWearables(this));
-		this.layerRenderers.removeIf(layer -> (LayerRenderer<?>) layer instanceof LayerCustomHead);
 	}
 
 	@Override
@@ -78,7 +77,9 @@ public class RenderTF2Character extends RenderBiped<EntityTF2Character> {
 		}
 		super.doRender(living, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
 		if (living.isAlive()) {
-			TF2EventsClient.renderBeam(living, p_76986_9_, 0.04f);
+			TF2EventsClient.renderBeam(living, p_76986_9_, 0.04f, net.minecraft.util.Mth.lerp(p_76986_9_, living.xo, living.getX()),
+					net.minecraft.util.Mth.lerp(p_76986_9_, living.yo, living.getY()),
+					net.minecraft.util.Mth.lerp(p_76986_9_, living.zo, living.getZ()));
 			if (sniperZoomed) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder renderer = tessellator.getBuffer();

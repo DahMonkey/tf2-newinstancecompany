@@ -45,20 +45,102 @@ public class PyrolandRenderer {
     @SubscribeEvent
     public void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-        if (shouldRenderPyrovision()) if (!isShaderLoaded()) enableShader();
-        else if (isShaderLoaded()) disableShader();
+        if (Minecraft.getInstance().level == null) return;
+        boolean pyrovision = shouldRenderPyrovision();
+        if (pyrovision && !isShaderLoaded()) enableShader();
+        else if (!pyrovision && isShaderLoaded()) disableShader();
     }
 
     @SubscribeEvent
     public void playSound(PlaySoundEvent event) {
         SoundInstance sound = event.getSound();
-        SoundSource cat = sound.getCategory();
+        if (sound == null) return;
+        SoundSource cat = sound.getSource();
         if (!(cat == SoundSource.HOSTILE || cat == SoundSource.PLAYERS || cat == SoundSource.NEUTRAL)) return;
-        if (sound instanceof AbstractSoundInstance && shouldRenderPyrovision()) {
-            AbstractSoundInstance positionedsound = (AbstractSoundInstance) sound;
-            positionedsound.pitch = ((AbstractSoundInstance)sound).pitch * 1.5f;
-            if (SOUND_MAP.containsKey(sound.getSoundLocation()))
-                positionedsound.positionedSoundLocation = SOUND_MAP.get(sound.getSoundLocation());
+        if (!(sound instanceof net.minecraft.client.resources.sounds.TickableSoundInstance) && shouldRenderPyrovision()) {
+            ResourceLocation location = SOUND_MAP.getOrDefault(sound.getLocation(), sound.getLocation());
+            event.setSound(new PyrolandSound(sound, location));
+        }
+    }
+
+    /** Wraps a sound with a higher pitch and, optionally, a replacement sound event. */
+    private static class PyrolandSound implements SoundInstance {
+        private final SoundInstance parent;
+        private final ResourceLocation location;
+        private net.minecraft.client.resources.sounds.Sound sound;
+
+        PyrolandSound(SoundInstance parent, ResourceLocation location) {
+            this.parent = parent;
+            this.location = location;
+        }
+
+        @Override
+        public ResourceLocation getLocation() {
+            return location;
+        }
+
+        @Override
+        public net.minecraft.client.sounds.WeighedSoundEvents resolve(net.minecraft.client.sounds.SoundManager manager) {
+            parent.resolve(manager);
+            net.minecraft.client.sounds.WeighedSoundEvents events = manager.getSoundEvent(this.location);
+            this.sound = events == null ? net.minecraft.client.sounds.SoundManager.EMPTY_SOUND
+                    : events.getSound(net.minecraft.util.RandomSource.create());
+            return events;
+        }
+
+        @Override
+        public net.minecraft.client.resources.sounds.Sound getSound() {
+            return sound != null ? sound : parent.getSound();
+        }
+
+        @Override
+        public SoundSource getSource() {
+            return parent.getSource();
+        }
+
+        @Override
+        public boolean isLooping() {
+            return parent.isLooping();
+        }
+
+        @Override
+        public boolean isRelative() {
+            return parent.isRelative();
+        }
+
+        @Override
+        public int getDelay() {
+            return parent.getDelay();
+        }
+
+        @Override
+        public float getVolume() {
+            return parent.getVolume();
+        }
+
+        @Override
+        public float getPitch() {
+            return parent.getPitch() * 1.5f;
+        }
+
+        @Override
+        public double getX() {
+            return parent.getX();
+        }
+
+        @Override
+        public double getY() {
+            return parent.getY();
+        }
+
+        @Override
+        public double getZ() {
+            return parent.getZ();
+        }
+
+        @Override
+        public SoundInstance.Attenuation getAttenuation() {
+            return parent.getAttenuation();
         }
     }
 
@@ -86,17 +168,17 @@ public class PyrolandRenderer {
     }
 
     private boolean isShaderLoaded() {
-        PostChain shader = Minecraft.getInstance().entityRenderer.getShaderGroup();
-        return shader != null && PYROLAND_SHADER.toString().equals(shader.getShaderGroupName());
+        PostChain shader = Minecraft.getInstance().gameRenderer.currentEffect();
+        return shader != null && PYROLAND_SHADER.toString().equals(shader.getName());
     }
 
     private void enableShader() {
-        Minecraft.getInstance().entityRenderer.loadShader(PYROLAND_SHADER);
+        Minecraft.getInstance().gameRenderer.loadEffect(PYROLAND_SHADER);
     }
 
     private void disableShader() {
         Minecraft mc = Minecraft.getInstance();
-        mc.entityRenderer.loadEntityShader(mc.getCameraEntity());
+        mc.gameRenderer.checkEntityPostEffect(mc.getCameraEntity());
     }
 
     public void registerSoundReplacement(ResourceLocation sound, ResourceLocation replacement) {

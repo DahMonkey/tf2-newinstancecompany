@@ -179,7 +179,7 @@ public class ItemMedigun extends ItemUsable {
 		// float spreadPitch = (float) (living.rotationPitch / 180 + rand[1]);
 		// float spreadYaw = (float) (living.rotationYaw / 180 +
 		// rand[0]*(90/Math.max(90-Math.abs(spreadPitch*180),0.0001f)));
-		// System.out.println("Rot: "+living.rotationYawHead+"
+		// System.out.println("Rot: "+living.yHeadRot+"
 		// "+living.rotationPitch);
 		float spreadPitch = living.getXRot() / 180;
 		float spreadYaw = living.yHeadRot / 180;

@@ -197,6 +197,6 @@ public class GuiDisguiseKit extends GuiScreen {
 					}, false);
 			}
 		}
-		// this.playerNameField.updateCursorCounter();
+		// this.playerNameField.tick();
 	}
 }

@@ -59,7 +59,7 @@ public class EntityEngineer extends EntityTF2Character {
 			}
 
 			@Override
-			protected double getTargetDistance() {
+			protected double getFollowDistance() {
 				return 50;
 			}
 		});
@@ -68,7 +68,7 @@ public class EntityEngineer extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootEngineer;
 	}
 
@@ -133,10 +133,11 @@ public class EntityEngineer extends EntityTF2Character {
 			sentryRange *= sentryRange;
 
 			if (sentryRange < this.sentry.distanceToSqr(this.getTarget())) {
-				Entity entityhit = TF2Util
+				java.util.List<net.minecraft.world.phys.HitResult> hits = TF2Util
 						.pierce(this.level, sentry, sentry.getX(), sentry.getY() + sentry.getEyeHeight(), sentry.getZ(),
-								target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), false, 0, false)
-						.get(0).getEntity();
+								target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), false, 0, false);
+				Entity entityhit = hits.isEmpty() ? null
+						: rafradek.TF2weapons.util.TF2HitResult.getEntity(hits.get(0));
 
 				return entityhit == target || entityhit == this
 						|| (entityhit != null && !TF2Util.isAlliedTo(sentry, entityhit));
@@ -163,7 +164,7 @@ public class EntityEngineer extends EntityTF2Character {
 			;
 		}
 		if (!this.level.isClientSide) {
-			if (this.getRestrictRadius() == 0 && this.distanceToSqr(this.getRestrictCenter()) < 1) {
+			if (this.getRestrictRadius() == 0 && this.distanceToSqr(net.minecraft.world.phys.Vec3.atBottomCenterOf(this.getRestrictCenter())) < 1) {
 				this.restrictTo(this.getRestrictCenter(), 8);
 			}
 			if (this.getOwner() != null && this.getOrder() == Order.FOLLOW && this.grabbed == null) {

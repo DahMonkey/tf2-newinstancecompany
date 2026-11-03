@@ -17,11 +17,6 @@ import net.minecraft.world.level.Level;
 
 public class EntityHeavy extends EntityTF2Character {
 
-	@Override
-	public float getHeight() {
-		return 1.99f;
-	}
-
 	public EntityHeavy(Level par1World) {
 		this(TF2weapons.HEAVY, par1World);
 	}
@@ -66,7 +61,7 @@ public class EntityHeavy extends EntityTF2Character {
 	}
 
 	@Override
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getDefaultLootTable() {
 		return TF2weapons.lootHeavy;
 	}
 

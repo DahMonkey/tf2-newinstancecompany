@@ -226,10 +226,10 @@ public abstract class TF2Message implements IMessage {
 						buf.writeByte((byte) ((mop.getLocation().z - TF2HitResult.getEntity(mop).getZ()) * 16));
 					} else {
 						buf.writeBoolean(false);
-						buf.writeByte(mop.getDirection().get3DDataValue());
-						buf.writeInt(mop.getBlockPos().getX());
-						buf.writeInt(mop.getBlockPos().getY());
-						buf.writeInt(mop.getBlockPos().getZ());
+						buf.writeByte(((BlockHitResult) mop).getDirection().get3DDataValue());
+						buf.writeInt(((BlockHitResult) mop).getBlockPos().getX());
+						buf.writeInt(((BlockHitResult) mop).getBlockPos().getY());
+						buf.writeInt(((BlockHitResult) mop).getBlockPos().getZ());
 						buf.writeByte((byte) ((mop.getLocation().x - ((BlockHitResult) mop).getBlockPos().getX()) * 16));
 						buf.writeByte((byte) ((mop.getLocation().y - ((BlockHitResult) mop).getBlockPos().getY()) * 16));
 						buf.writeByte((byte) ((mop.getLocation().z - ((BlockHitResult) mop).getBlockPos().getZ()) * 16));

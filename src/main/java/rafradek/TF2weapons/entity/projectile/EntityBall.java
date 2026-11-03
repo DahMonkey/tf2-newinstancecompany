@@ -81,7 +81,7 @@ public class EntityBall extends EntityProjectileSimple {
 	 * } }
 	 */
 	@Override
-	public void remove(Entity.RemovalReason removalReason) {
+	public void remove(net.minecraft.world.entity.Entity.RemovalReason removalReason) {
 		if (this.impact) {
 			this.impact = false;
 			this.canBePickedUp = true;

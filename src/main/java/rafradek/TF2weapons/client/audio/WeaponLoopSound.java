@@ -16,15 +16,15 @@ public class WeaponLoopSound extends WeaponSound {
 
 	public WeaponLoopSound(SoundEvent sound, LivingEntity entity, boolean firing, WeaponData conf, boolean crit, int type) {
 		super(sound, entity, type, conf);
-		repeat = true;
+		looping = true;
 		this.firing = firing;
 		this.crit = crit;
 	}
 
 	@Override
-	public void update() {
-		super.update();
-		if (endsnextTick || donePlaying) return;
+	public void tick() {
+		super.tick();
+		if (endsnextTick || this.isStopped()) return;
 		ItemStack stack = entity.getItemInHand(InteractionHand.MAIN_HAND);
 		boolean boost = TF2Util.calculateCritPre(stack, entity) == 2;
 		boolean playThis = (boost && crit) || (!boost && !crit);
