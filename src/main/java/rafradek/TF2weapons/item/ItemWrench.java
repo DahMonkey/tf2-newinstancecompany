@@ -94,7 +94,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 					((EntitySentry) building).setAmmo(Math.min(((EntitySentry) building).getMaxAmmo(),
 							((EntitySentry) building).getAmmo() + metalUse));
 					metalLeft -= metalUse;
-					if (building.getLevel() == 3) {
+					if (building.getBuildingLevel() == 3) {
 						metalUse = Math.min(
 								Math.min(20 - ((EntitySentry) building).getRocketAmmo(), (int) (8 * metalMult)),
 								metalLeft / 2);
@@ -103,7 +103,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 						metalLeft -= metalUse * 2;
 					}
 				}
-				if (building.getLevel() < building.getMaxLevel()) {
+				if (building.getBuildingLevel() < building.getMaxLevel()) {
 					metalUse = Math.min(
 							Math.min(200 - building.getProgress(),
 									(int) TF2Attribute.getModifier("Upgrade Rate", stack, 25 * metalMult, attacker)),

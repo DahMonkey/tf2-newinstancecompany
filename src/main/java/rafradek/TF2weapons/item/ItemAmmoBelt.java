@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -43,7 +44,7 @@ public class ItemAmmoBelt extends LegacyItem {
 		}
 
 		public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
-			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
+			return capability == ForgeCapabilities.ITEM_HANDLER;
 		}
 
 		@Override
@@ -53,7 +54,7 @@ public class ItemAmmoBelt extends LegacyItem {
 	}
 
 	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
-			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+			if (capability == ForgeCapabilities.ITEM_HANDLER)
 				return (T) (Object) this;
 			return null;
 		}

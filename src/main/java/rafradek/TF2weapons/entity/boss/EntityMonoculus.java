@@ -380,8 +380,8 @@ public class EntityMonoculus extends EntityTF2Boss {
 	 * super.addAchievement(player); player.awardStat(TF2Achievements.MONOCULUS); }
 	 */
 	@Override
-	public float getEyeHeight() {
-		return this.getBbHeight() / 2;
+	protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions size) {
+		return size.height / 2;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraft.resources.ResourceKey;
 import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.client.Minecraft;
@@ -95,32 +96,22 @@ public class EntityTeleporter extends EntityBuilding {
 				else {
 					TeleporterData exit = this.getTeleportExit();
 					if (exit != null && this.consumeEnergy(this.getMinEnergy())) {
-						if (exit.dimension != this.dimension) {
-							if (entityIn instanceof ServerPlayer
-									&& ForgeHooks.onTravelToDimension(this, exit.dimension)) {
-								this.level.getServer().getPlayerList().transferPlayerToDimension(
-										(ServerPlayer) entityIn, exit.dimension,
-										new TeleporterDim((ServerLevel) this.level, exit));
-
-							} else {
-								Level destworld = this.level.getServer().getLevel(exit.dimension);
-								Entity newent = EntityList.newEntity(entityIn.getClass(), destworld);
-								if (newent != null) {
-									CompoundTag data = entityIn.save(new CompoundTag());
-									data.remove("Dimension");
-									newent.readFromNBT(data);
-									entityIn.discard();
-									newent.forceSpawn = true;
-									entityIn.moveToBlockPosAndAngles(exit, entityIn.getYRot(),
-											entityIn.getXRot());
-									destworld.addFreshEntity(newent);
-									entityIn = newent;
+						if (exit.dimension != this.level.dimension()) {
+							ServerLevel destworld = this.level.getServer().getLevel(exit.dimension);
+							if (destworld != null && ForgeHooks.onTravelToDimension(entityIn, exit.dimension)) {
+								if (entityIn instanceof ServerPlayer)
+									((ServerPlayer) entityIn).teleportTo(destworld, exit.getX() + 0.5,
+											exit.getY() + 0.23, exit.getZ() + 0.5, entityIn.getYRot(), entityIn.getXRot());
+								else {
+									Entity moved = entityIn.changeDimension(destworld, new TeleporterDim(exit));
+									if (moved != null)
+										entityIn = moved;
 								}
 							}
 						}
 						entityIn.teleportTo(exit.getX() + 0.5, exit.getY() + 0.23, exit.getZ() + 0.5);
 						this.setTeleports(this.getTeleports() + 1);
-						this.setTPprogress(this.getLevel() == 1 ? 200 : (this.getLevel() == 2 ? 100 : 60));
+						this.setTPprogress(this.getBuildingLevel() == 1 ? 200 : (this.getBuildingLevel() == 2 ? 100 : 60));
 						this.playSound(TF2Sounds.MOB_TELEPORTER_SEND, 1.5f, 1f);
 						entityIn.playSound(TF2Sounds.MOB_TELEPORTER_RECEIVE, 0.75f, 1f);
 						if (this.getOwner() instanceof ServerPlayer) {
@@ -193,7 +184,7 @@ public class EntityTeleporter extends EntityBuilding {
 					&& !this.blockPosition().equals(teleporters.get(this.getOwnerUUID())[this.getID()]))
 				this.updateTeleportersData(false);
 		} else if (this.getSoundState() == 1)
-			this.spin += (float) Math.PI * (this.getLevel() == 1 ? 0.25f : (this.getLevel() == 2 ? 0.325f : 0.4f));
+			this.spin += (float) Math.PI * (this.getBuildingLevel() == 1 ? 0.25f : (this.getBuildingLevel() == 2 ? 0.325f : 0.4f));
 		else
 			this.spin = 0;
 	}
@@ -202,7 +193,7 @@ public class EntityTeleporter extends EntityBuilding {
 		UUID uuid = this.getOwnerUUID();
 		if (this.getOwnerUUID() != null && teleporters.get(uuid) != null) {
 			final TeleporterData data = teleporters.get(uuid)[this.getID()];
-			List<EntityTeleporter> list = this.level.getEntities(EntityTeleporter.class, input -> data != null && data.id == input.tpID);
+			List<EntityTeleporter> list = this.level.getEntitiesOfClass(EntityTeleporter.class, this.getBoundingBox().inflate(256), input -> data != null && data.id == input.tpID);
 			if (!list.isEmpty())
 				this.linkedTp = list.get(0);
 			// System.out.println("linkedtpset");
@@ -217,8 +208,8 @@ public class EntityTeleporter extends EntityBuilding {
 		case 0:
 			return null;
 		case 1:
-			return this.getLevel() == 1 ? TF2Sounds.MOB_TELEPORTER_SPIN_1
-					: (this.getLevel() == 2 ? TF2Sounds.MOB_TELEPORTER_SPIN_2 : TF2Sounds.MOB_TELEPORTER_SPIN_3);
+			return this.getBuildingLevel() == 1 ? TF2Sounds.MOB_TELEPORTER_SPIN_1
+					: (this.getBuildingLevel() == 2 ? TF2Sounds.MOB_TELEPORTER_SPIN_2 : TF2Sounds.MOB_TELEPORTER_SPIN_3);
 		default:
 			return super.getSoundNameForState(state);
 		}
@@ -359,7 +350,7 @@ public class EntityTeleporter extends EntityBuilding {
 
 		UUID id = this.getOwnerUUID();
 		if (!forceremove && this.isExit()/* &&teleporters.get(id)[this.getID()]==null */)
-			teleporters.get(id)[this.getID()] = new TeleporterData(this.blockPosition(), this.tpID, this.dimension);
+			teleporters.get(id)[this.getID()] = new TeleporterData(this.blockPosition(), this.tpID, this.level.dimension());
 		else if (teleporters.get(id)[this.getID()] != null && teleporters.get(id)[this.getID()].id == this.tpID) {
 			// new Exception().printStackTrace();
 			teleporters.get(id)[this.getID()] = null;
@@ -383,7 +374,7 @@ public class EntityTeleporter extends EntityBuilding {
 
 	@Override
 	public int getIronDrop() {
-		return 1 + this.getLevel() / 2;
+		return 1 + this.getBuildingLevel() / 2;
 	}
 
 	@Override
@@ -470,7 +461,7 @@ public class EntityTeleporter extends EntityBuilding {
 		renderer.pos(67, 6, 0.0D).tex(0.9375D, 0.125D).endVertex();
 		tessellator.draw();
 
-		imagePos = this.getLevel() == 1 ? 0.3125D : this.getLevel() == 2 ? 0.375D : 0.4375D;
+		imagePos = this.getBuildingLevel() == 1 ? 0.3125D : this.getBuildingLevel() == 2 ? 0.375D : 0.4375D;
 		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(50, 18, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 18, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
@@ -478,7 +469,7 @@ public class EntityTeleporter extends EntityBuilding {
 		renderer.pos(50, 2, 0.0D).tex(0.9375D, imagePos).endVertex();
 		tessellator.draw();
 
-		if (this.getLevel() < 3) {
+		if (this.getBuildingLevel() < 3) {
 			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(67, 42, 0.0D).tex(0.9375D, 0.125D).endVertex();
 			renderer.pos(83, 42, 0.0D).tex(1D, 0.125D).endVertex();
@@ -518,7 +509,7 @@ public class EntityTeleporter extends EntityBuilding {
 			tessellator.draw();
 		}
 
-		if (this.getLevel() < 3) {
+		if (this.getBuildingLevel() < 3) {
 			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 41, 0.0D).endVertex();
 			renderer.pos(140, 41, 0.0D).endVertex();
@@ -529,7 +520,7 @@ public class EntityTeleporter extends EntityBuilding {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.85F);
 		if (this.getTPprogress() > 0) {
 			double tpProgress = (1 - ((double) this.getTPprogress()
-					/ (this.getLevel() == 1 ? 200 : (this.getLevel() == 2 ? 100 : 60)))) * 55;
+					/ (this.getBuildingLevel() == 1 ? 200 : (this.getBuildingLevel() == 2 ? 100 : 60)))) * 55;
 
 			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 21, 0.0D).endVertex();
@@ -538,7 +529,7 @@ public class EntityTeleporter extends EntityBuilding {
 			renderer.pos(85, 7, 0.0D).endVertex();
 			tessellator.draw();
 		}
-		if (this.getLevel() < 3) {
+		if (this.getBuildingLevel() < 3) {
 			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 41, 0.0D).endVertex();
 			renderer.pos(85 + this.getProgress() * 0.275D, 41, 0.0D).endVertex();
@@ -561,7 +552,7 @@ public class EntityTeleporter extends EntityBuilding {
 		 * 0.25D).endVertex(); renderer.pos(69, event.getResolution().getScaledHeight()
 		 * / 2 + 34, 0.0D).tex(0.9375D, 0.25D).endVertex(); tessellator.draw();
 		 * 
-		 * imagePos = teleporter.getLevel() == 1 ? 0.3125D : teleporter.getLevel() == 2
+		 * imagePos = teleporter.getBuildingLevel() == 1 ? 0.3125D : teleporter.getBuildingLevel() == 2
 		 * ? 0.375D : 0.4375D; renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 - 22,
 		 * event.getResolution().getScaledHeight() / 2 + 46, 0.0D).tex(0.9375D, 0.0625D
@@ -574,7 +565,7 @@ public class EntityTeleporter extends EntityBuilding {
 		 * 2 - 22, event.getResolution().getScaledHeight() / 2 + 30, 0.0D).tex(0.9375D,
 		 * imagePos).endVertex(); tessellator.draw();
 		 * 
-		 * if (teleporter.getLevel() < 3) { renderer.begin(7,
+		 * if (teleporter.getBuildingLevel() < 3) { renderer.begin(7,
 		 * DefaultVertexFormats.POSITION_TEX);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 - 5,
 		 * event.getResolution().getScaledHeight() / 2 + 70, 0.0D).tex(0.9375D,
@@ -614,7 +605,7 @@ public class EntityTeleporter extends EntityBuilding {
 		 * event.getResolution().getScaledHeight() / 2 + 35, 0.0D).endVertex();
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 35, 0.0D).endVertex();
-		 * tessellator.draw(); } if (teleporter.getLevel() < 3) { renderer.begin(7,
+		 * tessellator.draw(); } if (teleporter.getBuildingLevel() < 3) { renderer.begin(7,
 		 * DefaultVertexFormats.POSITION);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 69, 0.0D).endVertex();
@@ -626,8 +617,8 @@ public class EntityTeleporter extends EntityBuilding {
 		 * event.getResolution().getScaledHeight() / 2 + 55, 0.0D).endVertex();
 		 * tessellator.draw(); } GlStateManager.color(1.0F, 1.0F, 1.0F, 0.85F); if
 		 * (teleporter.getTPprogress() > 0) { double tpProgress = (1 - ((double)
-		 * teleporter.getTPprogress() / (teleporter.getLevel() == 1 ? 200 :
-		 * (teleporter.getLevel() == 2 ? 100 : 60)))) * 55; renderer.begin(7,
+		 * teleporter.getTPprogress() / (teleporter.getBuildingLevel() == 1 ? 200 :
+		 * (teleporter.getBuildingLevel() == 2 ? 100 : 60)))) * 55; renderer.begin(7,
 		 * DefaultVertexFormats.POSITION);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 49, 0.0D).endVertex();
@@ -637,7 +628,7 @@ public class EntityTeleporter extends EntityBuilding {
 		 * event.getResolution().getScaledHeight() / 2 + 35, 0.0D).endVertex();
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 35, 0.0D).endVertex();
-		 * tessellator.draw(); } if (teleporter.getLevel() < 3) { renderer.begin(7,
+		 * tessellator.draw(); } if (teleporter.getBuildingLevel() < 3) { renderer.begin(7,
 		 * DefaultVertexFormats.POSITION);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 69, 0.0D).endVertex();
@@ -655,40 +646,94 @@ public class EntityTeleporter extends EntityBuilding {
 
 	public static class TeleporterData extends BlockPos {
 
-		public final int dimension;
+		public final ResourceKey<Level> dimension;
 		public final int id;
 
-		public TeleporterData(BlockPos blockPos, int id, int dimension) {
+		public TeleporterData(BlockPos blockPos, int id, ResourceKey<Level> dimension) {
 			super(blockPos);
 			this.id = id;
 			this.dimension = dimension;
 		}
 	}
 
-	public static class TeleporterDim extends Teleporter {
+	/** Moves non-player entities between dimensions to the exit teleporter. */
+	public static class TeleporterDim implements net.minecraftforge.common.util.ITeleporter {
 
-		public BlockPos target;
+		public final BlockPos target;
 
-		public TeleporterDim(ServerLevel world, BlockPos targetPos) {
-			super(world);
-			target = targetPos;
+		public TeleporterDim(BlockPos targetPos) {
+			this.target = targetPos;
 		}
 
 		@Override
-		public boolean makePortal(Entity entityIn) {
-			return true;
+		public Entity placeEntity(Entity entity, ServerLevel currentWorld, ServerLevel destWorld, float yaw,
+				java.util.function.Function<Boolean, Entity> repositionEntity) {
+			Entity moved = repositionEntity.apply(false);
+			moved.moveTo(this.target.getX() + 0.5, this.target.getY() + 0.23, this.target.getZ() + 0.5, yaw,
+					moved.getXRot());
+			return moved;
 		}
+	}
 
-		@Override
-		public boolean placeInExistingPortal(Entity entityIn, float rotationYaw) {
-			if (entityIn instanceof ServerPlayer) {
-				((ServerPlayer) entityIn).connection.setPlayerLocation(target.getX(), target.getY(), target.getZ(),
-						entityIn.getYRot(), entityIn.getXRot());
-			} else {
-				entityIn.moveTo(target.getX(), target.getY(), target.getZ(), entityIn.getYRot(),
-						entityIn.getXRot());
+	private static java.nio.file.Path teleporterFile(net.minecraft.server.MinecraftServer server) {
+		return server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("teleports.dat");
+	}
+
+	public static void loadTeleporters(net.minecraft.server.MinecraftServer server) {
+		teleporters.clear();
+		tpCount = 0;
+		java.io.File input = teleporterFile(server).toFile();
+		if (!input.exists())
+			return;
+		try {
+			CompoundTag tagRoot = net.minecraft.nbt.NbtIo.readCompressed(input);
+			CompoundTag tag = tagRoot.getCompound("Teleporters");
+			for (String key : tag.getAllKeys()) {
+				TeleporterData[] blockArray = new TeleporterData[TP_PER_PLAYER];
+				teleporters.put(UUID.fromString(key), blockArray);
+				CompoundTag exitTag = tag.getCompound(key);
+				for (int i = 0; i < TP_PER_PLAYER; i++)
+					if (exitTag.contains(Integer.toString(i))) {
+						CompoundTag entry = exitTag.getCompound(Integer.toString(i));
+						blockArray[i] = new TeleporterData(
+								new BlockPos(entry.getInt("X"), entry.getInt("Y"), entry.getInt("Z")), entry.getInt("Id"),
+								ResourceKey.create(net.minecraft.core.Registry.DIMENSION_REGISTRY,
+										new net.minecraft.resources.ResourceLocation(entry.getString("Dim"))));
+					}
 			}
-			return true;
+			tpCount = tagRoot.getInt("TPCount");
+		} catch (Exception e) {
+			TF2weapons.LOGGER.warn("Reading teleporter data skipped", e);
 		}
+	}
+
+	public static void saveTeleporters(net.minecraft.server.MinecraftServer server) {
+		CompoundTag tagRoot = new CompoundTag();
+		CompoundTag tag = new CompoundTag();
+		tagRoot.put("Teleporters", tag);
+		for (java.util.Map.Entry<UUID, TeleporterData[]> entry : teleporters.entrySet()) {
+			CompoundTag exitTag = new CompoundTag();
+			for (int i = 0; i < TP_PER_PLAYER; i++) {
+				TeleporterData data = entry.getValue()[i];
+				if (data != null) {
+					CompoundTag dataTag = new CompoundTag();
+					dataTag.putInt("X", data.getX());
+					dataTag.putInt("Y", data.getY());
+					dataTag.putInt("Z", data.getZ());
+					dataTag.putInt("Id", data.id);
+					dataTag.putString("Dim", data.dimension.location().toString());
+					exitTag.put(Integer.toString(i), dataTag);
+				}
+			}
+			tag.put(entry.getKey().toString(), exitTag);
+		}
+		tagRoot.putInt("TPCount", tpCount);
+		try {
+			net.minecraft.nbt.NbtIo.writeCompressed(tagRoot, teleporterFile(server).toFile());
+		} catch (java.io.IOException e) {
+			TF2weapons.LOGGER.error("Could not save teleporter data", e);
+		}
+		teleporters.clear();
+		tpCount = 0;
 	}
 }

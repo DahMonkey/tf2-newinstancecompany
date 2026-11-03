@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.WeaponsCapability;
 import rafradek.TF2weapons.util.TF2Util;
@@ -53,7 +54,7 @@ public class ItemAmmoPackage extends LegacyItem {
 			}
 			ItemStack out = convertPackage(itemStackIn, player, ammoType);
 			out = TF2Util.mergeStackByDamage(
-					player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null), out);
+					player.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null), out);
 			if (!player.getInventory().add(out))
 				player.spawnAtLocation(out, 0);
 			itemStackIn.shrink(1);

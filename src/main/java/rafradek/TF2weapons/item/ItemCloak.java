@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.util.TF2Util;
 
 import net.minecraft.network.chat.Component;
@@ -157,7 +158,7 @@ public class ItemCloak extends ItemFromData {
 					&& stack.getDamageValue() == 0) {
 				return stack;
 			}
-			IItemHandler items = living.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+			IItemHandler items = living.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			for (int i = 0; i < items.getSlots(); i++) {
 				stack = items.getStackInSlot(i);
 				if (stack.getItem() instanceof ItemCloak && ((ItemCloak) stack.getItem()).isFeignDeath(stack, living)

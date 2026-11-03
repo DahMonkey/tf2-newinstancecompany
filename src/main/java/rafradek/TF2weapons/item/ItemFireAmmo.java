@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.util.TF2Util;
 import net.minecraft.core.Direction;
@@ -87,7 +88,7 @@ public class ItemFireAmmo extends ItemAmmo {
 			 * null).getStackInSlot(3).isEmpty()){ IItemHandlerModifiable invAmmo =
 			 * (IItemHandlerModifiable) living.getCapability(TF2weapons.INVENTORY_CAP,
 			 * null).getStackInSlot(3)
-			 * .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null); for (int
+			 * .getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null); for (int
 			 * i = 0; i < invAmmo.getSlots(); i++) { ItemStack stackInv =
 			 * invAmmo.getStackInSlot(i); if (stack == stackInv) { invAmmo.setStackInSlot(i,
 			 * ItemStack.EMPTY); return; } } } ((EntityPlayer)

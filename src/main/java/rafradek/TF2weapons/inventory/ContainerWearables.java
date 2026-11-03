@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.Container;
 import com.google.common.collect.Multimap;
@@ -65,7 +66,7 @@ public class ContainerWearables extends LegacyContainer {
 				 * getInventoryStackLimit(), but 1 in the case of armor slots)
 				 */
 				@Override
-				public int getSlotStackLimit() {
+				public int getMaxStackSize() {
 					return 1;
 				}
 
@@ -74,7 +75,7 @@ public class ContainerWearables extends LegacyContainer {
 				 * armor slots.
 				 */
 				@Override
-				public boolean isItemValid(@Nullable ItemStack stack) {
+				public boolean mayPlace(ItemStack stack) {
 					if (stack.isEmpty())
 						return false;
 					else
@@ -84,8 +85,8 @@ public class ContainerWearables extends LegacyContainer {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
-				public String getSlotTexture() {
-					return ArmorItem.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
+				public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+					return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, TF2Util.armorSlotIcon(entityequipmentslot));
 				}
 			});
 		}
@@ -94,12 +95,12 @@ public class ContainerWearables extends LegacyContainer {
 			int l = k;
 			this.addSlot(new Slot(wearables, k, 77, 8 + k * 18) {
 				@Override
-				public int getSlotStackLimit() {
+				public int getMaxStackSize() {
 					return 1;
 				}
 
 				@Override
-				public void onSlotChanged() {
+				public void setChanged() {
 					super.setChanged();
 					if (!ContainerWearables.this.player.level.isClientSide) {
 						// System.out.println("changed");
@@ -109,14 +110,14 @@ public class ContainerWearables extends LegacyContainer {
 							TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[l] = null;
 						}
 
-						if (!this.getStack().isEmpty()) {
-							Multimap<Attribute, AttributeModifier> modifiers = this.getStack()
+						if (!this.getItem().isEmpty()) {
+							Multimap<Attribute, AttributeModifier> modifiers = this.getItem()
 									.getAttributeModifiers(EquipmentSlot.HEAD);
 							ContainerWearables.this.player.getAttributes().addTransientAttributeModifiers(modifiers);
 							TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[l] = modifiers;
 						}
 						TF2Util.sendTracking(new TF2Message.WearableChangeMessage(ContainerWearables.this.player,
-								this.getSlotIndex(), this.getStack()), ContainerWearables.this.player);
+								this.getSlotIndex(), this.getItem()), ContainerWearables.this.player);
 					}
 				}
 
@@ -125,7 +126,7 @@ public class ContainerWearables extends LegacyContainer {
 				 * armor slots.
 				 */
 				@Override
-				public boolean isItemValid(@Nullable ItemStack stack) {
+				public boolean mayPlace(ItemStack stack) {
 					if (stack.isEmpty())
 						return false;
 					else
@@ -135,8 +136,8 @@ public class ContainerWearables extends LegacyContainer {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
-				public String getSlotTexture() {
-					return ArmorItem.EMPTY_SLOT_NAMES[EquipmentSlot.HEAD.getIndex()];
+				public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+					return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, TF2Util.armorSlotIcon(EquipmentSlot.HEAD));
 				}
 			});
 		}
@@ -147,7 +148,7 @@ public class ContainerWearables extends LegacyContainer {
 			 * armor slots.
 			 */
 			@Override
-			public boolean isItemValid(@Nullable ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				return stack.getItem() instanceof ItemFromData
 						&& stack.canEquip(EquipmentSlot.CHEST, player);
 			}
@@ -155,12 +156,12 @@ public class ContainerWearables extends LegacyContainer {
 			@Override
 			@Nullable
 			@OnlyIn(Dist.CLIENT)
-			public String getSlotTexture() {
-				return ArmorItem.EMPTY_SLOT_NAMES[EquipmentSlot.CHEST.getIndex()];
+			public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+				return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, TF2Util.armorSlotIcon(EquipmentSlot.CHEST));
 			}
 
 			@Override
-			public void onSlotChanged() {
+			public void setChanged() {
 				super.setChanged();
 				if (!ContainerWearables.this.player.level.isClientSide) {
 					// System.out.println("changed");
@@ -170,8 +171,8 @@ public class ContainerWearables extends LegacyContainer {
 						TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[2] = null;
 					}
 
-					if (!this.getStack().isEmpty()) {
-						Multimap<Attribute, AttributeModifier> modifiers = this.getStack()
+					if (!this.getItem().isEmpty()) {
+						Multimap<Attribute, AttributeModifier> modifiers = this.getItem()
 								.getAttributeModifiers(EquipmentSlot.CHEST);
 						modifiers.removeAll(Attributes.ARMOR);
 						modifiers.removeAll(Attributes.ARMOR_TOUGHNESS);
@@ -179,14 +180,14 @@ public class ContainerWearables extends LegacyContainer {
 						TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[2] = modifiers;
 					}
 					TF2Util.sendTracking(new TF2Message.WearableChangeMessage(ContainerWearables.this.player,
-							this.getSlotIndex(), this.getStack()), ContainerWearables.this.player);
+							this.getSlotIndex(), this.getItem()), ContainerWearables.this.player);
 				}
 			}
 		});
 		// slot 7
 		this.addSlot(new Slot(wearables, 3, 154, 28) {
 			@Override
-			public int getSlotStackLimit() {
+			public int getMaxStackSize() {
 				return 1;
 			}
 
@@ -195,7 +196,7 @@ public class ContainerWearables extends LegacyContainer {
 			 * armor slots.
 			 */
 			@Override
-			public boolean isItemValid(@Nullable ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				if (stack.isEmpty())
 					return false;
 				else
@@ -203,7 +204,7 @@ public class ContainerWearables extends LegacyContainer {
 			}
 
 			@Override
-			public void onSlotChanged() {
+			public void setChanged() {
 
 				super.setChanged();
 				addSlotAmmo();
@@ -212,8 +213,8 @@ public class ContainerWearables extends LegacyContainer {
 			@Override
 			@Nullable
 			@OnlyIn(Dist.CLIENT)
-			public String getSlotTexture() {
-				return TF2weapons.MOD_ID + ":items/ammo_belt_empty";
+			public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+				return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, new net.minecraft.resources.ResourceLocation(TF2weapons.MOD_ID + ":items/ammo_belt_empty"));
 			}
 		});
 		// slot 8-34
@@ -232,15 +233,15 @@ public class ContainerWearables extends LegacyContainer {
 			 * armor slots.
 			 */
 			@Override
-			public boolean isItemValid(@Nullable ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				return stack.getItem() instanceof ItemToken;
 			}
 
 			@Override
 			@Nullable
 			@OnlyIn(Dist.CLIENT)
-			public String getSlotTexture() {
-				return TF2weapons.MOD_ID + ":items/token_empty";
+			public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+				return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, new net.minecraft.resources.ResourceLocation(TF2weapons.MOD_ID + ":items/token_empty"));
 			}
 		});
 
@@ -250,7 +251,7 @@ public class ContainerWearables extends LegacyContainer {
 			this.addSlot(new Slot(wearables, k + 5, 175, 8 + k * 18) {
 
 				@Override
-				public void onSlotChanged() {
+				public void setChanged() {
 					super.setChanged();
 					if (!ContainerWearables.this.player.level.isClientSide) {
 						// System.out.println("changed");
@@ -263,7 +264,7 @@ public class ContainerWearables extends LegacyContainer {
 				 * armor slots.
 				 */
 				@Override
-				public boolean isItemValid(@Nullable ItemStack stack) {
+				public boolean mayPlace(ItemStack stack) {
 					if (stack.isEmpty())
 						return false;
 					else
@@ -273,8 +274,8 @@ public class ContainerWearables extends LegacyContainer {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
-				public String getSlotTexture() {
-					return CURRENCY_EMPTY[l];
+				public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+					return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, new net.minecraft.resources.ResourceLocation(CURRENCY_EMPTY[l]));
 				}
 			});
 		}
@@ -285,14 +286,14 @@ public class ContainerWearables extends LegacyContainer {
 				addSlot(new SlotItemHandler(nullInv, j + i * 3, 98 + j * 18, 18 + i * 18) {
 
 					@Override
-					public boolean isItemValid(@Nullable ItemStack stack) {
+					public boolean mayPlace(ItemStack stack) {
 						return false;
 					}
 				});
 
 		addSlotAmmo();
 		// if(wearables.getStackInSlot(3)!=null &&
-		// wearables.getStackInSlot(3).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+		// wearables.getStackInSlot(3).hasCapability(ForgeCapabilities.ITEM_HANDLER,
 		// null))
 		// this.addSlotAmmo();
 	}
@@ -313,7 +314,7 @@ public class ContainerWearables extends LegacyContainer {
 			((ItemToken) TF2weapons.itemToken).updateAttributes(this.wearables.getStackInSlot(4), player);
 		/*
 		 * if (this.wearables.getStackInSlot(3) == null) for (int i = 4; i < 13; ++i) {
-		 * ItemStack itemstack = this.wearables.removeStackFromSlot(i);
+		 * ItemStack itemstack = this.wearables.removeItemNoUpdate(i);
 		 * 
 		 * if (item!stack.isEmpty()) player.drop(itemstack, false); }
 		 */
@@ -328,8 +329,8 @@ public class ContainerWearables extends LegacyContainer {
 		IItemHandler handler = nullInv;
 		ammoBelt = false;
 		if (!this.wearables.getStackInSlot(3).isEmpty() && this.wearables.getStackInSlot(3)
-				.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-			handler = this.wearables.getStackInSlot(3).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+				.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
+			handler = this.wearables.getStackInSlot(3).getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			ammoBelt = true;
 		}
 		for (int i = 0; i < 3; ++i)
@@ -337,13 +338,13 @@ public class ContainerWearables extends LegacyContainer {
 				Slot slot = new SlotItemHandler(handler, j + i * 3, 98 + j * 18, 18 + i * 18) {
 
 					@Override
-					public boolean isItemValid(@Nullable ItemStack stack) {
+					public boolean mayPlace(ItemStack stack) {
 						return this.getItemHandler() != nullInv && !stack.isEmpty()
-								&& stack.getItem() instanceof ItemAmmo && super.isItemValid(stack);
+								&& stack.getItem() instanceof ItemAmmo && super.mayPlace(stack);
 					}
 				};
 				this.slots.set(this.slots.size() - 9 + j + i * 3, slot);
-				slot.slotNumber = this.slots.size() - 9 + j + i * 3;
+				slot.index = this.slots.size() - 9 + j + i * 3;
 			}
 	}
 
@@ -357,9 +358,9 @@ public class ContainerWearables extends LegacyContainer {
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
-			EquipmentSlot entityequipmentslot = Mob.getSlotForItemStack(itemstack);
+			EquipmentSlot entityequipmentslot = Mob.getEquipmentSlotForItem(itemstack);
 
 			if (index >= 0 && index < 8) {
 				if (!this.moveItemStackTo(itemstack1, 8, 44, false))
@@ -370,9 +371,9 @@ public class ContainerWearables extends LegacyContainer {
 			} else if (itemstack1.getItem() instanceof ItemBackpack && index >= 8) {
 				if (!this.moveItemStackTo(itemstack1, 6, 7, false))
 					return ItemStack.EMPTY;
-			} else if (entityequipmentslot.getSlotType() == EquipmentSlot.Type.ARMOR
-					&& !this.slots.get(4 - entityequipmentslot.getSlotIndex()).hasItem()) {
-				int i = 4 - entityequipmentslot.getSlotIndex();
+			} else if (entityequipmentslot.getType() == EquipmentSlot.Type.ARMOR
+					&& !this.slots.get(4 - entityequipmentslot.getIndex()).hasItem()) {
+				int i = 4 - entityequipmentslot.getIndex();
 
 				if (!this.moveItemStackTo(itemstack1, i, i + 1, false))
 					return ItemStack.EMPTY;

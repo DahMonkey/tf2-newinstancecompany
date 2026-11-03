@@ -105,22 +105,19 @@ public class EntitySentry extends EntityBuilding {
 
 	@Override
 	public void adjustSize() {
-		if (this.getLevel() == 1) {
-			this.width = 0.8f;
-			this.height = 0.8f;
-		} else if (this.getLevel() == 2) {
-			this.width = 1f;
-			this.height = 1f;
-		} else if (this.getLevel() == 3) {
-			this.width = 1f;
-			this.height = 1.2f;
+		float width = 0.8f, height = 0.8f;
+		if (this.getBuildingLevel() == 2) {
+			width = 1f;
+			height = 1f;
+		} else if (this.getBuildingLevel() == 3) {
+			width = 1f;
+			height = 1.2f;
 		}
 		if (this.isMini()) {
-			this.getBbWidth() *= 0.65f;
-			this.getBbHeight() *= 0.65f;
+			width *= 0.65f;
+			height *= 0.65f;
 		}
-		this.getBbHeight() -= 0.1f;
-		this.setSize(this.getBbWidth(), this.getBbHeight() + 0.1f);
+		this.setSize(width, height);
 		// System.out.println(x);
 	}
 
@@ -135,9 +132,9 @@ public class EntitySentry extends EntityBuilding {
 	public SoundEvent getSoundNameForState(int state) {
 		switch (state) {
 		case 0:
-			return this.getLevel() == 1 ? TF2Sounds.MOB_SENTRY_SCAN_1
-					: (this.getLevel() == 2 ? TF2Sounds.MOB_SENTRY_SCAN_2 : TF2Sounds.MOB_SENTRY_SCAN_3);
-		// case 2:return TF2weapons.MOD_ID+":mob.sentry.shoot."+this.getLevel();
+			return this.getBuildingLevel() == 1 ? TF2Sounds.MOB_SENTRY_SCAN_1
+					: (this.getBuildingLevel() == 2 ? TF2Sounds.MOB_SENTRY_SCAN_2 : TF2Sounds.MOB_SENTRY_SCAN_3);
+		// case 2:return TF2weapons.MOD_ID+":mob.sentry.shoot."+this.getBuildingLevel();
 		case 3:
 			return TF2Sounds.MOB_SENTRY_EMPTY;
 		default:
@@ -161,7 +158,7 @@ public class EntitySentry extends EntityBuilding {
 		this.targetSelector.addGoal(2, new EntityAISpotTarget<>(this, LivingEntity.class, true, true,
 				target -> (((((getAttackFlags() & 2) == 2 && getOwnerUUID() != null) && target instanceof Player)
 						|| target.getTeam() != null
-						|| ((getAttackFlags() & 1) == 1 && (getRevengeTarget() == target
+						|| ((getAttackFlags() & 1) == 1 && (getLastHurtByMob() == target
 								|| (getOwner() != null && (getOwner().getLastHurtByMob() == target
 										|| getOwner().getLastHurtMob() == target))))
 						|| ((getAttackFlags() & 4) == 4 && TF2Util.isHostile(target) && getOwnerUUID() != null)
@@ -188,9 +185,8 @@ public class EntitySentry extends EntityBuilding {
 			this.attackDelay--;
 		if (this.attackDelayRocket > 0)
 			this.attackDelayRocket--;
-		this.ignoreFrustumCheck = this.isControlled();
 		if (this.isControlled() && !this.level.isClientSide) {
-			Vec3 lookVec = Vec3.fromPitchYaw(this.getOwner().getXRot(), this.getOwner().yHeadRot)
+			Vec3 lookVec = Vec3.directionFromRotation(this.getOwner().getXRot(), this.getOwner().yHeadRot)
 					.scale(200);
 			HitResult trace = TF2Util.pierce(this.level, this.getOwner(), this.getOwner().getX(),
 					this.getOwner().getY() + this.getOwner().getEyeHeight(), this.getOwner().getZ(),
@@ -228,7 +224,7 @@ public class EntitySentry extends EntityBuilding {
 	}
 
 	public void shootRocket(LivingEntity owner) {
-		while (this.getLevel() == 3 && this.getRocketAmmo() > 0 && this.attackDelayRocket <= 0
+		while (this.getBuildingLevel() == 3 && this.getRocketAmmo() > 0 && this.attackDelayRocket <= 0
 				&& this.consumeEnergy(this.getMinEnergy() * 10)) {
 			this.attackDelayRocket += 60;
 			if (this.isControlled())
@@ -267,20 +263,20 @@ public class EntitySentry extends EntityBuilding {
 	public void shootBullet(LivingEntity owner) {
 		this.setSoundState(this.getAmmo() > 0 && this.energy.getEnergyStored() >= this.getMinEnergy() ? 2 : 3);
 		Vec3 attackPos = (this.isControlled()
-				? new Vec3(this.getLookControl().getLookPosX() - this.getX(),
-						this.getLookControl().getLookPosY() - this.getY() - this.getEyeHeight(),
-						this.getLookControl().getLookPosZ() - this.getZ())
+				? new Vec3(this.getLookControl().getWantedX() - this.getX(),
+						this.getLookControl().getWantedY() - this.getY() - this.getEyeHeight(),
+						this.getLookControl().getWantedZ() - this.getZ())
 				: this.getTarget().getEyePosition(1).subtract(this.getEyePosition(1))).normalize().scale(60)
 						.add(this.getEyePosition(1));
 		while (this.attackDelay <= 0 && this.getAmmo() > 0 && this.consumeEnergy(this.getMinEnergy())) {
 			if (this.getOwnerUUID() != null && this.tickCount % 10 == 0)
 				TF2Util.attractMobs(this, this.level);
-			float cooldown = this.getLevel() > 1 ? 2.5f : 5f;
-			// this.attackDelay += this.getLevel() > 1 ? 2.5f : 5f;
+			float cooldown = this.getBuildingLevel() > 1 ? 2.5f : 5f;
+			// this.attackDelay += this.getBuildingLevel() > 1 ? 2.5f : 5f;
 			if (this.isMini())
 				cooldown /= 1.5f;
 			if (this.isHeat()) {
-				cooldown *= this.getLevel() > 1 ? 5f : 4f;
+				cooldown *= this.getBuildingLevel() > 1 ? 5f : 4f;
 			}
 			if (this.isControlled())
 				cooldown /= 2f;
@@ -291,14 +287,14 @@ public class EntitySentry extends EntityBuilding {
 			if (this.isHeat()) {
 				this.playSound(TF2Sounds.WEAPON_MACHINA, 2f, 1f);
 			} else {
-				this.playSound(this.getLevel() == 1 ? TF2Sounds.MOB_SENTRY_SHOOT_1 : TF2Sounds.MOB_SENTRY_SHOOT_2, 1.5f,
+				this.playSound(this.getBuildingLevel() == 1 ? TF2Sounds.MOB_SENTRY_SHOOT_1 : TF2Sounds.MOB_SENTRY_SHOOT_2, 1.5f,
 						1f);
 			}
 
 			float damage = 1.6f;
 			if (this.isHeat()) {
 				damage = 4.25f + this.getHeat() * 1.25f;
-				if (this.getLevel() > 1)
+				if (this.getBuildingLevel() > 1)
 					damage *= 1.25f;
 			}
 			if (this.isMini())
@@ -348,7 +344,7 @@ public class EntitySentry extends EntityBuilding {
 							src)) {
 						Vec3 dist = new Vec3(TF2HitResult.getEntity(bullet).getX() - this.getX(), TF2HitResult.getEntity(bullet).getY() - this.getY(),
 								TF2HitResult.getEntity(bullet).getZ() - this.getZ()).normalize();
-						dist = dist.scale(0.25 * (this.getLevel() > 1 ? 0.7 : 1));
+						dist = dist.scale(0.25 * (this.getBuildingLevel() > 1 ? 0.7 : 1));
 						if (this.isMini())
 							dist = dist.scale(0.55);
 						if (this.isControlled())
@@ -371,8 +367,7 @@ public class EntitySentry extends EntityBuilding {
 										(ServerPlayer) TF2HitResult.getEntity(bullet));
 
 							if (TF2HitResult.getEntity(bullet) instanceof LivingEntity) {
-								((LivingEntity) TF2HitResult.getEntity(bullet)).setLastAttackedEntity(this);
-								((LivingEntity) TF2HitResult.getEntity(bullet)).setLastHurtByMob(this);
+																((LivingEntity) TF2HitResult.getEntity(bullet)).setLastHurtByMob(this);
 								if (!TF2HitResult.getEntity(bullet).isAlive()) {
 									this.scoreKill((LivingEntity) TF2HitResult.getEntity(bullet));
 								}
@@ -396,7 +391,7 @@ public class EntitySentry extends EntityBuilding {
 					this.getOffhandItem());
 		}
 		if (this.getOwner() instanceof Player && TF2Util.isEnemy(this.getOwner(), target)) {
-			ItemStack stack = TF2Util.getFirstItem(((Player) this.getOwner()).inventory,
+			ItemStack stack = TF2Util.getFirstItem(((Player) this.getOwner()).getInventory(),
 					stackl -> stackl.getItem() instanceof ItemPDA);
 			if (!stack.isEmpty()) {
 				if (!(target instanceof Player)) {
@@ -411,14 +406,16 @@ public class EntitySentry extends EntityBuilding {
 	}
 
 	@Override
-	public boolean canEntityBeSeen(Entity entityIn) {
-		return this.level.rayTraceBlocks(new Vec3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()),
-				new Vec3(entityIn.getX(), entityIn.getY() + entityIn.getEyeHeight(), entityIn.getZ()), false, true,
-				false) == null;
+	public boolean hasLineOfSight(Entity entityIn) {
+		return this.level.clip(new net.minecraft.world.level.ClipContext(
+				new Vec3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()),
+				new Vec3(entityIn.getX(), entityIn.getY() + entityIn.getEyeHeight(), entityIn.getZ()),
+				net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE,
+				this)).getType() == HitResult.Type.MISS;
 	}
 
 	public int getMaxAmmo() {
-		return this.getLevel() == 1 ? 150 : 200;
+		return this.getBuildingLevel() == 1 ? 150 : 200;
 	}
 
 	public int getAmmo() {
@@ -534,8 +531,8 @@ public class EntitySentry extends EntityBuilding {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getBbHeight() / 2 + 0.2f;
+	protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions size) {
+		return size.height / 2 + 0.2f;
 	}
 
 	@Override
@@ -611,7 +608,7 @@ public class EntitySentry extends EntityBuilding {
 		LegacyGui.drawTexturedModalRect(20, 2, 0, 112, 124, 60);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 		LegacyGui.drawTexturedModalRect(0, 0, 0, 48, 144, 64);
-		double imagePos = this.getLevel() == 1 ? 0.375D : this.getLevel() == 2 ? 0.1875D : 0D;
+		double imagePos = this.getBuildingLevel() == 1 ? 0.375D : this.getBuildingLevel() == 2 ? 0.1875D : 0D;
 
 		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(19, 56, 0.0D).tex(0.75D, imagePos + 0.1875D).endVertex();
@@ -623,7 +620,7 @@ public class EntitySentry extends EntityBuilding {
 		if (!this.isAlive())
 			return;
 
-		imagePos = this.getLevel() == 3 ? 0D : 0.0625D;
+		imagePos = this.getBuildingLevel() == 3 ? 0D : 0.0625D;
 		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(67, 57, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(83, 57, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
@@ -645,7 +642,7 @@ public class EntitySentry extends EntityBuilding {
 		renderer.pos(67, 23, 0.0D).tex(0.9375D, 0.125D).endVertex();
 		tessellator.draw();
 
-		imagePos = this.getLevel() == 1 ? 0.3125D : this.getLevel() == 2 ? 0.375D : 0.4375D;
+		imagePos = this.getBuildingLevel() == 1 ? 0.3125D : this.getBuildingLevel() == 2 ? 0.375D : 0.4375D;
 		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(50, 18, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 18, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
@@ -694,7 +691,7 @@ public class EntitySentry extends EntityBuilding {
 		renderer.pos(85, 24, 0.0D).endVertex();
 		tessellator.draw();
 
-		double xOffset = this.getLevel() < 3 ? this.getProgress() * 0.275D : this.getRocketAmmo() * 2.75D;
+		double xOffset = this.getBuildingLevel() < 3 ? this.getProgress() * 0.275D : this.getRocketAmmo() * 2.75D;
 		renderer.begin(7, DefaultVertexFormats.POSITION);
 		renderer.pos(85, 56, 0.0D).endVertex();
 		renderer.pos(85 + xOffset, 56, 0.0D).endVertex();

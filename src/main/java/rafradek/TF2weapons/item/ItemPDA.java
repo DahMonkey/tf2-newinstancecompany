@@ -190,7 +190,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 											&& TF2Attribute.getModifier("Weapon Mode", stackL, 0, player) == 2)
 							.isEmpty()) {
 						((EntitySentry) entity).setMini(true);
-						if (entity.getLevel() > 1)
+						if (entity.getBuildingLevel() > 1)
 							entity.die(DamageSource.GENERIC);
 					}
 				}

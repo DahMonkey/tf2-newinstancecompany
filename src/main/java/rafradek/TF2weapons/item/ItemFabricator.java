@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraft.network.chat.Component;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -175,7 +176,7 @@ public abstract class ItemFabricator extends LegacyItem {
 	public InteractionResultHolder<ItemStack> use(Level world, Player living, InteractionHand hand) {
 		if (!world.isClientSide) {
 			ItemStack stack = living.getItemInHand(hand);
-			IItemHandler handler = living.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+			IItemHandler handler = living.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			for (TF2Ingredient input : getInput(stack, living)) {
 				if (!TF2Util.hasEnoughItem(handler, input, input.getCount()))
 					return new InteractionResultHolder<>(InteractionResult.FAIL, living.getItemInHand(hand));

@@ -134,7 +134,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions size) {
 		return 2.1f;
 	}
 

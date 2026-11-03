@@ -223,7 +223,7 @@ public class EntityMedic extends EntityTF2Character {
 	 * Get this Entity's EnumCreatureAttribute
 	 */
 	@Override
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
 			this.spawnAtLocation(ItemFromData.getNewStack("syringegun"), 0);
 		if (this.random.nextFloat() < 0.08f + p_70628_2_ * 0.03f)

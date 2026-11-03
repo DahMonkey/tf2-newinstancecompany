@@ -114,7 +114,7 @@ public class EntityHeavy extends EntityTF2Character {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions size) {
 		return 1.78F * (this.getRobotSize() > 1 ? 1.75f : this.getRobotSize() > 2 ? 2f : 1f);
 	}
 
@@ -122,7 +122,7 @@ public class EntityHeavy extends EntityTF2Character {
 	 * Get this Entity's EnumCreatureAttribute
 	 */
 	@Override
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
 			this.spawnAtLocation(ItemFromData.getNewStack("shotgun"), 0);
 		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)

@@ -489,7 +489,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 	}
 
 	@Override
-	protected boolean canDespawn() {
+	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
 		return false;
 	}
 

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -83,7 +84,7 @@ public class ItemAmmo extends LegacyItem {
 			 * if (living.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3) !=
 			 * null){ IItemHandlerModifiable invAmmo = (IItemHandlerModifiable)
 			 * living.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)
-			 * .getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+			 * .getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			 *
 			 * for (int i = 0; i < invAmmo.getSlots(); i++) { ItemStack stackInv =
 			 * invAmmo.getStackInSlot(i); if (stack == stackInv) { invAmmo.setStackInSlot(i,

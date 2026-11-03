@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -104,7 +105,7 @@ public class EntityDispenser extends EntityBuilding {
 
 			if (this.reloadTimer <= 0 && this.getMetal() < MAX_METAL) {
 				int metalAmount = TF2ConfigVars.fastMetalProduction ? 30 : 21;
-				metalAmount = Math.min(MAX_METAL - this.getMetal(), metalAmount + this.getLevel() * (metalAmount / 3));
+				metalAmount = Math.min(MAX_METAL - this.getMetal(), metalAmount + this.getBuildingLevel() * (metalAmount / 3));
 				if (this.consumeEnergy(metalAmount * this.getMinEnergy())) {
 					this.setMetal(this.getMetal() + metalAmount);
 					this.playSound(TF2Sounds.MOB_DISPENSER_GENERATE_METAL, 1.55f, 1f);
@@ -113,27 +114,27 @@ public class EntityDispenser extends EntityBuilding {
 			}
 			this.giveAmmoTimer--;
 			if (this.food <= 8 && this.giveAmmoTimer == 0) {
-				ItemStack foodItem = TF2Util.getFirstItem(this.items, stack -> (stack.getItem() instanceof ItemFood));
+				ItemStack foodItem = TF2Util.getFirstItem(this.items, stack -> stack.isEdible());
 
 				if (!foodItem.isEmpty()) {
-					this.food += ((ItemFood) foodItem.getItem()).getHealAmount(foodItem);
+					this.food += foodItem.getItem().getFoodProperties(foodItem, this).getNutrition();
 					foodItem.shrink(1);
 				}
 			}
 			for (LivingEntity living : targetList) {
-				int level = this.getLevel();
+				int level = this.getBuildingLevel();
 				if (living.getHealth() < living.getMaxHealth() && this.consumeEnergy(this.getMinEnergy()))
 					living.heal(0.025f + 0.025f * level);
 
 				if (this.giveAmmoTimer == 0) {
 					if (living instanceof Player) {
-						FoodStats stats = ((Player) living).getFoodStats();
+						net.minecraft.world.food.FoodData stats = ((Player) living).getFoodData();
 						if (stats.getFoodLevel() >= 20)
-							stats.addStats(1, living.getHealth() >= living.getMaxHealth() ? 8 : 1);
+							stats.eat(1, living.getHealth() >= living.getMaxHealth() ? 8 : 1);
 						else {
 							int foodAmount = (int) (living.getHealth() / living.getMaxHealth() * 8);
 							if (this.food > 0) {
-								stats.addStats(Math.min(foodAmount, this.food), 1f);
+								stats.eat(Math.min(foodAmount, this.food), 1f);
 								this.food -= Math.min(foodAmount, this.food);
 							}
 						}
@@ -141,20 +142,20 @@ public class EntityDispenser extends EntityBuilding {
 
 					if (living instanceof EntityEngineer || living instanceof Player) {
 						int metal = living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getMetal();
-						int metalUse = Math.min(30 + this.getLevel() * 10,
+						int metalUse = Math.min(30 + this.getBuildingLevel() * 10,
 								Math.min(WeaponsCapability.get(living).getMaxMetal() - metal, this.getMetal()));
 						this.setMetal(this.getMetal() - metalUse);
 						living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).setMetal(metal + metalUse);
 					}
 					if (living instanceof EntityTF2Character) {
-						((EntityTF2Character) living).restoreAmmo(0.1f + this.getLevel() * 0.1f);
+						((EntityTF2Character) living).restoreAmmo(0.1f + this.getBuildingLevel() * 0.1f);
 
 					}
 					Predicate<ItemStack> test = stack -> (!stack.isEmpty()
-							&& (stack.getItem().isRepairable()
+							&& (stack.isRepairable()
 									|| (stack.isDamageableItem() && !TF2ConfigVars.oldDispenser))
 							&& stack.getDamageValue() != 0
-							&& !TF2ConfigVars.repairBlacklist.contains(stack.getItem().getRegistryName()));
+							&& !TF2ConfigVars.repairBlacklist.contains(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem())));
 					ItemStack heldItem = TF2Util.getFirstItem(items, test);
 
 					if (heldItem.isEmpty() && test.test(living.getMainHandItem()))
@@ -171,7 +172,7 @@ public class EntityDispenser extends EntityBuilding {
 								enchantCost = 1f / 3f;
 						}
 						repairMult *= enchantCost;
-						int metalUse = Math.min(15 + this.getLevel() * 10,
+						int metalUse = Math.min(15 + this.getBuildingLevel() * 10,
 								Math.min((int) (heldItem.getDamageValue() / repairMult) + 1, this.getMetal()));
 
 						// System.out.println("use: "+metalUse);
@@ -183,8 +184,6 @@ public class EntityDispenser extends EntityBuilding {
 								this.setMetal(this.getMetal() - metalUse);
 								heldItem.setDamageValue(heldItem.getDamageValue() - repairUses);
 
-								if (living instanceof ServerPlayer)
-									((ServerPlayer) living).updateHeldItem();
 							}
 						}
 					}
@@ -197,10 +196,10 @@ public class EntityDispenser extends EntityBuilding {
 
 					if (TF2Attribute.getModifier("No External Cloak", cloak.getB(), 0, living) == 0) {
 						cloak.getB()
-								.setDamageValue(Math.max(cloak.getB().getDamageValue() - (2 + this.getLevel()), 0));
+								.setDamageValue(Math.max(cloak.getB().getDamageValue() - (2 + this.getBuildingLevel()), 0));
 						if (living instanceof ServerPlayer)
 							((ServerPlayer) living).connection
-									.send(new ClientboundContainerSetSlotPacket(-2, cloak.getA(), cloak.getB()));
+									.send(new ClientboundContainerSetSlotPacket(-2, 0, cloak.getA(), cloak.getB()));
 					}
 				}
 				if (this.dispenserTarget != null && !this.dispenserTarget.contains(living))
@@ -275,9 +274,9 @@ public class EntityDispenser extends EntityBuilding {
 	@SuppressWarnings("deprecation")
 	public float getMaterialCost(ItemStack stack) {
 		float cost = 0;
-		for (Recipe recipe : ForgeRegistries.RECIPES.getValues()) {
-			if (recipe.getRecipeOutput().isItemEqualIgnoreDurability(stack)
-					&& TF2Util.isBaseSame(recipe.getRecipeOutput().getTag(), stack.getTag())) {
+		for (net.minecraft.world.item.crafting.Recipe<?> recipe : this.level.getRecipeManager().getRecipes()) {
+			if (recipe.getResultItem().sameItemStackIgnoreDurability(stack)
+					&& TF2Util.isBaseSame(recipe.getResultItem().getTag(), stack.getTag())) {
 				for (Ingredient ing : recipe.getIngredients()) {
 					if (ing.test(this.currRepairItem)) {
 						cost++;
@@ -290,15 +289,15 @@ public class EntityDispenser extends EntityBuilding {
 			}
 		}
 		if (cost == 0) {
-			if (stack.getItem() instanceof ItemPickaxe || stack.getItem() instanceof AxeItem)
+			if (stack.getItem() instanceof net.minecraft.world.item.PickaxeItem || stack.getItem() instanceof AxeItem)
 				cost = 3;
-			else if (stack.getItem() instanceof SwordItem || stack.getItem() instanceof ItemHoe
-					|| stack.getItem() instanceof ItemShears)
+			else if (stack.getItem() instanceof SwordItem || stack.getItem() instanceof net.minecraft.world.item.HoeItem
+					|| stack.getItem() instanceof net.minecraft.world.item.ShearsItem)
 				cost = 2;
-			else if (stack.getItem() instanceof ItemSpade)
+			else if (stack.getItem() instanceof net.minecraft.world.item.ShovelItem)
 				cost = 1;
 			else if (stack.getItem() instanceof ArmorItem) {
-				switch (((ArmorItem) stack.getItem()).armorType) {
+				switch (((ArmorItem) stack.getItem()).getSlot()) {
 				case CHEST:
 					cost = 8;
 					break;
@@ -375,10 +374,9 @@ public class EntityDispenser extends EntityBuilding {
 	@Override
 	public void drawFromBlock(BlockPos pos, BlockEntity ent, Direction facing) {
 		super.drawFromBlock(pos, ent, facing);
-		Direction front = Direction.getDirectionFromEntityLiving(pos, this);
-		if (ent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())) {
-			IItemHandler handler = ent.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
-					facing.getOpposite());
+		Direction front = Direction.getNearest(this.getX() - pos.getX() - 0.5, 0, this.getZ() - pos.getZ() - 0.5);
+		IItemHandler handler = ent.getCapability(ForgeCapabilities.ITEM_HANDLER, facing.getOpposite()).orElse(null);
+		if (handler != null) {
 			if (front == facing || front == facing.getOpposite())
 				for (int i = 0; i < items.getSlots(); i++) {
 					if (items.getStackInSlot(i).isDamageableItem() && items.getStackInSlot(i).getDamageValue() == 0)
@@ -411,7 +409,7 @@ public class EntityDispenser extends EntityBuilding {
 
 	@Override
 	public int getIronDrop() {
-		return 0 + this.getLevel();
+		return 0 + this.getBuildingLevel();
 	}
 
 	@Override
@@ -449,8 +447,8 @@ public class EntityDispenser extends EntityBuilding {
 	}
 
 	@Override
-	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
-		super.dropEquipment(wasRecentlyHit, lootingModifier);
+	protected void dropCustomDeathLoot(DamageSource damageSource, int lootingModifier, boolean wasRecentlyHit) {
+		super.dropCustomDeathLoot(damageSource, lootingModifier, wasRecentlyHit);
 		for (int i = 0; i < this.items.getSlots(); i++) {
 			this.spawnAtLocation(this.items.getStackInSlot(i), 0);
 		}
@@ -502,7 +500,7 @@ public class EntityDispenser extends EntityBuilding {
 		renderer.pos(67, 6, 0.0D).tex(0.9375D, 0.125D).endVertex();
 		tessellator.draw();
 
-		double imagePos = this.getLevel() == 1 ? 0.3125D : this.getLevel() == 2 ? 0.375D : 0.4375D;
+		double imagePos = this.getBuildingLevel() == 1 ? 0.3125D : this.getBuildingLevel() == 2 ? 0.375D : 0.4375D;
 		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		renderer.pos(50, 18, 0.0D).tex(0.9375D, 0.0625D + imagePos).endVertex();
 		renderer.pos(66, 18, 0.0D).tex(1D, 0.0625D + imagePos).endVertex();
@@ -510,7 +508,7 @@ public class EntityDispenser extends EntityBuilding {
 		renderer.pos(50, 2, 0.0D).tex(0.9375D, imagePos).endVertex();
 		tessellator.draw();
 
-		if (this.getLevel() < 3) {
+		if (this.getBuildingLevel() < 3) {
 			renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			renderer.pos(67, 42, 0.0D).tex(0.9375D, 0.125D).endVertex();
 			renderer.pos(83, 42, 0.0D).tex(1D, 0.125D).endVertex();
@@ -543,7 +541,7 @@ public class EntityDispenser extends EntityBuilding {
 		renderer.pos(85, 7, 0.0D).endVertex();
 		tessellator.draw();
 
-		if (this.getLevel() < 3) {
+		if (this.getBuildingLevel() < 3) {
 			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 41, 0.0D).endVertex();
 			renderer.pos(140, 41, 0.0D).endVertex();
@@ -560,7 +558,7 @@ public class EntityDispenser extends EntityBuilding {
 		renderer.pos(85, 7, 0.0D).endVertex();
 		tessellator.draw();
 
-		if (this.getLevel() < 3) {
+		if (this.getBuildingLevel() < 3) {
 			renderer.begin(7, DefaultVertexFormats.POSITION);
 			renderer.pos(85, 41, 0.0D).endVertex();
 			renderer.pos(85 + this.getProgress() * 0.275D, 41, 0.0D).endVertex();

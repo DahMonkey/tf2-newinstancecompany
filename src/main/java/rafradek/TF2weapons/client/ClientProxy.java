@@ -179,6 +179,9 @@ public class ClientProxy extends CommonProxy {
 				Component t) -> new GuiUpgradeStation((ContainerUpgrades) m));
 		MenuScreens.register(menu(3), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
 				Component t) -> new GuiAmmoFurnace((ContainerAmmoFurnace) m));
+		MenuScreens.register(menu(4), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
+				Component t) -> new rafradek.TF2weapons.client.gui.inventory.GuiMercenary(
+						(rafradek.TF2weapons.inventory.ContainerMercenary) m, inv, t));
 		MenuScreens.register(menu(5), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
 				Component t) -> GuiBuildingFactory.create(m));
 	}

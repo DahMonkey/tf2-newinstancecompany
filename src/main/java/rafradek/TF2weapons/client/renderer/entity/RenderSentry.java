@@ -85,9 +85,9 @@ public class RenderSentry extends RenderLiving<EntitySentry> {
 		if (living.isConstructing())
 			this.mainModel = this.box;
 		else {
-			if (living.getLevel() == 1)
+			if (living.getBuildingLevel() == 1)
 				this.mainModel = this.level1;
-			else if (living.getLevel() == 2)
+			else if (living.getBuildingLevel() == 2)
 				this.mainModel = this.level2;
 			else
 				this.mainModel = this.level3;

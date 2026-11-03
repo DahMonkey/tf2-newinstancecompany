@@ -135,7 +135,7 @@ public class GuiTF2Crafting extends GuiContainer {
 				itemsToRender.set(i + space, input.get(i).getMatchingStacks()[0]);
 				if (itemsToRender.get(i + space).getDamageValue() == 32767) itemsToRender.get(i + space).setDamageValue(0);
 			}
-			for (int j = 10; j < 46; j++) if (input.get(i).apply(menu.getSlot(j).getStack())) {
+			for (int j = 10; j < 46; j++) if (input.get(i).apply(menu.getSlot(j).getItem())) {
 				slotClicked(menu.getSlot(j), j, 0, ClickType.PICKUP);
 				slotClicked(menu.getSlot(i + space + 1), i + space + 1, 1, ClickType.PICKUP);
 				slotClicked(menu.getSlot(j), j, 0, ClickType.PICKUP);

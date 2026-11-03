@@ -76,7 +76,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 		else
 			stack = getReplacement(player,
 					TF2CraftingManager.INSTANCE.findMatchingRecipe(this.craftMatrix, this.level, this.player));
-		this.craftResult.setInventorySlotContents(0, stack);
+		this.craftResult.setItem(0, stack);
 	}
 
 	public static ItemStack getReplacement(Player player, ItemStack stack) {
@@ -133,7 +133,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 
 		if (!this.level.isClientSide)
 			for (int i = 0; i < 9; ++i) {
-				ItemStack itemstack = this.craftMatrix.removeStackFromSlot(i);
+				ItemStack itemstack = this.craftMatrix.removeItemNoUpdate(i);
 
 				if (!itemstack.isEmpty())
 					player.drop(itemstack, false);
@@ -156,7 +156,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 
 			if (itemstack1.getItem() == TF2weapons.itemTF2 && itemstack1.getDamageValue() == 9 &! player.level.isClientSide)
 				itemstack1 = ItemFromData.getRandomWeapon(itemstack1, player.getRandom());
@@ -168,7 +168,7 @@ public class ContainerTF2Workbench extends LegacyContainer implements IRecipeCon
 				if (!this.moveItemStackTo(itemstack1, 10, 46, true))
 					return ItemStack.EMPTY;
 
-				slot.onSlotChange(itemstack1, itemstack);
+				slot.onQuickCraft(itemstack1, itemstack);
 			} else if (index >= 10 && index < 37) {
 				if (!this.moveItemStackTo(itemstack1, 37, 46, false))
 					return ItemStack.EMPTY;

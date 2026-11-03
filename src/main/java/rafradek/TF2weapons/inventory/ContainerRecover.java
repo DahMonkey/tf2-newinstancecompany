@@ -22,7 +22,7 @@ public class ContainerRecover extends LegacyContainer {
 			for (int j = 0; j < 9; ++j) {
 				this.addSlot(new SlotItemHandler(dispenserInventoryIn, j + i * 9, 8 + j * 18, 18 + i * 18) {
 					@Override
-					public boolean isItemValid(@Nullable ItemStack stack) {
+					public boolean mayPlace(ItemStack stack) {
 						return false;
 					}
 				});
@@ -49,7 +49,7 @@ public class ContainerRecover extends LegacyContainer {
 					count++;
 				else if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 2)
 					count += 9;
-				else if (Block.getBlockFromItem(stack.getItem()) == TF2weapons.blockAustralium)
+				else if (Block.byItem(stack.getItem()) == TF2weapons.blockAustralium)
 					count += 81;
 			}
 		}
@@ -74,7 +74,7 @@ public class ContainerRecover extends LegacyContainer {
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 
 			if (index < 27) {

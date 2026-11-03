@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character.Order;
@@ -14,7 +15,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
@@ -37,7 +37,7 @@ public class ContainerMercenary extends MerchantMenu {
 	public int secondaryAmmo;
 
 	public ContainerMercenary(Player player, EntityTF2Character merc, Level world) {
-		super(player.getInventory(), merc, world);
+		super(LegacyContainer.currentWindowId(), player.getInventory(), merc);
 		this.mercenary = merc;
 		if (this.mercenary.hasHeldInventory()) {
 			for (int i = 0; i < 4; i++) {
@@ -55,7 +55,7 @@ public class ContainerMercenary extends MerchantMenu {
 			{
 				int i = 3;
 				for (EquipmentSlot slot : EquipmentSlot.values()) {
-					if (slot.getSlotType() == Type.ARMOR) {
+					if (slot.getType() == Type.ARMOR) {
 						if (this.mercenary.loadoutHeld.getStackInSlot(4 + i).isEmpty() && !this.mercenary.isEmpty[i]) {
 							this.mercenary.loadoutHeld.setStackInSlot(4 + i, this.mercenary.getItemBySlot(slot));
 							this.mercenary.setItemSlot(slot, ItemStack.EMPTY);
@@ -68,14 +68,14 @@ public class ContainerMercenary extends MerchantMenu {
 		for (int k = 0; k < 4; ++k) {
 			final EquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[k];
 			this.addSlot(new SlotItemHandler(
-					merc.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.NORTH), 3 - k, 184,
+					merc.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.NORTH).orElseThrow(IllegalStateException::new), 3 - k, 284,
 					8 + k * 18) {
 				/**
 				 * Returns the maximum stack size for a given slot (usually the same as
 				 * getInventoryStackLimit(), but 1 in the case of armor slots)
 				 */
 				@Override
-				public int getSlotStackLimit() {
+				public int getMaxStackSize() {
 					return 1;
 				}
 
@@ -85,7 +85,7 @@ public class ContainerMercenary extends MerchantMenu {
 				 */
 				@Override
 				@Nonnull
-				public ItemStack getStack() {
+				public ItemStack getItem() {
 					if (entityequipmentslot == EquipmentSlot.HEAD && this.getItemHandler()
 							.getStackInSlot(this.getSlotIndex()).getItem() instanceof ItemWearable)
 						return ItemStack.EMPTY;
@@ -99,7 +99,7 @@ public class ContainerMercenary extends MerchantMenu {
 				 */
 
 				@Override
-				public boolean isItemValid(@Nullable ItemStack stack) {
+				public boolean mayPlace(ItemStack stack) {
 					if (stack.isEmpty() || merc.isRobot()
 							|| (merc.getOwner() != player && !player.getAbilities().instabuild))
 						return false;
@@ -110,28 +110,28 @@ public class ContainerMercenary extends MerchantMenu {
 				@Override
 				@Nullable
 				@OnlyIn(Dist.CLIENT)
-				public String getSlotTexture() {
-					return ArmorItem.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
+				public com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> getNoItemIcon() {
+					return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, TF2Util.armorSlotIcon(entityequipmentslot));
 				}
 			});
 		}
 		for (int i = 0; i < 4; i++) {
 			final int index = i;
 			this.addSlot(
-					new SlotItemHandler(merc.hasHeldInventory() ? merc.loadoutHeld : merc.loadout, i, 206, 8 + i * 18) {
+					new SlotItemHandler(merc.hasHeldInventory() ? merc.loadoutHeld : merc.loadout, i, 306, 8 + i * 18) {
 
 						@Override
-						public int getSlotStackLimit() {
+						public int getMaxStackSize() {
 							return 64;
 						}
 
 						@Override
-						public boolean canTakeStack(Player player) {
-							return super.canTakeStack(player);
+						public boolean mayPickup(Player player) {
+							return super.mayPickup(player);
 						}
 
 						@Override
-						public boolean isItemValid(@Nullable ItemStack stack) {
+						public boolean mayPlace(ItemStack stack) {
 							if (stack.isEmpty() || (merc.getOwner() != player && !player.getAbilities().instabuild))
 								return false;
 							else {
@@ -151,15 +151,15 @@ public class ContainerMercenary extends MerchantMenu {
 					});
 		}
 
-		this.addSlot(new SlotItemHandler(merc.refill, 0, 206, 93) {
+		this.addSlot(new SlotItemHandler(merc.refill, 0, 306, 93) {
 			@Override
-			public boolean isItemValid(@Nullable ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				if (stack.isEmpty()
 						|| (!TF2Util.isAlliedTo(merc.getOwner(), player) && !player.getAbilities().instabuild))
 					return false;
 				if (TF2Util.isOre("ingotLead", stack))
 					return true;
-				if (stack.getItem() instanceof ItemFood) {
+				if (stack.isEdible()) {
 					return true;
 				}
 				if (stack.getItem() instanceof ItemAmmo || stack.getItem() == Items.ARROW) {
@@ -189,12 +189,12 @@ public class ContainerMercenary extends MerchantMenu {
 			this.addSlot(new SlotItemHandler(merc.loadout, i, -888888, -566788) {
 
 				@Override
-				public boolean canTakeStack(Player player) {
+				public boolean mayPickup(Player player) {
 					return false;
 				}
 
 				@Override
-				public boolean isItemValid(@Nullable ItemStack stack) {
+				public boolean mayPlace(ItemStack stack) {
 					return false;
 				}
 
@@ -208,41 +208,46 @@ public class ContainerMercenary extends MerchantMenu {
 				 */
 			});
 		}
+		this.addAmmoSlots();
 	}
 
 	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
+	public net.minecraft.world.inventory.MenuType<?> getType() {
+		return TF2weapons.MENU_TYPES[4];
+	}
 
-		for (ContainerListener listener : this.listeners) {
-			ItemStack weapon = this.mercenary.loadout.getStackInSlot(0);
-			int loaded = weapon.getItem() instanceof ItemWeapon ? ItemWeapon.getWeapon(weapon).getClip(weapon) : 0;
-			if (this.primaryAmmo != this.mercenary.getAmmo(0)) {
-				this.primaryAmmo = this.mercenary.getAmmo(0);
-				// System.out.println("ammo in:");
+	private int loadedAmmo(int slot) {
+		ItemStack weapon = this.mercenary.loadout.getStackInSlot(slot);
+		return weapon.getItem() instanceof ItemWeapon ? ItemWeapon.getWeapon(weapon).getClip(weapon) : 0;
+	}
 
-				listener.sendWindowProperty(this, 0, this.primaryAmmo);
+	private void addAmmoSlots() {
+		this.addDataSlot(new net.minecraft.world.inventory.DataSlot() {
+			@Override
+			public int get() {
+				return mercenary.level.isClientSide ? primaryAmmo : mercenary.getAmmo(0);
 			}
-			weapon = this.mercenary.loadout.getStackInSlot(0);
-			loaded = weapon.getItem() instanceof ItemWeapon ? ItemWeapon.getWeapon(weapon).getClip(weapon) : 0;
-			if (this.secondaryAmmo != this.mercenary.getAmmo(1) + loaded) {
-				this.secondaryAmmo = this.mercenary.getAmmo(1) + loaded;
-				listener.sendWindowProperty(this, 1, this.secondaryAmmo);
+
+			@Override
+			public void set(int value) {
+				primaryAmmo = value;
 			}
-		}
+		});
+		this.addDataSlot(new net.minecraft.world.inventory.DataSlot() {
+			@Override
+			public int get() {
+				return mercenary.level.isClientSide ? secondaryAmmo : mercenary.getAmmo(1) + loadedAmmo(0);
+			}
+
+			@Override
+			public void set(int value) {
+				secondaryAmmo = value;
+			}
+		});
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void updateProgressBar(int id, int data) {
-		if (id == 0)
-			this.primaryAmmo = data;
-		else if (id == 1)
-			this.secondaryAmmo = data;
-	}
-
-	@Override
-	public boolean enchantItem(Player player, int id) {
+	public boolean clickMenuButton(Player player, int id) {
 		if (id == 0 && !mercenary.isRobot()) {
 			if (mercenary.getOwner() == player) {
 				ItemHandlerHelper.giveItemToPlayer(player, TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
@@ -273,11 +278,11 @@ public class ContainerMercenary extends MerchantMenu {
 	}
 
 	@Override
-	public void onContainerClosed(Player player) {
-		super.onContainerClosed(player);
+	public void removed(Player player) {
+		super.removed(player);
 		if (!this.mercenary.level.isClientSide) {
 			for (EquipmentSlot slot : EquipmentSlot.values()) {
-				if (slot.getSlotType() == Type.ARMOR) {
+				if (slot.getType() == Type.ARMOR) {
 					this.mercenary.setDropChance(slot,
 							!this.mercenary.getItemBySlot(slot).isEmpty() ? 2.0f : 0.25f);
 				}
@@ -293,7 +298,7 @@ public class ContainerMercenary extends MerchantMenu {
 
 				int i = 7;
 				for (EquipmentSlot slot : EquipmentSlot.values()) {
-					if (slot.getSlotType() == Type.ARMOR) {
+					if (slot.getType() == Type.ARMOR) {
 						if (this.mercenary.getItemBySlot(slot)
 								.isEmpty()/*
 											 * && this.mercenary.loadoutHeld.getStackInSlot(3).getItem() instanceof
@@ -314,21 +319,21 @@ public class ContainerMercenary extends MerchantMenu {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(Player player, int index) {
+	public ItemStack quickMoveStack(Player player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
-			EquipmentSlot equip = Mob.getSlotForItemStack(itemstack);
+			EquipmentSlot equip = Mob.getEquipmentSlotForItem(itemstack);
 
 			if (index == 2) {
 				if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onSlotChange(itemstack1, itemstack);
+				slot.onQuickCraft(itemstack1, itemstack);
 			} else if (index != 0 && index != 1 && index < 39) {
 				if (equip.getSlotType() == EquipmentSlot.Type.ARMOR) {
 					if (!this.getSlot(43 - equip.getSlotIndex()).isItemValid(itemstack1) || !this

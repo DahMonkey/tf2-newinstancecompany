@@ -236,7 +236,7 @@ public class EntityDemoman extends EntityTF2Character {
 	 * Get this Entity's EnumCreatureAttribute
 	 */
 	@Override
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		if (this.random.nextFloat() < 0.075f + p_70628_2_ * 0.0375f)
 			this.spawnAtLocation(ItemFromData.getNewStack("grenadelauncher"), 0);
 		if (this.random.nextFloat() < 0.06f + p_70628_2_ * 0.03f)

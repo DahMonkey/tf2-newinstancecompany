@@ -63,7 +63,7 @@ public class InventoryAmmoBelt extends LegacyInventory implements ICapabilityPro
 		for (int i = 0; i < nbt.size(); ++i) {
 			CompoundTag nbttagcompound = nbt.getCompound(i);
 			int j = nbttagcompound.getByte("Slot");
-			this.setInventorySlotContents(j, ItemStack.of(nbttagcompound));
+			this.setItem(j, ItemStack.of(nbttagcompound));
 		}
 		// System.out.println("Reading ");
 	}

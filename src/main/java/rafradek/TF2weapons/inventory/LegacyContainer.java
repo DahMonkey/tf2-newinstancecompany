@@ -18,6 +18,10 @@ public abstract class LegacyContainer extends AbstractContainerMenu {
 		super(NEXT_TYPE.get(), NEXT_ID.get());
 	}
 
+	public static int currentWindowId() {
+		return NEXT_ID.get();
+	}
+
 	public static <T> T withContext(MenuType<?> type, int windowId, java.util.function.Supplier<T> factory) {
 		MenuType<?> oldType = NEXT_TYPE.get();
 		int oldId = NEXT_ID.get();

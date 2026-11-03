@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.entity.building.EntityBuilding;
 import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,8 +19,8 @@ public class ContainerEnergy extends LegacyContainer {
 		this.building = building;
 		this.addSlot(new SlotItemHandler(building.charge, 0, 7, 80) {
 			@Override
-			public boolean isItemValid(@Nullable ItemStack stack) {
-				return stack.getCapability(CapabilityEnergy.ENERGY).isPresent() && super.isItemValid(stack);
+			public boolean mayPlace(ItemStack stack) {
+				return stack.getCapability(ForgeCapabilities.ENERGY).isPresent() && super.mayPlace(stack);
 			}
 		});
 
@@ -42,10 +43,10 @@ public class ContainerEnergy extends LegacyContainer {
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 
-			if (index != 0 && itemstack1.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+			if (index != 0 && itemstack1.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
 				if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

@@ -156,8 +156,8 @@ public class EntityTarget extends ArmorStand {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.isBaby() ? this.getBbHeight() * 0.5F : 1.6825F;
+	protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions size) {
+		return this.isBaby() ? size.height * 0.5F : 1.6825F;
 	}
 
 	@Override

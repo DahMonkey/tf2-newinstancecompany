@@ -47,7 +47,7 @@ public class EntityAISentryAttack extends Goal {
 			this.host.getLookControl().setLookAt(lookX, lookY, lookZ, 30, 75);
 		else
 			this.host.getLookControl().setLookAt(lookX, lookY, lookZ,
-					(5f + this.host.getLevel() * 2.25f) * (this.host.isMini() ? 1.35f : 1f), 50);
+					(5f + this.host.getBuildingLevel() * 2.25f) * (this.host.isMini() ? 1.35f : 1f), 50);
 		if (TF2Util.lookingAt(this.host, 24, lookX, lookY, lookZ)) {
 			this.lockTarget = true;
 			this.host.shootBullet(owner);

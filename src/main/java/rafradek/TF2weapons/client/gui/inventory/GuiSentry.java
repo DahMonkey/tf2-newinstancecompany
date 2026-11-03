@@ -94,9 +94,9 @@ public class GuiSentry extends GuiContainer {
 			else drawHoveringText("Energy use is disabled", mouseX, mouseY);
 		}
 		if (mouseX >= leftPos + 5 && mouseX < leftPos + 23 && mouseY >= topPos + 112 && mouseY < topPos + 130) {
-			List<String> list = new ArrayList<>(Arrays.asList(I18n.get("gui.sentry.help", sentry.getLevel() == 1 ? "6.4" : "12.8")
+			List<String> list = new ArrayList<>(Arrays.asList(I18n.get("gui.sentry.help", sentry.getBuildingLevel() == 1 ? "6.4" : "12.8")
 							.split(Pattern.quote("\\n"))));
-			if (sentry.getLevel() > 2) list.add(I18n.get("gui.sentry.help.rockets"));
+			if (sentry.getBuildingLevel() > 2) list.add(I18n.get("gui.sentry.help.rockets"));
 			drawHoveringText(list, mouseX, mouseY);
 		}
 		renderHoveredToolTip(mouseX, mouseY);

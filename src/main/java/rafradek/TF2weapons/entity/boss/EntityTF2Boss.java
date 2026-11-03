@@ -130,12 +130,12 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public void applyEntityCollision(Entity entityIn) {
+	public void push(Entity entityIn) {
 
 	}
 
 	@Override
-	protected boolean canDespawn() {
+	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
 		return false;
 	}
 
@@ -145,7 +145,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int lootingModifier, boolean wasRecentlyHit) {
 		int count = this.playersAttacked;
 		if (count > 4) {
 			count = 2 + this.playersAttacked / 2;
@@ -270,7 +270,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public void setFire(int time) {
+	public void setSecondsOnFire(int time) {
 		super.setSecondsOnFire(1);
 	}
 
@@ -486,7 +486,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 	}
 
 	@Override
-	public boolean isPotionApplicable(MobEffectInstance potioneffectIn) {
+	public boolean canBeAffected(MobEffectInstance potioneffectIn) {
 		return potioneffectIn.getEffect() == TF2weapons.stun && potioneffectIn.getAmplifier() >= 3;
 	}
 

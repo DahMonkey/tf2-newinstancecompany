@@ -27,7 +27,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ContainerUpgrades extends LegacyContainer {
 	/** The crafting matrix inventory (3x3). */
 	// public InventoryCrafting craftMatrix = new InventoryCrafting(this, 3, 3);
-	public Container upgradedItem = new SimpleContainer("", false, 1);
+	public Container upgradedItem = new SimpleContainer(1);
 	private final Level world;
 	/** Position of the workbench */
 	public final BlockPos pos;
@@ -44,14 +44,15 @@ public class ContainerUpgrades extends LegacyContainer {
 			Level world, BlockPos posIn) {
 		this.station = station;
 		this.player = player;
-		this.level = world;
+		this.world = world;
 		this.pos = posIn;
+		this.addDataSlot(this.creditsSlot);
 		this.applicable = new ArrayList<>();
 		transactions = new int[0];
 		transactionsCost = new int[0];
 		this.addSlot(new Slot(upgradedItem, 0, 108, 8) {
 			@Override
-			public void onSlotChanged() {
+			public void setChanged() {
 				super.setChanged();
 				refreshData();
 				transactions = new int[applicable.size()];
@@ -60,7 +61,7 @@ public class ContainerUpgrades extends LegacyContainer {
 			}
 
 			@Override
-			public boolean isItemValid(@Nullable ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				if (stack.isEmpty())
 					return false;
 				else
@@ -93,31 +94,25 @@ public class ContainerUpgrades extends LegacyContainer {
 		}
 	}
 
-	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-		int exp = TF2Util.getExperiencePoints(this.player);
-		if (this.playerCredits != exp) {
-			this.playerCredits = exp;
-			for (ContainerListener listener : this.listeners) {
-				listener.sendWindowProperty(this, 0, exp);
-			}
+	private final net.minecraft.world.inventory.DataSlot creditsSlot = new net.minecraft.world.inventory.DataSlot() {
+		@Override
+		public int get() {
+			return ContainerUpgrades.this.player.level.isClientSide ? ContainerUpgrades.this.playerCredits
+					: TF2Util.getExperiencePoints(ContainerUpgrades.this.player);
 		}
-	}
 
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void updateProgressBar(int id, int data) {
-		if (id == 0)
-			this.playerCredits = data;
-	}
+		@Override
+		public void set(int value) {
+			ContainerUpgrades.this.playerCredits = value;
+		}
+	};
 
 	@Override
 	public void onContainerClosed(Player player) {
 		super.onContainerClosed(player);
 
-		if (!this.level.isClientSide) {
-			ItemStack itemstack = this.upgradedItem.removeStackFromSlot(0);
+		if (!this.world.isClientSide) {
+			ItemStack itemstack = this.upgradedItem.removeItemNoUpdate(0);
 
 			if (!itemstack.isEmpty())
 				player.drop(itemstack, false);
@@ -126,7 +121,7 @@ public class ContainerUpgrades extends LegacyContainer {
 
 	@Override
 	public boolean canInteractWith(Player player) {
-		return this.level.getBlockState(this.pos).getBlock() != TF2weapons.blockUpgradeStation ? false
+		return this.world.getBlockState(this.pos).getBlock() != TF2weapons.blockUpgradeStation ? false
 				: player.distanceToSqr(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D,
 						this.pos.getZ() + 0.5D) <= 64.0D;
 	}
@@ -141,14 +136,14 @@ public class ContainerUpgrades extends LegacyContainer {
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 
 			if (index == 0) {
 				if (!this.moveItemStackTo(itemstack1, 1, 28, true))
 					return ItemStack.EMPTY;
 
-				slot.onSlotChange(itemstack1, itemstack);
+				slot.onQuickCraft(itemstack1, itemstack);
 			} else if (index >= 1 && index < 28) {
 				if (!this.moveItemStackTo(itemstack1, 0, 1, false))
 					return ItemStack.EMPTY;

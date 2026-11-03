@@ -78,7 +78,7 @@ public class EntityPyro extends EntityTF2Character {
 	}
 
 	@Override
-	public void setFire(int time) {
+	public void setSecondsOnFire(int time) {
 		super.setSecondsOnFire(1);
 	}
 
@@ -138,7 +138,7 @@ public class EntityPyro extends EntityTF2Character {
 	}
 
 	/*
-	 * public void onLivingUpdate() { super.onLivingUpdate();
+	 * public void aiStep() { super.aiStep();
 	 * if(this.ammoLeft>0&&this.getAttackTarget()!=null&&this.
 	 * getDistanceSq(this.getAttackTarget())<=400&&(!TF2ActionHandler.
 	 * playerAction.get(this.world.isRemote).containsKey(this)||(
@@ -173,7 +173,7 @@ public class EntityPyro extends EntityTF2Character {
 	 * Get this Entity's EnumCreatureAttribute
 	 */
 	@Override
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		if (this.random.nextFloat() < 0.15f + p_70628_2_ * 0.075f)
 			this.spawnAtLocation(ItemFromData.getNewStack("shotgun"), 0);
 		if (this.random.nextFloat() < 0.05f + p_70628_2_ * 0.025f)

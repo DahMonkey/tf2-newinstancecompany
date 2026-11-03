@@ -104,8 +104,8 @@ public class GuiUpgradeStation extends GuiContainer {
 				setButtons();
 			}
 		}
-		refund.enabled = !menu.slots.get(0).getStack().isEmpty()
-				&& menu.slots.get(0).getStack().getTag().getInt("TotalSpent") > 0;
+		refund.enabled = !menu.slots.get(0).getItem().isEmpty()
+				&& menu.slots.get(0).getItem().getTag().getInt("TotalSpent") > 0;
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		renderHoveredToolTip(mouseX, mouseY);
 		for (GuiTooltip tooltip : tooltip) tooltip.drawButton(mc, mouseX, mouseY, partialTicks);
@@ -130,7 +130,7 @@ public class GuiUpgradeStation extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		int expPoints = ((ContainerUpgrades) menu).playerCredits;
 		int size = ((ContainerUpgrades) menu).applicable.size();
-		ItemStack stack = menu.slots.get(0).getStack();
+		ItemStack stack = menu.slots.get(0).getItem();
 		for (int i = 0; i < 6; i++) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);

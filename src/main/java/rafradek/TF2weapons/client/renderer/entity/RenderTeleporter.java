@@ -67,7 +67,7 @@ public class RenderTeleporter extends RenderLiving<EntityTeleporter> {
 
 		if (living.getSoundState() == 1)
 			living.spinRender = living.spin
-					+ ((float) Math.PI * (living.getLevel() == 1 ? 0.25f : (living.getLevel() == 2 ? 0.325f : 0.4f)))
+					+ ((float) Math.PI * (living.getBuildingLevel() == 1 ? 0.25f : (living.getBuildingLevel() == 2 ? 0.325f : 0.4f)))
 							* partial;
 		else
 			living.spinRender = 0;

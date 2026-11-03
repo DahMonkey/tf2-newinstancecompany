@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
@@ -47,11 +48,11 @@ public class EntityScout extends EntityTF2Character {
 	 * ItemFromData.getNewStack("scattergun")); }
 	 */
 	@Override
-	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int lootingModifier, boolean wasRecentlyHit) {
 		if (ItemFromData.getData(this.loadout.getStackInSlot(2)).getName().equals("sandmanball")) {
 			this.loadout.setStackInSlot(2, ItemFromData.getNewStack("sandman"));
 		}
-		super.dropEquipment(wasRecentlyHit, lootingModifier);
+		super.dropCustomDeathLoot(damageSource, lootingModifier, wasRecentlyHit);
 	}
 
 	@Override
@@ -178,7 +179,7 @@ public class EntityScout extends EntityTF2Character {
 	 * Plays step sound at given x, y, z for the entity
 	 */
 	@Override
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		if (this.random.nextFloat() < 0.60f + p_70628_2_ * 0.30f)
 			this.spawnAtLocation(ItemFromData.getNewStack("bonk"), 0);
 		if (this.random.nextFloat() < 0.12f + p_70628_2_ * 0.075f)

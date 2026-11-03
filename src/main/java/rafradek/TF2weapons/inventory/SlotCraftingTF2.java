@@ -29,50 +29,50 @@ public class SlotCraftingTF2 extends ResultSlot {
 	}
 
 	@Override
-	public ItemStack onTake(Player player, ItemStack stack) {
-		if (player.level.isClientSide) return stack;
+	public void onTake(Player player, ItemStack stack) {
+		if (player.level.isClientSide)
+			return;
 		if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 9) {
 			if (stack.hasTag()) {
 				TF2Class clazz = TF2Class.getClass(stack.getTag().getByte("Token"));
-				stack = ItemFromData.getRandomWeapon(player.getRandom(), Predicates.<WeaponData>and(
+				stack = ItemFromData.getRandomWeapon(player.getRandom(), rafradek.TF2weapons.util.PredicateUtil.<WeaponData>and(
 						ItemFromData.VISIBLE_WEAPON, test -> test.get(PropertyType.SLOT).containsKey(clazz.getName())));
 			} else
 				stack = ItemFromData.getRandomWeapon(player.getRandom(), ItemFromData.VISIBLE_WEAPON);
 			// player.awardStat(TF2Achievements.HOME_MADE);
-			player.getInventory().setItemStack(stack);
+			player.containerMenu.setCarried(stack);
 		} else if (stack.getItem() == TF2weapons.itemTF2 && stack.getDamageValue() == 10) {
 			stack = ItemFromData.getRandomWeaponOfType("cosmetic", player.getRandom(), false);
-			player.getInventory().setItemStack(stack);
+			player.containerMenu.setCarried(stack);
 		}
 		if (stack.hasTag() && stack.getTag().getBoolean("Australium")) {
 			// player.awardStat(TF2Achievements.SHINY);
 		}
-		FMLCommonHandler.instance().firePlayerCraftingEvent(player, stack, craftMatrix);
-		this.onCrafting(stack);
+		net.minecraftforge.event.ForgeEventFactory.firePlayerCraftingEvent(player, stack, craftMatrix);
+		this.checkTakeAchievements(stack);
 		ForgeHooks.setCraftingPlayer(player);
 		NonNullList<ItemStack> aitemstack = TF2CraftingManager.INSTANCE.getRemainingItems(this.craftMatrix,
 				player.level);
 		ForgeHooks.setCraftingPlayer(null);
 
 		for (int i = 0; i < aitemstack.size(); ++i) {
-			ItemStack itemstack = this.craftMatrix.getStackInSlot(i);
+			ItemStack itemstack = this.craftMatrix.getItem(i);
 			ItemStack itemstack1 = aitemstack.get(i);
 
 			if (!itemstack.isEmpty()) {
-				this.craftMatrix.decrStackSize(i, 1);
-				itemstack = this.craftMatrix.getStackInSlot(i);
+				this.craftMatrix.removeItem(i, 1);
+				itemstack = this.craftMatrix.getItem(i);
 			}
 
 			if (!itemstack1.isEmpty())
 				if (itemstack.isEmpty())
-					this.craftMatrix.setInventorySlotContents(i, itemstack1);
+					this.craftMatrix.setItem(i, itemstack1);
 				else if (ItemStack.isSame(itemstack, itemstack1)
 						&& ItemStack.tagMatches(itemstack, itemstack1)) {
 					itemstack1.grow(itemstack.getCount());
-					this.craftMatrix.setInventorySlotContents(i, itemstack1);
+					this.craftMatrix.setItem(i, itemstack1);
 				} else if (!this.player.getInventory().add(itemstack1))
 					this.player.drop(itemstack1, false);
 		}
-		return stack;
 	}
 }

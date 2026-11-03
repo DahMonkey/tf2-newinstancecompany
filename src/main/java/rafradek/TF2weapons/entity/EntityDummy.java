@@ -39,8 +39,6 @@ public class EntityDummy extends Mob {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Nullable
-	@Override
 	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
 		T value = this.getCapabilityLegacy(capability, facing);
 		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);

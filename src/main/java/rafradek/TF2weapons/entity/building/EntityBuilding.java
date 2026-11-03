@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.EntityType;
@@ -127,7 +128,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		this.charge = new ItemStackHandler(1);
 		// this.notifyDataManagerChange(LEVEL);
 		this.adjustSize();
-		enablePersistence();
+		setPersistenceRequired();
 	}
 
 	public void applyTasks() {
@@ -135,14 +136,13 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public boolean canBePushed() {
+	public boolean isPushable() {
 		return false;
 	}
 
 	@Override
-	public void applyEntityCollision(Entity entityIn) {
-		if (entityIn.getBoundingBox().intersects(this.getCollisionBoundingBox()))
-			super.applyEntityCollision(entityIn);
+	public void push(Entity entityIn) {
+		super.push(entityIn);
 	}
 
 	public int getMaxLevel() {
@@ -201,7 +201,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 						(byte) (this.getBuildingID() + 1));
 				((EntityEngineer) this.owner).switchSlot(3);
 			} else if (this.fromPDA) {
-				int slotpda = TF2Util.getFirstItemSlot(((Player) this.getOwner()).inventory,
+				int slotpda = TF2Util.getFirstItemSlot(((Player) this.getOwner()).getInventory(),
 						stack -> stack.getItem() instanceof ItemPDA);
 				if (slotpda != -1) {
 					CompoundTag tag = new CompoundTag();
@@ -231,7 +231,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public boolean isPotionApplicable(MobEffectInstance potioneffectIn) {
+	public boolean canBeAffected(MobEffectInstance potioneffectIn) {
 		return potioneffectIn.getEffect() == TF2weapons.stun;
 	}
 
@@ -259,7 +259,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public void setFire(int time) {
+	public void setSecondsOnFire(int time) {
 		super.setSecondsOnFire(0);
 	}
 
@@ -267,7 +267,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	protected void defineSynchedData() {
 		super.defineSynchedData();
 		this.entityData.define(VIS_TEAM, (byte) this.random.nextInt(2));
-		this.entityData.define(OWNER_UUID, Optional.<UUID>absent());
+		this.entityData.define(OWNER_UUID, Optional.empty());
 		this.entityData.define(LEVEL, (byte) 1);
 		this.entityData.define(SOUND_STATE, (byte) 25);
 		this.entityData.define(PROGRESS, 0);
@@ -287,7 +287,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	@Override
 	public UUID getOwnerUUID() {
-		return this.entityData.get(OWNER_UUID).orNull();
+		return this.entityData.get(OWNER_UUID).orElse(null);
 	}
 
 	@Override
@@ -302,10 +302,10 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	public void setOwner(LivingEntity owner) {
 		this.owner = owner;
 		if (owner instanceof Player) {
-			this.ownerName = owner.getName();
+			this.ownerName = owner.getName().getString();
 			this.entityData.set(OWNER_UUID, Optional.of(owner.getUUID()));
 		} else if (this.getOwnerUUID() != null)
-			this.entityData.set(OWNER_UUID, Optional.absent());
+			this.entityData.set(OWNER_UUID, Optional.empty());
 		else if (owner != null)
 			this.engMade = true;
 	}
@@ -338,7 +338,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	public void tick() {
 		this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, (0));
-		if (this.firstUpdate && !this.level.isClientSide && this.fromPDA
+		if (this.firstTick && !this.level.isClientSide && this.fromPDA
 				&& !PlayerPersistStorage.get(this.level, this.getOwnerUUID()).allowBuilding(this)) {
 			this.discard();
 			return;
@@ -353,12 +353,6 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 			this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
 		if (!this.level.isClientSide) {
 
-			if (this.tickCount % 80 == 0) {
-				int j1 = Mth.floor(this.getYRot() * 256.0F / 360.0F);
-				int l1 = Mth.floor(this.getXRot() * 256.0F / 360.0F);
-				((ServerLevel) this.level).getEntityTracker().sendToTracking(this,
-						new SPacketEntity.S16PacketEntityLook(this.getId(), (byte) j1, (byte) l1, true));
-			}
 
 			if (this.fromPDA && this.tickCount % 5 == 0 && this.isAlive()) {
 				PlayerPersistStorage storage = PlayerPersistStorage.get(this.level, this.getOwnerUUID());
@@ -366,7 +360,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 					if (storage.buildings[this.getBuildingID()] == null
 							|| !storage.buildings[this.getBuildingID()].getA().equals(this.getUUID())) {
 						this.setHealth(0);
-						this.onDeath(DETONATE);
+						this.die(DETONATE);
 						return;
 					}
 					CompoundTag tag = storage.buildings[this.getBuildingID()].getB();
@@ -374,7 +368,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 				} else {
 					if (!storage.disposableBuildings.contains(this.getUUID())) {
 						this.setHealth(0);
-						this.onDeath(DETONATE);
+						this.die(DETONATE);
 						return;
 					}
 				}
@@ -388,14 +382,14 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 								: ((ItemSapper) this.sapper.getItem()).getWeaponDamage(sapper, this.sapperOwner, this),
 								TF2Util.causeDirectDamage(this.sapper, this.sapperOwner));
 
-			if (this.charge.getStackInSlot(0).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-				this.energy.receiveEnergy(this.charge.getStackInSlot(0).getCapability(CapabilityEnergy.ENERGY).orElse(null)
+			if (this.charge.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+				this.energy.receiveEnergy(this.charge.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).orElse(null)
 						.extractEnergy(this.energy.receiveEnergy(this.energy.getMaxEnergyStored(), true), false),
 						false);
 			}
 			this.setInfoEnergy(this.energy.getEnergyStored());
 			if (this.getOwnerUUID() != null && shouldUseBlocks())
-				for (Direction facing : Direction.VALUES) {
+				for (Direction facing : Direction.values()) {
 					BlockPos pos = this.blockPosition().relative(facing);
 					BlockEntity ent = this.level.getBlockEntity(pos);
 
@@ -415,13 +409,15 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	public void detonate() {
 		this.setHealth(0);
-		this.onDeath(DETONATE);
+		this.die(DETONATE);
 	}
 
 	public void drawFromBlock(BlockPos pos, BlockEntity ent, Direction facing) {
-		if (ent.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
-			this.energy.receiveEnergy(ent.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite())
-					.extractEnergy(this.energy.receiveEnergy(this.energy.getMaxEnergyStored(), true), false), false);
+		if (ent.getCapability(ForgeCapabilities.ENERGY, facing.getOpposite()).isPresent()) {
+			net.minecraftforge.energy.IEnergyStorage other = ent.getCapability(ForgeCapabilities.ENERGY, facing.getOpposite())
+					.orElse(null);
+			this.energy.receiveEnergy(
+					other.extractEnergy(this.energy.receiveEnergy(this.energy.getMaxEnergyStored(), true), false), false);
 		}
 	}
 
@@ -446,8 +442,8 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public boolean isAIDisabled() {
-		return super.isAIDisabled() || this.isDisabled();
+	public boolean isNoAi() {
+		return super.isNoAi() || this.isDisabled();
 	}
 
 	public boolean isSapped() {
@@ -465,30 +461,15 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		if (!isSapped()) {
 			this.setSoundState(0);
 			this.playSound(TF2Sounds.MOB_SAPPER_DEATH, 1.5f, 1f);
-			this.dropItem(Items.IRON_INGOT, 1);
+			this.spawnAtLocation(new ItemStack(Items.IRON_INGOT, 1));
 		}
 	}
 
 	@Override
-	public AABB getCollisionBox(Entity entityIn) {
-		return ((entityIn != null && !TF2Util.isAlliedTo(entityIn, this)) || entityIn == this.getOwner())
-				&& this.isAlive() ? entityIn.getBoundingBox() : null;
+	public boolean canBeCollidedWith() {
+		return this.isAlive();
 	}
 
-	@Override
-	public AABB getCollisionBoundingBox() {
-		if (!this.isAlive())
-			return null;
-		/*
-		 * else if(this.height>this.getCollHeight()){ AxisAlignedBB
-		 * colBox=this.getEntityBoundingBox();
-		 * colBox=colBox.grow((this.getCollWidth()-this.width)/2,
-		 * (this.getCollHeight()-this.height)/2, (this.getCollWidth()-this.width)/2);
-		 * colBox=colBox.offset(0, this.getEntityBoundingBox().minY-colBox.minY, 0);
-		 * return colBox; }
-		 */
-		return this.getBoundingBox();
-	}
 
 	@Override
 	public Team getTeam() {
@@ -529,7 +510,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		this.entityData.set(ENERGY, energy);
 	}
 
-	public int getLevel() {
+	public int getBuildingLevel() {
 		return this.entityData.get(LEVEL);
 	}
 
@@ -538,7 +519,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	public void upgrade() {
-		this.setLevel(this.getLevel() + 1);
+		this.setLevel(this.getBuildingLevel() + 1);
 		this.setProgress(0);
 		this.getAttribute(Attributes.MAX_HEALTH)
 		.setBaseValue(this.getAttribute(Attributes.MAX_HEALTH).getBaseValue() * 1.2);
@@ -581,7 +562,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 		super.addAdditionalSaveData(par1NBTTagCompound);
 
 		par1NBTTagCompound.putByte("Team", (byte) this.getEntTeam());
-		par1NBTTagCompound.putByte("Level", (byte) this.getLevel());
+		par1NBTTagCompound.putByte("Level", (byte) this.getBuildingLevel());
 		par1NBTTagCompound.putShort("Progress", (byte) this.getProgress());
 		par1NBTTagCompound.putShort("Sapper", this.entityData.get(SAPPED));
 		par1NBTTagCompound.putShort("Construction", this.entityData.get(CONSTRUCTING).shortValue());
@@ -649,7 +630,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	public boolean canUseWrench() {
-		return this.canUseWrenchImportant() || this.getLevel() < this.getMaxLevel();
+		return this.canUseWrenchImportant() || this.getBuildingLevel() < this.getMaxLevel();
 	}
 
 	public boolean canUseWrenchImportant() {
@@ -657,18 +638,18 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public boolean canBeHitWithPotion() {
+	public boolean isAffectedByPotions() {
 		return false;
 	}
 
 	@Override
-	protected float updateDistance(float p_110146_1_, float p_110146_2_) {
+	protected float tickHeadTurn(float p_110146_1_, float p_110146_2_) {
 		this.yBodyRot = this.getYRot();
 		return p_110146_2_;
 	}
 
 	@Override
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+	protected void dropCustomDeathLoot(DamageSource damageSource, int p_70628_2_, boolean p_70628_1_) {
 		LivingEntity attacker = this.getKillCredit();
 		if (this.fromPDA || (TF2Util.isAlliedTo(attacker, this) && this.getOwnerUUID() == null))
 			return;
@@ -676,22 +657,22 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 			int count = this.getOwner() instanceof Player ? this.getIronDrop()
 					: Mth.ceil(this.getIronDrop() / 2);
 			for (int i = 0; i < count; i++)
-				this.dropItem(Items.IRON_INGOT, 1);
+				this.spawnAtLocation(new ItemStack(Items.IRON_INGOT, 1));
 		}
 	}
 
 	@Override
-	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
-		super.dropEquipment(wasRecentlyHit, lootingModifier);
+	protected void dropCustomDeathLoot(DamageSource damageSource, int lootingModifier, boolean wasRecentlyHit) {
+		super.dropCustomDeathLoot(damageSource, lootingModifier, wasRecentlyHit);
 		this.spawnAtLocation(this.charge.getStackInSlot(0), 0);
 	}
 
 	public int getIronDrop() {
-		return 1 + this.getLevel();
+		return 1 + this.getBuildingLevel();
 	}
 
 	@Override
-	protected boolean canDespawn() {
+	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
 		return this.getOwnerUUID() == null && (this.getOwner() == null || !this.getOwner().isAlive());
 	}
 
@@ -723,22 +704,20 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Nullable
-	@Override
 	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
 		T value = this.getCapabilityLegacy(capability, facing);
 		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
 	}
 
 	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
-		if (capability == CapabilityEnergy.ENERGY) {
+		if (capability == ForgeCapabilities.ENERGY) {
 			return (T) this.energy;
 		}
 		return super.getCapability(capability, facing).orElse(null);
 	}
 
 	public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
-		return capability == CapabilityEnergy.ENERGY || super.getCapability(capability, facing).isPresent();
+		return capability == ForgeCapabilities.ENERGY || super.getCapability(capability, facing).isPresent();
 	}
 
 	public static int getCost(int building, ItemStack wrench) {

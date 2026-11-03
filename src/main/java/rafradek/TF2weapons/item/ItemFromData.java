@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import rafradek.TF2weapons.client.compat.ModelLoader;
 import rafradek.TF2weapons.util.PredicateUtil;
 import rafradek.TF2weapons.client.compat.ScaledResolution;
@@ -606,7 +607,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 
 		if (!owner.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3).isEmpty()) {
 			IItemHandler inv = owner.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)
-					.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+					.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			// System.out.println("Ammo Search: "+inv.getSlots());
 			for (int i = 0; i < inv.getSlots(); i++) {
 				ItemStack stackCap = inv.getStackInSlot(i);
@@ -638,7 +639,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 		int ammoCount = 0;
 		if (!owner.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3).isEmpty()) {
 			IItemHandler inv = owner.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)
-					.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+					.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			for (int i = 0; i < inv.getSlots(); i++) {
 				ItemStack stackCap = inv.getStackInSlot(i);
 				if (!stackCap.isEmpty() && stackCap.getItem() instanceof ItemAmmo

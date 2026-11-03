@@ -1,181 +1,170 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
-import rafradek.TF2weapons.client.compat.GuiButton;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import rafradek.TF2weapons.util.TF2Util;
-import rafradek.TF2weapons.client.compat.GlStateManager;
-import rafradek.TF2weapons.client.compat.RenderHelper;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.MerchantScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character.Order;
 import rafradek.TF2weapons.inventory.ContainerMercenary;
-import java.io.IOException;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import rafradek.TF2weapons.util.TF2Util;
 
+/**
+ * Mercenary trading and loadout screen: the vanilla trading screen with the mercenary's armor, weapon
+ * and refill slots in a panel on its right.
+ */
 public class GuiMercenary extends MerchantScreen {
 
-	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/mercenary.png");
+	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID,
+			"textures/gui/container/mercenary.png");
+	private static final int PANEL_X = 276;
 
-	public EntityTF2Character mercenary;
-	public GuiButton hireBtn;
-	public GuiButton shareBtn;
-	public GuiButton orderBtn;
-	public GuiButton[] mainWeaponButton = new GuiButton[3];
-	public Inventory inv;
+	public final EntityTF2Character mercenary;
+	private final ContainerMercenary container;
+	private final Inventory inv;
+	private Button hireBtn;
+	private Button shareBtn;
+	private Button orderBtn;
+	private final Button[] mainWeaponButton = new Button[3];
 
-	public GuiMercenary(Inventory inv, EntityTF2Character mercenary, Level world) {
-		super(inv, mercenary, world);
-		this.mercenary = mercenary;
+	public GuiMercenary(ContainerMercenary menu, Inventory inv, Component title) {
+		super(menu, inv, title);
+		this.container = menu;
+		this.mercenary = menu.mercenary;
 		this.inv = inv;
-		menu = new ContainerMercenary(Minecraft.getInstance().player, mercenary, world);
-		imageWidth += 54;
-		// merInv=mercenary.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
-		// null);
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
-		buttonList.add(hireBtn = new GuiButton(60, leftPos + (imageWidth / 2) - 75, topPos - 25, 150, 20,
-				"Hire mercenary (1 Australium ingot)"));
-		buttonList.add(shareBtn = new GuiButton(62, leftPos + (imageWidth / 2) - 75,
-				topPos + imageHeight + 5, 150, 20, "Share loot (1 Australium ingot)"));
-		buttonList.add(orderBtn = new GuiButton(61, leftPos + 179, topPos + 123, 48, 20, "Order"));
-		for (int i = 0; i < 3; i++) buttonList.add(mainWeaponButton[i] = new GuiButton(63 + i, leftPos + 223,
-					topPos + 12 + i * 18, 4, 6, ""));
-		updateButtons();
+	protected void init() {
+		super.init();
+		this.hireBtn = this.addRenderableWidget(new Button(this.leftPos + PANEL_X / 2 - 75, this.topPos - 25, 150, 20,
+				Component.literal("Hire mercenary (1 Australium ingot)"), b -> this.press(0)));
+		this.shareBtn = this.addRenderableWidget(new Button(this.leftPos + PANEL_X / 2 - 75,
+				this.topPos + this.imageHeight + 5, 150, 20, Component.literal("Share loot (1 Australium ingot)"),
+				b -> this.press(1)));
+		this.orderBtn = this.addRenderableWidget(new Button(this.leftPos + PANEL_X + 3, this.topPos + 123, 48, 20,
+				Component.literal("Order"), b -> this.press(2)));
+		for (int i = 0; i < 3; i++) {
+			int slot = i;
+			this.mainWeaponButton[i] = this.addRenderableWidget(new Button(this.leftPos + PANEL_X + 47,
+					this.topPos + 12 + i * 18, 4, 6, Component.empty(), b -> this.press(3 + slot)));
+		}
+		this.updateButtons();
+	}
+
+	private void press(int button) {
+		if (button == 2) {
+			this.mercenary.setOrder(this.mercenary.getOrder() == Order.FOLLOW ? Order.HOLD : Order.FOLLOW);
+			this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,
+					10 + this.mercenary.getOrder().ordinal());
+		} else if (button == 0) {
+			this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 0);
+			if (this.mercenary.getOwnerUUID() == null)
+				this.mercenary.setOwner(this.minecraft.player);
+			else
+				this.mercenary.setOwner(null);
+		} else if (button == 1) {
+			this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 1);
+			this.mercenary.setSharing(true);
+		} else {
+			int slot = button - 3;
+			this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 50 + slot);
+			this.mercenary.setMainWeapon(this.mercenary.getMainWeapon() == slot ? -1 : slot);
+		}
+		this.updateButtons();
+	}
+
+	private boolean hasAustralium() {
+		return this.inv.contains(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
 	}
 
 	public void updateButtons() {
-		// hireBtn.visible = mercenary.getOwner() == null;
-		if (mercenary.isRobot()) {
-			hireBtn.visible = false;
-			shareBtn.visible = false;
+		if (this.hireBtn == null)
+			return;
+		if (this.mercenary.isRobot()) {
+			this.hireBtn.visible = false;
+			this.shareBtn.visible = false;
 		}
-		if (mercenary.getOwnerUUID() == null) {
-			hireBtn.enabled = inv.hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
-			hireBtn.displayString = "Hire this mercenary (1 Australium ingot)";
-			orderBtn.enabled = false;
-			shareBtn.visible = false;
-		} else if (mercenary.getOwnerUUID().equals(mc.player.getUUID())) {
-			hireBtn.enabled = true;
-			hireBtn.displayString = "Fire this mercenary";
-			orderBtn.enabled = true;
-			orderBtn.displayString = mercenary.getOrder().toString();
-			if (!mercenary.isRobot()) {
-				shareBtn.visible = true;
-				shareBtn.enabled = !mercenary.isSharing()
-						&& inv.hasItemStack(TF2Util.metaStack(TF2weapons.itemTF2, 1, 2));
+		if (this.mercenary.getOwnerUUID() == null) {
+			this.hireBtn.active = this.hasAustralium();
+			this.hireBtn.setMessage(Component.literal("Hire this mercenary (1 Australium ingot)"));
+			this.orderBtn.active = false;
+			this.shareBtn.visible = false;
+		} else if (this.mercenary.getOwnerUUID().equals(this.minecraft.player.getUUID())) {
+			this.hireBtn.active = true;
+			this.hireBtn.setMessage(Component.literal("Fire this mercenary"));
+			this.orderBtn.active = true;
+			this.orderBtn.setMessage(Component.literal(this.mercenary.getOrder().toString()));
+			if (!this.mercenary.isRobot()) {
+				this.shareBtn.visible = true;
+				this.shareBtn.active = !this.mercenary.isSharing() && this.hasAustralium();
 			}
 		} else {
-			hireBtn.enabled = false;
-			hireBtn.displayString = mercenary.ownerName != null ? "Hired mercenary"
-					: "Hired by: " + mercenary.ownerName;
-			orderBtn.enabled = false;
-			shareBtn.visible = false;
+			this.hireBtn.active = false;
+			this.hireBtn.setMessage(Component.literal(
+					this.mercenary.ownerName == null ? "Hired mercenary" : "Hired by: " + this.mercenary.ownerName));
+			this.orderBtn.active = false;
+			this.shareBtn.visible = false;
 		}
 		for (int i = 0; i < 3; i++) {
-			mainWeaponButton[i].enabled = mc.player.getUUID().equals(mercenary.getOwnerUUID()) || mc.player.isCreative();
-			if (mercenary.getMainWeapon() == i) mainWeaponButton[i].displayString = "|";
-			else mainWeaponButton[i].displayString = "";
+			this.mainWeaponButton[i].active = this.minecraft.player.getUUID().equals(this.mercenary.getOwnerUUID())
+					|| this.minecraft.player.isCreative();
+			this.mainWeaponButton[i].setMessage(Component.literal(this.mercenary.getMainWeapon() == i ? "|" : ""));
 		}
-
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) throws IOException {
-		super.actionPerformed(button);
-		if (button.id == 61) {
-			if (mercenary.getOrder() == Order.FOLLOW) mercenary.setOrder(Order.HOLD);
-			else mercenary.setOrder(Order.FOLLOW);
-			mc.gameMode.handleInventoryButtonClick(menu.containerId, 10 + mercenary.getOrder().ordinal());
-		} else if (button.id == 60) {
-			mc.gameMode.handleInventoryButtonClick(menu.containerId, 0);
-			if (mercenary.getOwnerUUID() == null) mercenary.setOwner(mc.player);
-			else mercenary.setOwner(null);
-		} else if (button.id == 62) {
-			mc.gameMode.handleInventoryButtonClick(menu.containerId, 1);
-			mercenary.setSharing(true);
-		} else if (button.id >= 63 && button.id < 66) {
-			mc.gameMode.handleInventoryButtonClick(menu.containerId, button.id - 13);
-			if (mercenary.getMainWeapon() == button.id - 63) mercenary.setMainWeapon(-1);
-			else mercenary.setMainWeapon(button.id - 63);
+	protected void containerTick() {
+		super.containerTick();
+		if (this.minecraft.player.tickCount % 10 == 0)
+			this.updateButtons();
+	}
+
+	@Override
+	public void render(PoseStack pose, int mouseX, int mouseY, float partialTicks) {
+		super.render(pose, mouseX, mouseY, partialTicks);
+		if (this.hireBtn.isHoveredOrFocused())
+			this.renderTooltip(pose, Component.literal("Lost australium can be recovered at Mann Co store"), mouseX,
+					mouseY);
+		else if (this.shareBtn.isHoveredOrFocused())
+			this.renderTooltip(pose, Component.literal("Allows the owner to collect loot from enemies"), mouseX,
+					mouseY);
+		else if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && !this.hoveredSlot.hasItem()) {
+			int id = this.hoveredSlot.index;
+			if (id >= 43 && id < 47 && !this.mercenary.loadout.getStackInSlot(id - 43).isEmpty())
+				this.renderTooltip(pose, this.mercenary.loadout.getStackInSlot(id - 43), mouseX, mouseY);
 		}
-		updateButtons();
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		super.drawScreen(mouseX, mouseY, partialTicks);
-		if (hireBtn.isMouseOver()) drawHoveringText("Lost australium can be recovered at Mann Co store", mouseX, mouseY);
-		else if (shareBtn.isMouseOver()) drawHoveringText("Allows the owner to collect loot from enemies", mouseX, mouseY);
-
-	}
-
-	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+	protected void renderBg(PoseStack pose, float partialTicks, int mouseX, int mouseY) {
+		super.renderBg(pose, partialTicks, mouseX, mouseY);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-		int i = leftPos + imageWidth - 54;
-		int j = topPos;
-		drawTexturedModalRect(i, j, 176, 0, 54, 146);
-		fontRenderer.drawString("Refill", i + 7, j + 80, 4210752);
-		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.menu).primaryAmmo), i + 10, j + 113, 4210752);
-		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.menu).secondaryAmmo), i + 33, j + 113, 4210752);
-		GlStateManager.enableLighting();
-		GlStateManager.enableRescaleNormal();
-		RenderHelper.enableGUIStandardItemLighting();
-		itemRender.zLevel = 0;
+		int i = this.leftPos + PANEL_X;
+		int j = this.topPos;
+		this.blit(pose, i, j, 176, 0, 54, 146);
+		this.font.draw(pose, "Refill", i + 7, j + 80, 4210752);
+		this.font.draw(pose, Integer.toString(this.container.primaryAmmo), i + 10, j + 113, 4210752);
+		this.font.draw(pose, Integer.toString(this.container.secondaryAmmo), i + 33, j + 113, 4210752);
 		for (int k = 0; k < 4; k++) {
-			ItemStack stack = mercenary.loadout.getStackInSlot(k);
-			if (!stack.isEmpty()) {
-				if (k < 4 && !menu.getSlot(k + 43).hasItem()) itemRender.renderItemIntoGUI(stack,
-						menu.getSlot(k + 43).xPos + leftPos, menu.getSlot(k + 43).yPos + topPos);
-				else if (k == 3 && !menu.getSlot(k + 36).hasItem())
-					itemRender.renderItemIntoGUI(stack, menu.getSlot(k - 3).yPos, menu.getSlot(k - 3).xPos);
-			}
-
+			ItemStack stack = this.mercenary.loadout.getStackInSlot(k);
+			if (!stack.isEmpty() && !this.menu.getSlot(k + 43).hasItem())
+				this.itemRenderer.renderAndDecorateItem(stack, this.menu.getSlot(k + 43).x + this.leftPos,
+						this.menu.getSlot(k + 43).y + this.topPos);
 		}
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableLighting();
-		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
-		GlStateManager.enableBlend();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
-		/*
-		 * MerchantRecipeList merchantrecipelist = this.m.getRecipes(this.mc.player);
-		 * 
-		 * if (merchantrecipelist != null && !merchantrecipelist.isEmpty()) { int k =
-		 * this.selectedMerchantRecipe;
-		 * 
-		 * if (k < 0 || k >= merchantrecipelist.size()) { return; }
-		 * 
-		 * MerchantRecipe merchantrecipe = (MerchantRecipe)merchantrecipelist.get(k);
-		 * 
-		 * if (merchantrecipe.isRecipeDisabled()) {
-		 * this.mc.getTextureManager().bindTexture(MERCHANT_GUI_TEXTURE);
-		 * GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		 * GlStateManager.disableLighting(); this.drawTexturedModalRect(this.guiLeft +
-		 * 83, this.guiTop + 21, 212, 0, 28, 21);
-		 * this.drawTexturedModalRect(this.guiLeft + 83, this.guiTop + 51, 212, 0, 28,
-		 * 21); } }
-		 */
 	}
 
 	@Override
-	protected void renderHoveredToolTip(int mouseX, int mouseY) {
-		super.renderHoveredToolTip(mouseX, mouseY);
-		if (mc.player.getInventory().getItem().isEmpty() && getSlotUnderMouse() != null && !getSlotUnderMouse().hasItem()) {
-			int id = getSlotUnderMouse().index;
-			if (id >= 43 && id < 47 && !mercenary.loadout.getStackInSlot(id - 43).isEmpty())
-				renderToolTip(mercenary.loadout.getStackInSlot(id - 43), mouseX, mouseY);
-		}
+	protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top, int button) {
+		boolean inPanel = mouseX >= left + PANEL_X && mouseX < left + PANEL_X + 54 && mouseY >= top
+				&& mouseY < top + 146;
+		return !inPanel && super.hasClickedOutside(mouseX, mouseY, left, top, button);
 	}
 }

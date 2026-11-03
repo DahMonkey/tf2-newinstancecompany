@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.damagesource.CombatRules;
@@ -1634,10 +1635,10 @@ public class TF2Util {
 	public static ItemStack pickAmmo(ItemStack stack, Player player, boolean addNormalInventory) {
 		if (stack.getItem() instanceof ItemFireAmmo && stack.getCount() == 1) {
 			stack = TF2Util.mergeStackByDamage(
-					player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null), stack);
+					player.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null), stack);
 			if (!player.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3).isEmpty())
 				stack = TF2Util.mergeStackByDamage(player.getCapability(TF2weapons.INVENTORY_CAP).orElse(null)
-						.getStackInSlot(3).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null), stack);
+						.getStackInSlot(3).getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null), stack);
 
 			if (stack.isEmpty()) {
 				return stack;
@@ -1648,7 +1649,7 @@ public class TF2Util {
 
 			if (!player.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3).isEmpty()) {
 				IItemHandler inv = player.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).getStackInSlot(3)
-						.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+						.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 				stack = ItemHandlerHelper.insertItemStacked(inv, stack, false);
 				/*
 				 * if(stack.isEmpty()){ event.getItem().setItem(orig); }
@@ -1661,7 +1662,7 @@ public class TF2Util {
 							(ServerPlayer) player);
 			}
 			if (!stack.isEmpty() && addNormalInventory) {
-				IItemHandler inv = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+				IItemHandler inv = player.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 				stack = ItemHandlerHelper.insertItemStacked(inv, stack, false);
 				ItemStack weapon = player.getMainHandItem();
 				if (!weapon.isEmpty() && weapon.getItem() instanceof ItemWeapon)
@@ -1760,7 +1761,7 @@ public class TF2Util {
 
 	public static IItemHandler getLoadoutItemHandler(LivingEntity living) {
 		if (living instanceof Player) {
-			IItemHandler handler = living.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+			IItemHandler handler = living.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			return handler;
 		} else if (living instanceof EntityTF2Character) {
 			IItemHandler handler = ((EntityTF2Character) living).loadout;
@@ -2006,5 +2007,19 @@ public class TF2Util {
 			if (modifier.getOperation().toValue() == operation)
 				list.add(modifier);
 		return list;
+	}
+
+	/** The empty-slot icon of an armor slot. */
+	public static ResourceLocation armorSlotIcon(net.minecraft.world.entity.EquipmentSlot slot) {
+		switch (slot) {
+		case HEAD:
+			return net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_HELMET;
+		case CHEST:
+			return net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE;
+		case LEGS:
+			return net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS;
+		default:
+			return net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS;
+		}
 	}
 }
