@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import com.google.common.collect.HashMultimap;
@@ -1045,10 +1047,10 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 			GuiComponent.drawModalRectWithCustomSizedTexture(28, resolution.getScaledHeight() - 18, 83, 68, 45, 40, 128, 128);
 
-			gui.drawCenteredString(Minecraft.getInstance().font,
+			LegacyGui.drawCenteredString(Minecraft.getInstance().font,
 					Integer.toString(stack.getTag().getInt(NBTLiterals.STREAK_KILLS)), 50,
 					resolution.getScaledHeight() - 44, 16777215);
-			gui.drawCenteredString(Minecraft.getInstance().font, "STREAK", 50, resolution.getScaledHeight() - 31, 16777215);
+			LegacyGui.drawCenteredString(Minecraft.getInstance().font, "STREAK", 50, resolution.getScaledHeight() - 31, 16777215);
 
 			GL11.glDepthMask(true);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);

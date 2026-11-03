@@ -92,9 +92,9 @@ public class ClientProxy extends CommonProxy {
 	public static HashMap<String, ResourceLocation> textureDisguise = new HashMap<>();
 
 	public static RenderCustomModel disguiseRender;
-	public static RenderLivingBase<?> disguiseRenderPlayer;
-	public static RenderLivingBase<?> disguiseRenderPlayerSmall;
-	public static RenderLivingBase<?> forceTextureRenderPlayer;
+	public static net.minecraft.client.renderer.entity.player.PlayerRenderer disguiseRenderPlayer;
+	public static net.minecraft.client.renderer.entity.player.PlayerRenderer disguiseRenderPlayerSmall;
+	public static net.minecraft.client.renderer.entity.player.PlayerRenderer forceTextureRenderPlayer;
 	public static KeyMapping reload = new KeyMapping("key.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "TF2");
 	public static KeyMapping backpackitem = new KeyMapping("key.activatebackpack", InputConstants.Type.KEYSYM,
 			GLFW.GLFW_KEY_0, "TF2");
@@ -137,6 +137,16 @@ public class ClientProxy extends CommonProxy {
 			ModelLoader.onRegisterAdditional(event);
 		});
 		modBus.addListener(ModelLoader::onBakingCompleted);
+		modBus.addListener((net.minecraftforge.client.event.EntityRenderersEvent.AddLayers event) -> {
+			disguiseRenderPlayer = new rafradek.TF2weapons.client.renderer.entity.RenderPlayerDisguised(
+					event.getContext(), false);
+			disguiseRenderPlayerSmall = new rafradek.TF2weapons.client.renderer.entity.RenderPlayerDisguised(
+					event.getContext(), true);
+			forceTextureRenderPlayer = new rafradek.TF2weapons.client.renderer.entity.RenderPlayerForceTexture(
+					event.getContext(), false);
+		});
+		modBus.addListener(TF2EventsClient::registerIcons);
+		modBus.addListener(TF2EventsClient::iconsStitched);
 		MinecraftForge.EVENT_BUS.register(new TF2EventsClient());
 		MinecraftForge.EVENT_BUS.register(PyrolandRenderer.INSTANCE);
 	}

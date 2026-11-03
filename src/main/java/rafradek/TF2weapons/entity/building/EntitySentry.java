@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.client.Minecraft;
@@ -608,9 +609,9 @@ public class EntitySentry extends EntityBuilding {
 			GuiComponent gui) {
 		ClientProxy.setColor(TF2Util.getTeamColor(this), 0.7f, 0, 0.25f, 0.8f);
 
-		gui.drawTexturedModalRect(20, 2, 0, 112, 124, 60);
+		LegacyGui.drawTexturedModalRect(20, 2, 0, 112, 124, 60);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		gui.drawTexturedModalRect(0, 0, 0, 48, 144, 64);
+		LegacyGui.drawTexturedModalRect(0, 0, 0, 48, 144, 64);
 		double imagePos = this.getLevel() == 1 ? 0.375D : this.getLevel() == 2 ? 0.1875D : 0D;
 
 		renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -653,7 +654,7 @@ public class EntitySentry extends EntityBuilding {
 		renderer.pos(50, 2, 0.0D).tex(0.9375D, imagePos).endVertex();
 		tessellator.draw();
 
-		gui.drawString(Minecraft.getInstance().font, Integer.toString(this.getKills()), 85, 9, 16777215);
+		LegacyGui.drawString(Minecraft.getInstance().font, Integer.toString(this.getKills()), 85, 9, 16777215);
 		float health = this.getHealth() / this.getMaxHealth();
 		if (health > 0.33f) {
 			GlStateManager.color(0.9F, 0.9F, 0.9F, 1F);

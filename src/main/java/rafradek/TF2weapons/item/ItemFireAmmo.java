@@ -69,7 +69,7 @@ public class ItemFireAmmo extends ItemAmmo {
 			int left = Math.max(0, amount - this.getAmount(stack));
 			if (stack.getCount() > 1) {
 				ItemStack remain = stack.split(1);
-				remain.hurtAndBreak(amount, living);
+				remain.hurtAndBreak(amount, living, broken -> {});
 				if (living instanceof Player)
 					remain = TF2Util.pickAmmo(remain, (Player) living, true);
 				if (!remain.isEmpty())

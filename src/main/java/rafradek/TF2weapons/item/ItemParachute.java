@@ -33,7 +33,7 @@ public class ItemParachute extends ItemBackpack implements ISpecialArmor {
 
 	@Override
 	public void damageArmor(LivingEntity entity, ItemStack stack, DamageSource source, int damage, int slot) {
-		stack.hurtAndBreak(damage * (stack.getTag().getBoolean("Deployed") ? 8 : 1), entity);
+		stack.hurtAndBreak(damage * (stack.getTag().getBoolean("Deployed") ? 8 : 1), entity, broken -> {});
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -264,18 +266,18 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 				int cost = EntityBuilding.getCost(i,
 						TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
 				if (hasTag && i < 4 && plcap.entityData.get(VIEWS[i]).getSize() != 0) {
-					gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
+					LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
 							resolution.getScaledHeight() / 2, 0, 64, 64, 64);
-					gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 132 + i * 72,
+					LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 132 + i * 72,
 							resolution.getScaledHeight() / 2 + 12, 208, 64 + i * 48, 48, 48);
 				} else if (WeaponsCapability.get(player).getMetal() >= cost) {
-					// gui.drawString(Minecraft.getInstance().font,
+					// LegacyGui.drawString(Minecraft.getInstance().font,
 					// Minecraft.getInstance().font.getStringWidth(Integer.toString(cost));
-					gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
+					LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 140 + i * 72,
 							resolution.getScaledHeight() / 2, i == 4 ? 0 : i * 64, 0, 64, 64);
 				}
 				/*
-				 * else gui.drawTexturedModalRect(resolution.getScaledWidth()/2-140 + i * 72,
+				 * else LegacyGui.drawTexturedModalRect(resolution.getScaledWidth()/2-140 + i * 72,
 				 * resolution.getScaledHeight()/2, 0, 0, 64, 64);
 				 */
 
@@ -283,14 +285,14 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 			for (int i = 0; i < buildCount; i++) {
 				int cost = EntityBuilding.getCost(i,
 						TF2Util.getFirstItem(player.getInventory(), stackL -> stackL.getItem() instanceof ItemWrench));
-				gui.drawString(Minecraft.getInstance().font, Integer.toString(cost),
+				LegacyGui.drawString(Minecraft.getInstance().font, Integer.toString(cost),
 						resolution.getScaledWidth() / 2 - 72
 								- Minecraft.getInstance().font.width(Integer.toString(cost)) + i * 72,
 						resolution.getScaledHeight() / 2 - 8, 0xFFFFFFFF);
-				gui.drawCenteredString(Minecraft.getInstance().font, "[" + (i + 1) + "]",
+				LegacyGui.drawCenteredString(Minecraft.getInstance().font, "[" + (i + 1) + "]",
 						resolution.getScaledWidth() / 2 - 108 + i * 72, resolution.getScaledHeight() / 2 + 72,
 						0xFFFFFFFF);
-				gui.drawString(Minecraft.getInstance().font, I18n.get(GUI_BUILD_NAMES[i]),
+				LegacyGui.drawString(Minecraft.getInstance().font, I18n.get(GUI_BUILD_NAMES[i]),
 						resolution.getScaledWidth() / 2 - 140 + i * 72, resolution.getScaledHeight() / 2 - 18,
 						0xFFFFFFFF);
 				if (WeaponsCapability.get(player).getMetal() < cost
@@ -302,33 +304,33 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 
 			}
 			/*
-			 * gui.drawTexturedModalRect(resolution.getScaledWidth()/2-68,
+			 * LegacyGui.drawTexturedModalRect(resolution.getScaledWidth()/2-68,
 			 * resolution.getScaledHeight()/2-32, 64, 0, 64, 64);
-			 * gui.drawTexturedModalRect(resolution.getScaledWidth()/2+4,
+			 * LegacyGui.drawTexturedModalRect(resolution.getScaledWidth()/2+4,
 			 * resolution.getScaledHeight()/2-32, 128, 0, 64, 64);
-			 * gui.drawTexturedModalRect(resolution.getScaledWidth()/2+72,
+			 * LegacyGui.drawTexturedModalRect(resolution.getScaledWidth()/2+72,
 			 * resolution.getScaledHeight()/2-32, 192, 0, 64, 64);
 			 * 
-			 * gui.drawCenteredString(Minecraft.getInstance().font, "[2]",
+			 * LegacyGui.drawCenteredString(Minecraft.getInstance().font, "[2]",
 			 * resolution.getScaledWidth()/2-36, resolution.getScaledHeight()/2+40,
-			 * 0xFFFFFFFF); gui.drawCenteredString(Minecraft.getInstance().font, "[3]",
+			 * 0xFFFFFFFF); LegacyGui.drawCenteredString(Minecraft.getInstance().font, "[3]",
 			 * resolution.getScaledWidth()/2+36, resolution.getScaledHeight()/2+40,
-			 * 0xFFFFFFFF); gui.drawCenteredString(Minecraft.getInstance().font, "[4]",
+			 * 0xFFFFFFFF); LegacyGui.drawCenteredString(Minecraft.getInstance().font, "[4]",
 			 * resolution.getScaledWidth()/2+108, resolution.getScaledHeight()/2+40,
-			 * 0xFFFFFFFF); gui.drawCenteredString(Minecraft.getInstance().font,
+			 * 0xFFFFFFFF); LegacyGui.drawCenteredString(Minecraft.getInstance().font,
 			 * I18n.format("gui.build.sentry"), resolution.getScaledWidth()/2-108,
 			 * resolution.getScaledHeight()/2-40, 0xFFFFFFFF);
-			 * gui.drawCenteredString(Minecraft.getInstance().font,
+			 * LegacyGui.drawCenteredString(Minecraft.getInstance().font,
 			 * I18n.format("gui.build.dispenser"), resolution.getScaledWidth()/2-36,
 			 * resolution.getScaledHeight()/2-40, 0xFFFFFFFF);
-			 * gui.drawCenteredString(Minecraft.getInstance().font,
+			 * LegacyGui.drawCenteredString(Minecraft.getInstance().font,
 			 * I18n.format("gui.build.entrance"), resolution.getScaledWidth()/2+36,
 			 * resolution.getScaledHeight()/2-40, 0xFFFFFFFF);
-			 * gui.drawCenteredString(Minecraft.getInstance().font, I18n.format("gui.build.exit"),
+			 * LegacyGui.drawCenteredString(Minecraft.getInstance().font, I18n.format("gui.build.exit"),
 			 * resolution.getScaledWidth()/2+108, resolution.getScaledHeight()/2-40,
 			 * 0xFFFFFFFF);
 			 */
-			gui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.build"), resolution.getScaledWidth() / 2,
+			LegacyGui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.build"), resolution.getScaledWidth() / 2,
 					resolution.getScaledHeight() / 2 - 40, 0xFFFFFFFF);
 
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

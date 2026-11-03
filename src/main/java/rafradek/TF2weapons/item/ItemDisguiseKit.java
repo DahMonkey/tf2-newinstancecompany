@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -106,9 +108,9 @@ public class ItemDisguiseKit extends LegacyItem implements IItemSlotNumber, IIte
 			int height = resolution.getScaledHeight();
 			for (int i = 0; i < 9; i++) {
 				TF2Class clazz = TF2Class.getClass(i);
-				gui.drawCenteredString(Minecraft.getInstance().font, clazz.getLocalizedName().getString(), width / 2 - 225 + i * 50,
+				LegacyGui.drawCenteredString(Minecraft.getInstance().font, clazz.getLocalizedName().getString(), width / 2 - 225 + i * 50,
 						height / 2 + 50, 0xFFFFFFFF);
-				gui.drawCenteredString(Minecraft.getInstance().font, String.valueOf(i + 1), width / 2 - 225 + i * 50,
+				LegacyGui.drawCenteredString(Minecraft.getInstance().font, String.valueOf(i + 1), width / 2 - 225 + i * 50,
 						height / 2 + 60, 0xFFFFFFFF);
 				EntityTF2Character entity = clazz.createEntity(player.level);
 				entity.setEntTeam(TF2Util.getTeamForDisplay(player) == 0 ? 1 : 0);

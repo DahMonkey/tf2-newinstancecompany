@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EntityType;
@@ -432,12 +433,12 @@ public class EntityTeleporter extends EntityBuilding {
 	public void renderGUI(BufferBuilder renderer, Tessellator tessellator, Player player, int width, int height,
 			GuiComponent gui) {
 		// GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		// gui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
+		// LegacyGui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
 		// event.getResolution().getScaledHeight()/2+35, 0, 0, 128, 40);
 		ClientProxy.setColor(TF2Util.getTeamColor(this), 0.7f, 0, 0.25f, 0.8f);
-		gui.drawTexturedModalRect(20, 2, 0, 112, 124, 44);
+		LegacyGui.drawTexturedModalRect(20, 2, 0, 112, 124, 44);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		gui.drawTexturedModalRect(0, 0, 0, 0, 144, 48);
+		LegacyGui.drawTexturedModalRect(0, 0, 0, 0, 144, 48);
 		/*
 		 * renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 - 72,
@@ -486,7 +487,7 @@ public class EntityTeleporter extends EntityBuilding {
 			tessellator.draw();
 		}
 		if (this.getTPprogress() <= 0) {
-			gui.drawString(Minecraft.getInstance().font, this.getTeleports() + " (ID: " + (this.getID() + 1) + ")", 85, 10,
+			LegacyGui.drawString(Minecraft.getInstance().font, this.getTeleports() + " (ID: " + (this.getID() + 1) + ")", 85, 10,
 					16777215);
 		}
 
@@ -547,7 +548,7 @@ public class EntityTeleporter extends EntityBuilding {
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		// GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		// gui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
+		// LegacyGui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
 		// event.getResolution().getScaledHeight()/2+35, 0, 0, 128, 40);
 
 		/*
@@ -584,7 +585,7 @@ public class EntityTeleporter extends EntityBuilding {
 		 * 0.0625).endVertex(); renderer.pos(event.getResolution().getScaledWidth() / 2
 		 * - 5, event.getResolution().getScaledHeight() / 2 + 54, 0.0D).tex(0.9375D,
 		 * 0.0625).endVertex(); tessellator.draw(); } if (teleporter.getTPprogress() <=
-		 * 0) { gui.drawString(Minecraft.getInstance().font, teleporter.getTeleports() +
+		 * 0) { LegacyGui.drawString(Minecraft.getInstance().font, teleporter.getTeleports() +
 		 * " (ID: " + (teleporter.getID() + 1) + ")",
 		 * event.getResolution().getScaledWidth() / 2 + 13,
 		 * event.getResolution().getScaledHeight() / 2 + 38, 16777215); } float health =

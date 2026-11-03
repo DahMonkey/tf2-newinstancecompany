@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -266,7 +268,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 			OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			// gui.drawTexturedModalRect(x,
+			// LegacyGui.drawTexturedModalRect(x,
 			// y, textureSprite, widthIn, heightIn);
 			RenderSystem.setShaderTexture(0, ClientProxy.scopeTexture);
 			double widthDrawStart = (double) (resolution.getScaledWidth() - resolution.getScaledHeight()) / 2;

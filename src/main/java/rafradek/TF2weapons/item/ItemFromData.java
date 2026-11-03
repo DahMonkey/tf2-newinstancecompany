@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
 import net.minecraft.util.RandomSource;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;

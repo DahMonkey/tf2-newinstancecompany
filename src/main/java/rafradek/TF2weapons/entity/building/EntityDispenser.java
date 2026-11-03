@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
@@ -465,12 +466,12 @@ public class EntityDispenser extends EntityBuilding {
 	public void renderGUI(BufferBuilder renderer, Tessellator tessellator, Player player, int width, int height,
 			GuiComponent gui) {
 		// GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		// gui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
+		// LegacyGui.drawTexturedModalRect(event.getResolution().getScaledWidth()/2-64,
 		// event.getResolution().getScaledHeight()/2+35, 0, 0, 128, 40);
 		ClientProxy.setColor(TF2Util.getTeamColor(this), 0.7f, 0, 0.25f, 0.8f);
-		gui.drawTexturedModalRect(20, 2, 0, 112, 124, 44);
+		LegacyGui.drawTexturedModalRect(20, 2, 0, 112, 124, 44);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-		gui.drawTexturedModalRect(0, 0, 0, 0, 144, 48);
+		LegacyGui.drawTexturedModalRect(0, 0, 0, 0, 144, 48);
 		/*
 		 * renderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		 * renderer.pos(event.getResolution().getScaledWidth() / 2 - 72,

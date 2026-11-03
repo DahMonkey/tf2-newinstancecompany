@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.Container;
 import rafradek.TF2weapons.common.TF2Achievements;
@@ -1941,5 +1942,27 @@ public class TF2Util {
 			@javax.annotation.Nullable java.util.UUID thrower) {
 		if (item != null && thrower != null)
 			item.setThrower(thrower);
+	}
+
+	/** Name of a player by UUID: online players first, then the server's profile cache. */
+	@javax.annotation.Nullable
+	public static String getPlayerName(Level world, @javax.annotation.Nullable java.util.UUID id) {
+		if (id == null)
+			return null;
+		Player player = world.getPlayerByUUID(id);
+		if (player != null)
+			return player.getGameProfile().getName();
+		if (world.getServer() != null && world.getServer().getProfileCache() != null)
+			return world.getServer().getProfileCache().get(id).map(com.mojang.authlib.GameProfile::getName)
+					.orElse(null);
+		return null;
+	}
+
+	/** An item entity at the entity's position that is not spawned yet, for adding to drop lists. */
+	public static net.minecraft.world.entity.item.ItemEntity makeDrop(LivingEntity living, ItemStack stack) {
+		net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(living.level,
+				living.getX(), living.getEyeY() - 0.3, living.getZ(), stack);
+		item.setPickUpDelay(40);
+		return item;
 	}
 }

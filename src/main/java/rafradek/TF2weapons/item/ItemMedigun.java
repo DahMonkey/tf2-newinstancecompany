@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
@@ -518,7 +520,7 @@ public class ItemMedigun extends ItemUsable {
 			text = "UBERCHARGE: " + Math.round(uber * 100f) + "%";
 		else
 			text = "UBERCHARGES: " + Mth.floor(uber / (1f / this.getUbers(stack, player)));
-		Minecraft.getInstance().gui.drawString(Minecraft.getInstance().Minecraft.getInstance().font, text,
+		Minecraft.getInstance().LegacyGui.drawString(Minecraft.getInstance().Minecraft.getInstance().font, text,
 				resolution.getScaledWidth() - 130, resolution.getScaledHeight() - 48, 16777215);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.33F);

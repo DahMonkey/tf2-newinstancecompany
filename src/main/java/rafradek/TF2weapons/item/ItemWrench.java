@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ScaledResolution;
+import rafradek.TF2weapons.client.compat.LegacyGui;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 
@@ -268,16 +270,16 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 			GuiComponent gui = Minecraft.getInstance().gui;
-			Minecraft.getInstance().gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 80,
+			Minecraft.getInstance().LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 - 80,
 					resolution.getScaledHeight() / 2 - 32, 64, 192, 64, 64);
-			Minecraft.getInstance().gui.drawTexturedModalRect(resolution.getScaledWidth() / 2 + 16,
+			Minecraft.getInstance().LegacyGui.drawTexturedModalRect(resolution.getScaledWidth() / 2 + 16,
 					resolution.getScaledHeight() / 2 - 32, 0, 192, 64, 64);
 
-			gui.drawCenteredString(Minecraft.getInstance().font, "(1-8)", resolution.getScaledWidth() / 2 - 48,
+			LegacyGui.drawCenteredString(Minecraft.getInstance().font, "(1-8)", resolution.getScaledWidth() / 2 - 48,
 					resolution.getScaledHeight() / 2 + 40, 0xFFFFFFFF);
-			gui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.selectlocation"),
+			LegacyGui.drawCenteredString(Minecraft.getInstance().font, I18n.get("gui.selectlocation"),
 					resolution.getScaledWidth() / 2, resolution.getScaledHeight() / 2 - 50, 0xFFFFFFFF);
-			gui.drawCenteredString(Minecraft.getInstance().font, "(9)", resolution.getScaledWidth() / 2 + 48,
+			LegacyGui.drawCenteredString(Minecraft.getInstance().font, "(9)", resolution.getScaledWidth() / 2 + 48,
 					resolution.getScaledHeight() / 2 + 40, 0xFFFFFFFF);
 
 			GL11.glEnable(GL11.GL_TEXTURE_2D);

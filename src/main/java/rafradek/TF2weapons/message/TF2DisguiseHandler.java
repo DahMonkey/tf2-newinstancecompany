@@ -19,7 +19,7 @@ public class TF2DisguiseHandler implements IMessageHandler<TF2Message.DisguiseMe
 							&& stack.getItem() instanceof ItemDisguiseKit)) {
 				ItemDisguiseKit.startDisguise(player, player.level, message.value);
 				if (!player.getAbilities().instabuild && !TF2ConfigVars.freeUseItems)
-					stack.hurtAndBreak(1, player);
+					stack.hurtAndBreak(1, player, broken -> {});
 			}
 		});
 		return null;
