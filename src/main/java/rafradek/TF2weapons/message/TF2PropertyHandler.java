@@ -20,9 +20,9 @@ public class TF2PropertyHandler implements IMessageHandler<TF2Message.PropertyMe
 
 		if (ctx.side.isClient())
 			Minecraft.getInstance().execute(() -> {
-				if (Minecraft.getInstance().level == null)
+				if (rafradek.TF2weapons.client.ClientProxy.getClientLevel() == null)
 					return;
-				Entity ent = Minecraft.getInstance().level.getEntity(message.entityID);
+				Entity ent = rafradek.TF2weapons.client.ClientProxy.getClientLevel().getEntity(message.entityID);
 				if (ent != null && ent.getCapability(TF2weapons.WEAPONS_CAP).isPresent()) {
 					if (ent instanceof LivingEntity
 							&& ((LivingEntity) ent).getItemInHand(InteractionHand.MAIN_HAND) != null

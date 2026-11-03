@@ -11,7 +11,7 @@ public class TF2EffectCooldownHandler implements IMessageHandler<TF2Message.Effe
 	public IMessage onMessage(final EffectCooldownMessage message, MessageContext ctx) {
 		if (ctx.side.isClient())
 			Minecraft.getInstance().execute(() -> {
-				WeaponsCapability cap = Minecraft.getInstance().player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
+				WeaponsCapability cap = rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
 				cap.effectsCool.put(message.name, message.time);
 				// cap.critTime = message.critTime;
 				// cap.collectedHeads = message.heads;

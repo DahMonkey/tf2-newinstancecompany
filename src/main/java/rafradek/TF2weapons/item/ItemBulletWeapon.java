@@ -266,7 +266,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 						endY, endZ, this.showSpecialTracer(stack) ? 0 : 13,
 						this.showSpecialTracer(stack) ? 2 : critical, 0, this.showSpecialTracer(stack) ? 50f : 1f);
 			}
-			if (living != Minecraft.getInstance().player)
+			if (living != rafradek.TF2weapons.client.ClientProxy.getLocalPlayer())
 				return;
 		}
 		// System.out.println(startX+" "+startY+" "+startZ+" "+endX+" "+endY+"

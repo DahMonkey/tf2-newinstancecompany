@@ -637,7 +637,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 
 				this.stateDo(owner, stack, hand, state);
 
-				if ((!owner.level.isClientSide || owner != Minecraft.getInstance().player)
+				if ((!owner.level.isClientSide || owner != rafradek.TF2weapons.client.ClientProxy.getLocalPlayer())
 						&& stack.getItem() instanceof ItemWeapon && ((ItemWeapon) stack.getItem()).hasClip(stack)
 						&& (!item.searchForAmmo(owner, stack).isEmpty() || owner.level.isClientSide)) {
 					ItemWeapon weapon = (ItemWeapon) item;
@@ -707,7 +707,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 							}
 						}
 				} else if (this.reloadingHand == hand
-						&& !(owner.level.isClientSide && owner == Minecraft.getInstance().player))
+						&& !(owner.level.isClientSide && owner == rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()))
 					this.reloadingHand = null;
 			}
 			if (this.stackActive.get(hand) != null) {

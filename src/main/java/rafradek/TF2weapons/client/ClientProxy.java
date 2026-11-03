@@ -564,6 +564,11 @@ public class ClientProxy extends CommonProxy {
 		Minecraft.getInstance().getSoundManager().play(new OnFireSound(playSound, target));
 	}
 
+	/** The client world, typed as Level so common code never names ClientLevel. */
+	public static net.minecraft.world.level.Level getClientLevel() {
+		return Minecraft.getInstance().level;
+	}
+
 	public static Player getLocalPlayer() {
 		return Minecraft.getInstance().player;
 	}

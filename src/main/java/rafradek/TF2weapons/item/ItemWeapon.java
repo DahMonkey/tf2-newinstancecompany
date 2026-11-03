@@ -174,7 +174,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 		if (living instanceof Player && hand == InteractionHand.MAIN_HAND)
 			((Player) living).resetAttackStrengthTicker();
-		else if (world.isClientSide && Minecraft.getInstance().player == living)
+		else if (world.isClientSide && rafradek.TF2weapons.client.ClientProxy.getLocalPlayer() == living)
 			Minecraft.getInstance().gameRenderer.itemInHandRenderer.itemUsed(InteractionHand.OFF_HAND);
 
 		int thisCritical = TF2Util.calculateCritPre(stack, living);
@@ -990,7 +990,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	@Override
 	public boolean isBarVisible(ItemStack stack) {
 		return (this.hasClip(stack)
-				&& this.getClip(stack) != this.getWeaponClipSize(stack, Minecraft.getInstance().player))
+				&& this.getClip(stack) != this.getWeaponClipSize(stack, rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()))
 				|| super.isBarVisible(stack);
 	}
 
@@ -1003,16 +1003,16 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	public double getDurabilityForDisplayLegacy(ItemStack stack) {
 		if (super.isBarVisible(stack))
 			return (1d - super.getBarWidth(stack) / 13d);
-		else if (stack == Minecraft.getInstance().player.getMainHandItem() && this.IsReloadingFullClip(stack)) {
-			WeaponsCapability cap = WeaponsCapability.get(Minecraft.getInstance().player);
+		else if (stack == rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getMainHandItem() && this.IsReloadingFullClip(stack)) {
+			WeaponsCapability cap = WeaponsCapability.get(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer());
 			if (cap.reloadingHand != null && cap.reloadCool > 0) {
 				double ready = (double) this.getClip(stack)
-						/ this.getWeaponClipSize(stack, Minecraft.getInstance().player);
-				return (cap.reloadCool / (double) this.getWeaponReloadTime(stack, Minecraft.getInstance().player))
+						/ this.getWeaponClipSize(stack, rafradek.TF2weapons.client.ClientProxy.getLocalPlayer());
+				return (cap.reloadCool / (double) this.getWeaponReloadTime(stack, rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()))
 						* (1d - ready);
 			}
 		}
-		return (1D - (double) this.getClip(stack) / this.getWeaponClipSize(stack, Minecraft.getInstance().player));
+		return (1D - (double) this.getClip(stack) / this.getWeaponClipSize(stack, rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()));
 	}
 
 	@Override

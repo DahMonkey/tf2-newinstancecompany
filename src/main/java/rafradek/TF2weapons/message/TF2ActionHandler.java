@@ -368,7 +368,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 				if (message.value <= 15)
 					handleMessage(message, player, true);
 				else if (message.value == 19) {
-					if (player != null && player != Minecraft.getInstance().player
+					if (player != null && player != rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()
 							&& !(player.getCapability(TF2weapons.WEAPONS_CAP).isPresent()
 									&& WeaponsCapability.get(player).isFeign())) {
 						player.discard();

@@ -100,7 +100,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
-		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
+		if (rafradek.TF2weapons.client.ClientProxy.getLocalPlayer() != null && rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().isCreative()) {
 			tooltip.add(Component.literal("Hold " + net.minecraft.client.Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString() + " to spawn natural building"));
 		}
 	}

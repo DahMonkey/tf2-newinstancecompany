@@ -30,7 +30,7 @@ public class ItemGas extends ItemProjectileWeapon {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public boolean isBarVisible(ItemStack stack) {
-		Integer value = Minecraft.getInstance().player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).effectsCool
+		Integer value = rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).effectsCool
 				.get(getData(stack).getName());
 		return value != null && value > 0;
 	}
@@ -42,7 +42,7 @@ public class ItemGas extends ItemProjectileWeapon {
 	}
 
 	public double getDurabilityForDisplayLegacy(ItemStack stack) {
-		Integer value = Minecraft.getInstance().player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).effectsCool
+		Integer value = rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.WEAPONS_CAP).orElse(null).effectsCool
 				.get(getData(stack).getName());
 		return (double) (value != null ? value : 0) / (double) 1600;
 	}

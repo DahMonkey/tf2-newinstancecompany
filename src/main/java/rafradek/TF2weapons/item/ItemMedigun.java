@@ -58,7 +58,7 @@ public class ItemMedigun extends ItemUsable {
 		// null).healTarget>0)) return false;
 		// System.out.println("View: "+var4+" "+startX+" "+startY+" "+startZ+"
 		// "+startX+endX+" "+endY+" "+endZ);
-		if (world.isClientSide && living == Minecraft.getInstance().player) {
+		if (world.isClientSide && living == rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()) {
 			HitResult trace = this.trace(stack, living, world);
 			if (world.getEntity(living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getHealTarget()) == null
 					&& trace != null && TF2HitResult.getEntity(trace) != null && TF2HitResult.getEntity(trace) instanceof LivingEntity

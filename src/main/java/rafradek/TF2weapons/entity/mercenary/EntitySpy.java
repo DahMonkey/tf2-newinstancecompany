@@ -168,7 +168,7 @@ public class EntitySpy extends EntityTF2Character {
 					return type != null ? type.getDescription() : net.minecraft.network.chat.Component.literal(username);
 				} else
 					return PlayerTeam.formatNameForTeam(
-							Minecraft.getInstance().level.getScoreboard().getPlayersTeam(username),
+							rafradek.TF2weapons.client.ClientProxy.getClientLevel().getScoreboard().getPlayersTeam(username),
 							net.minecraft.network.chat.Component.literal(username));
 			}
 		} else

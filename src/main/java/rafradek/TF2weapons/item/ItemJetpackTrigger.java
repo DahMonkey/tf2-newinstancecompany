@@ -22,9 +22,9 @@ public class ItemJetpackTrigger extends ItemUsable implements IBackpackItem {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public boolean isBarVisible(ItemStack stack) {
-		if (!(ItemBackpack.getBackpack(Minecraft.getInstance().player).getItem() instanceof ItemJetpack))
+		if (!(ItemBackpack.getBackpack(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()).getItem() instanceof ItemJetpack))
 			return false;
-		return ItemBackpack.getBackpack(Minecraft.getInstance().player).getTag().getShort("Charge") > 0;
+		return ItemBackpack.getBackpack(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()).getTag().getShort("Charge") > 0;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class ItemJetpackTrigger extends ItemUsable implements IBackpackItem {
 	}
 
 	public double getDurabilityForDisplayLegacy(ItemStack stack) {
-		ItemStack backpack = ItemBackpack.getBackpack(Minecraft.getInstance().player);
+		ItemStack backpack = ItemBackpack.getBackpack(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer());
 		if (!(backpack.getItem() instanceof ItemJetpack))
 			return 0;
 		return (double) (backpack.getTag().getShort("Charge"))

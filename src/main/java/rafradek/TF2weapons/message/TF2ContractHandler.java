@@ -13,21 +13,21 @@ public class TF2ContractHandler implements IMessageHandler<TF2Message.ContractMe
 	@Override
 	public IMessage onMessage(final ContractMessage message, MessageContext ctx) {
 
-		if (Minecraft.getInstance().player == null)
+		if (rafradek.TF2weapons.client.ClientProxy.getLocalPlayer() == null)
 			return null;
-		ArrayList<Contract> contracts = Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts;
+		ArrayList<Contract> contracts = rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts;
 		if (message.id == -1) {
 			contracts.add(message.contract);
-			Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newContracts = true;
+			rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.PLAYER_CAP).orElse(null).newContracts = true;
 		} else if (contracts.size() <= message.id) {
 			contracts.add(message.id, message.contract);
 			if (message.contract.rewards > 0) {
-				Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = true;
+				rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = true;
 			}
 		} else {
 			Contract prev = contracts.set(message.id, message.contract);
 			if (prev.rewards == 0 && message.contract.rewards > 0) {
-				Minecraft.getInstance().player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = true;
+				rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getCapability(TF2weapons.PLAYER_CAP).orElse(null).newRewards = true;
 			}
 		}
 		/*

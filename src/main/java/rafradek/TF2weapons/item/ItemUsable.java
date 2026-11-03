@@ -172,7 +172,7 @@ public abstract class ItemUsable extends ItemFromData {
 	}
 
 	public boolean canFireInternal(Level world, LivingEntity living, ItemStack stack, InteractionHand hand) {
-		if (world.isClientSide && living != Minecraft.getInstance().player)
+		if (world.isClientSide && living != rafradek.TF2weapons.client.ClientProxy.getLocalPlayer())
 			return WeaponsCapability.get(living).canFire(hand, true);
 		return canFire(world, living, stack);
 	}
@@ -264,7 +264,7 @@ public abstract class ItemUsable extends ItemFromData {
 	}
 
 	public boolean canAltFireInternal(Level worldObj, LivingEntity player, ItemStack item, InteractionHand hand) {
-		if (worldObj.isClientSide && player != Minecraft.getInstance().player)
+		if (worldObj.isClientSide && player != rafradek.TF2weapons.client.ClientProxy.getLocalPlayer())
 			return WeaponsCapability.get(player).canFire(hand, false);
 		return canAltFire(worldObj, player, item);
 	}

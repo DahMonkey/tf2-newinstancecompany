@@ -33,7 +33,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 			@Override
 			@OnlyIn(Dist.CLIENT)
 			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
-				if (entityIn == Minecraft.getInstance().player && Minecraft.getInstance().hitResult != null
+				if (entityIn == rafradek.TF2weapons.client.ClientProxy.getLocalPlayer() && Minecraft.getInstance().hitResult != null
 						&& TF2Util.hitEntity(Minecraft.getInstance().hitResult) != null
 						&& TF2Util.getDistanceSqBox(TF2Util.hitEntity(Minecraft.getInstance().hitResult), entityIn.getX(),
 								entityIn.getY(), entityIn.getZ(), entityIn.getBbWidth(),

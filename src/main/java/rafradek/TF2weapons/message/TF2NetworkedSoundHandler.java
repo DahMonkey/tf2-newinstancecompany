@@ -21,7 +21,7 @@ public class TF2NetworkedSoundHandler implements IMessageHandler<TF2Message.Netw
 				sound = new NetworkedSound(message.pos, message.event, message.category, message.volume, message.pitch,
 						message.id, message.repeat);
 			else {
-				Entity entity = Minecraft.getInstance().level.getEntity(message.target);
+				Entity entity = rafradek.TF2weapons.client.ClientProxy.getClientLevel().getEntity(message.target);
 				sound = new NetworkedSound(entity, message.event, message.category, message.volume, message.pitch,
 						message.id, message.repeat);
 			}

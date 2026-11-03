@@ -69,9 +69,9 @@ public class ItemHorn extends LegacyItem implements IBackpackItem {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public boolean isBarVisible(ItemStack stack) {
-		if (!(ItemBackpack.getBackpack(Minecraft.getInstance().player).getItem() instanceof ItemSoldierBackpack))
+		if (!(ItemBackpack.getBackpack(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()).getItem() instanceof ItemSoldierBackpack))
 			return false;
-		return WeaponsCapability.get(Minecraft.getInstance().player).getRage(RageType.BANNER) != 1f;
+		return WeaponsCapability.get(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()).getRage(RageType.BANNER) != 1f;
 	}
 
 	@Override
@@ -81,8 +81,8 @@ public class ItemHorn extends LegacyItem implements IBackpackItem {
 	}
 
 	public double getDurabilityForDisplayLegacy(ItemStack stack) {
-		if (!(ItemBackpack.getBackpack(Minecraft.getInstance().player).getItem() instanceof ItemSoldierBackpack))
+		if (!(ItemBackpack.getBackpack(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()).getItem() instanceof ItemSoldierBackpack))
 			return 0;
-		return 1 - WeaponsCapability.get(Minecraft.getInstance().player).getRage(RageType.BANNER);
+		return 1 - WeaponsCapability.get(rafradek.TF2weapons.client.ClientProxy.getLocalPlayer()).getRage(RageType.BANNER);
 	}
 }

@@ -59,7 +59,7 @@ public class ItemChargingTarge extends ItemFromData {
 	public boolean isBarVisible(ItemStack stack) {
 
 		return super.isBarVisible(stack)
-				|| Minecraft.getInstance().player.getEffect(TF2weapons.charging) != null;
+				|| rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getEffect(TF2weapons.charging) != null;
 		/*
 		 * Integer value =
 		 * Minecraft.getMinecraft().player.getCapability(TF2weapons.WEAPONS_CAP,
@@ -74,8 +74,8 @@ public class ItemChargingTarge extends ItemFromData {
 	}
 
 	public double getDurabilityForDisplayLegacy(ItemStack stack) {
-		if (Minecraft.getInstance().player.getEffect(TF2weapons.charging) != null)
-			return 1 - ((double) Minecraft.getInstance().player.getEffect(TF2weapons.charging)
+		if (rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getEffect(TF2weapons.charging) != null)
+			return 1 - ((double) rafradek.TF2weapons.client.ClientProxy.getLocalPlayer().getEffect(TF2weapons.charging)
 					.getDuration() / (double) 40);
 		return (1d - super.getBarWidth(stack) / 13d);
 		/*

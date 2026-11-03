@@ -11,7 +11,7 @@ public class TF2WearableChangeHandler implements IMessageHandler<TF2Message.Wear
 	@Override
 	public IMessage onMessage(final WearableChangeMessage message, MessageContext ctx) {
 		Minecraft.getInstance().execute(() -> {
-			Entity entity = Minecraft.getInstance().level.getEntity(message.entityID);
+			Entity entity = rafradek.TF2weapons.client.ClientProxy.getClientLevel().getEntity(message.entityID);
 			if (entity != null) {
 				if (message.slot < 20)
 					entity.getCapability(TF2weapons.INVENTORY_CAP).orElse(null).setInventorySlotContents(message.slot,
