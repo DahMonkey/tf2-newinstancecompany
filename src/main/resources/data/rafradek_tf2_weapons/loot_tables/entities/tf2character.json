@@ -18,6 +18,9 @@
             {
               "function": "rafradek_tf2_weapons:set_meta",
               "meta": 3
+            },
+            {
+              "function": "rafradek_tf2_weapons:random_weapon_item"
             }
           ]
         }

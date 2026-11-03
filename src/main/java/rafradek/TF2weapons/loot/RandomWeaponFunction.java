@@ -1,47 +1,37 @@
 package rafradek.TF2weapons.loot;
 
-import rafradek.TF2weapons.util.TF2Util;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.item.ItemFromData;
 import rafradek.TF2weapons.item.ItemWeapon;
-import rafradek.TF2weapons.item.ItemWearable;
 import rafradek.TF2weapons.util.PropertyType;
-import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-public class RandomWeaponFunction extends LootItemFunction {
+/** Random (possibly Valve or upgraded) weapon ("set_weapon_upgraded"). */
+public class RandomWeaponFunction extends LootItemConditionalFunction {
 
-	// public int[] possibleValues;
-	// public int[] withClass;
-	public RandomValueRange upgradeRange;
-	public float valveWepChance;
+	public final NumberProvider upgradeRange;
+	public final float valveWepChance;
 
-	public RandomWeaponFunction(LootItemCondition[] conditionsIn, RandomValueRange range, float valve) {
+	public RandomWeaponFunction(LootItemCondition[] conditionsIn, NumberProvider range, float valve) {
 		super(conditionsIn);
 		this.upgradeRange = range;
 		this.valveWepChance = valve;
 	}
 
 	@Override
-	public ItemStack apply(ItemStack stack, RandomSource random, LootContext context) {
-		//loottweaker support
-		if (random == null && context == null) {
-			CompoundTag nbt = stack.getTag();
-			stack = TF2Util.metaStack(TF2weapons.itemTF2, 1, stack.getItem() instanceof ItemWearable ? 10 : 9);
-		 	stack.setTag(nbt);
-			return stack;
-		}
+	protected ItemStack run(ItemStack stack, LootContext context) {
+		RandomSource random = context.getRandom();
 		if (this.valveWepChance * 0.35f < random.nextFloat()) {
 			stack = ItemFromData.getRandomWeapon(random,
 					input -> (!input.getBoolean(PropertyType.HIDDEN) && input.getInt(PropertyType.ROLL_HIDDEN) == 0
@@ -62,33 +52,31 @@ public class RandomWeaponFunction extends LootItemFunction {
 			TF2Attribute.setAttribute(stack, TF2Attribute.attributes[49], 0.85f);
 			TF2Attribute.setAttribute(stack, TF2Attribute.attributes[46], 1.15f);
 		}
-		if (upgradeRange.getMax() > 0)
-			TF2Attribute.upgradeItemStack(stack, this.upgradeRange.generateInt(random), random);
+		int upgrades = upgradeRange.getInt(context);
+		if (upgrades > 0 && !stack.isEmpty())
+			TF2Attribute.upgradeItemStack(stack, upgrades, random);
 		return stack;
 	}
 
-	public static class Serializer extends LootItemFunction.Serializer<RandomWeaponFunction> {
-		public Serializer() {
-			super(new ResourceLocation("set_weapon_upgraded"), RandomWeaponFunction.class);
+	@Override
+	public LootItemFunctionType getType() {
+		return TF2weapons.SET_WEAPON_UPGRADED;
+	}
+
+	public static class Serializer extends LootItemConditionalFunction.Serializer<RandomWeaponFunction> {
+		@Override
+		public void serialize(JsonObject object, RandomWeaponFunction function, JsonSerializationContext context) {
+			super.serialize(object, function, context);
+			object.add("upgrade_range", context.serialize(function.upgradeRange));
+			object.addProperty("valve_chance", function.valveWepChance);
 		}
 
 		@Override
-		public void serialize(JsonObject object, RandomWeaponFunction functionClazz,
-				JsonSerializationContext serializationContext) {
-			object.add("upgrade_range", serializationContext.serialize(functionClazz.upgradeRange));
-			object.add("valve_chance", serializationContext.serialize(functionClazz.valveWepChance));
-			// object.add("possibleValues",
-			// serializationContext.serialize(functionClazz.possibleValues));
-			// object.add("data",
-			// serializationContext.serialize(functionClazz.metaRange));
-		}
-
-		@Override
-		public RandomWeaponFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext,
+		public RandomWeaponFunction deserialize(JsonObject object, JsonDeserializationContext context,
 				LootItemCondition[] conditionsIn) {
 			return new RandomWeaponFunction(conditionsIn,
-					GsonHelper.deserializeClass(object, "upgrade_range", deserializationContext, RandomValueRange.class),
-					object.get("valve_chance").getAsFloat());
+					GsonHelper.getAsObject(object, "upgrade_range", context, NumberProvider.class),
+					GsonHelper.getAsFloat(object, "valve_chance", 0));
 		}
 	}
 }

@@ -2,48 +2,39 @@ package rafradek.TF2weapons.loot;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
-import java.util.Random;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import rafradek.TF2weapons.TF2weapons;
+import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
 
-public class EntityBuildingFunction extends LootItemFunction {
+/** Picks a building box matching the dropping mercenary's team ("random_meta"). */
+public class EntityBuildingFunction extends LootItemConditionalFunction {
 
-	// public int[] possibleValues;
-	// public int[] withClass;
 	public EntityBuildingFunction(LootItemCondition[] conditionsIn) {
 		super(conditionsIn);
 	}
 
 	@Override
-	public ItemStack apply(ItemStack stack, RandomSource random, LootContext context) {
-		Entity entity = context.getEntity(EntityTarget.THIS);
-		if (entity != null && entity instanceof EntityTF2Character)
-			stack.setDamageValue(18 + random.nextInt(3) * 2 + ((EntityTF2Character) entity).getEntTeam());
+	protected ItemStack run(ItemStack stack, LootContext context) {
+		Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
+		if (entity instanceof EntityTF2Character)
+			stack.setDamageValue(18 + context.getRandom().nextInt(3) * 2 + ((EntityTF2Character) entity).getEntTeam());
 		return stack;
 	}
 
-	public static class Serializer extends LootItemFunction.Serializer<EntityBuildingFunction> {
-		public Serializer() {
-			super(new ResourceLocation("random_meta"), EntityBuildingFunction.class);
-		}
+	@Override
+	public LootItemFunctionType getType() {
+		return TF2weapons.RANDOM_META;
+	}
 
+	public static class Serializer extends LootItemConditionalFunction.Serializer<EntityBuildingFunction> {
 		@Override
-		public void serialize(JsonObject object, EntityBuildingFunction functionClazz,
-				JsonSerializationContext serializationContext) {
-			// object.add("possibleValues",
-			// serializationContext.serialize(functionClazz.possibleValues));
-			// object.add("data",
-			// serializationContext.serialize(functionClazz.metaRange));
-		}
-
-		@Override
-		public EntityBuildingFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext,
+		public EntityBuildingFunction deserialize(JsonObject object, JsonDeserializationContext context,
 				LootItemCondition[] conditionsIn) {
 			return new EntityBuildingFunction(conditionsIn);
 		}
