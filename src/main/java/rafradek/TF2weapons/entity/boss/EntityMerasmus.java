@@ -68,7 +68,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 	public BlockPos hiddenBlock;
 	private int hideCount;
 	public ArrayList<BlockPos> usedPos = new ArrayList<>();
-	private static final EntityDataAccessor<Boolean> SPELL_BOMB = SynchedEntityData.createKey(EntityMerasmus.class,
+	private static final EntityDataAccessor<Boolean> SPELL_BOMB = SynchedEntityData.defineId(EntityMerasmus.class,
 			EntityDataSerializers.BOOLEAN);
 
 	public EntityMerasmus(Level world) {
@@ -172,7 +172,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 						pos.y + this.getZ(), 0, 0, 0, new int[0]);
 			}
 
-		if (!world.isClientSide) {
+		if (!this.level.isClientSide) {
 			if (this.begin == 0) {
 				this.setNoAi(false);
 				this.getAttribute(Attributes.ARMOR).removeModifier(BOSS_ARMOR_SPAWN);
@@ -335,8 +335,8 @@ public class EntityMerasmus extends EntityTF2Boss {
 	}
 
 	@Override
-	public void discard() {
-		super.discard();
+	public void remove(Entity.RemovalReason removalReason) {
+		super.remove(removalReason);
 		for (BlockPos pos : this.usedPos) {
 			if (this.level.getBlockState(pos).getBlock() == TF2weapons.blockProp)
 				this.level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -408,7 +408,7 @@ public class EntityMerasmus extends EntityTF2Boss {
 						this.random.nextInt((int) (40 + blockCount * 0.3f)) - 20 - (int) (blockCount * 0.15f));
 				pos = this.level.getTopSolidOrLiquidBlock(pos);
 				// pos=pos.add(0, 1, 0);
-				if (this.level.getBlockState(pos).getBlock().isReplaceable(this.level, pos)) {
+				if (this.level.getBlockState(pos).getMaterial().isReplaceable()) {
 					this.level.setBlockAndUpdate(pos, TF2weapons.blockProp
 							.getStateFromMeta(this.random.nextInt(BlockProp.EnumBlockType.values().length)));
 				}

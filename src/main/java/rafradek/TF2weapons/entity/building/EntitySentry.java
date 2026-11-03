@@ -72,19 +72,19 @@ public class EntitySentry extends EntityBuilding {
 	public int mercsKilled;
 	public float attackRateMult = 1;
 	// public SentryLookHelper lookHelper;
-	private static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> ROCKET = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Integer> ROCKET = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> KILLS = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Integer> KILLS = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Boolean> CONTROLLED = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Boolean> CONTROLLED = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Byte> TARGET = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Byte> TARGET = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Boolean> MINI = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Boolean> MINI = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.createKey(EntitySentry.class,
+	private static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.defineId(EntitySentry.class,
 			EntityDataSerializers.INT);
 
 	private static final AttributeModifier MINI_HEALTH_MODIFIER = new AttributeModifier(
@@ -193,11 +193,11 @@ public class EntitySentry extends EntityBuilding {
 		if (this.isControlled() && !this.level.isClientSide) {
 			Vec3 lookVec = Vec3.fromPitchYaw(this.getOwner().getXRot(), this.getOwner().yHeadRot)
 					.scale(200);
-			HitResult trace = TF2Util.pierce(world, this.getOwner(), this.getOwner().getX(),
+			HitResult trace = TF2Util.pierce(this.level, this.getOwner(), this.getOwner().getX(),
 					this.getOwner().getY() + this.getOwner().getEyeHeight(), this.getOwner().getZ(),
 					this.getOwner().getX() + lookVec.x, this.getOwner().getY() + this.getOwner().getEyeHeight() + lookVec.y,
 					this.getOwner().getZ() + lookVec.z, false, 0.01f, false).get(0);
-			this.getLookControl().setLookPosition(trace.getLocation().x, trace.getLocation().y, trace.getLocation().z, 30, 75);
+			this.getLookControl().setLookAt(trace.getLocation().x, trace.getLocation().y, trace.getLocation().z, 30, 75);
 		}
 		if (this.getTarget() != null
 				&& (!this.getTarget().isAlive() || !this.hasLineOfSight(this.getTarget())))
@@ -338,9 +338,9 @@ public class EntitySentry extends EntityBuilding {
 							&& TF2ConfigVars.scaleAttributes) {
 						if (this.isControlled())
 							damage *= 0.92f;
-						if (world.getDifficulty() == Difficulty.NORMAL) {
+						if (this.level.getDifficulty() == Difficulty.NORMAL) {
 							damage *= 0.9f;
-						} else if (world.getDifficulty() == Difficulty.EASY) {
+						} else if (this.level.getDifficulty() == Difficulty.EASY) {
 							damage *= 0.8f;
 						}
 					}
@@ -586,7 +586,7 @@ public class EntitySentry extends EntityBuilding {
 				if (TF2ConfigVars.disableBuildingGui)
 					this.grab();
 				else
-					FMLNetworkHandler.openGui(player, TF2weapons.instance, 5, world, this.getId(), 0, 0);
+					TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 5, this.level, this.getId(), 0, 0);
 			}
 			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}

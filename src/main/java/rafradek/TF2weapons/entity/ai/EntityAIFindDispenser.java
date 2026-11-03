@@ -32,7 +32,7 @@ public class EntityAIFindDispenser extends Goal {
 			Entity disp = TF2Util.findAmmoSource(host, range, true);
 			if (disp != null) {
 				this.target = disp;
-				this.path = host.getNavigation().createPath(disp);
+				this.path = host.getNavigation().createPath(disp, 0);
 				return this.path != null;
 			}
 		}

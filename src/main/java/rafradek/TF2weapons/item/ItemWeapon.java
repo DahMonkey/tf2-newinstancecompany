@@ -94,7 +94,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 	@Override
 	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(par1ItemStack, par2World, par3Entity, par4, par5);
 		if (!par2World.isClientSide
 				&& TF2Attribute.getModifier("No Disguise Kit", par1ItemStack, 0, (LivingEntity) par3Entity) != 0) {
 			if (par3Entity.getCapability(TF2weapons.WEAPONS_CAP).isPresent()
@@ -694,7 +694,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 					&& ((Player) attacker).getCooldowns().isOnCooldown(this))) {
 				TF2Util.stun(targetliving, 16, true);
 				if (attacker instanceof Player) {
-					((Player) attacker).getCooldowns().setCooldown(this, stun);
+					((Player) attacker).getCooldowns().addCooldown(this, stun);
 				}
 			}
 			int metalhit = (int) TF2Attribute.getModifier("Metal Hit", stack, 0, attacker);

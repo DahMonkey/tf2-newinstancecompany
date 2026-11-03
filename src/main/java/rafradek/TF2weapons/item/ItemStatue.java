@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.EntityStatue;
@@ -27,8 +28,15 @@ public class ItemStatue extends LegacyItem {
 	}
 
 	@Override
-	public InteractionResult useOn(Player player, Level world, BlockPos pos, InteractionHand hand,
-			Direction facing, float hitX, float hitY, float hitZ) {
+	public InteractionResult useOn(UseOnContext context) {
+		Player player = context.getPlayer();
+		Level world = context.getLevel();
+		BlockPos pos = context.getClickedPos();
+		InteractionHand hand = context.getHand();
+		Direction facing = context.getClickedFace();
+		float hitX = (float) (context.getClickLocation().x - pos.getX());
+		float hitY = (float) (context.getClickLocation().y - pos.getY());
+		float hitZ = (float) (context.getClickLocation().z - pos.getZ());
 		ItemStack stack = player.getItemInHand(hand);
 		if (!world.isClientSide && stack.hasTag() && stack.getTag().contains("Statue")) {
 			EntityStatue statue = new EntityStatue(world);

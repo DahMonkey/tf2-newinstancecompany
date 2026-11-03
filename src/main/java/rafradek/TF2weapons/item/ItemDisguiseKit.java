@@ -41,12 +41,12 @@ public class ItemDisguiseKit extends LegacyItem implements IItemSlotNumber, IIte
 	public static void startDisguise(LivingEntity living, Level world, String type) {
 		String type2 = type;
 		if (!world.isClientSide && type.startsWith("T:") && (living instanceof Player)) {
-			Player player = world.getClosestPlayer(living.getX(), living.getY(), living.getZ(), 512,
-					playerl -> (!TF2Util.isAlliedTo(living, playerl)
+			Player player = world.getNearestPlayer(living.getX(), living.getY(), living.getZ(), 512,
+					playerl -> playerl instanceof Player && (!TF2Util.isAlliedTo(living, playerl)
 							&& WeaponsCapability.get(playerl).getUsedToken() >= 0 && type.substring(2).equalsIgnoreCase(
 									TF2Class.getClass(WeaponsCapability.get(playerl).getUsedToken()).getName())));
 			if (player != null) {
-				type2 = "P:" + player.getName();
+				type2 = "P:" + player.getName().getString();
 			}
 		}
 		WeaponsCapability.get(living).setDisguiseType(type2);

@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 
 public class EntityDemoman extends EntityTF2Character {
 
-	private static final EntityDataAccessor<Boolean> SENTRY_BUSTER = SynchedEntityData.createKey(EntityDemoman.class,
+	private static final EntityDataAccessor<Boolean> SENTRY_BUSTER = SynchedEntityData.defineId(EntityDemoman.class,
 			EntityDataSerializers.BOOLEAN);
 
 	public int chargeCool = 0;
@@ -168,7 +168,7 @@ public class EntityDemoman extends EntityTF2Character {
 					if (this.isValidTarget(target) && target.distanceToSqr(bomb) < 7
 							&& this.getSensing().hasLineOfSight(target) && target.hasLineOfSight(bomb)) {
 						((ItemWeapon) this.loadout.getStackInSlot(1).getItem())
-								.altFireTick(this.loadout.getStackInSlot(1), this, world);
+								.altFireTick(this.loadout.getStackInSlot(1), this, this.level);
 						break;
 					}
 				}

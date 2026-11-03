@@ -75,7 +75,7 @@ public class EntityAIUseMedigun extends EntityAIUseRangedWeapon {
 		 * this.entityMoveSpeed); }
 		 */
 
-		this.entityHost.getLookControl().setLookPosition(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);
+		this.entityHost.getLookControl().setLookAt(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);
 		// this.entityHost.getLookHelper().setLookPositionWithEntity(this.attackTarget,
 		// 1.0F, 90.0F);
 		double range = ItemFromData.getData(stack).getFloat(PropertyType.RANGE);

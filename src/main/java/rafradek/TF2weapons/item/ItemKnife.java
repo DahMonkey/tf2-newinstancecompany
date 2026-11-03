@@ -127,7 +127,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 				} else
 					target.getPersistentData().putFloat(NBTLiterals.BACKSTAB_MULT, 0.9f);
 			}
-			((Player) attacker).getCooldowns().setCooldown(this, this.getFiringSpeed(stack, attacker) / 12);
+			((Player) attacker).getCooldowns().addCooldown(this, this.getFiringSpeed(stack, attacker) / 12);
 		}
 		boolean isBackstab = isBackstab(attacker, target, stack);
 

@@ -44,7 +44,7 @@ public class ItemParachute extends ItemBackpack implements ISpecialArmor {
 			/*
 			 * if (player.ticksExisted % 30 == 0) { itemStack.damageItem(1, player); }
 			 */
-			if (player.isOnGround() || player.isEyeInFluid(Material.WATER))
+			if (player.isOnGround() || player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER))
 				itemStack.getTag().putBoolean("Deployed", false);
 		}
 	}

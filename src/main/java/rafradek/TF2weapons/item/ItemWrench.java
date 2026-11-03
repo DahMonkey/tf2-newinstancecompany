@@ -251,7 +251,7 @@ public class ItemWrench extends ItemMeleeWeapon implements IItemSlotNumber {
 					player.level.getServer().getPlayerList().transferPlayerToDimension((ServerPlayer) player,
 							dimension, new EntityTeleporter.TeleporterDim((ServerLevel) player.level, pos));
 				player.teleportTo(pos.getX() + 0.5, pos.getY() + 0.23, pos.getZ() + 0.5);
-				player.getCooldowns().setCooldown(MapList.weaponClasses.get("wrench"), 200);
+				player.getCooldowns().addCooldown(MapList.weaponClasses.get("wrench"), 200);
 				TF2Util.playSound(player, TF2Sounds.MOB_TELEPORTER_SEND, 1.0F, 1.0F);
 				player.stopUsingItem();
 				player.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).consumeMetal(20, false);

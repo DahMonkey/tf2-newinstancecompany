@@ -33,7 +33,7 @@ public class ItemSoldierBackpack extends ItemBackpack {
 	}
 
 	public MobEffect getBuff(ItemStack stack) {
-		return MobEffect.getPotionFromResourceLocation(getData(stack).getString(PropertyType.EFFECT_TYPE));
+		return TF2Util.getEffect(getData(stack).getString(PropertyType.EFFECT_TYPE));
 	}
 
 	@Override

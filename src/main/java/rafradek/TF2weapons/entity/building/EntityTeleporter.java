@@ -58,15 +58,15 @@ public class EntityTeleporter extends EntityBuilding {
 
 	public long timestamp;
 
-	private static final EntityDataAccessor<Integer> TELEPORTS = SynchedEntityData.createKey(EntityTeleporter.class,
+	private static final EntityDataAccessor<Integer> TELEPORTS = SynchedEntityData.defineId(EntityTeleporter.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> TPPROGRESS = SynchedEntityData.createKey(EntityTeleporter.class,
+	private static final EntityDataAccessor<Integer> TPPROGRESS = SynchedEntityData.defineId(EntityTeleporter.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Byte> CHANNEL = SynchedEntityData.createKey(EntityTeleporter.class,
+	private static final EntityDataAccessor<Byte> CHANNEL = SynchedEntityData.defineId(EntityTeleporter.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Boolean> EXIT = SynchedEntityData.createKey(EntityTeleporter.class,
+	private static final EntityDataAccessor<Boolean> EXIT = SynchedEntityData.defineId(EntityTeleporter.class,
 			EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Byte> COLOR = SynchedEntityData.createKey(EntityTeleporter.class,
+	private static final EntityDataAccessor<Byte> COLOR = SynchedEntityData.defineId(EntityTeleporter.class,
 			EntityDataSerializers.BYTE);
 
 	public EntityTeleporter(Level world) {
@@ -88,7 +88,7 @@ public class EntityTeleporter extends EntityBuilding {
 								&& entityIn.getTeam() == null)))
 						|| TF2Util.isAlliedTo(EntityTeleporter.this, entityIn))
 				&& entityIn.getBoundingBox()
-						.intersects(this.getBoundingBox().grow(0, 0.5, 0).move(0, 0.5D, 0)))
+						.intersects(this.getBoundingBox().inflate(0, 0.5, 0).move(0, 0.5D, 0)))
 			if (ticksToTeleport <= 0)
 				if (ticksToTeleport < 0)
 					ticksToTeleport = 10;
@@ -165,7 +165,7 @@ public class EntityTeleporter extends EntityBuilding {
 				/*
 				 * if(ticksToTeleport<=0){ List<EntityLivingBase>
 				 * targetList=this.world.getEntitiesWithinAABB( EntityLivingBase.class,
-				 * this.getEntityBoundingBox().grow(0, 0.5, 0).offset(0, 0.5D, 0), new
+				 * this.getEntityBoundingBox().inflate(0, 0.5, 0).offset(0, 0.5D, 0), new
 				 * Predicate<EntityLivingBase>(){
 				 *
 				 * @Override public boolean apply(EntityLivingBase input) {
@@ -202,7 +202,7 @@ public class EntityTeleporter extends EntityBuilding {
 		UUID uuid = this.getOwnerUUID();
 		if (this.getOwnerUUID() != null && teleporters.get(uuid) != null) {
 			final TeleporterData data = teleporters.get(uuid)[this.getID()];
-			List<EntityTeleporter> list = world.getEntities(EntityTeleporter.class, input -> data != null && data.id == input.tpID);
+			List<EntityTeleporter> list = this.level.getEntities(EntityTeleporter.class, input -> data != null && data.id == input.tpID);
 			if (!list.isEmpty())
 				this.linkedTp = list.get(0);
 			// System.out.println("linkedtpset");
@@ -228,7 +228,7 @@ public class EntityTeleporter extends EntityBuilding {
 	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 
 		if (player == this.getOwner() && player.getItemInHand(hand).getItem() instanceof DyeItem) {
-			if (!world.isClientSide) {
+			if (!this.level.isClientSide) {
 				this.setColor(player.getItemInHand(hand).getDamageValue());
 			}
 			return InteractionResult.sidedSuccess(this.level.isClientSide);
@@ -238,7 +238,7 @@ public class EntityTeleporter extends EntityBuilding {
 				if (TF2ConfigVars.disableBuildingGui)
 					this.grab();
 				else
-					FMLNetworkHandler.openGui(player, TF2weapons.instance, 5, world, this.getId(), 0, 0);
+					TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 5, this.level, this.getId(), 0, 0);
 			return InteractionResult.sidedSuccess(this.level.isClientSide);
 		}
 		return InteractionResult.PASS;
@@ -330,7 +330,7 @@ public class EntityTeleporter extends EntityBuilding {
 	}
 
 	@Override
-	public void discard() {
+	public void remove(Entity.RemovalReason removalReason) {
 		// Chunk
 		// chunk=this.world.getChunkFromBlockCoords(this.getPosition());
 		// if(chunk.isLoaded()){
@@ -339,12 +339,12 @@ public class EntityTeleporter extends EntityBuilding {
 		// }
 		// System.out.println("teleporter removed: "+chunk.isLoaded()+"
 		// "+chunk.isEmpty()+" "+chunk.isPopulated());
-		super.discard();
+		super.remove(removalReason);
 	}
 
 	@Override
-	public void notifyDataManagerChange(EntityDataAccessor<?> key) {
-		super.notifyDataManagerChange(key);
+	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+		super.onSyncedDataUpdated(key);
 		if (!this.level.isClientSide)
 			if (OWNER_UUID.equals(key)) {
 				UUID id = this.getOwnerUUID();

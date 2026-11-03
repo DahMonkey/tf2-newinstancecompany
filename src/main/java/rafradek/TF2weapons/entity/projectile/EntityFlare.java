@@ -31,8 +31,7 @@ public class EntityFlare extends EntityProjectileSimple {
 			this.level.addParticle(ParticleTypes.SMOKE, x, y, z, 0, 0, 0);
 	}
 
-	@Override
-	public int getBrightnessForRender() {
+		public int getBrightnessForRender() {
 		return 15728880;
 	}
 
@@ -42,7 +41,7 @@ public class EntityFlare extends EntityProjectileSimple {
 	}
 
 	@Override
-	public boolean isBurning() {
+	public boolean isOnFire() {
 		return true;
 	}
 

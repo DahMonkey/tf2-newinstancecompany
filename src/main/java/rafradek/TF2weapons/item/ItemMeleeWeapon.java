@@ -59,7 +59,7 @@ public class ItemMeleeWeapon extends ItemBulletWeapon {
 				if (!TF2ConfigVars.fastItemCooldown)
 					cooldown *= getData(ballStack).getFloat(PropertyType.COOLDOWN_LONG);
 				if (living instanceof Player)
-					((Player) living).getCooldowns().setCooldown(this, cooldown);
+					((Player) living).getCooldowns().addCooldown(this, cooldown);
 				ItemStack oldHeldItem = living.getMainHandItem();
 				living.setItemInHand(InteractionHand.MAIN_HAND, ballStack);
 				((ItemProjectileWeapon) ballStack.getItem()).use(ballStack, living, world, InteractionHand.MAIN_HAND, null);

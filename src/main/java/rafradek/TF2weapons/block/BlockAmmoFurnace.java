@@ -60,7 +60,7 @@ public class BlockAmmoFurnace extends BaseEntityBlock {
 	public boolean onBlockActivated(Level world, BlockPos pos, BlockState state, Player player,
 			InteractionHand hand, Direction side, float hitX, float hitY, float hitZ) {
 		if (!world.isClientSide)
-			FMLNetworkHandler.openGui(player, TF2weapons.instance, 3, world, pos.getX(), pos.getY(), pos.getZ());
+			TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 3, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 

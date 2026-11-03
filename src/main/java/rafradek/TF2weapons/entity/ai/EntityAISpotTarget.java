@@ -62,7 +62,7 @@ public class EntityAISpotTarget<T extends LivingEntity> extends Goal {
 		this.shouldCheckSight = p_i1665_5_;
 		this.mob = p_i1665_1_;
 		this.targetClass = p_i1665_2_;
-		this.theNearestAttackableTargetSorter = new NearestAttackableTargetGoal.Sorter(p_i1665_1_);
+		this.theNearestAttackableTargetSorter = java.util.Comparator.comparingDouble(p_i1665_1_::distanceToSqr);
 		this.setFlags(TF2Util.mutexFlags(1));
 		this.targetLock = targetLock;
 		this.targetEntitySelector = target -> {

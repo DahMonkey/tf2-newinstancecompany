@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.ListTag;
@@ -28,7 +29,7 @@ public class EntityCleaver extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		super.onHitGround(x, y, z, mop);
 		if (!this.level.isClientSide && this.damage <= 0 && !this.infinite) {
 			this.spawnAtLocation(this.usedWeapon, 0f);

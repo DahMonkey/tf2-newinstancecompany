@@ -1188,9 +1188,9 @@ public class TF2EventsCommon {
 
 	@SubscribeEvent
 	public void loadWorld(LevelEvent.Load event) {
-		if (!(world instanceof Level))
+		if (!(event.getLevel() instanceof Level))
 			return;
-		Level world = (Level) world;
+		Level world = (Level) event.getLevel();
 		/*
 		 * if (!event.getWorld().isRemote &&
 		 * event.getWorld().getPerWorldStorage().getOrLoadData(TF2WorldStorage.class,
@@ -1243,9 +1243,9 @@ public class TF2EventsCommon {
 
 	@SubscribeEvent
 	public void unloadWorld(LevelEvent.Unload event) {
-		if (!(world instanceof Level))
+		if (!(event.getLevel() instanceof Level))
 			return;
-		Level world = (Level) world;
+		Level world = (Level) event.getLevel();
 		if (TF2weapons.dummyEnt != null && TF2weapons.dummyEnt.level == world)
 			TF2weapons.dummyEnt = null;
 		if (world.isClientSide && sentryView != null && sentryView.level == world) {
@@ -1692,7 +1692,7 @@ public class TF2EventsCommon {
 
 		if (stack.getItem() instanceof ItemFoodThrowable
 				&& !event.getPlayer().getCooldowns().isOnCooldown(stack.getItem())) {
-			event.getPlayer().getCooldowns().setCooldown(stack.getItem(),
+			event.getPlayer().getCooldowns().addCooldown(stack.getItem(),
 					((ItemFoodThrowable) stack.getItem()).waitTime / (TF2ConfigVars.fastItemCooldown ? 2 : 1));
 			if (!stack.hasTag())
 				stack.setTag(new CompoundTag());
@@ -1993,7 +1993,7 @@ public class TF2EventsCommon {
 			}
 			CompoundTag invTag = nbt.getCompound("Invasions");
 			for (String key : invTag.getAllKeys()) {
-				invasions.put(UUID.fromString(key), new InvasionEvent(world, invTag.getCompound(key)));
+				invasions.put(UUID.fromString(key), new InvasionEvent(this.level, invTag.getCompound(key)));
 			}
 		}
 
@@ -2033,7 +2033,7 @@ public class TF2EventsCommon {
 				}
 			}
 
-			InvasionEvent event = new InvasionEvent(world, player.blockPosition(), difficulty);
+			InvasionEvent event = new InvasionEvent(this.level, player.blockPosition(), difficulty);
 			this.invasions.put(player.getUUID(), event);
 			return true;
 		}

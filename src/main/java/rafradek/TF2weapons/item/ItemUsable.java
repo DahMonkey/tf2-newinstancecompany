@@ -72,7 +72,7 @@ public abstract class ItemUsable extends ItemFromData {
 
 	@Override
 	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(stack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(stack, par2World, par3Entity, par4, par5);
 		if (stack.isEmpty())
 			return;
 		/*

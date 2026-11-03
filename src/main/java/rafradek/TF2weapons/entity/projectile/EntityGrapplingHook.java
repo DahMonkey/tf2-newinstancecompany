@@ -28,7 +28,7 @@ public class EntityGrapplingHook extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		if (!sticked && !this.level.isEmptyBlock(mop.getBlockPos())) {
 			this.setPos(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.1,
 					mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.1f,

@@ -23,7 +23,7 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		super.onHitGround(x, y, z, mop);
 		if (!this.level.isEmptyBlock(mop.getBlockPos())) {
 			this.setPos(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.1,
@@ -45,7 +45,7 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void discard() {
+	public void remove(Entity.RemovalReason removalReason) {
 		if (this.level.isClientSide && this.sticked && this.getThrower() != null && !this.clientSticked) {
 			EntityStickProjectile ent = new EntityStickProjectile(this.level);
 			ent.absMoveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
@@ -56,7 +56,7 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 			ent.stickedBlock = this.stickedBlock;
 			this.level.addFreshEntity(ent);
 		}
-		super.discard();
+		super.remove(removalReason);
 	}
 
 	@Override

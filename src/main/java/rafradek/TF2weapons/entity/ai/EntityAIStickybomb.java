@@ -122,7 +122,7 @@ public class EntityAIStickybomb extends Goal {
 			this.entityHost.getNavigation().moveTo(this.attackTarget.x, this.attackTarget.y, this.attackTarget.z,
 					this.entityMoveSpeed);
 		}
-		this.entityHost.getLookControl().setLookPosition(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);
+		this.entityHost.getLookControl().setLookAt(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);
 		if (d0 <= this.attackRangeSquared) {
 			if (!pressed) {
 				pressed = true;

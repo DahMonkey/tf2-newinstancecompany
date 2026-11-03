@@ -238,7 +238,7 @@ public class EntityAIUseRangedWeapon extends Goal {
 				|| this.entityHost.getAmmo() == 0))
 			this.reloading = false;
 
-		this.entityHost.getLookControl().setLookPosition(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);
+		this.entityHost.getLookControl().setLookAt(lookX, lookY, lookZ, this.entityHost.rotation, 90.0F);
 		if ((!reloading) && fire
 				&& d0 <= (this.attackTarget instanceof EntityBuilding ? this.attackRangeSSquared
 						: this.attackRangeSquared)

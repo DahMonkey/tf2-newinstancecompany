@@ -64,9 +64,9 @@ public class EntityDispenser extends EntityBuilding {
 	public int reloadTimer;
 	public int giveAmmoTimer;
 	public List<LivingEntity> dispenserTarget = new ArrayList<>();
-	private static final EntityDataAccessor<Integer> METAL = SynchedEntityData.createKey(EntityDispenser.class,
+	private static final EntityDataAccessor<Integer> METAL = SynchedEntityData.defineId(EntityDispenser.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Float> RANGE = SynchedEntityData.createKey(EntityDispenser.class,
+	private static final EntityDataAccessor<Float> RANGE = SynchedEntityData.defineId(EntityDispenser.class,
 			EntityDataSerializers.FLOAT);
 	public ItemStackHandler items = new ItemStackHandler(9);
 
@@ -94,7 +94,7 @@ public class EntityDispenser extends EntityBuilding {
 		}
 
 		List<LivingEntity> targetList = this.level.getEntitiesOfClass(LivingEntity.class,
-				this.getBoundingBox().grow(2f * this.getRange(), 1.5 * this.getRange(), 2 * this.getRange()),
+				this.getBoundingBox().inflate(2f * this.getRange(), 1.5 * this.getRange(), 2 * this.getRange()),
 				input -> !(input instanceof EntityBuilding) && EntityDispenser.this != input
 						&& ((getOwner() != null && WeaponsCapability.get(getOwner()).dispenserPlayer
 								&& input instanceof Player && input.getTeam() == null)
@@ -219,7 +219,7 @@ public class EntityDispenser extends EntityBuilding {
 				if (TF2ConfigVars.disableBuildingGui)
 					this.grab();
 				else
-					FMLNetworkHandler.openGui(player, TF2weapons.instance, 5, world, this.getId(), 0, 0);
+					TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 5, this.level, this.getId(), 0, 0);
 			}
 
 			return InteractionResult.sidedSuccess(this.level.isClientSide);

@@ -82,7 +82,7 @@ public class EntitySniper extends EntityTF2Character {
 			this.rotation = 3;
 		}
 
-		if (world.isClientSide && this.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isCharging()
+		if (this.level.isClientSide && this.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).isCharging()
 				&& this.getAttribute(Attributes.MOVEMENT_SPEED)
 						.getModifier(ItemSniperRifle.slowdownUUID) == null) {
 			this.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).chargeTicks = 0;

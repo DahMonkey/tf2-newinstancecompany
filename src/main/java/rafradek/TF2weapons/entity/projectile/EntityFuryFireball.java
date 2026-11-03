@@ -33,13 +33,12 @@ public class EntityFuryFireball extends EntityProjectileSimple {
 		source.setIsFire();
 	}
 
-	@Override
-	public int getBrightnessForRender() {
+		public int getBrightnessForRender() {
 		return 15728880;
 	}
 
 	@Override
-	public boolean isBurning() {
+	public boolean isOnFire() {
 		return true;
 	}
 
@@ -55,11 +54,11 @@ public class EntityFuryFireball extends EntityProjectileSimple {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public boolean isInRangeToRender3d(double x, double y, double z) {
+	public boolean shouldRender(double x, double y, double z) {
 		double d0 = this.getX() - x;
 		double d1 = this.getY() - y;
 		double d2 = this.getZ() - z;
 		double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-		return this.isInRangeToRenderDist(d3);
+		return this.shouldRenderAtSqrDistance(d3);
 	}
 }

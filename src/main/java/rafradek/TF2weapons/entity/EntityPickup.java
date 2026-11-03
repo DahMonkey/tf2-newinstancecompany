@@ -20,6 +20,19 @@ import net.minecraft.world.level.material.Material;
 
 public class EntityPickup extends Entity {
 
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
 	public int age = 0;
 	public int lifespan = 1200;
 	public boolean rematerialize;
@@ -76,7 +89,7 @@ public class EntityPickup extends Entity {
 	}
 
 	@Override
-	public void onCollideWithPlayer(Player entityIn) {
+	public void playerTouch(Player entityIn) {
 		if (!this.level.isClientSide && !this.isDisabled()) {
 			if (this.getType().healthRegen > 0 && entityIn.getHealth() < entityIn.getMaxHealth()) {
 				entityIn.heal(this.getType().healthRegen * entityIn.getMaxHealth());
@@ -120,7 +133,7 @@ public class EntityPickup extends Entity {
 				|| (int) this.zo != (int) this.getZ();
 
 		if (flag || this.tickCount % 25 == 0) {
-			if (this.level.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA) {
+			if (this.level.getBlockState(this.blockPosition()).getMaterial() == Material.LAVA) {
 				this.setDeltaMovement(this.getDeltaMovement().x, (0.20000000298023224D), this.getDeltaMovement().z);
 				this.setDeltaMovement(((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), this.getDeltaMovement().y, this.getDeltaMovement().z);
 				this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F));

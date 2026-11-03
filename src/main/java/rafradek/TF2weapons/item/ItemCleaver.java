@@ -27,7 +27,7 @@ public class ItemCleaver extends ItemProjectileWeapon {
 			PredictionMessage message) {
 		if (super.use(stack, living, world, hand, message) && !world.isClientSide) {
 			if (living instanceof Player)
-				((Player) living).getCooldowns().setCooldown(this, (int) (this.getFiringSpeed(stack, living)
+				((Player) living).getCooldowns().addCooldown(this, (int) (this.getFiringSpeed(stack, living)
 						/ 50
 						* (TF2ConfigVars.fastItemCooldown ? 1f : getData(stack).getFloat(PropertyType.COOLDOWN_LONG))));
 			if (living instanceof Player && !((Player) living).getAbilities().instabuild

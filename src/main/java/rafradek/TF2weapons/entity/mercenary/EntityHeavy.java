@@ -17,6 +17,11 @@ import net.minecraft.world.level.Level;
 
 public class EntityHeavy extends EntityTF2Character {
 
+	@Override
+	public float getHeight() {
+		return 1.99f;
+	}
+
 	public EntityHeavy(Level par1World) {
 		this(TF2weapons.HEAVY, par1World);
 	}
@@ -30,7 +35,6 @@ public class EntityHeavy extends EntityTF2Character {
 		this.rotation = 10;
 		// this.ammoLeft = 133;
 		this.xpReward = 15;
-		this.setSize(0.6F, 1.99F);
 
 		// this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND,
 		// ItemUsable.getNewStack("Minigun"));

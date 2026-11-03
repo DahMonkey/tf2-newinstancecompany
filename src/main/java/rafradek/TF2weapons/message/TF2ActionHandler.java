@@ -162,7 +162,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 						}
 
 					});
-					// FMLNetworkHandler.openGui(player, TF2weapons.instance, 4, player.world,(int)
+					// TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 4, player.world,(int)
 					// player.posX,(int) player.posY,(int) player.posZ);
 				} else if (message.value == 23
 						&& (WeaponsCapability.get(player).airJumps < WeaponsCapability.get(player).getMaxAirJumps()

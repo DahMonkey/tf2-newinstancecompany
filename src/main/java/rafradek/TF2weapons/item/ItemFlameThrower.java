@@ -69,7 +69,7 @@ public class ItemFlameThrower extends ItemAirblast {
 				SoundEvent playSound = ItemFromData.getSound(stack, PropertyType.FIRE_START_SOUND);
 				ClientProxy.playWeaponSound(living, playSound, false, 2, stack);
 			}
-			if (living.isEyeInFluid(Material.WATER)) {
+			if (living.isEyeInFluid(net.minecraft.tags.FluidTags.WATER)) {
 				Vec3 look = living.getLookAngle();
 				Vec3 tangent = new Vec3(-look.z, 0, look.x);
 				Vec3 pos = living.position().add(tangent.x*0.3, living.getEyeHeight(), tangent.z*0.3)
@@ -152,7 +152,7 @@ public class ItemFlameThrower extends ItemAirblast {
 
 	@Override
 	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(stack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(stack, par2World, par3Entity, par4, par5);
 		if (WeaponsCapability.get(par3Entity).isRageActive(RageType.PHLOG)) {
 			if (par5 && par3Entity.tickCount % 5 == 0) {
 				((LivingEntity) par3Entity).addEffect(new MobEffectInstance(TF2weapons.critBoost, 5));

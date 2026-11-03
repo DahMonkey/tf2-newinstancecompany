@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.EntityPickup;
@@ -29,12 +30,19 @@ public class ItemConfigure extends LegacyItem {
 	}
 
 	@Override
-	public InteractionResult useOn(Player player, Level world, BlockPos pos, InteractionHand hand,
-			Direction facing, float hitX, float hitY, float hitZ) {
+	public InteractionResult useOn(UseOnContext context) {
+		Player player = context.getPlayer();
+		Level world = context.getLevel();
+		BlockPos pos = context.getClickedPos();
+		InteractionHand hand = context.getHand();
+		Direction facing = context.getClickedFace();
+		float hitX = (float) (context.getClickLocation().x - pos.getX());
+		float hitY = (float) (context.getClickLocation().y - pos.getY());
+		float hitZ = (float) (context.getClickLocation().z - pos.getZ());
 		if (!world.isClientSide) {
 			BlockEntity ent = world.getBlockEntity(pos);
 			if (ent instanceof IEntityConfigurable) {
-				// FMLNetworkHandler.openGui(player, TF2weapons.instance, 7, world,
+				// TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 7, world,
 				// pos.getX(),
 				// pos.getY(), pos.getZ());
 				TF2weapons.network.sendTo(new TF2Message.GuiConfigMessage(

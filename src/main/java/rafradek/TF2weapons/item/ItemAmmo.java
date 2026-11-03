@@ -96,7 +96,7 @@ public class ItemAmmo extends LegacyItem {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player living, InteractionHand hand) {
 		if (!world.isClientSide)
-			FMLNetworkHandler.openGui(living, TF2weapons.instance, 0, world, 0, 0, 0);
+			TF2weapons.openGui((net.minecraft.world.entity.player.Player) living, 0, world, 0, 0, 0);
 		return new InteractionResultHolder<>(InteractionResult.SUCCESS, living.getItemInHand(hand));
 	}
 

@@ -212,7 +212,7 @@ public class ItemMedigun extends ItemUsable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(par1ItemStack, par2World, par3Entity, par4, par5);
 		LivingEntity living = (LivingEntity) par3Entity;
 		if (par1ItemStack.isEmpty())
 			return;
@@ -374,7 +374,7 @@ public class ItemMedigun extends ItemUsable {
 				return TF2weapons.shieldBullet;
 			}
 		}
-		return MobEffect.getPotionFromResourceLocation(ItemFromData.getData(stack).getString(PropertyType.EFFECT_TYPE));
+		return TF2Util.getEffect(ItemFromData.getData(stack).getString(PropertyType.EFFECT_TYPE));
 	}
 
 	public boolean isShieldResist(ItemStack stack, LivingEntity living) {

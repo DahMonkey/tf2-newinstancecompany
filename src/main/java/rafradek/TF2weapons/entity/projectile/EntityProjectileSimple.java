@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
@@ -56,7 +57,7 @@ public class EntityProjectileSimple extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		if (!this.level.isClientSide) {
 			this.impact = true;
 
@@ -95,7 +96,7 @@ public class EntityProjectileSimple extends EntityProjectileBase {
 	@Override
 	public void spawnParticles(double x, double y, double z) {
 		if (this.getProjType() == 4) {
-			ClientProxy.spawnBisonParticle(world, x, y, z, TF2Util.getTeamColor(this.shootingEntity));
+			ClientProxy.spawnBisonParticle(this.level, x, y, z, TF2Util.getTeamColor(this.shootingEntity));
 		}
 	}
 

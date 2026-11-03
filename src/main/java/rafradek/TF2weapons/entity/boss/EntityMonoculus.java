@@ -57,9 +57,9 @@ public class EntityMonoculus extends EntityTF2Boss {
 	public int laserTime;
 	public int laserCooldown = 150;
 
-	private static final EntityDataAccessor<Boolean> ANGRY = SynchedEntityData.createKey(EntityMonoculus.class,
+	private static final EntityDataAccessor<Boolean> ANGRY = SynchedEntityData.defineId(EntityMonoculus.class,
 			EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Boolean> LASER = SynchedEntityData.createKey(EntityMonoculus.class,
+	private static final EntityDataAccessor<Boolean> LASER = SynchedEntityData.defineId(EntityMonoculus.class,
 			EntityDataSerializers.BOOLEAN);
 
 	public EntityMonoculus(Level world) {
@@ -385,7 +385,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 	}
 
 	@Override
-	public void notifyDataManagerChange(EntityDataAccessor<?> key) {
+	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
 		if (this.level.isClientSide && LASER.equals(key))
 			this.laserTime = 100;
 	}

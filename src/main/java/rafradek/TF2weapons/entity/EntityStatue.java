@@ -28,6 +28,19 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 
 public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
 	public LivingEntity entity;
 	public CompoundTag data;
 	public boolean isFeign;
@@ -83,7 +96,7 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 	protected void defineSynchedData() {}
 
 	@Override
-	public boolean canBeCollidedWith() {
+	public boolean isPickable() {
 		return !isRemoved() && !clientOnly;
 	}
 

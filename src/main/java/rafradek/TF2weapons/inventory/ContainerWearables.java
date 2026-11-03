@@ -112,7 +112,7 @@ public class ContainerWearables extends LegacyContainer {
 						if (!this.getStack().isEmpty()) {
 							Multimap<Attribute, AttributeModifier> modifiers = this.getStack()
 									.getAttributeModifiers(EquipmentSlot.HEAD);
-							ContainerWearables.this.player.getAttributes().applyAttributeModifiers(modifiers);
+							ContainerWearables.this.player.getAttributes().addTransientAttributeModifiers(modifiers);
 							TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[l] = modifiers;
 						}
 						TF2Util.sendTracking(new TF2Message.WearableChangeMessage(ContainerWearables.this.player,
@@ -175,7 +175,7 @@ public class ContainerWearables extends LegacyContainer {
 								.getAttributeModifiers(EquipmentSlot.CHEST);
 						modifiers.removeAll(Attributes.ARMOR);
 						modifiers.removeAll(Attributes.ARMOR_TOUGHNESS);
-						ContainerWearables.this.player.getAttributes().applyAttributeModifiers(modifiers);
+						ContainerWearables.this.player.getAttributes().addTransientAttributeModifiers(modifiers);
 						TF2PlayerCapability.get(ContainerWearables.this.player).wearablesAttrib[2] = modifiers;
 					}
 					TF2Util.sendTracking(new TF2Message.WearableChangeMessage(ContainerWearables.this.player,

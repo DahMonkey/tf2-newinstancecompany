@@ -11,6 +11,19 @@ import net.minecraftforge.common.capabilities.Capability;
 
 public class EntityDummy extends Mob {
 
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
 	public WeaponsCapability cap;
 
 	public EntityDummy(Level world) {

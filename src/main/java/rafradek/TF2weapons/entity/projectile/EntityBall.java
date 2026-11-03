@@ -66,7 +66,7 @@ public class EntityBall extends EntityProjectileSimple {
 	}
 
 	@Override
-	public void onCollideWithPlayer(Player entityIn) {
+	public void playerTouch(Player entityIn) {
 		if (!this.level.isClientSide && this.canBePickedUp) {
 			if (!this.infinite && entityIn.getInventory().add(TF2Util.metaStack(TF2weapons.itemAmmo, 1, 14)))
 				this.discard();
@@ -81,11 +81,11 @@ public class EntityBall extends EntityProjectileSimple {
 	 * } }
 	 */
 	@Override
-	public void discard() {
+	public void remove(Entity.RemovalReason removalReason) {
 		if (this.impact) {
 			this.impact = false;
 			this.canBePickedUp = true;
 		} else
-			super.discard();
+			super.remove(removalReason);
 	}
 }

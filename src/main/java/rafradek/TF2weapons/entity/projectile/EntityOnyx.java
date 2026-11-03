@@ -54,7 +54,7 @@ public class EntityOnyx extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		this.explode(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.05,
 				mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.05,
 				mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.05, null, 1f);

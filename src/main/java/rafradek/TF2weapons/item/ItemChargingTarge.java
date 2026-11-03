@@ -35,7 +35,7 @@ public class ItemChargingTarge extends ItemFromData {
 				living.addEffect(new MobEffectInstance(TF2weapons.charging,
 						(int) TF2Attribute.getModifier("Effect Duration", stack, 40, living),
 						(int) TF2Attribute.getModifier("Charge Step", stack, 0, living)));
-			living.getCooldowns().setCooldown(this,
+			living.getCooldowns().addCooldown(this,
 					(int) (280f / TF2Attribute.getModifier("Charge", stack, 1, living)));
 		}
 		// living.getCapability(TF2weapons.WEAPONS_CAP,

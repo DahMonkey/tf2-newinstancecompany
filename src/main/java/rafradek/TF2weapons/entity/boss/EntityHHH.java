@@ -165,7 +165,7 @@ public class EntityHHH extends EntityTF2Boss {
 						pos.y + this.getZ(), 0, 0, 0, new int[0]);
 			}
 
-		if (!world.isClientSide && this.begin <= 0) {
+		if (!this.level.isClientSide && this.begin <= 0) {
 			if (this.random.nextInt(20) == 0) {
 				TF2Util.addModifierSafe(this, Attributes.MOVEMENT_SPEED, new AttributeModifier(fasterSpeed,
 						"fastspeed", TF2Util.lerp(0.2f, 0.0f, this.getHealth() / this.getMaxHealth()), AttributeModifier.Operation.fromValue(2)), false);
@@ -188,7 +188,7 @@ public class EntityHHH extends EntityTF2Boss {
 						input -> (input instanceof EntityTF2Character || input instanceof Player
 								|| input == getRevengeTarget()) && getDistanceSq(input) < 600
 								&& TargetGoal.isSuitableTarget(EntityHHH.this, input, false, false));
-				Collections.sort(list, new NearestAttackableTargetGoal.Sorter(this));
+				Collections.sort(list, java.util.Comparator.comparingDouble(this::distanceToSqr));
 				if (list.size() > 0)
 					this.setTarget(list.get(0));
 				// list.get(0).addPotionEffect(new PotionEffect(TF2weapons.it,600));
@@ -241,7 +241,7 @@ public class EntityHHH extends EntityTF2Boss {
 
 			}
 			if (--this.teleportTime <= 0 && this.getTarget() != null && this.tickCount % 5 == 0) {
-				Path path = this.getNavigation().createPath(this.getTarget());
+				Path path = this.getNavigation().createPath(this.getTarget(), 0);
 				boolean shouldTeleport = false;
 				if (path == null)
 					shouldTeleport = this.distanceToSqr(this.getTarget()) > 1.5 && this
@@ -374,11 +374,11 @@ public class EntityHHH extends EntityTF2Boss {
 	}
 
 	@Override
-	public void discard() {
+	public void remove(Entity.RemovalReason removalReason) {
 		if (this.getTarget() != null) {
 			this.getTarget().removeEffect(TF2weapons.it);
 		}
-		super.discard();
+		super.remove(removalReason);
 	}
 
 	@Override
@@ -400,7 +400,7 @@ public class EntityHHH extends EntityTF2Boss {
 			 * if(ent.getActivePotionEffect(TF2weapons.it)==null&&this.scareTick<=0){
 			 * for(EntityLivingBase
 			 * living:this.world.getEntitiesWithinAABB(EntityLivingBase.class,
-			 * this.getEntityBoundingBox().grow(10, 10, 10), new
+			 * this.getEntityBoundingBox().inflate(10, 10, 10), new
 			 * Predicate<EntityLivingBase>(){
 			 *
 			 * @Override public boolean apply(EntityLivingBase input) { return

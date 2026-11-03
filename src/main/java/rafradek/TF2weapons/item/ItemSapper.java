@@ -59,7 +59,7 @@ public class ItemSapper extends ItemBulletWeapon {
 			if (!TF2ConfigVars.freeUseItems)
 				stack.shrink(1);
 			if (attacker instanceof Player)
-				((Player) attacker).getCooldowns().setCooldown(this, 300);
+				((Player) attacker).getCooldowns().addCooldown(this, 300);
 			if (stack.getCount() <= 0 && attacker instanceof Player)
 				((Player) attacker).getInventory().deleteStack(stack);
 		}

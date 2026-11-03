@@ -69,7 +69,7 @@ public class ItemBonk extends ItemFromData {
 				(int) (getData(stack).getInt(PropertyType.COOLDOWN)
 						* (TF2ConfigVars.fastItemCooldown ? 1f : getData(stack).getFloat(PropertyType.COOLDOWN_LONG))));
 		entityLiving.addEffect(new MobEffectInstance(
-				MobEffect.getPotionFromResourceLocation(getData(stack).getString(PropertyType.EFFECT_TYPE)),
+				TF2Util.getEffect(getData(stack).getString(PropertyType.EFFECT_TYPE)),
 				TF2ConfigVars.longDurationBanner ? ItemFromData.getData(stack).getInt(PropertyType.DURATION) : 160));
 		if (!TF2ConfigVars.freeUseItems
 				&& !(entityLiving instanceof Player && ((Player) entityLiving).getAbilities().instabuild))

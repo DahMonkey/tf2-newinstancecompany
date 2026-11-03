@@ -56,7 +56,7 @@ public class ItemFoodThrowable extends ItemFood {
 	protected void onFoodEaten(ItemStack stack, Level world, Player player) {
 		super.onFoodEaten(stack, world, player);
 		if (!world.isClientSide) {
-			player.getCooldowns().setCooldown(this, TF2ConfigVars.fastItemCooldown ? waitTime / 2 : waitTime);
+			player.getCooldowns().addCooldown(this, TF2ConfigVars.fastItemCooldown ? waitTime / 2 : waitTime);
 		}
 	}
 

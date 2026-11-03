@@ -54,6 +54,19 @@ import net.minecraftforge.common.capabilities.Capability;
 
 public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
 	protected final ServerBossEvent bossInfo = (new ServerBossEvent(this.getHoverName(), BossEvent.Color.PURPLE,
 			BossEvent.Overlay.PROGRESS));
 	public int level = 1;
@@ -229,7 +242,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 				}
 
 		if (flag)
-			this.level.levelEvent((Player) null, 1022, new BlockPos(this), 0);
+			this.level.levelEvent((Player) null, 1022, this.blockPosition(), 0);
 		return flag;
 	}
 
@@ -276,7 +289,7 @@ public abstract class EntityTF2Boss extends Monster implements IEntityTF2 {
 		this.setPos(this.getX(), (y), this.getZ());
 		this.setPos(this.getX(), this.getY(), (z));
 		boolean flag = false;
-		BlockPos blockpos = new BlockPos(this);
+		BlockPos blockpos = this.blockPosition();
 		Level world = this.level;
 		Random random = this.getRandom();
 

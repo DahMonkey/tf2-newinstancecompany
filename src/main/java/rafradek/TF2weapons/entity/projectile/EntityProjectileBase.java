@@ -366,7 +366,7 @@ public abstract class EntityProjectileBase extends Projectile implements IEntity
 						: (int) TF2Attribute.getModifier("Coll Remove", this.usedWeapon, 0, this.shootingEntity);
 				if (attr == 0 && !ForgeEventFactory.onProjectileImpact(this, target)) {
 					BlockPos blpos = blockHit.getBlockPos();
-					this.onHitGround(blpos.getX(), blpos.getY(), blpos.getZ(), target);
+					this.onHitGround(blpos.getX(), blpos.getY(), blpos.getZ(), blockHit);
 				} else if (attr == 2)
 					this.explode(target.getLocation().x, target.getLocation().y, target.getLocation().z, null, 1f);
 				else
@@ -546,10 +546,10 @@ public abstract class EntityProjectileBase extends Projectile implements IEntity
 			if (this.verticalCollision)
 				this.onHitBlockY(this.getBlockStateOn().getBlock());
 		}
-		this.stickedBlock = this.getOnPosLegacy();
+		this.stickedBlock = this.getStickPos();
 	}
 
-	private BlockPos getOnPosLegacy() {
+	private BlockPos getStickPos() {
 		BlockPos blockpos = new BlockPos(Mth.floor(this.getX()), Mth.floor(this.getY() - 0.2), Mth.floor(this.getZ()));
 		BlockState state = this.level.getBlockState(blockpos);
 		if (state.isAir()) {
@@ -575,7 +575,7 @@ public abstract class EntityProjectileBase extends Projectile implements IEntity
 	public void readAdditionalSaveData(CompoundTag tag) {
 	}
 
-	public abstract void onHitGround(int x, int y, int z, HitResult mop);
+	public abstract void onHitGround(int x, int y, int z, BlockHitResult mop);
 
 	public abstract void onHitMob(Entity entityHit, HitResult mop);
 

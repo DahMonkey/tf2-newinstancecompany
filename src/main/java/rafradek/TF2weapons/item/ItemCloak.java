@@ -50,7 +50,7 @@ public class ItemCloak extends ItemFromData {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(par1ItemStack, par2World, par3Entity, par4, par5);
 		if (par1ItemStack.getTag().getBoolean("Active") && WeaponsCapability.get(par3Entity).isInvisible()) {
 			// System.out.println("uncharge");
 			int maxdamage = getMaxDamage(par1ItemStack);

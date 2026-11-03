@@ -108,7 +108,7 @@ public class RenderSentry extends RenderLiving<EntitySentry> {
 			// GL11.glEnable(GL11.GL_BLEND);
 			// OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 			ClientProxy.setColor(TF2Util.getTeamColor(living), 0.23f, 0, 0f, 1f);
-			AABB boundingBox = living.getBoundingBox().grow(0.3f, 0.3f, 0.3f);
+			AABB boundingBox = living.getBoundingBox().inflate(0.3f, 0.3f, 0.3f);
 			BufferBuilder.begin(7, DefaultVertexFormats.POSITION_NORMAL);
 			BufferBuilder.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F)
 					.endVertex();

@@ -39,7 +39,7 @@ public class BlockCabinet extends Block {
 
 	@Override
 	public boolean onBlockActivated(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand, @Nullable Direction side, float hitX, float hitY, float hitZ) {
-		if (!world.isClientSide) FMLNetworkHandler.openGui(player, TF2weapons.instance, 1, world, pos.getX(), pos.getY(), pos.getZ());
+		if (!world.isClientSide) TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 1, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 

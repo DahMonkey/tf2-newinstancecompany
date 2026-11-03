@@ -36,7 +36,7 @@ public class InventoryLoadout extends ItemStackHandler {
 					.getAttributeModifiers(stack.getItem().getEquipmentSlot(stack));
 			modifiers.removeAll(Attributes.ARMOR);
 			modifiers.removeAll(Attributes.ARMOR_TOUGHNESS);
-			living.getAttributes().applyAttributeModifiers(modifiers);
+			living.getAttributes().addTransientAttributeModifiers(modifiers);
 		}
 	}
 

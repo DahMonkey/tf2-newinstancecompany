@@ -60,13 +60,13 @@ public class BlockUpgradeStation extends BaseEntityBlock {
 	@Override
 	public boolean onBlockActivated(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand, Direction side, float hitX, float hitY, float hitZ) {
 		if (!world.isClientSide)
-			if (state.getValue(HOLDER)) FMLNetworkHandler.openGui(player, TF2weapons.instance, 2, world, pos.getX(), pos.getY(), pos.getZ());
+			if (state.getValue(HOLDER)) TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 2, world, pos.getX(), pos.getY(), pos.getZ());
 			else for (int x = -1; x < 2; x++)
 				for (int y = -1; y < 2; y++)
 					for (int z = -1; z < 2; z++)
 						if (world.getBlockState(pos.add(x, y, z)).getBlock() instanceof BlockUpgradeStation
 								&& world.getBlockState(pos.add(x, y, z)).getValue(HOLDER)) {
-							FMLNetworkHandler.openGui(player, TF2weapons.instance, 2, world, pos.getX() + x,
+							TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 2, world, pos.getX() + x,
 									pos.getY() + y, pos.getZ() + z);
 							return true;
 						}

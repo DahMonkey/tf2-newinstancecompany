@@ -50,10 +50,10 @@ public class EntityJar extends EntityProjectileBase {
 			for (LivingEntity living : this.level.getEntitiesOfClass(LivingEntity.class,
 					this.getBoundingBox().inflate(5, 5, 5)))
 				if (!this.hitEntities.contains(living)) {
-					if (living.canBeHitWithPotion() && living.distanceToSqr(this) < 25 && living != this.shootingEntity
+					if (living.isAffectedByPotions() && living.distanceToSqr(this) < 25 && living != this.shootingEntity
 							&& !TF2Util.isAlliedTo(this.shootingEntity, living)) {
 						living.addEffect(new MobEffectInstance(
-								MobEffect.getPotionFromResourceLocation(
+								TF2Util.getEffect(
 										ItemFromData.getData(this.usedWeapon).getString(PropertyType.EFFECT_TYPE)),
 								300));
 						if (TF2Util.isEnemy(this.shootingEntity, living))
@@ -71,8 +71,8 @@ public class EntityJar extends EntityProjectileBase {
 			if (!this.isGasExploded()) {
 				this.playSound(ItemUsable.getSound(usedWeapon, PropertyType.EXPLOSION_SOUND), 1f, 1f);
 				// this.playSound(TF2Sounds.JAR_EXPLODE, 1.5f, 1f);
-				this.level.levelEvent(2002, new BlockPos(this),
-						MobEffect.getPotionFromResourceLocation(
+				this.level.levelEvent(2002, this.blockPosition(),
+						TF2Util.getEffect(
 								ItemFromData.getData(this.usedWeapon).getString(PropertyType.EFFECT_TYPE))
 								.getColor());
 			}
@@ -86,7 +86,7 @@ public class EntityJar extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		this.explode(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.05,
 				mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.05,
 				mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.05, null, 1f);
@@ -138,7 +138,7 @@ public class EntityJar extends EntityProjectileBase {
 				double xa = this.getX() + pos.x;
 				double ya = this.getY() + 0.5;
 				double za = this.getZ() + pos.y;
-				ClientProxy.spawnGasSmokeParticle(world, xa, ya, za, 0x2B3E00);
+				ClientProxy.spawnGasSmokeParticle(this.level, xa, ya, za, 0x2B3E00);
 			}
 
 		}

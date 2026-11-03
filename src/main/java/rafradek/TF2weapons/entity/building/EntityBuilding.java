@@ -60,21 +60,34 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
-	private static final EntityDataAccessor<Byte> VIS_TEAM = SynchedEntityData.createKey(EntityBuilding.class,
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
+	private static final EntityDataAccessor<Byte> VIS_TEAM = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> LEVEL = SynchedEntityData.createKey(EntityBuilding.class,
+	private static final EntityDataAccessor<Byte> LEVEL = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Byte> SOUND_STATE = SynchedEntityData.createKey(EntityBuilding.class,
+	private static final EntityDataAccessor<Byte> SOUND_STATE = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Integer> PROGRESS = SynchedEntityData.createKey(EntityBuilding.class,
+	private static final EntityDataAccessor<Integer> PROGRESS = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> CONSTRUCTING = SynchedEntityData.createKey(EntityBuilding.class,
+	private static final EntityDataAccessor<Integer> CONSTRUCTING = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.createKey(EntityBuilding.class,
+	private static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Byte> SAPPED = SynchedEntityData.createKey(EntityBuilding.class,
+	private static final EntityDataAccessor<Byte> SAPPED = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.BYTE);
-	protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.createKey(EntityBuilding.class,
+	protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(EntityBuilding.class,
 			EntityDataSerializers.OPTIONAL_UUID);
 
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -137,7 +150,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 	}
 
 	@Override
-	public void notifyDataManagerChange(EntityDataAccessor<?> key) {
+	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
 		this.adjustSize();
 
 		// System.out.println("Watcher update: "+data);

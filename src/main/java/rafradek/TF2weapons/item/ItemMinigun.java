@@ -50,7 +50,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 
 	@Override
 	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(par1ItemStack, par2World, par3Entity, par4, par5);
 		WeaponsCapability cap = par3Entity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
 
 		if (par5 && par1ItemStack.getTag() != null) {
@@ -207,7 +207,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 								ClientProxy.spawnFlameParticle(world, living, 0, true);
 						} else {
 							for (LivingEntity target : world.getEntitiesOfClass(LivingEntity.class,
-									living.getBoundingBox().grow(4, -0.5, 4).move(0, -0.5, 0),
+									living.getBoundingBox().inflate(4, -0.5, 4).move(0, -0.5, 0),
 									input -> input != living && TF2Util.canHit(living, input)
 											&& input.distanceToSqr(living) < 16)) {
 

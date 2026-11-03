@@ -102,7 +102,7 @@ public class RenderTeleporter extends RenderLiving<EntityTeleporter> {
 			tessellator.draw();
 
 			if (living.getColor() != -1) {
-				float[] color = Sheep.getDyeRgb(DyeColor.byDyeDamage(living.getColor()));
+				float[] color = Sheep.getDyeRgb(DyeColor.byId(15 - living.getColor()));
 				GlStateManager.color(color[0], color[1], color[2], 0.85F);
 
 				renderer.begin(7, DefaultVertexFormats.POSITION_TEX);

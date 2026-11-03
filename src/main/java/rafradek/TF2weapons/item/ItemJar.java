@@ -75,7 +75,7 @@ public class ItemJar extends ItemProjectileWeapon {
 					&& !TF2ConfigVars.freeUseItems)
 				stack.shrink(1);
 			if (living instanceof Player)
-				((Player) living).getCooldowns().setCooldown(this, (int) (this.getFiringSpeed(stack, living)
+				((Player) living).getCooldowns().addCooldown(this, (int) (this.getFiringSpeed(stack, living)
 						/ 50
 						* (TF2ConfigVars.fastItemCooldown ? 1f : getData(stack).getFloat(PropertyType.COOLDOWN_LONG))));
 		}
@@ -110,7 +110,7 @@ public class ItemJar extends ItemProjectileWeapon {
 
 	@Override
 	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(stack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(stack, par2World, par3Entity, par4, par5);
 		if (!par2World.isClientSide && par3Entity instanceof Player && stack.getTag().getBoolean("IsEmpty")) {
 			Integer value = WeaponsCapability.get(par3Entity).effectsCool.get(getData(stack).getName());
 			if (value == null || value <= 0) {

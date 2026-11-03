@@ -134,7 +134,7 @@ public class EntityEngineer extends EntityTF2Character {
 
 			if (sentryRange < this.sentry.distanceToSqr(this.getTarget())) {
 				Entity entityhit = TF2Util
-						.pierce(world, sentry, sentry.getX(), sentry.getY() + sentry.getEyeHeight(), sentry.getZ(),
+						.pierce(this.level, sentry, sentry.getX(), sentry.getY() + sentry.getEyeHeight(), sentry.getZ(),
 								target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), false, 0, false)
 						.get(0).getEntity();
 

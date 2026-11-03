@@ -55,6 +55,19 @@ import net.minecraft.world.scores.Team;
 
 public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
 	public Player trader;
 	public MerchantOffers tradeOffers;
 	public static List<MerchantOffer> addRecipes = new ArrayList<>();
@@ -280,7 +293,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 
 			if (this.tickCount % 3 == 0) {
 				if (this.getTarget() != null && this.getTarget().isAlive()
-						&& this.getNavigation().createPath(this.getTarget()) == null) {
+						&& this.getNavigation().createPath(this.getTarget(), 0) == null) {
 					this.noPathTime += 1;
 					Vec3 forward = this.getVectorForRotation(0, this.yHeadRot);
 					if (this.noPathTime > 2) {
@@ -435,7 +448,7 @@ public class EntitySaxtonHale extends PathfinderMob implements INpc, Merchant {
 					float f1 = 0.25F + EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
 
 					if (this.random.nextFloat() < f1) {
-						entityplayer.getCooldowns().setCooldown(Items.SHIELD, 100);
+						entityplayer.getCooldowns().addCooldown(Items.SHIELD, 100);
 						this.level.broadcastEntityEvent(entityplayer, (byte) 30);
 					}
 				}

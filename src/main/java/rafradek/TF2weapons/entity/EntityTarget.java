@@ -19,6 +19,19 @@ import net.minecraftforge.common.ForgeHooks;
 
 public class EntityTarget extends ArmorStand {
 
+	private net.minecraft.world.entity.EntityDimensions legacySize;
+
+	/** 1.12 setSize: overrides the entity type's size for this entity. */
+	public void setSize(float width, float height) {
+		this.legacySize = net.minecraft.world.entity.EntityDimensions.scalable(width, height);
+		this.refreshDimensions();
+	}
+
+	@Override
+	public net.minecraft.world.entity.EntityDimensions getDimensions(net.minecraft.world.entity.Pose pose) {
+		return this.legacySize != null ? this.legacySize : super.getDimensions(pose);
+	}
+
 	public EntityTarget(Level world) {
 		this(TF2weapons.TARGET, world);
 	}
@@ -70,11 +83,11 @@ public class EntityTarget extends ArmorStand {
 	}
 
 	@Override
-	public void notifyDataManagerChange(EntityDataAccessor<?> key) {
+	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
 		if (STATUS.equals(key)) {
 			this.setSize(0.6F, 1.8625F);
 		} else
-			super.notifyDataManagerChange(key);
+			super.onSyncedDataUpdated(key);
 	}
 
 	@Override

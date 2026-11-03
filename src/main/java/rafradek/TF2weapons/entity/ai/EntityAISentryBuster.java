@@ -50,7 +50,7 @@ public class EntityAISentryBuster extends Goal {
 			target = entitylivingbase.blockPosition();
 
 		if (target != null) {
-			this.path = this.attacker.getNavigation().createPath(target);
+			this.path = this.attacker.getNavigation().createPath(target, 0);
 
 			if (this.path != null) {
 				return true;
@@ -115,7 +115,7 @@ public class EntityAISentryBuster extends Goal {
 		BlockPos target = this.attacker.targetpos;
 		if (entitylivingbase != null)
 			target = entitylivingbase.blockPosition();
-		this.attacker.getLookControl().setLookPosition(target.getX(), target.getY(), target.getZ(), 30.0F, 30.0F);
+		this.attacker.getLookControl().setLookAt(target.getX(), target.getY(), target.getZ(), 30.0F, 30.0F);
 		double d0 = this.attacker.distanceToSqr(target);
 		--this.delayCounter;
 

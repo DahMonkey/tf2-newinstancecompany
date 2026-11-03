@@ -1262,7 +1262,7 @@ public abstract class EntityTF2Character extends PathfinderMob implements Enemy,
 					float f1 = 0.25F + EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
 
 					if (this.random.nextFloat() < f1) {
-						entityplayer.getCooldowns().setCooldown(Items.SHIELD, 100);
+						entityplayer.getCooldowns().addCooldown(Items.SHIELD, 100);
 						this.level.broadcastEntityEvent(entityplayer, (byte) 30);
 					}
 				}

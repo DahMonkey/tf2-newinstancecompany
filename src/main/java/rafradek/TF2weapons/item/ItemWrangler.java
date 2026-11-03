@@ -44,7 +44,7 @@ public class ItemWrangler extends ItemUsable {
 			List<EntitySentry> list = world.getEntitiesOfClass(EntitySentry.class,
 					living.getBoundingBox().inflate(128, 128, 128),
 					input -> input.getOwner() == living && !input.isDisabled());
-			Collections.sort(list, new NearestAttackableTargetGoal.Sorter(living));
+			Collections.sort(list, java.util.Comparator.comparingDouble(living::distanceToSqr));
 			if (!list.isEmpty()) {
 				list.get(0).setControlled(true);
 				weaponsCapability.controlledSentry = list.get(0);

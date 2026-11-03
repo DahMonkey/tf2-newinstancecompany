@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.util.TF2Class;
@@ -48,8 +49,15 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 	}
 
 	@Override
-	public InteractionResult useOn(Player player, Level world, BlockPos pos, InteractionHand hand,
-			Direction facing, float hitX, float hitY, float hitZ) {
+	public InteractionResult useOn(UseOnContext context) {
+		Player player = context.getPlayer();
+		Level world = context.getLevel();
+		BlockPos pos = context.getClickedPos();
+		InteractionHand hand = context.getHand();
+		Direction facing = context.getClickedFace();
+		float hitX = (float) (context.getClickLocation().x - pos.getX());
+		float hitY = (float) (context.getClickLocation().y - pos.getY());
+		float hitZ = (float) (context.getClickLocation().z - pos.getZ());
 		if (ItemToken.allowUse(player, TF2Class.ENGINEER)) {
 			return super.useOn(player, world, pos, hand, facing, hitX, hitY, hitZ);
 		} else {
@@ -93,7 +101,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
-			tooltip.add(Component.literal("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn natural building"));
+			tooltip.add(Component.literal("Hold " + net.minecraft.client.Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString() + " to spawn natural building"));
 		}
 	}
 

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.item.context.UseOnContext;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -64,8 +65,15 @@ public class ItemBossSpawner extends LegacyItem {
 	}
 
 	@Override
-	public InteractionResult useOn(Player player, Level world, BlockPos pos, InteractionHand hand, Direction facing,
-			float hitX, float hitY, float hitZ) {
+	public InteractionResult useOn(UseOnContext context) {
+		Player player = context.getPlayer();
+		Level world = context.getLevel();
+		BlockPos pos = context.getClickedPos();
+		InteractionHand hand = context.getHand();
+		Direction facing = context.getClickedFace();
+		float hitX = (float) (context.getClickLocation().x - pos.getX());
+		float hitY = (float) (context.getClickLocation().y - pos.getY());
+		float hitZ = (float) (context.getClickLocation().z - pos.getZ());
 		if (world.isClientSide || TF2ConfigVars.disableBossSpawnItems)
 			return InteractionResult.SUCCESS;
 		EntityTF2Boss boss = null;

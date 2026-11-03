@@ -611,7 +611,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 						this.lastWeapon = ItemStack.EMPTY;
 					}
 					if (stackcap.fire1Cool <= 0) {
-						this.startUsingItem(hand, stack);
+						this.setActiveHand(hand, stack);
 					}
 				}
 

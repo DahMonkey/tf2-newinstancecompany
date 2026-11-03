@@ -7,7 +7,7 @@ import net.minecraft.world.item.ArmorMaterial;
 public class ItemExtraArmor extends ArmorItem {
 
 	public ItemExtraArmor(ArmorMaterial materialIn, EquipmentSlot equipmentSlotIn) {
-		super(materialIn, 0, equipmentSlotIn);
+		super(materialIn, equipmentSlotIn, new Properties());
 	}
 
 }

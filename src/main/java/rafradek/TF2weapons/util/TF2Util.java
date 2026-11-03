@@ -1974,4 +1974,13 @@ public class TF2Util {
 		item.setPickUpDelay(40);
 		return item;
 	}
+
+	/** 1.12's Potion.getPotionFromResourceLocation. */
+	@javax.annotation.Nullable
+	public static net.minecraft.world.effect.MobEffect getEffect(String name) {
+		if (name == null || name.isEmpty())
+			return null;
+		ResourceLocation id = ResourceLocation.tryParse(name.toLowerCase(java.util.Locale.ROOT));
+		return id == null ? null : net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getValue(id);
+	}
 }

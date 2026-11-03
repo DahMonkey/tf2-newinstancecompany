@@ -91,7 +91,7 @@ public class EntityAIAmbush extends Goal {
 				ItemDisguiseKit.startDisguise(this.host, this.host.level, "T:Engineer");
 		}
 		// this.host.getNavigator().tryMoveToEntityLiving(target, 1);
-		this.host.getLookControl().setLookPosition(target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), 90,
+		this.host.getLookControl().setLookAt(target.getX(), target.getY() + target.getEyeHeight(), target.getZ(), 90,
 				90.0F);
 
 		if (dist > 16 || !TF2Util.lookingAtFast(target, 105, this.host.getX(), this.host.getY(), this.host.getZ())) {

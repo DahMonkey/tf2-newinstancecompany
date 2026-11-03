@@ -37,7 +37,7 @@ public class EntityRocket extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		this.explode(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.02,
 				mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.02,
 				mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.02, null, 1f);

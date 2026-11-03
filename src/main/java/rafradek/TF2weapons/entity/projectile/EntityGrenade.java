@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
@@ -25,9 +26,9 @@ public class EntityGrenade extends EntityProjectileBase {
 	public boolean hitGround;
 
 	public int fuse = 46;
-	private static final EntityDataAccessor<Byte> BOMB = SynchedEntityData.createKey(EntityGrenade.class,
+	private static final EntityDataAccessor<Byte> BOMB = SynchedEntityData.defineId(EntityGrenade.class,
 			EntityDataSerializers.BYTE);
-	private static final EntityDataAccessor<Boolean> BURST = SynchedEntityData.createKey(EntityGrenade.class,
+	private static final EntityDataAccessor<Boolean> BURST = SynchedEntityData.defineId(EntityGrenade.class,
 			EntityDataSerializers.BOOLEAN);
 
 	public EntityGrenade(Level p_i1756_1_) {
@@ -94,7 +95,7 @@ public class EntityGrenade extends EntityProjectileBase {
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 
 	}
 
@@ -106,7 +107,7 @@ public class EntityGrenade extends EntityProjectileBase {
 	@Override
 	public void explode(double x, double y, double z, Entity direct, float damageMult) {
 		super.explode(x, y, z, direct, damageMult);
-		if (world.isClientSide || this.shootingEntity == null)
+		if (this.level.isClientSide || this.shootingEntity == null)
 			return;
 		if (!this.isBurst()) {
 			int grenadeSpecialist = (int) TF2Attribute.getModifier("Grenade Specialist", this.usedWeapon, 0f,
@@ -114,7 +115,7 @@ public class EntityGrenade extends EntityProjectileBase {
 			int grenadeMult = (int) (2 * (direct == null ? 1.5f : 1));
 			double rndSpread = direct == null ? 0.4f : 0.1f;
 			for (int i = 0; i < grenadeSpecialist * grenadeMult; i++) {
-				EntityGrenade burst = new EntityGrenade(world);
+				EntityGrenade burst = new EntityGrenade(this.level);
 				burst.initProjectile(this.shootingEntity, InteractionHand.MAIN_HAND, usedWeaponOrig);
 				burst.setPos(x, y, z);
 				double motionmult = 1D + (this.random.nextDouble() * 0.3 * grenadeSpecialist) - 0.15 * grenadeSpecialist;
@@ -167,7 +168,7 @@ public class EntityGrenade extends EntityProjectileBase {
 		this.fuse--;
 		if (this.fuse <= 0)
 			this.explode(this.getX(), this.getY() + this.getBbHeight() / 2, this.getZ(), null, this.getBomb() > 0 ? 1 : 0.64f);
-		if (this.collided && !this.hitGround) {
+		if ((this.horizontalCollision || this.verticalCollision) && !this.hitGround) {
 			this.hitGround = true;
 			if (!this.level.isClientSide) {
 				int attr = (int) TF2Attribute.getModifier("Coll Remove", this.usedWeapon, 0, this.shootingEntity);
@@ -221,7 +222,7 @@ public class EntityGrenade extends EntityProjectileBase {
 	}
 
 	@Override
-	public void notifyDataManagerChange(EntityDataAccessor<?> key) {
+	public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
 		if (BOMB.equals(key) && this.getBomb() == 1) {
 			this.setSize(0.7f, 0.7f);
 		}

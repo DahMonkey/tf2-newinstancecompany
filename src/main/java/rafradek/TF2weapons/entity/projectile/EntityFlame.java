@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2ConfigVars;
@@ -35,17 +36,16 @@ public class EntityFlame extends EntityProjectileBase {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public boolean isInRangeToRender3d(double x, double y, double z) {
+	public boolean shouldRender(double x, double y, double z) {
 		return false;
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 		if (!this.level.isClientSide && TF2ConfigVars.destTerrain == 2
-				&& this.level.getBlockState(mop.getBlockPos()).getMaterial().getCanBurn()
+				&& this.level.getBlockState(mop.getBlockPos()).getMaterial().isFlammable()
 				&& this.level.getBlockState(mop.getBlockPos().relative(mop.getDirection())).getMaterial() != Material.FIRE
-				&& this.level.getBlockState(mop.getBlockPos().relative(mop.getDirection())).getBlock().isReplaceable(world,
-						getPosition().relative(mop.getDirection())))
+				&& this.level.getBlockState(mop.getBlockPos().relative(mop.getDirection())).getMaterial().isReplaceable())
 			this.level.setBlockAndUpdate(mop.getBlockPos().relative(mop.getDirection()), Blocks.FIRE.defaultBlockState());
 		this.discard();
 	}
@@ -63,7 +63,7 @@ public class EntityFlame extends EntityProjectileBase {
 			// this.shootingEntity.posZ).distanceTo(new Vec3d(mop.hitVec.x,
 			// mop.hitVec.y, mop.hitVec.z))+5.028f;
 
-			float dmg = TF2Util.calculateDamage(entityHit, world, this.shootingEntity, usedWeapon, critical,
+			float dmg = TF2Util.calculateDamage(entityHit, this.level, this.shootingEntity, usedWeapon, critical,
 					1f + (float) (this.tickCount - 1) / (this.getMaxTime() - 1));
 			// System.out.println("damage: "+dmg);
 			// dmg*=ItemUsable.getData(this.usedWeapon).get("Min
@@ -83,7 +83,7 @@ public class EntityFlame extends EntityProjectileBase {
 
 	@Override
 	public void tick() {
-		if (this.isEyeInFluid(Material.WATER)) {
+		if (this.isEyeInFluid(net.minecraft.tags.FluidTags.WATER)) {
 			this.discard();
 			return;
 		}

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -58,12 +59,12 @@ public class EntityStickybomb extends EntityProjectileBase {
 	}
 
 	@Override
-	public boolean canBeCollidedWith() {
+	public boolean isPickable() {
 		return isSticked();
 	}
 
 	@Override
-	public void onHitGround(int x, int y, int z, HitResult mop) {
+	public void onHitGround(int x, int y, int z, BlockHitResult mop) {
 
 	}
 
@@ -97,8 +98,8 @@ public class EntityStickybomb extends EntityProjectileBase {
 	}
 
 	@Override
-	public void discard() {
-		super.discard();
+	public void remove(Entity.RemovalReason removalReason) {
+		super.remove(removalReason);
 		if (!this.level.isClientSide)
 			this.shootingEntity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).activeBomb.remove(this);
 	}
@@ -155,8 +156,8 @@ public class EntityStickybomb extends EntityProjectileBase {
 	}
 
 	@Override
-	public boolean isGlowing() {
-		return super.isGlowing() || (this.getProjType() == 1 && this.level.isClientSide
+	public boolean isCurrentlyGlowing() {
+		return super.isCurrentlyGlowing() || (this.getProjType() == 1 && this.level.isClientSide
 				&& this.shootingEntity == ClientProxy.getLocalPlayer() && this.tickCount >= this.getArmTime()
 				&& TF2Util.lookingAt(this.shootingEntity, 30, this.getX(), this.getY(), this.getZ()));
 	}

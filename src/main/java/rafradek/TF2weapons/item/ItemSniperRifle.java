@@ -164,7 +164,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 
 	@Override
 	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
-		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
+		super.inventoryTick(par1ItemStack, par2World, par3Entity, par4, par5);
 		WeaponsCapability cap = par3Entity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
 
 		if (cap.reloadCool > 0 && par5 && cap.isCharging())

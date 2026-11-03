@@ -56,7 +56,7 @@ public class TileEntityAmmoFurnace extends TileEntityAbstractAmmoFurnace {
 	}
 
 	@Override
-	public boolean isBurning() {
+	public boolean isOnFire() {
 		return this.furnaceBurnTime > 0;
 	}
 
