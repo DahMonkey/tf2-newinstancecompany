@@ -35,8 +35,9 @@ public class GuiTeleporter extends GuiContainer {
 	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID,
 			"textures/gui/container/building.png");
 
-	public GuiTeleporter(EntityTeleporter teleporter) {
-		super(new ContainerEnergy(teleporter, Minecraft.getInstance().player.getInventory()));
+	public GuiTeleporter(ContainerEnergy container) {
+		super(container);
+		EntityTeleporter teleporter = (EntityTeleporter) container.building;
 		this.teleporter = teleporter;
 		exit = teleporter.isExit();
 		channel = teleporter.getID();

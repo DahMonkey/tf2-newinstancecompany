@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
 import rafradek.TF2weapons.item.ItemBuildingBox;
@@ -21,13 +22,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 
-public class ContainerTF2Workbench extends AbstractContainerMenu implements IRecipeContainer {
+public class ContainerTF2Workbench extends LegacyContainer implements IRecipeContainer {
 	/** The crafting matrix inventory (3x3). */
 	public CraftingContainer craftMatrix = new CraftingContainer(this, 3, 3);
 	public InventoryCraftResult craftResult = new InventoryCraftResult();
-	private final Level world;
+	public final Level world;
 	/** Position of the workbench */
-	private final BlockPos pos;
+	public final BlockPos pos;
 	public Player player;
 	public int currentRecipe = -1;
 
@@ -64,7 +65,7 @@ public class ContainerTF2Workbench extends AbstractContainerMenu implements IRec
 	 * Callback for when the crafting matrix is changed.
 	 */
 	@Override
-	public void onCraftMatrixChanged(AbstractContainerMenu inventoryIn) {
+	public void onCraftMatrixChanged(Container inventoryIn) {
 		ItemStack stack = ItemStack.EMPTY;
 		List<Recipe> recipes = TF2CraftingManager.INSTANCE.getRecipeList();
 		if (currentRecipe >= 0 && currentRecipe < recipes.size()

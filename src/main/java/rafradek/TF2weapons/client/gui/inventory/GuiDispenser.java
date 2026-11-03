@@ -29,8 +29,9 @@ public class GuiDispenser extends GuiContainer {
 
 	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/building.png");
 
-	public GuiDispenser(EntityDispenser dispenser) {
-		super(new ContainerDispenser(dispenser, Minecraft.getInstance().player.getInventory()));
+	public GuiDispenser(ContainerDispenser container) {
+		super(container);
+		EntityDispenser dispenser = (EntityDispenser) container.building;
 		this.dispenser = dispenser;
 		imageWidth = 212;
 		imageHeight = 195;

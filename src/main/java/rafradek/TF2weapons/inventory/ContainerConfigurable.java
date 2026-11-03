@@ -12,9 +12,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ContainerConfigurable extends AbstractContainerMenu {
+public class ContainerConfigurable extends LegacyContainer {
 	private final Level world;
-	private final BlockPos pos;
+	public final BlockPos pos;
 	public Player player;
 	public IEntityConfigurable config;
 

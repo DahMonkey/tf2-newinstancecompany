@@ -1,5 +1,6 @@
 package rafradek.TF2weapons;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.common.TF2Achievements;
 import com.google.common.collect.Iterables;
@@ -2183,7 +2184,7 @@ public class TF2EventsCommon {
 		}
 
 		@Override
-		public void sendAllWindowProperties(AbstractContainerMenu containerIn, AbstractContainerMenu inventory) {}
+		public void sendAllWindowProperties(AbstractContainerMenu containerIn, Container inventory) {}
 
 		@Override
 		public void sendAllContents(AbstractContainerMenu containerToSend, NonNullList<ItemStack> itemsList) {}

@@ -30,9 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 public class GuiUpgradeStation extends GuiContainer {
-	public GuiUpgradeStation(AbstractContainerMenu inventorySlotsIn) {
-		super(inventorySlotsIn);
-	}
 
 	private static final ResourceLocation UPGRADES_GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/upgrades.png");
 
@@ -51,10 +48,9 @@ public class GuiUpgradeStation extends GuiContainer {
 
 	private boolean wasClicking;
 
-	public GuiUpgradeStation(Inventory playerv, TileEntityUpgrades station, Level world,
-			BlockPos blockPosition) {
-		super(new ContainerUpgrades(Minecraft.getInstance().player, playerv, station, world, blockPosition));
-		this.station = station;
+	public GuiUpgradeStation(ContainerUpgrades container) {
+		super(container);
+		this.station = container.station;
 		imageWidth = 230;
 		imageHeight = 225;
 		// this.itemsToRender=new ItemStack[9];

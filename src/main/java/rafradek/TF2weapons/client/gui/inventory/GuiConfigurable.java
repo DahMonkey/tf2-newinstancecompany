@@ -26,9 +26,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 
 public class GuiConfigurable extends GuiContainer {
-	public GuiConfigurable(AbstractContainerMenu inventorySlotsIn) {
-		super(inventorySlotsIn);
-	}
 
 	private static final ResourceLocation UPGRADES_GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/upgrades.png");
 
@@ -44,9 +41,9 @@ public class GuiConfigurable extends GuiContainer {
 	public GuiComponent[] fields = new GuiComponent[0];
 	public BlockPos pos;
 
-	public GuiConfigurable(Inventory playerv, IEntityConfigurable station, Level world,
-			BlockPos blockPosition) {
-		super(new ContainerConfigurable(Minecraft.getInstance().player, playerv, station, world, blockPosition));
+	public GuiConfigurable(ContainerConfigurable container) {
+		super(container);
+		BlockPos blockPosition = container.pos;
 		this.imageWidth = 230;
 		this.imageHeight = 225;
 		this.pos = blockPosition;

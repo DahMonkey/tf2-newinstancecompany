@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.item.ItemFromData;
@@ -20,7 +21,7 @@ public class SlotCraftingTF2 extends ResultSlot {
 	private CraftingContainer craftMatrix;
 	private Player player;
 
-	public SlotCraftingTF2(Player player, CraftingContainer craftingInventory, AbstractContainerMenu inventoryIn,
+	public SlotCraftingTF2(Player player, CraftingContainer craftingInventory, Container inventoryIn,
 			int slotIndex, int xPosition, int yPosition) {
 		super(player, craftingInventory, inventoryIn, slotIndex, xPosition, yPosition);
 		this.player = player;

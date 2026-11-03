@@ -10,9 +10,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerEnergy extends AbstractContainerMenu {
+public class ContainerEnergy extends LegacyContainer {
+
+	public final EntityBuilding building;
 
 	public ContainerEnergy(EntityBuilding building, Inventory inv) {
+		this.building = building;
 		this.addSlot(new SlotItemHandler(building.charge, 0, 7, 80) {
 			@Override
 			public boolean isItemValid(@Nullable ItemStack stack) {

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.tileentity;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.inventory.ContainerAmmoFurnace;
 import javax.annotation.Nullable;
@@ -78,7 +79,7 @@ public class TileEntityElectricAmmoFurnace extends TileEntityAbstractAmmoFurnace
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public static boolean isBurning(AbstractContainerMenu inventory) {
+	public static boolean isBurning(Container inventory) {
 		return inventory.getField(0) > 0;
 	}
 

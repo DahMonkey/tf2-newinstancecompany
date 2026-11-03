@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.item.ItemAmmo;
 import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,15 +13,15 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ContainerAmmoFurnace extends AbstractContainerMenu {
+public class ContainerAmmoFurnace extends LegacyContainer {
 
-	private final AbstractContainerMenu tileFurnace;
+	public final Container tileFurnace;
 	private int cookTime;
 	private int totalCookTime;
 	private int furnaceBurnTime;
 	private int currentItemBurnTime;
 
-	public ContainerAmmoFurnace(Inventory inventory, AbstractContainerMenu furnaceInventory) {
+	public ContainerAmmoFurnace(Inventory inventory, Container furnaceInventory) {
 		this.tileFurnace = furnaceInventory;
 		for (int i = 0; i < 9; i++)
 			this.addSlot(new Slot(furnaceInventory, i, 9 + (i % 3) * 18, 17 + (i / 3) * 18));

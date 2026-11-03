@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.Container;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
@@ -25,7 +26,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerWearables extends AbstractContainerMenu {
+public class ContainerWearables extends LegacyContainer {
 
 	public static final String[] CURRENCY_EMPTY = { TF2weapons.MOD_ID + ":items/money_small_empty",
 			TF2weapons.MOD_ID + ":items/money_medium_empty", TF2weapons.MOD_ID + ":items/money_big_empty" };
@@ -36,7 +37,7 @@ public class ContainerWearables extends AbstractContainerMenu {
 	/** Determines if inventory manipulation should be handled. */
 	public boolean isLocalWorld;
 	private final Player player;
-	public AbstractContainerMenu wearables;
+	public Container wearables;
 	public static IItemHandler nullInv = new ItemStackHandler(9);
 	public boolean ammoBelt;
 

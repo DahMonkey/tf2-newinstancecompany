@@ -16,14 +16,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerRobotDeploy extends AbstractContainerMenu {
+public class ContainerRobotDeploy extends LegacyContainer {
 
 	private static final String[] EMPTY_NAMES = { TF2weapons.MOD_ID + ":items/robot_part_1_1_empty",
 			TF2weapons.MOD_ID + ":items/robot_part_1_2_empty", TF2weapons.MOD_ID + ":items/robot_part_1_3_empty",
 			TF2weapons.MOD_ID + ":items/robot_part_2_1_empty", TF2weapons.MOD_ID + ":items/robot_part_2_2_empty",
 			TF2weapons.MOD_ID + ":items/robot_part_3_1_empty", TF2weapons.MOD_ID + ":items/robot_part_3_2_empty",
 			TF2weapons.MOD_ID + ":items/weapon_empty_0" };
-	TileEntityRobotDeploy tileEntity;
+	public TileEntityRobotDeploy tileEntity;
 	public int progress = 0;
 	public int maxprogress = 500;
 

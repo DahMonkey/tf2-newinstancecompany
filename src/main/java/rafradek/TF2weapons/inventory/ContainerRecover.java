@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.TF2weapons;
 import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
@@ -10,11 +11,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerRecover extends AbstractContainerMenu {
+public class ContainerRecover extends LegacyContainer {
 
 	private final ItemStackHandler lostItemsHandler;
 
-	public ContainerRecover(AbstractContainerMenu inventory, ItemStackHandler dispenserInventoryIn) {
+	public ContainerRecover(Container inventory, ItemStackHandler dispenserInventoryIn) {
 		this.lostItemsHandler = dispenserInventoryIn;
 
 		for (int i = 0; i < 3; ++i) {

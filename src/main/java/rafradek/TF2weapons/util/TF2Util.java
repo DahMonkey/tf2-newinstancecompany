@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.util;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.message.IMessage;
 import rafradek.TF2weapons.message.TF2NetworkWrapper.TargetPoint;
@@ -1202,11 +1203,11 @@ public class TF2Util {
 		return false;
 	}
 
-	public static ItemStack getFirstItem(AbstractContainerMenu inventory, Predicate<ItemStack> pred) {
+	public static ItemStack getFirstItem(Container inventory, Predicate<ItemStack> pred) {
 
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			if (!stack.isEmpty() && pred.apply(stack))
+			ItemStack stack = inventory.getItem(i);
+			if (!stack.isEmpty() && pred.test(stack))
 				return stack;
 		}
 		return ItemStack.EMPTY;
@@ -1216,17 +1217,17 @@ public class TF2Util {
 
 		for (int i = 0; i < inventory.getSlots(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (!stack.isEmpty() && pred.apply(stack))
+			if (!stack.isEmpty() && pred.test(stack))
 				return stack;
 		}
 		return ItemStack.EMPTY;
 	}
 
-	public static int getFirstItemSlot(AbstractContainerMenu inventory, Predicate<ItemStack> pred) {
+	public static int getFirstItemSlot(Container inventory, Predicate<ItemStack> pred) {
 
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			if (!stack.isEmpty() && pred.apply(stack))
+			ItemStack stack = inventory.getItem(i);
+			if (!stack.isEmpty() && pred.test(stack))
 				return i;
 		}
 		return -1;
@@ -1236,17 +1237,17 @@ public class TF2Util {
 
 		for (int i = 0; i < inventory.getSlots(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (!stack.isEmpty() && pred.apply(stack))
+			if (!stack.isEmpty() && pred.test(stack))
 				return i;
 		}
 		return -1;
 	}
 
-	public static ItemStack getBestItem(AbstractContainerMenu inventory, Comparator<ItemStack> comp, Predicate<ItemStack> pred) {
+	public static ItemStack getBestItem(Container inventory, Comparator<ItemStack> comp, Predicate<ItemStack> pred) {
 		ItemStack greater = ItemStack.EMPTY;
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			if ((pred == null || pred.apply(stack)) && comp.compare(stack, greater) > 0)
+			ItemStack stack = inventory.getItem(i);
+			if ((pred == null || pred.test(stack)) && comp.compare(stack, greater) > 0)
 				greater = stack;
 		}
 		return greater;
@@ -1256,7 +1257,7 @@ public class TF2Util {
 		ItemStack greater = ItemStack.EMPTY;
 		for (int i = 0; i < inventory.getSlots(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if ((pred == null || pred.apply(stack)) && comp.compare(stack, greater) > 0)
+			if ((pred == null || pred.test(stack)) && comp.compare(stack, greater) > 0)
 				greater = stack;
 		}
 		return greater;
@@ -1287,13 +1288,13 @@ public class TF2Util {
 		return stack;
 	}
 
-	public static boolean hasEnoughItem(AbstractContainerMenu inventory, Predicate<ItemStack> pred, int amount) {
+	public static boolean hasEnoughItem(Container inventory, Predicate<ItemStack> pred, int amount) {
 		int count = 0;
 		if (amount <= 0)
 			return true;
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			if (!stack.isEmpty() && pred.apply(stack)) {
+			ItemStack stack = inventory.getItem(i);
+			if (!stack.isEmpty() && pred.test(stack)) {
 				count += stack.getCount();
 				if (count >= amount)
 					return true;
@@ -1309,7 +1310,7 @@ public class TF2Util {
 			return true;
 		for (int i = 0; i < inventory.getSlots(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (!stack.isEmpty() && pred.apply(stack)) {
+			if (!stack.isEmpty() && pred.test(stack)) {
 				count += stack.getCount();
 				if (count >= amount)
 					return true;

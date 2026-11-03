@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.inventory;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.NBTLiterals;
 import rafradek.TF2weapons.TF2weapons;
@@ -23,13 +24,13 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ContainerUpgrades extends AbstractContainerMenu {
+public class ContainerUpgrades extends LegacyContainer {
 	/** The crafting matrix inventory (3x3). */
 	// public InventoryCrafting craftMatrix = new InventoryCrafting(this, 3, 3);
-	public AbstractContainerMenu upgradedItem = new SimpleContainer("", false, 1);
+	public Container upgradedItem = new SimpleContainer("", false, 1);
 	private final Level world;
 	/** Position of the workbench */
-	private final BlockPos pos;
+	public final BlockPos pos;
 	public Player player;
 	public int currentRecipe = -1;
 	public TileEntityUpgrades station;

@@ -16,10 +16,10 @@ public class GuiRobotDeploy extends GuiContainer {
 	TileEntityRobotDeploy tileEntity;
 	Inventory player;
 
-	public GuiRobotDeploy(Inventory player, TileEntityRobotDeploy tileEntity) {
-		super(new ContainerRobotDeploy(player, tileEntity));
-		this.tileEntity = tileEntity;
-		this.player = player;
+	public GuiRobotDeploy(ContainerRobotDeploy container) {
+		super(container);
+		this.tileEntity = container.tileEntity;
+		this.player = Minecraft.getInstance().player.getInventory();
 		imageHeight = 193;
 	}
 

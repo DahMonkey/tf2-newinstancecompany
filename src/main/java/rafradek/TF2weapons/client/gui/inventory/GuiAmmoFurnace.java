@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import net.minecraft.world.Container;
 import rafradek.TF2weapons.client.compat.GuiContainer;
 
 import rafradek.TF2weapons.client.compat.GlStateManager;
@@ -18,12 +19,12 @@ public class GuiAmmoFurnace extends GuiContainer {
 			TF2weapons.MOD_ID + ":textures/gui/container/ammofurnace.png");
 	/** The player inventory bound to this GUI. */
 	private final Inventory inventory;
-	private final AbstractContainerMenu tileFurnace;
+	private final Container tileFurnace;
 
-	public GuiAmmoFurnace(Inventory playerv, AbstractContainerMenu furnaceInv) {
-		super(new ContainerAmmoFurnace(playerv, furnaceInv));
-		inventory = playerv;
-		tileFurnace = furnaceInv;
+	public GuiAmmoFurnace(ContainerAmmoFurnace container) {
+		super(container);
+		inventory = Minecraft.getInstance().player.getInventory();
+		tileFurnace = container.tileFurnace;
 	}
 
 	@Override

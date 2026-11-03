@@ -36,8 +36,9 @@ public class GuiSentry extends GuiContainer {
 
 	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/building.png");
 
-	public GuiSentry(EntitySentry sentry) {
-		super(new ContainerEnergy(sentry, Minecraft.getInstance().player.getInventory()));
+	public GuiSentry(ContainerEnergy container) {
+		super(container);
+		EntitySentry sentry = (EntitySentry) container.building;
 		this.sentry = sentry;
 		attackFlags = sentry.getAttackFlags();
 		imageWidth = 212;
@@ -46,7 +47,7 @@ public class GuiSentry extends GuiContainer {
 
 	@Override
 	public void initGui() {
-		initGui();
+		super.initGui();
 		buttonList.clear();
 		buttonList.add(attackOnHurtBtn = new GuiButton(1, leftPos + 181, topPos + 14, 25, 20, "no"));
 		buttonList.add(attackOtherPlayersBtn = new GuiButton(2, leftPos + 181, topPos + 34, 25, 20, "no"));
