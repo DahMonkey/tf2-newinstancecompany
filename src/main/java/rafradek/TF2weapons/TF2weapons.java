@@ -292,10 +292,23 @@ public class TF2weapons {
 	public static final ResourceLocation cratesOpened = TF2Achievements.CRATES_OPENED;
 	public static BannerPattern redPattern, bluPattern, neutralPattern, fastSpawn;
 	public static final GameRules.Key<GameRules.BooleanValue> DO_TF2_AI = GameRules.register("doTF2AI",
-			GameRules.Category.MOBS, GameRules.BooleanValue.create(true, (server, value) -> {
-			}));
+			GameRules.Category.MOBS, defaultTrueBooleanRule());
 	public static final ResourceLocation robotsKilled = TF2Achievements.ROBOTS_KILLED;
 	public static MinecraftServer server;
+
+	/** The rule type of a vanilla boolean rule that defaults to true (BooleanValue.create is not public). */
+	@SuppressWarnings("unchecked")
+	private static GameRules.Type<GameRules.BooleanValue> defaultTrueBooleanRule() {
+		final Object[] holder = new Object[1];
+		GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
+			@Override
+			public <T extends GameRules.Value<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
+				if (key.getId().equals("doMobSpawning"))
+					holder[0] = type;
+			}
+		});
+		return (GameRules.Type<GameRules.BooleanValue>) holder[0];
+	}
 	public static EntityDummy dummyEnt;
 
 	public static ArrayList<ResourceLocation> animalsDisguise = new ArrayList<>();

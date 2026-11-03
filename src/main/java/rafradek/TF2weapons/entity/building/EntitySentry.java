@@ -96,11 +96,7 @@ public class EntitySentry extends EntityBuilding {
 	public EntitySentry(EntityType<? extends EntitySentry> type, Level world) {
 		super(type, world);
 		this.setSize(0.8f, 0.8f);
-		try {
-			this.lookControl = new SentryLookHelper(this);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		this.lookControl = new SentryLookHelper(this);
 	}
 
 	@Override

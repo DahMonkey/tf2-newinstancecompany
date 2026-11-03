@@ -87,7 +87,7 @@ public class EntityScout extends EntityTF2Character {
 		super.aiStep();
 
 		if (jumpDelay > 0 && --jumpDelay == 0 && (this.onGround || !this.doubleJumped))
-			this.jump();
+			this.jumpFromGround();
 		if (this.onGround)
 			this.doubleJumped = false;
 
