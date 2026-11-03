@@ -267,7 +267,7 @@ public class EntitySoldier extends EntityTF2Character {
 		@Override
 		public boolean canUse() {
 			if (getOwner() == null && getDiff() > 1 && (getTarget() != null || isGiant())
-					&& this.getUseItem().isEmpty()) {
+					&& EntitySoldier.this.getUseItem().isEmpty()) {
 				ItemStack backpack = ItemBackpack.getBackpack(EntitySoldier.this);
 				return backpack.getItem() instanceof ItemSoldierBackpack
 						&& getWepCapability().getRage(RageType.BANNER) >= 1f;

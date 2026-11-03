@@ -1159,7 +1159,7 @@ public class TF2Util {
 			// MathHelper.ceil(sec * upgrade) * 20, 20 * MathHelper.ceil(8 * upgrade) + fire
 			// % 20));
 			// fire = target.getRemainingFireTicks();
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
