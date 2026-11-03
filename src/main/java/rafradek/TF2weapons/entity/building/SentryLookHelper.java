@@ -73,7 +73,7 @@ public class SentryLookHelper extends LookControl {
 			double d0 = this.getX() - this.entity.getX();
 			double d1 = this.getY() - (this.entity.getY() + this.entity.getEyeHeight());
 			double d2 = this.getZ() - this.entity.getZ();
-			double d3 = Mth.sqrt((float)d0 * d0 + d2 * d2);
+			double d3 = (float) Math.sqrt(d0 * d0 + d2 * d2);
 			float f = (float) (Mth.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
 			float f1 = (float) (-(Mth.atan2(d1, d3) * (180D / Math.PI)));
 			this.entity.setXRot((this.updateRotation(this.entity.getXRot(), f1, this.deltaLookPitch)));

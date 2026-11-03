@@ -23,9 +23,8 @@ public class ItemArmorTF2 extends ArmorItem {
 	public UUID knockbackUUID = UUID.fromString("7941f9c1-13ac-4ae0-b54b-cbd8d5eec6df");
 	public float knockbackReduction;
 
-	public ItemArmorTF2(ArmorMaterial materialIn, int renderIndexIn, EquipmentSlot equipmentSlotIn,
-			String description, float kresistance) {
-		super(materialIn, renderIndexIn, equipmentSlotIn);
+	public ItemArmorTF2(ArmorMaterial materialIn, String description, float kresistance) {
+		super(materialIn, EquipmentSlot.FEET, new Properties().tab(rafradek.TF2weapons.TF2weapons.tabutilitytf2));
 		this.description = description;
 		this.knockbackReduction = kresistance;
 	}
@@ -40,7 +39,7 @@ public class ItemArmorTF2 extends ArmorItem {
 	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getDefaultAttributeModifiers(equipmentSlot));
 
-		if (equipmentSlot == this.armorType && this.knockbackReduction != 0) {
+		if (equipmentSlot == this.slot && this.knockbackReduction != 0) {
 			multimap.put(Attributes.KNOCKBACK_RESISTANCE,
 					new AttributeModifier(knockbackUUID, "Knockback modifier", this.knockbackReduction, AttributeModifier.Operation.fromValue(0)));
 		}

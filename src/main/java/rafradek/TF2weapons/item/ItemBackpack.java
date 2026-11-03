@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -35,19 +36,19 @@ public class ItemBackpack extends ItemFromData {
 	private UUID ARMOR_TOUGHNESS_MOD = UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D");
 
 	public ItemBackpack() {
-		this.addPropertyOverride(new ResourceLocation("bodyModel"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("bodymodel"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (ItemWearable.usedModel == 1)
 					return 1;
 				return 0;
 			}
 		});
-		this.addPropertyOverride(new ResourceLocation("headModel"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("headmodel"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (ItemWearable.usedModel == 2)
 					return 1;
 				return 0;
@@ -87,12 +88,12 @@ public class ItemBackpack extends ItemFromData {
 	}
 
 	@Override
-	public boolean isValidArmor(ItemStack stack, EquipmentSlot armorType, Entity entity) {
+	public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
 		return armorType == EquipmentSlot.CHEST;
 	}
 
 	@Override
-	public void onArmorTick(Level world, Player player, ItemStack itemStack) {
+	public void onArmorTick(ItemStack itemStack, Level world, Player player) {
 		this.onArmorTickAny(world, player, itemStack);
 	}
 
@@ -139,8 +140,8 @@ public class ItemBackpack extends ItemFromData {
 	@Override
 	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
 		return super.canApplyAtEnchantingTable(stack, enchantment)
-				|| enchantment.type == EnchantmentCategory.ARMOR_CHEST || enchantment.type == EnchantmentCategory.ARMOR
-				|| enchantment.type == EnchantmentCategory.WEARABLE;
+				|| enchantment.category == EnchantmentCategory.ARMOR_CHEST || enchantment.category == EnchantmentCategory.ARMOR
+				|| enchantment.category == EnchantmentCategory.WEARABLE;
 	}
 
 	@Override

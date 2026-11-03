@@ -165,3 +165,14 @@ s = os.path.join(src_mod, "structures")
 if os.path.isdir(s):
     shutil.copytree(s, os.path.join(D, "structures"))
 print("done")
+
+# 7. Item model override predicates must be lowercase resource locations in 1.19
+for root, _, files in os.walk(os.path.join(A, "models", "item")):
+    for fn in files:
+        if fn.endswith(".json"):
+            fp = os.path.join(root, fn)
+            t = open(fp, encoding="utf-8").read()
+            t2 = t.replace('"bodyModel"', '"bodymodel"').replace('"headModel"', '"headmodel"')
+            if t2 != t:
+                open(fp, "w", encoding="utf-8").write(t2)
+print("predicates lowercased")

@@ -7,8 +7,8 @@
   "overrides": [
     {
       "predicate": {
-        "bodyModel": 1,
-        "headModel": 0
+        "bodymodel": 1,
+        "headmodel": 0
       },
       "model": "rafradek_tf2_weapons:item/head_prize_body"
     }

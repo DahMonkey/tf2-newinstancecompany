@@ -29,16 +29,16 @@ public class ItemKnife extends ItemMeleeWeapon {
 
 	public ItemKnife() {
 		super();
-		this.addPropertyOverride(new ResourceLocation("backstab"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("backstab"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (entityIn == Minecraft.getInstance().player && Minecraft.getInstance().hitResult != null
-						&& Minecraft.getInstance().hitResult.getEntity() != null
-						&& TF2Util.getDistanceSqBox(Minecraft.getInstance().hitResult.getEntity(), entityIn.getX(),
+						&& TF2Util.hitEntity(Minecraft.getInstance().hitResult) != null
+						&& TF2Util.getDistanceSqBox(TF2Util.hitEntity(Minecraft.getInstance().hitResult), entityIn.getX(),
 								entityIn.getY(), entityIn.getZ(), entityIn.getBbWidth(),
 								entityIn.getBbHeight()) <= getMaxRange(stack) * getMaxRange(stack)
-						&& isBackstab(entityIn, Minecraft.getInstance().hitResult.getEntity(), stack))
+						&& isBackstab(entityIn, TF2Util.hitEntity(Minecraft.getInstance().hitResult), stack))
 					return 1;
 				return 0;
 			}
@@ -69,7 +69,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 			else
 				angle2 = -180 - angle2;
 			angle2 += 180;
-			float enemyAngle = 180 + Mth.wrapDegrees(target.getRotationYawHead());
+			float enemyAngle = 180 + Mth.wrapDegrees(target.getYHeadRot());
 			float difference = 180 - Math.abs(Math.abs(ourAngle - enemyAngle) - 180);
 			float difference2 = 180 - Math.abs(Math.abs(angle2 - enemyAngle) - 180);
 			// System.out.println(angle2+" "+difference2+" "+difference);
@@ -82,7 +82,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 	public float getBackstabBonusDamage(ItemStack stack, LivingEntity living, Entity target) {
 		float base = 4f;
 		if (living instanceof Player && ((Player) living).getCooldowns().isOnCooldown(this)) {
-			base -= (base - 1) * (((Player) living).getCooldowns().getCooldown(this, 0));
+			base -= (base - 1) * (((Player) living).getCooldowns().getCooldownPercent(this, 0));
 		}
 		base *= Math.pow(TF2Attribute.getModifier("Backstab Damage", stack, 1, living), 2.0f);
 		if (target instanceof IEntityTF2) {
@@ -138,7 +138,7 @@ public class ItemKnife extends ItemMeleeWeapon {
 
 				WeaponsCapability.get(attacker).stabbedDisguise = true;
 				if (!(target instanceof Player))
-					WeaponsCapability.get(attacker).setDisguiseType("M:" + EntityList.getKey(target).toString());
+					WeaponsCapability.get(attacker).setDisguiseType("M:" + net.minecraft.world.entity.EntityType.getKey(target.getType()).toString());
 				else
 					WeaponsCapability.get(attacker).setDisguiseType("P:" + target.getName());
 				((LivingEntity) target).deathTime = 15;

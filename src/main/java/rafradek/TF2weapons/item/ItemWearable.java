@@ -69,14 +69,14 @@ public class ItemWearable extends ItemFromData {
 
 	public ItemWearable() {
 		super();
-		this.addPropertyOverride(new ResourceLocation("bodyModel"), (ItemStack stack, @Nullable Level world,
+		this.addPropertyOverride(new ResourceLocation("bodymodel"), (ItemStack stack, @Nullable Level world,
 				@Nullable LivingEntity entityIn) -> (ItemWearable.usedModel == 1) ? 1 : 0);
-		this.addPropertyOverride(new ResourceLocation("headModel"), (ItemStack stack, @Nullable Level world,
+		this.addPropertyOverride(new ResourceLocation("headmodel"), (ItemStack stack, @Nullable Level world,
 				@Nullable LivingEntity entityIn) -> (ItemWearable.usedModel == 2) ? 1 : 0);
 	}
 
 	@Override
-	public boolean isValidArmor(ItemStack stack, EquipmentSlot slot, Entity player) {
+	public boolean canEquip(ItemStack stack, EquipmentSlot slot, Entity player) {
 		return slot == (isHat(stack) ? EquipmentSlot.HEAD : EquipmentSlot.CHEST);
 	}
 
@@ -102,7 +102,7 @@ public class ItemWearable extends ItemFromData {
 	}
 
 	@Override
-	public void onArmorTick(Level world, Player player, ItemStack itemStack) {
+	public void onArmorTick(ItemStack itemStack, Level world, Player player) {
 		onUpdateWearing(itemStack, world, player);
 	}
 

@@ -1983,4 +1983,12 @@ public class TF2Util {
 		ResourceLocation id = ResourceLocation.tryParse(name.toLowerCase(java.util.Locale.ROOT));
 		return id == null ? null : net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getValue(id);
 	}
+
+	/** The entity a ray trace hit, or null for block or missed traces. */
+	@javax.annotation.Nullable
+	public static Entity hitEntity(@javax.annotation.Nullable HitResult result) {
+		return result instanceof net.minecraft.world.phys.EntityHitResult
+				? ((net.minecraft.world.phys.EntityHitResult) result).getEntity()
+				: null;
+	}
 }

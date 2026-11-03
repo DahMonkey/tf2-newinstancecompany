@@ -59,7 +59,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 		float hitY = (float) (context.getClickLocation().y - pos.getY());
 		float hitZ = (float) (context.getClickLocation().z - pos.getZ());
 		if (ItemToken.allowUse(player, TF2Class.ENGINEER)) {
-			return super.useOn(player, world, pos, hand, facing, hitX, hitY, hitZ);
+			return super.useOn(context);
 		} else {
 			return InteractionResult.FAIL;
 		}

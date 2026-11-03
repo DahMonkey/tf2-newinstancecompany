@@ -1,27 +1,37 @@
 package rafradek.TF2weapons.item;
 
 import com.google.common.collect.Iterables;
-import rafradek.TF2weapons.TF2ConfigVars;
+
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import rafradek.TF2weapons.TF2ConfigVars;
 
-public class ItemFoodThrowable extends ItemFood {
+/** Sandvich and chocolate: food that heals whoever picks it up when thrown. */
+public class ItemFoodThrowable extends LegacyItem {
 
 	public int waitTime;
+	private final int healAmount;
 
-	public ItemFoodThrowable(int amount, float saturation, boolean isWolfFood, int waitTime) {
-		super(amount, saturation, isWolfFood);
+	public ItemFoodThrowable(int amount, float saturation, boolean isWolfFood, int waitTime,
+			java.util.function.Supplier<net.minecraft.world.effect.MobEffectInstance> effect, Properties properties) {
+		super(properties.food(new FoodProperties.Builder().nutrition(amount).saturationMod(saturation).alwaysEat()
+				.effect(effect, 1f).build()));
 		this.waitTime = waitTime;
-		this.setAlwaysEdible();
+		this.healAmount = amount;
+	}
+
+	public int getHealAmount(ItemStack stack) {
+		return this.healAmount;
 	}
 
 	@Override
-	public boolean onEntityItemUpdate(ItemEntity entityItem) {
+	public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
 		if (entityItem.getItem().hasTag() && entityItem.getItem().getTag().getBoolean("IsHealing")) {
 			LivingEntity living = Iterables.getFirst(entityItem.level.getEntitiesOfClass(LivingEntity.class,
 					entityItem.getBoundingBox(), test -> (!(test instanceof Player)
@@ -31,7 +41,7 @@ public class ItemFoodThrowable extends ItemFood {
 			if (living != null) {
 				living.heal(living.getMaxHealth() * this.getHealAmount(entityItem.getItem()) / 28f);
 				entityItem.getItem().shrink(1);
-				if (entityItem.getItem().getTag().getBoolean("IsHealing"))
+				if (entityItem.getItem().hasTag() && entityItem.getItem().getTag().getBoolean("IsHealing"))
 					entityItem.getItem().setTag(null);
 			}
 		}
@@ -39,33 +49,19 @@ public class ItemFoodThrowable extends ItemFood {
 	}
 
 	@Override
-	public boolean onDroppedByPlayer(ItemStack item, Player player) {
-
-		if (!TF2ConfigVars.fastItemCooldown) {
-			/*
-			 * if (!player.getCooldownTracker().hasCooldown(this)) {
-			 * player.getCooldownTracker().setCooldown(this, waitTime); if
-			 * (!item.hasTagCompound()) item.setTagCompound(new NBTTagCompound());
-			 * item.getTagCompound().setBoolean("IsHealing", true); }
-			 */
-		}
-		return true;
-	}
-
-	@Override
-	protected void onFoodEaten(ItemStack stack, Level world, Player player) {
-		super.onFoodEaten(stack, world, player);
-		if (!world.isClientSide) {
-			player.getCooldowns().addCooldown(this, TF2ConfigVars.fastItemCooldown ? waitTime / 2 : waitTime);
-		}
+	public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity living) {
+		int count = stack.getCount();
+		ItemStack result = super.finishUsingItem(stack, world, living);
+		if (!world.isClientSide && living instanceof Player)
+			((Player) living).getCooldowns().addCooldown(this,
+					TF2ConfigVars.fastItemCooldown ? this.waitTime / 2 : this.waitTime);
+		if (TF2ConfigVars.freeUseItems)
+			result.setCount(count);
+		return result;
 	}
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
-		ItemStack previous = player.getItemInHand(handIn);
-		InteractionResultHolder<ItemStack> result = super.use(world, player, handIn);
-		if (TF2ConfigVars.freeUseItems)
-			result.getResult().setCount(previous.getCount());
-		return result;
+		return super.use(world, player, handIn);
 	}
 }

@@ -28,10 +28,10 @@ public class ItemJar extends ItemProjectileWeapon {
 	public ItemJar() {
 		super();
 		this.setMaxStackSize(64);
-		this.addPropertyOverride(new ResourceLocation("empty"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("empty"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (stack.getTag().getBoolean("IsEmpty"))
 					return 1;
 				return 0;

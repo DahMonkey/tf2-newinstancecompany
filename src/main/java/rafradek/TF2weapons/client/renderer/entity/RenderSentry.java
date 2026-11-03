@@ -172,8 +172,8 @@ public class RenderSentry extends RenderLiving<EntitySentry> {
 				double yDist = (target.getLocation().y)
 						- (living.yo + (living.getY() - living.yo) * p_76986_9_ + living.getBbHeight() / 2);
 				double zDist = target.getLocation().z - (living.zo + (living.getZ() - living.zo) * p_76986_9_);
-				float f = Mth.sqrt((float)xDist * xDist + zDist * zDist);
-				float fullDist = Mth.sqrt((float)xDist * xDist + yDist * yDist + zDist * zDist);
+				float f = (float) Math.sqrt(xDist * xDist + zDist * zDist);
+				float fullDist = (float) Math.sqrt(xDist * xDist + yDist * yDist + zDist * zDist);
 				GlStateManager.translate((float) p_76986_2_, (float) p_76986_4_ + living.getEyeHeight(),
 						(float) p_76986_6_);
 				GL11.glRotatef((float) (Math.atan2(xDist, zDist) * 180.0D / Math.PI), 0.0F, 1.0F, 0.0F);

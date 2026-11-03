@@ -93,17 +93,17 @@ public class ItemFlameThrower extends ItemAirblast {
 				}
 			}
 			if (TF2Util.calculateCritPre(stack, living) != 2 && (!ClientProxy.fireSounds.containsKey(living)
-					|| !Minecraft.getInstance().getSoundManager().isSoundPlaying(ClientProxy.fireSounds.get(living))
+					|| !Minecraft.getInstance().getSoundManager().isActive(ClientProxy.fireSounds.get(living))
 					|| (ClientProxy.fireSounds.get(living).type != 0 && ClientProxy.fireSounds.get(living).type != 2)))
 				ClientProxy.playWeaponSound(living, ItemFromData.getSound(stack, PropertyType.FIRE_LOOP_SOUND), true, 0,
 						stack);
 			else if (TF2Util.calculateCritPre(stack, living) == 2 && (!ClientProxy.fireSounds.containsKey(living)
-					|| !Minecraft.getInstance().getSoundManager().isSoundPlaying(ClientProxy.fireSounds.get(living))
+					|| !Minecraft.getInstance().getSoundManager().isActive(ClientProxy.fireSounds.get(living))
 					|| (ClientProxy.fireSounds.get(living).type != 1))) {
 				ResourceLocation playSoundCrit = new ResourceLocation(
 						ItemFromData.getData(stack).getString(PropertyType.FIRE_LOOP_SOUND) + ".crit");
 
-				ClientProxy.playWeaponSound(living, SoundEvent.REGISTRY.getObject(playSoundCrit), true, 1, stack);
+				ClientProxy.playWeaponSound(living, net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(playSoundCrit), true, 1, stack);
 			}
 		}
 		// System.out.println("nie");

@@ -36,10 +36,10 @@ public class ItemMinigun extends ItemBulletWeapon {
 
 	public ItemMinigun() {
 		super();
-		this.addPropertyOverride(new ResourceLocation("spin"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("spin"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (entityIn != null && entityIn.getCapability(TF2weapons.WEAPONS_CAP).isPresent()
 						&& entityIn.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).chargeTicks > 0)
 					return 1;
@@ -151,7 +151,7 @@ public class ItemMinigun extends ItemBulletWeapon {
 				ResourceLocation playSoundCrit = new ResourceLocation(
 						ItemFromData.getData(stack).getString(PropertyType.FIRE_LOOP_SOUND) + ".crit");
 
-				ClientProxy.playWeaponSound(living, SoundEvent.REGISTRY.getObject(playSoundCrit), true, 1, stack);
+				ClientProxy.playWeaponSound(living, net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(playSoundCrit), true, 1, stack);
 			}
 		}
 		// System.out.println("nie");
@@ -272,6 +272,5 @@ public class ItemMinigun extends ItemBulletWeapon {
 	}
 
 	static {
-		slowdown.setSaved(false);
 	}
 }

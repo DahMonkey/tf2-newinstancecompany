@@ -170,10 +170,10 @@ public class InvasionEvent implements INBTSerializable<CompoundTag> {
 			Entry<EntityTF2Character, Integer> entry = it.next();
 			EntityTF2Character ent = entry.getKey();
 			if (ent.isRemoved()) {
-				if (ent.getAttackingEntity() != null
-						&& TF2Util.getOwnerIfOwnable(ent.getAttackingEntity()) instanceof Player
-						&& (ent.getAttackingEntity().getTeam() != null || !TF2ConfigVars.canJoin))
-					this.onKill(TF2Util.getOwnerIfOwnable(ent.getAttackingEntity()), ent.getLastDamageSource(), ent);
+				if (ent.getKillCredit() != null
+						&& TF2Util.getOwnerIfOwnable(ent.getKillCredit()) instanceof Player
+						&& (ent.getKillCredit().getTeam() != null || !TF2ConfigVars.canJoin))
+					this.onKill(TF2Util.getOwnerIfOwnable(ent.getKillCredit()), ent.getLastDamageSource(), ent);
 				it.remove();
 				this.removeRobotCount(ent);
 				continue;

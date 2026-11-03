@@ -67,7 +67,7 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 		ItemStack stack = player.getItemInHand(hand);
 		if (world.isClientSide)
 			return InteractionResult.SUCCESS;
-		else if (!player.canPlayerEdit(pos.relative(facing), facing, stack))
+		else if (!player.mayUseItemAt(pos.relative(facing), facing, stack))
 			return InteractionResult.FAIL;
 		else {
 			BlockState iblockstate = world.getBlockState(pos);
@@ -120,15 +120,15 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 		if (world.isClientSide)
 			return new InteractionResultHolder<>(InteractionResult.PASS, itemStackIn);
 		else {
-			HitResult raytraceresult = this.rayTrace(world, player, true);
+			HitResult raytraceresult = getPlayerPOVHitResult(world, player, net.minecraft.world.level.ClipContext.Fluid.SOURCE_ONLY);
 
 			if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.BLOCK) {
 				BlockPos blockpos = ((BlockHitResult) raytraceresult).getBlockPos();
 
 				if (!(world.getBlockState(blockpos).getBlock() instanceof LiquidBlock))
 					return new InteractionResultHolder<>(InteractionResult.PASS, itemStackIn);
-				else if (world.isBlockModifiable(player, blockpos)
-						&& player.canPlayerEdit(blockpos, ((BlockHitResult) raytraceresult).getDirection(), itemStackIn)) {
+				else if (world.mayInteract(player, blockpos)
+						&& player.mayUseItemAt(blockpos, ((BlockHitResult) raytraceresult).getDirection(), itemStackIn)) {
 
 					boolean hastag = itemStackIn.getTag() != null
 							&& itemStackIn.getTag().contains("SavedEntity");
@@ -165,7 +165,7 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 							 * entity).setExit(itemStackIn.getItemDamage()>23); }
 							 */
 						}
-						player.awardStat(StatList.getObjectUseStats(this));
+						player.awardStat(net.minecraft.stats.Stats.ITEM_USED.get(this));
 						return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
 					}
 				} else
@@ -244,12 +244,12 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 				data.isGiant = team == 2 && spawner != null && spawner.isShiftKeyDown();
 				if (nbtdata == null)
 					TF2Util.initialSpawn(entityliving, par0World.getCurrentDifficultyAt(new BlockPos(entityliving)), data);
-				entityliving.playLivingSound();
+				entityliving.playAmbientSound();
 				if (entity instanceof EntityBuilding)
 					((EntityBuilding) entity).setEntTeam(team);
 				if (entity instanceof EntitySaxtonHale && par1 % 2 == 1)
 					((EntitySaxtonHale) entity).setHostile();
-				if (!par0World.getCollisionBoxes(entity, entity.getBoundingBox()).isEmpty())
+				if (!par0World.noCollision(entity, entity.getBoundingBox()))
 					return null;
 				par0World.addFreshEntity(entity);
 
@@ -305,8 +305,8 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (stack.getDamageValue() < 18)
-			tooltip.add(Component.literal("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn with default equipment"));
+			tooltip.add(Component.literal("Hold " + net.minecraft.client.Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString() + " to spawn with default equipment"));
 		if (stack.getDamageValue() >= 36 && stack.getDamageValue() < 45)
-			tooltip.add(Component.literal("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn a giant"));
+			tooltip.add(Component.literal("Hold " + net.minecraft.client.Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString() + " to spawn a giant"));
 	}
 }

@@ -113,7 +113,7 @@ public class EntitySniper extends EntityTF2Character {
 		 * altUse(getHeldItem(EnumHand.MAIN_HAND), this, worldObj); }
 		 */
 		super.aiStep();
-		if (this.getRevengeTimer() == this.tickCount - 1) {
+		if (this.getLastHurtByMobTimestamp() == this.tickCount - 1) {
 			this.lastRotation[0] += 4;
 		}
 

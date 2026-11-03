@@ -99,7 +99,7 @@ public class EntityHHH extends EntityTF2Boss {
 		 * EntityLivingBase.class,2, false,false,new Predicate<EntityLivingBase>(){
 		 *
 		 * @Override public boolean apply(EntityLivingBase input) { return
-		 * input.getActivePotionEffect(TF2weapons.it)!=null; }
+		 * input.getEffect(TF2weapons.it)!=null; }
 		 *
 		 * }));
 		 */
@@ -397,7 +397,7 @@ public class EntityHHH extends EntityTF2Boss {
 		}
 		if (ent != null) {
 			/*
-			 * if(ent.getActivePotionEffect(TF2weapons.it)==null&&this.scareTick<=0){
+			 * if(ent.getEffect(TF2weapons.it)==null&&this.scareTick<=0){
 			 * for(EntityLivingBase
 			 * living:this.world.getEntitiesWithinAABB(EntityLivingBase.class,
 			 * this.getEntityBoundingBox().inflate(10, 10, 10), new

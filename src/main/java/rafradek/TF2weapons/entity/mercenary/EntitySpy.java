@@ -105,7 +105,7 @@ public class EntitySpy extends EntityTF2Character {
 				 * if (target != null &&
 				 * this.loadout.getStackInSlot(3).getTagCompound().getBoolean("Active")) {
 				 * boolean useKnife = false; if ((this.getRevengeTarget() != null &&
-				 * this.ticksExisted - this.getRevengeTimer() < 45) || (useKnife =
+				 * this.ticksExisted - this.getLastHurtByMobTimestamp() < 45) || (useKnife =
 				 * (this.getDistanceSq(target) < (TF2Util.lookingAtFast(target, 105, this.posX,
 				 * this.posY, this.posZ) ? 6 : 300)))) {
 				 * 

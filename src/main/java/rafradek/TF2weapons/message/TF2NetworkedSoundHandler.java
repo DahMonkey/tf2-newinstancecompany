@@ -26,7 +26,7 @@ public class TF2NetworkedSoundHandler implements IMessageHandler<TF2Message.Netw
 						message.id, message.repeat);
 			}
 			sounds.put(message.id, sound);
-			Minecraft.getInstance().getSoundManager().isSoundPlaying(sound);
+			Minecraft.getInstance().getSoundManager().isActive(sound);
 		});
 		return null;
 	}

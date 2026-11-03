@@ -1165,7 +1165,7 @@ public class TF2EventsCommon {
 		}
 		living.level.getProfiler().pop();
 		/*
-		 * if (living.getActivePotionEffect(TF2weapons.uber)!=null &&
+		 * if (living.getEffect(TF2weapons.uber)!=null &&
 		 * !(living.getHeldItem(EnumHand.MAIN_HAND) != null &&
 		 * living.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemMedigun &&
 		 * living.getHeldItem(EnumHand.MAIN_HAND).getTagCompound().getBoolean(

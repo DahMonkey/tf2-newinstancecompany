@@ -189,7 +189,7 @@ public class ItemMedigun extends ItemUsable {
 		endY = (-Mth.sin(spreadPitch * (float) Math.PI));
 		endZ = Mth.cos(spreadYaw * (float) Math.PI) * Mth.cos(spreadPitch * (float) Math.PI);
 
-		float var9 = Mth.sqrt((float)endX * endX + endY * endY + endZ * endZ);
+		float var9 = (float) Math.sqrt(endX * endX + endY * endY + endZ * endZ);
 		// float[] ratioX= this.calculateRatioX(living.rotationYaw,
 		// living.rotationPitch);
 		// float[] ratioY= this.calculateRatioY(living.rotationYaw,
@@ -314,10 +314,10 @@ public class ItemMedigun extends ItemUsable {
 					return true;
 				}
 				return target.getHealth() / target.getMaxHealth() < 0.35F
-						&& (target.tickCount - target.getRevengeTimer()) < 25;
+						&& (target.tickCount - target.getLastHurtByMobTimestamp()) < 25;
 			} else {
 				return target.getHealth() / target.getMaxHealth() < 0.35F
-						&& (target.tickCount - target.getRevengeTimer()) < 25;
+						&& (target.tickCount - target.getLastHurtByMobTimestamp()) < 25;
 			}
 		}
 	}

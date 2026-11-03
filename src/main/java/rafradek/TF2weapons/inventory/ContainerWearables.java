@@ -78,7 +78,7 @@ public class ContainerWearables extends LegacyContainer {
 					if (stack.isEmpty())
 						return false;
 					else
-						return stack.getItem().isValidArmor(stack, entityequipmentslot, ContainerWearables.this.player);
+						return stack.canEquip(entityequipmentslot, ContainerWearables.this.player);
 				}
 
 				@Override
@@ -149,7 +149,7 @@ public class ContainerWearables extends LegacyContainer {
 			@Override
 			public boolean isItemValid(@Nullable ItemStack stack) {
 				return stack.getItem() instanceof ItemFromData
-						&& stack.getItem().isValidArmor(stack, EquipmentSlot.CHEST, player);
+						&& stack.canEquip(EquipmentSlot.CHEST, player);
 			}
 
 			@Override

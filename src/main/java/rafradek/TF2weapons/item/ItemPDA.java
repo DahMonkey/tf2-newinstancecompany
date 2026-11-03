@@ -59,10 +59,10 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 
 	public ItemPDA() {
 		this.setMaxStackSize(1);
-		this.addPropertyOverride(new ResourceLocation("building"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("building"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (!stack.hasTag() || (stack.getTag().getByte("Building") == 0)) {
 					return 0f;
 				} else {
@@ -151,7 +151,7 @@ public class ItemPDA extends ItemFromData implements IItemSlotNumber, IItemOverl
 				return InteractionResult.PASS;
 			else
 				return InteractionResult.SUCCESS;
-		} else if (!player.canPlayerEdit(pos.relative(facing), facing, stack) || !stack.hasTag()
+		} else if (!player.mayUseItemAt(pos.relative(facing), facing, stack) || !stack.hasTag()
 				|| stack.getTag().getByte("Building") == 0)
 			return InteractionResult.PASS;
 		else {

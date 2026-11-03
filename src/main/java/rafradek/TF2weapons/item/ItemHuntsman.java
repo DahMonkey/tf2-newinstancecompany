@@ -35,28 +35,28 @@ public class ItemHuntsman extends ItemProjectileWeapon {
 
 	public ItemHuntsman() {
 		super();
-		this.addPropertyOverride(new ResourceLocation("loaded"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("loaded"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (ItemHuntsman.this.getClip(stack) > 0)
 					return 1;
 				return 0;
 			}
 		});
-		this.addPropertyOverride(new ResourceLocation("lighted"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("lighted"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (stack.hasTag() && stack.getTag().getBoolean("ArrowLit"))
 					return 1;
 				return 0;
 			}
 		});
-		this.addPropertyOverride(new ResourceLocation("charge"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("charge"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				return getCharge(entityIn, stack);
 			}
 		});
@@ -129,12 +129,9 @@ public class ItemHuntsman extends ItemProjectileWeapon {
 		super.inventoryTick(par1ItemStack, par2World, par3Entity, par4, par5);
 		if (!par2World.isClientSide && par3Entity.tickCount % 10 == 0) {
 			WeaponsCapability cap = par3Entity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);
-			if (par5 && (OreDictionary.itemMatches(new ItemStack(Blocks.TORCH),
-					((LivingEntity) par3Entity).getOffhandItem(), false)
-					|| OreDictionary.itemMatches(new ItemStack(Blocks.TORCH),
-							new ItemStack(par2World.getBlockState(par3Entity.blockPosition()).getBlock()), false)
-					|| OreDictionary.itemMatches(new ItemStack(Blocks.TORCH),
-							new ItemStack(par2World.getBlockState(par3Entity.blockPosition().above()).getBlock()), false))) {
+			if (par5 && (((LivingEntity) par3Entity).getOffhandItem().is(net.minecraft.world.item.Items.TORCH)
+					|| new ItemStack(par2World.getBlockState(par3Entity.blockPosition()).getBlock()).is(net.minecraft.world.item.Items.TORCH)
+					|| new ItemStack(par2World.getBlockState(par3Entity.blockPosition().above()).getBlock()).is(net.minecraft.world.item.Items.TORCH))) {
 				par1ItemStack.getTag().putBoolean("ArrowLit", true);
 			}
 		}
@@ -171,7 +168,7 @@ public class ItemHuntsman extends ItemProjectileWeapon {
 	@Override
 	public void shoot(ItemStack stack, LivingEntity living, Level world, int thisCritical, InteractionHand hand) {
 		if (!world.isClientSide) {
-			ItemStack arrow = new ItemStack(stack.getTag().getCompound("LastLoaded"));
+			ItemStack arrow = ItemStack.of(stack.getTag().getCompound("LastLoaded"));
 			if (arrow.isEmpty() || arrow.getItem() == Items.ARROW)
 				super.shoot(stack, living, world, thisCritical, hand);
 			else if (arrow.getItem() instanceof ArrowItem) {
@@ -222,6 +219,5 @@ public class ItemHuntsman extends ItemProjectileWeapon {
 	}
 
 	static {
-		slowdown.setSaved(false);
 	}
 }

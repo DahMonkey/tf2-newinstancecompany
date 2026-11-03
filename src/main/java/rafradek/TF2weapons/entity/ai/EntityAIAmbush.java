@@ -32,7 +32,7 @@ public class EntityAIAmbush extends Goal {
 
 		double dist = target.distanceToSqr(this.host);
 		boolean isAttacked = this.host.getLastHurtByMob() != null
-				&& this.host.tickCount - this.host.getRevengeTimer() < 45;
+				&& this.host.tickCount - this.host.getLastHurtByMobTimestamp() < 45;
 		boolean enemyLooking = !this.host.getWepCapability().isDisguised()
 				&& !this.host.loadout.getStackInSlot(3).getTag().getBoolean("Active")
 				&& this.host.getSensing().hasLineOfSight(target)

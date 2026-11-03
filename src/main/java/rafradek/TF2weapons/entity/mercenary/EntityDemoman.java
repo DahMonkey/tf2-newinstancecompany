@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.mercenary;
 
+import rafradek.TF2weapons.util.PredicateUtil;
 import net.minecraft.nbt.CompoundTag;
 import javax.annotation.Nullable;
 import net.minecraft.world.entity.MobSpawnType;
@@ -76,7 +77,7 @@ public class EntityDemoman extends EntityTF2Character {
 		if (this.random.nextFloat() > 0.18f && !this.loadout.getStackInSlot(1).isEmpty()
 				&& this.loadout.getStackInSlot(1).getItem() instanceof ItemChargingTarge) {
 			ItemStack sword = ItemFromData.getRandomWeapon(this.random,
-					Predicates.and(ItemFromData.VISIBLE_WEAPON, (Predicate<WeaponData>) input -> !input.getBoolean(PropertyType.STOCK)
+					PredicateUtil.and(ItemFromData.VISIBLE_WEAPON, (Predicate<WeaponData>) input -> !input.getBoolean(PropertyType.STOCK)
 							&& ItemFromData.isItemOfClassSlot(input, 2, getTF2Class())));
 			if (!sword.isEmpty())
 				this.loadout.setStackInSlot(2, sword);

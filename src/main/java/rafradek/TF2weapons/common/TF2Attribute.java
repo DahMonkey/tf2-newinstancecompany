@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.common;
 
+import rafradek.TF2weapons.util.PredicateUtil;
 import net.minecraft.util.RandomSource;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
@@ -149,7 +150,7 @@ public class TF2Attribute {
 
 	public static void initAttributes() {
 		new TF2Attribute(0, "DamageBonus", "Damage", Type.PERCENTAGE, 1f, State.POSITIVE)
-				.setUpgrade(Predicates.and(ITEM_WEAPON, Predicates.not(KNIFE)), 0.20f, 5, 160, 8).setKillstreak(0.04f)
+				.setUpgrade(PredicateUtil.and(ITEM_WEAPON, Predicates.not(KNIFE)), 0.20f, 5, 160, 8).setKillstreak(0.04f)
 				.setAustralium(1f).setNoCostReduce();
 		new TF2Attribute(1, "DamagePenalty", "Damage", Type.PERCENTAGE, 1f, State.NEGATIVE);
 		new TF2Attribute(2, "ClipSizeBonus", "Clip Size", Type.PERCENTAGE, 1f, State.POSITIVE)
@@ -165,8 +166,7 @@ public class TF2Attribute {
 		new TF2Attribute(10, "PelletBonus", "Pellet Count", Type.PERCENTAGE, 1f, State.POSITIVE);
 		new TF2Attribute(11, "PelletPenalty", "Pellet Count", Type.PERCENTAGE, 1f, State.NEGATIVE);
 		new TF2Attribute(12, "ReloadRateBonus", "Reload Time", Type.INVERTED_PERCENTAGE, 1f, State.POSITIVE).setUpgrade(
-				Predicates.and(WITH_CLIP,
-						stack -> !ItemFromData.getData(stack).getBoolean(PropertyType.RELOADS_FULL_CLIP)),
+				PredicateUtil.and(WITH_CLIP, stack -> !ItemFromData.getData(stack).getBoolean(PropertyType.RELOADS_FULL_CLIP)),
 				-0.2f, 3, 100, 5).setKillstreak(-0.05f).setAustralium(0.75f).setNoCostReduce();
 		new TF2Attribute(13, "ReloadRatePenalty", "Reload Time", Type.PERCENTAGE, 1f, State.NEGATIVE);
 		new TF2Attribute(14, "KnockbackBonus", "Knockback", Type.PERCENTAGE, 1f, State.POSITIVE);
@@ -206,7 +206,7 @@ public class TF2Attribute {
 		new TF2Attribute(37, "CritBurning", "Crit Burn", Type.ADDITIVE, 0, State.POSITIVE);
 		new TF2Attribute(38, "BurnOnHit", "Burn Hit", Type.ADDITIVE, 0, State.POSITIVE);
 		new TF2Attribute(39, "DestroyBlock", "Destroy Block", Type.ADDITIVE, 0, State.POSITIVE)
-				.setUpgrade(Predicates.or(ITEM_BULLET, EXPLOSIVE), 1f, 2, 200, 1).setAustralium(0.75f);
+				.setUpgrade(PredicateUtil.or(ITEM_BULLET, EXPLOSIVE), 1f, 2, 200, 1).setAustralium(0.75f);
 		new TF2Attribute(40, "NoRandomCrit", "Random Crit", Type.ADDITIVE, 0, State.NEGATIVE);
 		new TF2Attribute(41, "CritRocket", "Crit Rocket", Type.ADDITIVE, 0, State.POSITIVE);
 		new TF2Attribute(42, "CritMini", "Crit Mini", Type.ADDITIVE, 0, State.POSITIVE);
@@ -292,7 +292,7 @@ public class TF2Attribute {
 		new TF2Attribute(116, "HolsterTimePenalty", "Holster Time", Type.PERCENTAGE, 1f, State.NEGATIVE);
 		new TF2Attribute(117, "Unblockable", "Unblockable", Type.ADDITIVE, 1f, State.POSITIVE);
 		new TF2Attribute(118, "SelfPushForceBonus", "Self Push Force", Type.PERCENTAGE, 1f, State.POSITIVE)
-				.setUpgrade(Predicates.or(JUMPER, JETPACK), 0.20f, 5, 160, 4).setAustralium(1.25f);
+				.setUpgrade(PredicateUtil.or(JUMPER, JETPACK), 0.20f, 5, 160, 4).setAustralium(1.25f);
 		new TF2Attribute(119, "Jetpack", "Jetpack", Type.ADDITIVE, 0f, State.POSITIVE).setUpgrade(JETPACK, 1f, 1, 250,
 				4);
 		new TF2Attribute(120, "SentryBonus", "Sentry Bonus", Type.PERCENTAGE, 1f, State.POSITIVE);
@@ -640,7 +640,7 @@ public class TF2Attribute {
 	}
 
 	public boolean canApply(ItemStack stack) {
-		return !stack.isEmpty() && this.canApply.apply(stack);
+		return !stack.isEmpty() && this.canApply.test(stack);
 	}
 
 	public static int getMaxExperience(ItemStack stack, Player player) {

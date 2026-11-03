@@ -157,7 +157,7 @@ public class EntityDispenser extends EntityBuilding {
 							&& !TF2ConfigVars.repairBlacklist.contains(stack.getItem().getRegistryName()));
 					ItemStack heldItem = TF2Util.getFirstItem(items, test);
 
-					if (heldItem.isEmpty() && test.apply(living.getMainHandItem()))
+					if (heldItem.isEmpty() && test.test(living.getMainHandItem()))
 						heldItem = living.getMainHandItem();
 					if (!heldItem.isEmpty()) {
 
@@ -279,7 +279,7 @@ public class EntityDispenser extends EntityBuilding {
 			if (recipe.getRecipeOutput().isItemEqualIgnoreDurability(stack)
 					&& TF2Util.isBaseSame(recipe.getRecipeOutput().getTag(), stack.getTag())) {
 				for (Ingredient ing : recipe.getIngredients()) {
-					if (ing.apply(this.currRepairItem)) {
+					if (ing.test(this.currRepairItem)) {
 						cost++;
 					}
 

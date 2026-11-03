@@ -245,7 +245,7 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 	public void doFireSound(ItemStack stack, LivingEntity living, Level world, int critical) {
 		if (ItemFromData.getData(stack).hasProperty(PropertyType.CHARGED_FIRE_SOUND)
 				&& living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).chargeTicks >= getChargeTime(stack, living)) {
-			SoundEvent soundToPlay = SoundEvent.REGISTRY.getObject(
+			SoundEvent soundToPlay = net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(
 					new ResourceLocation(ItemFromData.getData(stack).getString(PropertyType.CHARGED_FIRE_SOUND)
 							+ (critical == 2 ? ".crit" : "")));
 			living.playSound(soundToPlay, 4f, 1f);
@@ -349,6 +349,5 @@ public class ItemSniperRifle extends ItemBulletWeapon {
 	}
 
 	static {
-		slowdown.setSaved(false);
 	}
 }

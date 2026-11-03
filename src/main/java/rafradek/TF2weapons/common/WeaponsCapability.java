@@ -969,7 +969,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 		 */
 		if (owner.level.isClientSide && owner != ClientProxy.getLocalPlayer()) {
 			// System.out.println("uber
-			// "+owner.getActivePotionEffect(TF2weapons.uber).getDuration());
+			// "+owner.getEffect(TF2weapons.uber).getDuration());
 			Iterator<MobEffectInstance> iterator = owner.getActiveEffects().iterator();
 			while (iterator.hasNext()) {
 				MobEffectInstance effect = iterator.next();

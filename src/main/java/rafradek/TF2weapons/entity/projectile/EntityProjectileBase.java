@@ -182,7 +182,7 @@ public abstract class EntityProjectileBase extends Projectile implements IEntity
 	@Override
 	public void shoot(double x, double y, double z, float speed, float spread) {
 		if (spread > 0) {
-			float xzlen = Mth.sqrt((float) (x * x + z * z));
+			float xzlen = (float) Math.sqrt((x * x + z * z));
 			float yaw = (float) (Mth.atan2(x, z));
 			float pitch = (float) (Mth.atan2(y, xzlen));
 			Vec3 random = TF2Util.radiusRandom2D(spread * 0.0075f, level.random, yaw, pitch, speed);

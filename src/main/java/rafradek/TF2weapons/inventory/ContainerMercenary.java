@@ -104,7 +104,7 @@ public class ContainerMercenary extends MerchantMenu {
 							|| (merc.getOwner() != player && !player.getAbilities().instabuild))
 						return false;
 					else
-						return stack.getItem().isValidArmor(stack, entityequipmentslot, merc);
+						return stack.canEquip(entityequipmentslot, merc);
 				}
 
 				@Override

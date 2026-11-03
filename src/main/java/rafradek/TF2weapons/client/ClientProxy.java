@@ -399,7 +399,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public Player getPlayerForSide(MessageContext ctx) {
-		return ctx.getSender() != null ? ctx.getSender() : Minecraft.getInstance().player;
+		return ctx != null && ctx.getSender() != null ? ctx.getSender() : Minecraft.getInstance().player;
 	}
 
 	@Override

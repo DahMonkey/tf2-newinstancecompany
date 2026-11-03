@@ -49,7 +49,7 @@ public class ItemTarget extends LegacyItem {
 			BlockPos blockpos = flag ? pos : pos.relative(facing);
 			ItemStack itemstack = player.getItemInHand(hand);
 
-			if (!player.canPlayerEdit(blockpos, facing, itemstack)) {
+			if (!player.mayUseItemAt(blockpos, facing, itemstack)) {
 				return InteractionResult.FAIL;
 			} else {
 				BlockPos blockpos1 = blockpos.above();

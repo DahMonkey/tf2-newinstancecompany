@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.util.PredicateUtil;
 import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.TF2weapons;
@@ -274,7 +275,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 		list = TF2Util.pierce(world, living, startX, startY, startZ, endX, endY, endZ, this.canHeadshot(living, stack),
 				this.getBulletSize(stack, living), this.canPenetrate(stack, living),
 				TF2Attribute.getModifier("Destroy Projectiles", stack, 0, living) == 0 ? TF2Util.TARGETABLE
-						: Predicates.or(
+						: PredicateUtil.or(
 								target -> (target instanceof EntityProjectileBase && !(target instanceof EntityFlame)),
 								TF2Util.TARGETABLE));
 		for (HitResult var4 : list)
@@ -309,23 +310,23 @@ public class ItemBulletWeapon extends ItemWeapon {
 							distance });
 					lastShotClient.add(var4);
 				}
-			} else if (var4.getBlockPos() != null)
+			} else if (var4 instanceof BlockHitResult && var4.getType() == HitResult.Type.BLOCK)
 				if (world.isClientSide) {
 
 					ClientProxy.spawnBulletHoleParticle(world, var4);
 					for (int i = 0; i < 2; i++)
-						world.addParticle(ParticleTypes.BLOCK_CRACK,
+						world.addParticle(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
+								world.getBlockState(((BlockHitResult) var4).getBlockPos())),
 								var4.getLocation().x + ((BlockHitResult) var4).getDirection().getStepX() * 0.05,
 								var4.getLocation().y + ((BlockHitResult) var4).getDirection().getStepY() * 0.05,
 								var4.getLocation().z + ((BlockHitResult) var4).getDirection().getStepZ() * 0.05,
 								((BlockHitResult) var4).getDirection().getStepX() * 0.07 * i, ((BlockHitResult) var4).getDirection().getStepY() * 0.07 * i,
-								((BlockHitResult) var4).getDirection().getStepZ() * 0.07 * i,
-								new int[] { Block.getStateId(world.getBlockState(var4.getBlockPos())) });
+								((BlockHitResult) var4).getDirection().getStepZ() * 0.07 * i);
 					if (getData(stack).hasProperty(PropertyType.HIT_SOUND)) {
 						SoundEvent event = getData(stack).hasProperty(PropertyType.HIT_WORLD_SOUND)
 								? getSound(stack, PropertyType.HIT_WORLD_SOUND)
 								: getSound(stack, PropertyType.HIT_SOUND);
-						world.playSound(var4.getLocation().x, var4.getLocation().y, var4.getLocation().z, event, SoundSource.PLAYERS,
+						world.playLocalSound(var4.getLocation().x, var4.getLocation().y, var4.getLocation().z, event, SoundSource.PLAYERS,
 								getData(stack).getName().equals("fryingpan") ? 2f : 0.7f, 1f, false);
 					}
 				} else if (!world.isClientSide) {
@@ -340,7 +341,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 						float damage = TF2Util.calculateDamage(TF2weapons.dummyEnt, world, living, stack, critical,
 								(float) living.position().distanceTo(var4.getLocation()));
 						damage *= TF2Attribute.getModifier("Destroy Block", stack, 0, living);
-						TF2Util.damageBlock(var4.getBlockPos(), living, world, stack, critical, damage,
+						TF2Util.damageBlock(((BlockHitResult) var4).getBlockPos(), living, world, stack, critical, damage,
 								new Vec3(endX, endY, endZ), null);
 					}
 				}

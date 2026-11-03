@@ -27,7 +27,7 @@ public class CommonProxy {
 	}
 
 	public Player getPlayerForSide(MessageContext ctx) {
-		return ctx.getSender();
+		return ctx != null ? ctx.getSender() : null;
 	}
 
 	public void registerItemBlock(BlockItem item) {

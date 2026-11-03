@@ -125,7 +125,7 @@ public abstract class ItemFabricator extends LegacyItem {
 
 		@Override
 		public boolean apply(ItemStack input) {
-			return test.apply(input);
+			return test.test(input);
 		}
 
 		@Override

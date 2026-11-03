@@ -73,7 +73,7 @@ public class ItemFireAmmo extends ItemAmmo {
 				if (living instanceof Player)
 					remain = TF2Util.pickAmmo(remain, (Player) living, true);
 				if (!remain.isEmpty())
-					living.spawnAtLocation(remain, 0).setPickupDelay(0);
+					living.spawnAtLocation(remain, 0).setPickUpDelay(0);
 			} else {
 				stack.setDamageValue(stack.getDamageValue() + amount);
 				if (stack.getDamageValue() > stack.getMaxDamage())
@@ -102,95 +102,5 @@ public class ItemFireAmmo extends ItemAmmo {
 	@Override
 	public int getAmount(ItemStack stack) {
 		return (uses - stack.getDamageValue()) * stack.getCount();
-	}
-
-	@Override
-	public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-		if (this.getTypeInt(stack) == 10 && TF2weapons.refinedFuel != null) {
-			Provider cap = new Provider(stack, 3, TF2weapons.refinedFuel);
-			return cap;
-		}
-		return null;
-	}
-
-	public static class Provider implements ICapabilityProvider, IFluidHandlerItem {
-
-		FluidTankProperties prop;
-		ItemStack stack;
-		int mult;
-		Fluid fluid;
-
-		public Provider(ItemStack stack, int mult, Fluid fluid) {
-			this.stack = stack;
-			this.mult = mult;
-			this.fluid = fluid;
-		}
-
-		@Override
-		public IFluidTankProperties[] getTankProperties() {
-			if (stack.isEmpty())
-				return new IFluidTankProperties[0];
-			return new IFluidTankProperties[] { new FluidTankProperties(
-					new FluidStack(fluid, ((ItemFireAmmo) stack.getItem()).getAmount(stack) * mult),
-					((ItemFireAmmo) stack.getItem()).uses * mult) };
-		}
-
-		@Override
-		public int fill(FluidStack resource, boolean doFill) {
-			if (stack.isEmpty())
-				return 0;
-			if (resource.getFluid() != fluid)
-				return resource.amount;
-			int resourceUsed = Math.max(
-					((ItemFireAmmo) stack.getItem()).uses - ((ItemFireAmmo) stack.getItem()).getAmount(stack),
-					(resource.amount / mult)) * mult;
-			if (doFill) {
-				stack.setDamageValue(stack.getDamageValue() - resourceUsed / mult);
-			}
-			return resourceUsed;
-		}
-
-		@Override
-		public FluidStack drain(FluidStack resource, boolean doDrain) {
-			if (stack.isEmpty())
-				return null;
-			if (resource.getFluid() != fluid)
-				return null;
-			int resourceUsed = Math.min(((ItemFireAmmo) stack.getItem()).getAmount(stack), (resource.amount / mult))
-					* mult;
-			if (doDrain) {
-				stack.setDamageValue(stack.getDamageValue() + resourceUsed / mult);
-				if (stack.getDamageValue() > stack.getMaxDamage())
-					stack.shrink(1);
-
-			}
-			return new FluidStack(fluid, resourceUsed);
-		}
-
-		@Override
-		public FluidStack drain(int maxDrain, boolean doDrain) {
-			return drain(new FluidStack(fluid, maxDrain), doDrain);
-		}
-
-		@Override
-		public ItemStack getContainer() {
-			return this.stack;
-		}
-
-		public boolean hasCapabilityLegacy(Capability<?> capability, Direction facing) {
-			return capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-	public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @javax.annotation.Nullable Direction facing) {
-		T value = this.getCapabilityLegacy(capability, facing);
-		return value == null ? net.minecraftforge.common.util.LazyOptional.empty() : net.minecraftforge.common.util.LazyOptional.of(() -> value);
-	}
-
-	public <T> T getCapabilityLegacy(Capability<T> capability, Direction facing) {
-			return capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY ? (T) this : null;
-		}
-
 	}
 }

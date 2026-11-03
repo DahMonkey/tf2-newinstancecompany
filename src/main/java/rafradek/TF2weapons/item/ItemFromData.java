@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.client.compat.ModelLoader;
+import rafradek.TF2weapons.util.PredicateUtil;
 import rafradek.TF2weapons.client.compat.ScaledResolution;
 import net.minecraft.util.RandomSource;
 import net.minecraft.network.chat.Component;
@@ -279,12 +281,11 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 			return getRandomWeapon(random, base);
 
 		ItemStack stock = getRandomWeapon(random,
-				Predicates.and(base, (Predicate<WeaponData>) input -> input.getBoolean(PropertyType.STOCK)));
+				PredicateUtil.and(base, (Predicate<WeaponData>) input -> input.getBoolean(PropertyType.STOCK)));
 
 		if (stockOnly)
 			return stock;
-		Predicate<WeaponData> unipredicate = Predicates.and(base,
-				(Predicate<WeaponData>) input -> !input.getBoolean(PropertyType.STOCK));
+		Predicate<WeaponData> unipredicate = PredicateUtil.and(base, (Predicate<WeaponData>) input -> !input.getBoolean(PropertyType.STOCK));
 		float unicount = getWeaponCount(unipredicate);
 		ItemStack uni = getRandomWeapon(random, unipredicate);
 		if (uni.isEmpty()) {
@@ -362,7 +363,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 	public static int getWeaponCount(Predicate<WeaponData> predicate) {
 		int count = 0;
 		for (Entry<String, WeaponData> entry : MapList.nameToData.entrySet()) {
-			if (predicate.apply(entry.getValue()))
+			if (predicate.test(entry.getValue()))
 				count++;
 		}
 		return count;
@@ -438,7 +439,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 					TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
 					// System.out.println("Attribute id: "+name);
 					if (attribute != null && attribute.state != State.HIDDEN)
-						tooltip.add(Component.literal(attribute.getTranslatedString(tagFloat.getFloat(), true)));
+						tooltip.add(Component.literal(attribute.getTranslatedString(tagFloat.getAsFloat(), true)));
 				}
 			}
 			attributeList = MapList.buildInAttributes.get(getData(stack).getName());
@@ -452,7 +453,7 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 					TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
 					// System.out.println("Attribute id: "+name);
 					if (attribute != null && attribute.state != State.HIDDEN)
-						tooltip.add(Component.literal(attribute.getTranslatedString(tagFloat.getFloat(), true)));
+						tooltip.add(Component.literal(attribute.getTranslatedString(tagFloat.getAsFloat(), true)));
 				}
 			}
 
@@ -503,20 +504,19 @@ public class ItemFromData extends LegacyItem implements IItemOverlay {
 	public void drawOverlay(ItemStack stack, Player player, Tessellator tesselator, BufferBuilder buffer,
 			ScaledResolution resolution) {}
 
-	@OnlyIn(Dist.CLIENT)
 	@Override
-	public boolean showDurabilityBar(ItemStack stack) {
-		return this.getMaxRage(stack, null) > 0f ? (this.getRage(stack, Minecraft.getInstance().player) < this
-				.getMaxRage(stack, Minecraft.getInstance().player)) : super.showDurabilityBar(stack);
+	public boolean isBarVisible(ItemStack stack) {
+		LivingEntity player = TF2weapons.proxy.getPlayerForSide(null);
+		return this.getMaxRage(stack, null) > 0f ? (this.getRage(stack, player) < this.getMaxRage(stack, player))
+				: super.isBarVisible(stack);
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	@Override
-	public double getDurabilityForDisplay(ItemStack stack) {
+	public int getBarWidth(ItemStack stack) {
+		LivingEntity player = TF2weapons.proxy.getPlayerForSide(null);
 		return this.getMaxRage(stack, null) > 0f
-				? (1 - this.getRage(stack, Minecraft.getInstance().player)
-						/ this.getMaxRage(stack, Minecraft.getInstance().player))
-				: super.getDurabilityForDisplay(stack);
+				? Math.round(13f * this.getRage(stack, player) / this.getMaxRage(stack, player))
+				: super.getBarWidth(stack);
 	}
 
 	public RageType getRageType(ItemStack stack, LivingEntity living) {

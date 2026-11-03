@@ -123,7 +123,7 @@ public class EntityScout extends EntityTF2Character {
 		 */
 		this.setDeltaMovement(((-Mth.sin(this.getYRot() / 180.0F * (float) Math.PI))), this.getDeltaMovement().y, this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, ((Mth.cos(this.getYRot() / 180.0F * (float) Math.PI))));
-		float f2 = (float) (Mth.sqrt((float)getDeltaMovement().x * getDeltaMovement().x + getDeltaMovement().z * getDeltaMovement().z)
+		float f2 = (float) ((float) Math.sqrt(getDeltaMovement().x * getDeltaMovement().x + getDeltaMovement().z * getDeltaMovement().z)
 				* this.getAttribute(Attributes.MOVEMENT_SPEED).getValue());
 		this.setDeltaMovement(this.getDeltaMovement().x * (f2), this.getDeltaMovement().y, this.getDeltaMovement().z);
 		this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z * (f2));

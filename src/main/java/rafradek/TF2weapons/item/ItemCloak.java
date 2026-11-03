@@ -36,10 +36,10 @@ public class ItemCloak extends ItemFromData {
 
 	public ItemCloak() {
 		super();
-		this.addPropertyOverride(new ResourceLocation("active"), new ItemPropertyFunction() {
+		this.addPropertyOverride(new ResourceLocation("active"), new LegacyItem.PropertyGetter() {
 			@Override
 			@OnlyIn(Dist.CLIENT)
-			public float apply(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entityIn) {
+			public float get(ItemStack stack, Level world, LivingEntity entityIn) {
 				if (entityIn != null && isFeignDeath(stack, entityIn) && WeaponsCapability.get(entityIn).isFeign())
 					return 1;
 				return 0;

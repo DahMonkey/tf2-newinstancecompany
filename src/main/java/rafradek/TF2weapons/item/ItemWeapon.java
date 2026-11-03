@@ -261,7 +261,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 
 	public void doFireSound(ItemStack stack, LivingEntity living, Level world, int critical) {
 		if (ItemFromData.getData(stack).hasProperty(PropertyType.FIRE_SOUND)) {
-			SoundEvent soundToPlay = SoundEvent.REGISTRY.getObject(new ResourceLocation(
+			SoundEvent soundToPlay = net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(
 					ItemFromData.getData(stack).getString(PropertyType.FIRE_SOUND) + (critical == 2 ? ".crit" : "")));
 
 			living.playSound(soundToPlay,

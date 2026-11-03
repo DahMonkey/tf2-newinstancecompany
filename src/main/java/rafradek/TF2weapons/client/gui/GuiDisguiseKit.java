@@ -61,14 +61,14 @@ public class GuiDisguiseKit extends GuiScreen {
 				if (entity instanceof EntitySpy) entity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).invisTicks = 0;
 			}
 		}
-		Collections.sort(mobList, (o1, o2) -> EntityList.getKey(o2).toString().compareTo(EntityList.getKey(o1).toString()));
+		Collections.sort(mobList, (o1, o2) -> net.minecraft.world.entity.EntityType.getKey(o2.getType()).toString().compareTo(net.minecraft.world.entity.EntityType.getKey(o1.getType()).toString()));
 		Keyboard.enableRepeatEvents(true);
 		playerNameField = new GuiTextField(6, fontRenderer, width / 2 + 26, height / 2 + 60, 108, 19);
 		playerNameField.setMaxStringLength(64);
 		playerNameField.setFocused(true);
 		buttonList.clear();
 		for (int i = 0; i < 16; i++) buttonList.add(new GuiButton(i, this.width / 2 - 135 + (i % 2) * 70, this.height / 2 - 60 + i / 2 * 20,
-					70, 20, I18n.get(EntityList.getTranslationName(EntityList.getKey(Zombie.class)), new Object[0])));
+					70, 20, I18n.get(EntityList.getTranslationName(net.minecraft.world.entity.EntityType.getKey(Zombie.class.getType())), new Object[0])));
 		buttonList.add(playerDisguise = new GuiButton(30, width / 2 + 25, height / 2 + 80, 110, 20, "Player"));
 		setButtons();
 	}

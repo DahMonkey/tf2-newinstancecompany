@@ -34,7 +34,7 @@ public class EntityAINearestChecked<T extends LivingEntity> extends TargetGoal {
 		this.setFlags(TF2Util.mutexFlags(1));
 		this.targetLock = targetLock;
 		this.targetEntitySelector = target -> {
-			if (p_i1665_6_ != null && !p_i1665_6_.apply(target))
+			if (p_i1665_6_ != null && !p_i1665_6_.test(target))
 				return false;
 			else {
 				// System.out.println("found "+target.getClass().getName()+"

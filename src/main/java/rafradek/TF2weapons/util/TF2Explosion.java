@@ -165,7 +165,7 @@ public class TF2Explosion extends Explosion {
 					d6 = entity.getY() + (entity.getBoundingBox().maxY - entity.getBoundingBox().minY) / 2
 							- this.explosionY;
 				double d7 = entity.getZ() - this.explosionZ;
-				double d9 = Mth.sqrt((float)d5 * d5 + d6 * d6 + d7 * d7);
+				double d9 = (float) Math.sqrt(d5 * d5 + d6 * d6 + d7 * d7);
 
 				if (d9 != 0.0D) {
 					d5 /= d9;
@@ -242,7 +242,7 @@ public class TF2Explosion extends Explosion {
 					double d3 = d0 - this.explosionX;
 					double d4 = d1 - this.explosionY;
 					double d5 = d2 - this.explosionZ;
-					double d6 = Mth.sqrt((float)d3 * d3 + d4 * d4 + d5 * d5);
+					double d6 = (float) Math.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 					d3 = d3 / d6;
 					d4 = d4 / d6;
 					d5 = d5 / d6;

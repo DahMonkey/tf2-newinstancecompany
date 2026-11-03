@@ -669,7 +669,7 @@ public class EntityBuilding extends Mob implements OwnableEntity, IEntityTF2 {
 
 	@Override
 	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-		LivingEntity attacker = this.getAttackingEntity();
+		LivingEntity attacker = this.getKillCredit();
 		if (this.fromPDA || (TF2Util.isAlliedTo(attacker, this) && this.getOwnerUUID() == null))
 			return;
 		if (!(this.getOwner() instanceof EntityEngineer && ((EntityEngineer) this.getOwner()).buildCount >= 3)) {

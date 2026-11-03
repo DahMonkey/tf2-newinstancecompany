@@ -229,7 +229,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 		this.animationSpeedOld = this.animationSpeed;
 		double d1 = this.getX() - this.xo;
 		double d0 = this.getZ() - this.zo;
-		float f2 = Mth.sqrt((float)d1 * d1 + d0 * d0) * 4.0F;
+		float f2 = (float) Math.sqrt(d1 * d1 + d0 * d0) * 4.0F;
 
 		if (f2 > 1.0F)
 			f2 = 1.0F;
@@ -275,7 +275,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 				this.getAttribute(Attributes.ARMOR).removeModifier(BOSS_ARMOR_SPAWN);
 			}
 			if (this.getTarget() == null) {
-				double f = Mth.sqrt((float)this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z);
+				double f = (float) Math.sqrt(this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z);
 				this.setYRot((-((float) Mth.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z)) * (180F / (float) Math.PI)));
 				this.setXRot((-((float) Mth.atan2(this.getDeltaMovement().y, f)) * (180F / (float) Math.PI)));
 				this.yBodyRot = this.getYRot();
@@ -290,7 +290,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 					double d3 = entitylivingbase.getY() - (this.getY() + this.getEyeHeight());
 					if (this.isLaser())
 						d3 += entitylivingbase.getEyeHeight();
-					double f = Mth.sqrt((float)d1 * d1 + d2 * d2);
+					double f = (float) Math.sqrt(d1 * d1 + d2 * d2);
 					float clamp = this.isLaser() ? 1.35f : 10f;
 					float yaw = -((float) Mth.atan2(d1, d2)) * (180F / (float) Math.PI);
 					float pitch = -((float) Mth.atan2(d3, f)) * (180F / (float) Math.PI);
@@ -672,7 +672,7 @@ public class EntityMonoculus extends EntityTF2Boss {
 
 				if (this.courseChangeCooldown-- <= 0) {
 					this.courseChangeCooldown = 0;
-					d3 = Mth.sqrt((float)d3);
+					d3 = (float) Math.sqrt(d3);
 
 					if (this.isNotColliding(this.getX(), this.getY(), this.getZ(), d3)) {
 						this.parentEntity.setDeltaMovement(this.parentEntity.getDeltaMovement().x + (d0 / d3 * speed), this.parentEntity.getDeltaMovement().y, this.parentEntity.getDeltaMovement().z);

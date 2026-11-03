@@ -91,8 +91,8 @@ public class RenderDispenser extends RenderLiving<EntityDispenser> {
 				double yDist = (yPos2 + target.getBbHeight() / 2)
 						- (living.yo + (living.getY() - living.yo) * p_76986_9_ + living.getBbHeight() / 2);
 				double zDist = zPos2 - (living.zo + (living.getZ() - living.zo) * p_76986_9_);
-				float f = Mth.sqrt((float)xDist * xDist + zDist * zDist);
-				float fullDist = Mth.sqrt((float)xDist * xDist + yDist * yDist + zDist * zDist);
+				float f = (float) Math.sqrt(xDist * xDist + zDist * zDist);
+				float fullDist = (float) Math.sqrt(xDist * xDist + yDist * yDist + zDist * zDist);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate((float) p_76986_2_, (float) p_76986_4_ + living.getBbHeight() / 2,
 						(float) p_76986_6_);

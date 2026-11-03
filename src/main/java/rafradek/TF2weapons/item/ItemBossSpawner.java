@@ -33,12 +33,6 @@ public class ItemBossSpawner extends LegacyItem {
 
 	public static final String[] NAMES = { "hhh", "monoculus", "merasmus" };
 
-	public static BlockPattern patternHHH = FactoryBlockPattern.start().aisle("NAN", "BCB", "NBN")
-			.where('A', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.LIT_PUMPKIN)))
-			.where('C', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.OBSIDIAN)))
-			.where('B', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.HAY_BLOCK)))
-			.where('N', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
-
 	public ItemBossSpawner() {
 		super();
 		this.setHasSubtypes(true);
@@ -86,8 +80,7 @@ public class ItemBossSpawner extends LegacyItem {
 		}
 
 		if (stack.getDamageValue() == 0 && cap.hhhSummonedDay < time / 24000) {
-			BlockPattern.PatternHelper pattern = patternHHH.match(world, pos);
-			if (world.getBlockState(pos).getBlock() == Blocks.PORTAL) {
+			if (world.getBlockState(pos).getBlock() == Blocks.NETHER_PORTAL) {
 				boss = new EntityHHH(world);
 				cap.hhhSummonedDay = (int) (time / 24000);
 			} else {
@@ -95,7 +88,7 @@ public class ItemBossSpawner extends LegacyItem {
 				return InteractionResult.SUCCESS;
 			}
 		} else if (stack.getDamageValue() == 1 && cap.monoculusSummonedDay < time / 24000) {
-			if (world.getBlockState(pos).getBlock() == Blocks.PORTAL) {
+			if (world.getBlockState(pos).getBlock() == Blocks.NETHER_PORTAL) {
 				boss = new EntityMonoculus(world);
 				cap.monoculusSummonedDay = (int) (time / 24000);
 			} else {
@@ -103,7 +96,7 @@ public class ItemBossSpawner extends LegacyItem {
 				return InteractionResult.SUCCESS;
 			}
 		} else if (stack.getDamageValue() == 2 && cap.merasmusSummonedDay < time / 24000) {
-			if (world.getBlockState(pos).getBlock() == Blocks.PORTAL) {
+			if (world.getBlockState(pos).getBlock() == Blocks.NETHER_PORTAL) {
 				boss = new EntityMerasmus(world);
 				cap.merasmusSummonedDay = (int) (time / 24000);
 			} else {
