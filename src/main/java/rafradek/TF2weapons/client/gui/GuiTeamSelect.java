@@ -1,13 +1,14 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiScreen;
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.message.TF2Message;
 import java.io.IOException;
 import java.util.List;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 
-public class GuiTeamSelect extends Screen {
+public class GuiTeamSelect extends GuiScreen {
 
 	private List<String> teams;
 	private int[] numbers;
@@ -27,7 +28,7 @@ public class GuiTeamSelect extends Screen {
 	@Override
 	public void initGui() {
 		for (int i = 0; i < teams.size(); i++) {
-			Button button = new Button(i, width / 2 - (int) ((teams.size() / 2f) * 100) - 35 + i * 100, 110, 70, 20, teams.get(i));
+			GuiButton button = new GuiButton(i, width / 2 - (int) ((teams.size() / 2f) * 100) - 35 + i * 100, 110, 70, 20, teams.get(i));
 			button.enabled = allowed[i];
 			buttonList.add(button);
 		}
@@ -38,7 +39,7 @@ public class GuiTeamSelect extends Screen {
 	 * buttons)
 	 */
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		TF2weapons.network.sendToServer(new TF2Message.ActionMessage(120 + button.id));
 		mc.setScreen(null);
 	}

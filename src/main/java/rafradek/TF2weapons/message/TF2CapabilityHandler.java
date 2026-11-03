@@ -26,7 +26,7 @@ public class TF2CapabilityHandler implements IMessageHandler<TF2Message.Capabili
 						for (DataEntry<?> param : message.entries) {
 							cap.onChangeValue(param.getKey(), param.getValue());
 						}
-						cap.entityData.setEntryValues(message.entries);
+						cap.entityData.assignValues(message.entries);
 					}
 					if (prevHealTarget != cap.getHealTarget() && cap.getHealTarget() > 0) {
 						SoundEvent sound = ItemFromData.getSound(

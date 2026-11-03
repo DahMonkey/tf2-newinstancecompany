@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.boss.EntityHHH;
@@ -114,12 +115,12 @@ public class ItemMonsterPlacerPlus extends LegacyItem {
 			HitResult raytraceresult = this.rayTrace(world, player, true);
 
 			if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockpos = raytraceresult.getBlockPos();
+				BlockPos blockpos = ((BlockHitResult) raytraceresult).getBlockPos();
 
 				if (!(world.getBlockState(blockpos).getBlock() instanceof LiquidBlock))
 					return new InteractionResultHolder<>(InteractionResult.PASS, itemStackIn);
 				else if (world.isBlockModifiable(player, blockpos)
-						&& player.canPlayerEdit(blockpos, raytraceresult.getDirection(), itemStackIn)) {
+						&& player.canPlayerEdit(blockpos, ((BlockHitResult) raytraceresult).getDirection(), itemStackIn)) {
 
 					boolean hastag = itemStackIn.getTag() != null
 							&& itemStackIn.getTag().contains("SavedEntity");

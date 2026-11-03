@@ -1,5 +1,10 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiContainer;
+import rafradek.TF2weapons.client.compat.GuiButton;
+import rafradek.TF2weapons.client.compat.GuiTextField;
+import rafradek.TF2weapons.client.compat.LegacyInput;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -11,9 +16,6 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 
-public class GuiConfigurable extends AbstractContainerScreen {
+public class GuiConfigurable extends GuiContainer {
 	public GuiConfigurable(AbstractContainerMenu inventorySlotsIn) {
 		super(inventorySlotsIn);
 	}
@@ -65,9 +67,9 @@ public class GuiConfigurable extends AbstractContainerScreen {
 				int type = tag.get(key).getId();
 				types[i] = type;
 				if (type == 8) {
-					fields[i] = new EditBox(5, fontRenderer, this.leftPos + 10, this.topPos + 10 + i * 20, 120,
+					fields[i] = new GuiTextField(5, fontRenderer, this.leftPos + 10, this.topPos + 10 + i * 20, 120,
 							20);
-					((EditBox) fields[i]).setText(tag.getString(key));
+					((GuiTextField) fields[i]).setText(tag.getString(key));
 				}
 
 				i++;
@@ -101,7 +103,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
-		boolean flag = Mouse.isButtonDown(0);
+		boolean flag = LegacyInput.isMouseButtonDown(0);
 		int i = leftPos;
 		int j = topPos;
 		int k = i + 209;
@@ -121,7 +123,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 			}
 		}
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		if (tag != null) for (int t = 0; t < keys.length; t++) if (fields[t] instanceof EditBox) ((EditBox) fields[t]).drawTextBox();
+		if (tag != null) for (int t = 0; t < keys.length; t++) if (fields[t] instanceof GuiTextField) ((GuiTextField) fields[t]).drawTextBox();
 		/*
 		 * this.refund.enabled =
 		 * !this.inventorySlots.inventorySlots.get(0).getStack().isEmpty() &&
@@ -139,23 +141,23 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
-		if (button.id < 12) mc.playerController.sendEnchantPacket(slots.windowId, button.id + firstIndex * 2);
-		else if (button.id == 12) mc.playerController.sendEnchantPacket(slots.windowId, -1);
+	protected void actionPerformed(GuiButton button) throws IOException {
+		if (button.id < 12) mc.gameMode.handleInventoryButtonClick(menu.containerId, button.id + firstIndex * 2);
+		else if (button.id == 12) mc.gameMode.handleInventoryButtonClick(menu.containerId, -1);
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		for (int t = 0; t < keys.length; t++) if (fields[t] instanceof EditBox)
-			((EditBox) fields[t]).mouseClicked(mouseX, mouseY, mouseButton);
+		for (int t = 0; t < keys.length; t++) if (fields[t] instanceof GuiTextField)
+			((GuiTextField) fields[t]).mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		boolean entered = false;
-		for (int t = 0; t < this.keys.length; t++) if (fields[t] instanceof EditBox)
-			entered |= ((EditBox) fields[t]).textboxKeyTyped(typedChar, keyCode);
+		for (int t = 0; t < this.keys.length; t++) if (fields[t] instanceof GuiTextField)
+			entered |= ((GuiTextField) fields[t]).textboxKeyTyped(typedChar, keyCode);
 		if (!entered) {
 			if (keyCode == 1 || this.minecraft.options.keyBindInventory.isActiveAndMatches(keyCode)) sendChanges();
 			super.keyTyped(typedChar, keyCode);
@@ -170,7 +172,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 
 	public void sendChanges() {
 		CompoundTag newtag = new CompoundTag();
-		for (int t = 0; t < keys.length; t++) if (types[t] == 8) newtag.putString(keys[t], ((EditBox) fields[t]).getText());
+		for (int t = 0; t < keys.length; t++) if (types[t] == 8) newtag.putString(keys[t], ((GuiTextField) fields[t]).getText());
 		TF2weapons.network.sendToServer(new TF2Message.GuiConfigMessage(newtag, this.pos));
 	}
 
@@ -189,7 +191,7 @@ public class GuiConfigurable extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
 		int x = (width - imageWidth) / 2;
 		int y = (height - imageHeight) / 2;
 		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);

@@ -386,7 +386,7 @@ public class TF2EventsClient {
 		if (eventArgs.getModID().equals("rafradek_tf2_weapons")) {
 			TF2ConfigVars.createConfig(true);
 			if (Minecraft.getInstance().player != null)
-				TF2weapons.network.sendToServer(new TF2Message.InitClientMessage(TF2weapons.conf));
+				TF2weapons.network.sendToServer(TF2Message.InitClientMessage.fromConfig());
 		}
 	}
 

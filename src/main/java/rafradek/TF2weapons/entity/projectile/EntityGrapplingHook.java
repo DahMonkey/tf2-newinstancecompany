@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -29,11 +30,11 @@ public class EntityGrapplingHook extends EntityProjectileSimple {
 	@Override
 	public void onHitGround(int x, int y, int z, HitResult mop) {
 		if (!sticked && !this.level.isEmptyBlock(mop.getBlockPos())) {
-			this.setPos(mop.getLocation().x + mop.getDirection().getStepX() * 0.1,
-					mop.getLocation().y + mop.getDirection().getStepY() * 0.1f,
-					mop.getLocation().z + mop.getDirection().getStepZ() * 0.1);
+			this.setPos(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.1,
+					mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.1f,
+					mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.1);
 			this.sticked = true;
-			this.stickedBlock = mop.getBlockPos();
+			this.stickedBlock = ((BlockHitResult) mop).getBlockPos();
 		}
 	}
 
@@ -41,9 +42,9 @@ public class EntityGrapplingHook extends EntityProjectileSimple {
 	public void onHitMob(Entity entityHit, HitResult mop) {
 		if (!sticked) {
 			super.onHitMob(entityHit, mop);
-			this.setPos(mop.getLocation().x + mop.getDirection().getStepX() * 0.1,
-					mop.getLocation().y + mop.getDirection().getStepY() * 0.1f,
-					mop.getLocation().z + mop.getDirection().getStepZ() * 0.1);
+			this.setPos(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.1,
+					mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.1f,
+					mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.1);
 			this.relativeX = this.getX() - entityHit.getX();
 			this.relativeY = this.getY() - entityHit.getY();
 			this.relativeZ = this.getZ() - entityHit.getZ();

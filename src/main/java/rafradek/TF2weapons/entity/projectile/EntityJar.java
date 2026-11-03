@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
+import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.common.TF2Achievements;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
@@ -85,9 +87,9 @@ public class EntityJar extends EntityProjectileBase {
 
 	@Override
 	public void onHitGround(int x, int y, int z, HitResult mop) {
-		this.explode(mop.getLocation().x + mop.getDirection().getStepX() * 0.05,
-				mop.getLocation().y + mop.getDirection().getStepY() * 0.05,
-				mop.getLocation().z + mop.getDirection().getStepZ() * 0.05, null, 1f);
+		this.explode(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.05,
+				mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.05,
+				mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.05, null, 1f);
 		if (this.isGas()) {
 			this.setDeltaMovement((0), this.getDeltaMovement().y, this.getDeltaMovement().z);
 			this.setDeltaMovement(this.getDeltaMovement().x, (0), this.getDeltaMovement().z);
@@ -104,7 +106,7 @@ public class EntityJar extends EntityProjectileBase {
 
 	@Override
 	public void onHitMob(Entity entityHit, HitResult mop) {
-		this.explode(mop.getLocation().x, mop.getLocation().y, mop.getLocation().z, mop.getEntity(), 1f);
+		this.explode(mop.getLocation().x, mop.getLocation().y, mop.getLocation().z, TF2HitResult.getEntity(mop), 1f);
 	}
 
 	@Override

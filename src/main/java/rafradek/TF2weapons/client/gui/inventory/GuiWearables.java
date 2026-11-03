@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 import rafradek.TF2weapons.client.compat.OpenGlHelper;
 import rafradek.TF2weapons.client.compat.RenderHelper;
@@ -9,7 +11,6 @@ import rafradek.TF2weapons.inventory.ContainerWearables;
 import java.io.IOException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
@@ -74,7 +75,7 @@ public class GuiWearables extends InventoryEffectRenderer {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, WEARABLES_TEXTURE);
+		RenderSystem.setShaderTexture(0, WEARABLES_TEXTURE);
 		int i = leftPos;
 		int j = topPos;
 		drawTexturedModalRect(i, j, 0, 0, imageWidth, imageHeight);
@@ -128,7 +129,7 @@ public class GuiWearables extends InventoryEffectRenderer {
 	 * buttons)
 	 */
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		/*
 		 * if (button.id == 0) this.mc.displayGuiScreen(new GuiAchievements(this,
 		 * this.mc.player.getStatFileWriter()));

@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.util.TF2Util;
 import rafradek.TF2weapons.client.compat.GlStateManager;
 import rafradek.TF2weapons.client.compat.RenderHelper;
@@ -11,7 +13,6 @@ import rafradek.TF2weapons.inventory.ContainerMercenary;
 import java.io.IOException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,17 +24,17 @@ public class GuiMercenary extends MerchantScreen {
 	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/mercenary.png");
 
 	public EntityTF2Character mercenary;
-	public Button hireBtn;
-	public Button shareBtn;
-	public Button orderBtn;
-	public Button[] mainWeaponButton = new Button[3];
+	public GuiButton hireBtn;
+	public GuiButton shareBtn;
+	public GuiButton orderBtn;
+	public GuiButton[] mainWeaponButton = new GuiButton[3];
 	public Inventory inv;
 
 	public GuiMercenary(Inventory inv, EntityTF2Character mercenary, Level world) {
 		super(inv, mercenary, world);
 		this.mercenary = mercenary;
 		this.inv = inv;
-		slots = new ContainerMercenary(Minecraft.getInstance().player, mercenary, world);
+		menu = new ContainerMercenary(Minecraft.getInstance().player, mercenary, world);
 		imageWidth += 54;
 		// merInv=mercenary.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
 		// null);
@@ -42,12 +43,12 @@ public class GuiMercenary extends MerchantScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(hireBtn = new Button(60, leftPos + (imageWidth / 2) - 75, topPos - 25, 150, 20,
+		buttonList.add(hireBtn = new GuiButton(60, leftPos + (imageWidth / 2) - 75, topPos - 25, 150, 20,
 				"Hire mercenary (1 Australium ingot)"));
-		buttonList.add(shareBtn = new Button(62, leftPos + (imageWidth / 2) - 75,
+		buttonList.add(shareBtn = new GuiButton(62, leftPos + (imageWidth / 2) - 75,
 				topPos + imageHeight + 5, 150, 20, "Share loot (1 Australium ingot)"));
-		buttonList.add(orderBtn = new Button(61, leftPos + 179, topPos + 123, 48, 20, "Order"));
-		for (int i = 0; i < 3; i++) buttonList.add(mainWeaponButton[i] = new Button(63 + i, leftPos + 223,
+		buttonList.add(orderBtn = new GuiButton(61, leftPos + 179, topPos + 123, 48, 20, "Order"));
+		for (int i = 0; i < 3; i++) buttonList.add(mainWeaponButton[i] = new GuiButton(63 + i, leftPos + 223,
 					topPos + 12 + i * 18, 4, 6, ""));
 		updateButtons();
 	}
@@ -89,21 +90,21 @@ public class GuiMercenary extends MerchantScreen {
 	}
 
 	@Override
-	public void actionPerformed(Button button) throws IOException {
+	public void actionPerformed(GuiButton button) throws IOException {
 		super.actionPerformed(button);
 		if (button.id == 61) {
 			if (mercenary.getOrder() == Order.FOLLOW) mercenary.setOrder(Order.HOLD);
 			else mercenary.setOrder(Order.FOLLOW);
-			mc.playerController.sendEnchantPacket(slots.windowId, 10 + mercenary.getOrder().ordinal());
+			mc.gameMode.handleInventoryButtonClick(menu.containerId, 10 + mercenary.getOrder().ordinal());
 		} else if (button.id == 60) {
-			mc.playerController.sendEnchantPacket(slots.windowId, 0);
+			mc.gameMode.handleInventoryButtonClick(menu.containerId, 0);
 			if (mercenary.getOwnerUUID() == null) mercenary.setOwner(mc.player);
 			else mercenary.setOwner(null);
 		} else if (button.id == 62) {
-			mc.playerController.sendEnchantPacket(slots.windowId, 1);
+			mc.gameMode.handleInventoryButtonClick(menu.containerId, 1);
 			mercenary.setSharing(true);
 		} else if (button.id >= 63 && button.id < 66) {
-			mc.playerController.sendEnchantPacket(slots.windowId, button.id - 13);
+			mc.gameMode.handleInventoryButtonClick(menu.containerId, button.id - 13);
 			if (mercenary.getMainWeapon() == button.id - 63) mercenary.setMainWeapon(-1);
 			else mercenary.setMainWeapon(button.id - 63);
 		}
@@ -122,13 +123,13 @@ public class GuiMercenary extends MerchantScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
 		int i = leftPos + imageWidth - 54;
 		int j = topPos;
 		drawTexturedModalRect(i, j, 176, 0, 54, 146);
 		fontRenderer.drawString("Refill", i + 7, j + 80, 4210752);
-		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.slots).primaryAmmo), i + 10, j + 113, 4210752);
-		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.slots).secondaryAmmo), i + 33, j + 113, 4210752);
+		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.menu).primaryAmmo), i + 10, j + 113, 4210752);
+		fontRenderer.drawString(Integer.toString(((ContainerMercenary) this.menu).secondaryAmmo), i + 33, j + 113, 4210752);
 		GlStateManager.enableLighting();
 		GlStateManager.enableRescaleNormal();
 		RenderHelper.enableGUIStandardItemLighting();
@@ -136,16 +137,16 @@ public class GuiMercenary extends MerchantScreen {
 		for (int k = 0; k < 4; k++) {
 			ItemStack stack = mercenary.loadout.getStackInSlot(k);
 			if (!stack.isEmpty()) {
-				if (k < 4 && !slots.getSlot(k + 43).hasItem()) itemRender.renderItemIntoGUI(stack,
-						slots.getSlot(k + 43).xPos + leftPos, slots.getSlot(k + 43).yPos + topPos);
-				else if (k == 3 && !slots.getSlot(k + 36).hasItem())
-					itemRender.renderItemIntoGUI(stack, slots.getSlot(k - 3).yPos, slots.getSlot(k - 3).xPos);
+				if (k < 4 && !menu.getSlot(k + 43).hasItem()) itemRender.renderItemIntoGUI(stack,
+						menu.getSlot(k + 43).xPos + leftPos, menu.getSlot(k + 43).yPos + topPos);
+				else if (k == 3 && !menu.getSlot(k + 36).hasItem())
+					itemRender.renderItemIntoGUI(stack, menu.getSlot(k - 3).yPos, menu.getSlot(k - 3).xPos);
 			}
 
 		}
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.disableLighting();
-		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
 		/*
@@ -172,7 +173,7 @@ public class GuiMercenary extends MerchantScreen {
 	protected void renderHoveredToolTip(int mouseX, int mouseY) {
 		super.renderHoveredToolTip(mouseX, mouseY);
 		if (mc.player.getInventory().getItem().isEmpty() && getSlotUnderMouse() != null && !getSlotUnderMouse().hasItem()) {
-			int id = getSlotUnderMouse().slotNumber;
+			int id = getSlotUnderMouse().index;
 			if (id >= 43 && id < 47 && !mercenary.loadout.getStackInSlot(id - 43).isEmpty())
 				renderToolTip(mercenary.loadout.getStackInSlot(id - 43), mouseX, mouseY);
 		}

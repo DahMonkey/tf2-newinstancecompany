@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiContainer;
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -12,16 +15,14 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 
-public class GuiDispenser extends AbstractContainerScreen {
+public class GuiDispenser extends GuiContainer {
 
 	public EntityDispenser dispenser;
-	public Button doneBtn;
-	public Button grab;
+	public GuiButton doneBtn;
+	public GuiButton grab;
 	public int channel;
 	public boolean exit;
 	public int attackFlags;
@@ -39,12 +40,12 @@ public class GuiDispenser extends AbstractContainerScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(this.grab = new Button(0, this.leftPos + 86, this.topPos + 90, 40, 20,
+		buttonList.add(this.grab = new GuiButton(0, this.leftPos + 86, this.topPos + 90, 40, 20,
 				I18n.get("gui.teleporter.drop", new Object[0])));
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button.enabled && button.id == 0) {
 			mc.setScreen(null);
 			TF2weapons.network.sendToServer(new TF2Message.BuildingConfigMessage(dispenser.getId(), (byte) 127, 1));
@@ -75,7 +76,7 @@ public class GuiDispenser extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
 		int x = (width - imageWidth) / 2;
 		int y = (height - imageHeight) / 2;
 		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);

@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.message;
 
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.world.phys.BlockHitResult;
+import rafradek.TF2weapons.util.TF2HitResult;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.netty.buffer.ByteBuf;
@@ -208,30 +212,30 @@ public abstract class TF2Message implements IMessage {
 			buf.writeByte(state);
 			if (target != null)
 				for (HitResult mop : target) {
-					if (mop.getEntity() != null) {
+					if (TF2HitResult.getEntity(mop) != null) {
 						buf.writeBoolean(true);
-						buf.writeInt(mop.getEntity().getId());
+						buf.writeInt(TF2HitResult.getEntity(mop).getId());
 						// if(mop.hitVec!=null){
 						// buf.writeFloat((float) mop.hitVec.x);
 						// buf.writeFloat((float) mop.hitVec.y);
 						// buf.writeFloat((float) mop.hitVec.z);
 						// }
 						// buf.writeInt(mop.entityHit.getEntityId());
-						buf.writeBoolean(((float[]) mop.hitInfo)[0] == 1);
-						buf.writeByte((byte) ((mop.getLocation().x - mop.getEntity().getX()) * 16));
-						buf.writeByte((byte) ((mop.getLocation().y - mop.getEntity().getY()) * 16));
-						buf.writeByte((byte) ((mop.getLocation().z - mop.getEntity().getZ()) * 16));
+						buf.writeBoolean(((float[]) TF2HitResult.getHitInfo(mop))[0] == 1);
+						buf.writeByte((byte) ((mop.getLocation().x - TF2HitResult.getEntity(mop).getX()) * 16));
+						buf.writeByte((byte) ((mop.getLocation().y - TF2HitResult.getEntity(mop).getY()) * 16));
+						buf.writeByte((byte) ((mop.getLocation().z - TF2HitResult.getEntity(mop).getZ()) * 16));
 					} else {
 						buf.writeBoolean(false);
 						buf.writeByte(mop.getDirection().get3DDataValue());
 						buf.writeInt(mop.getBlockPos().getX());
 						buf.writeInt(mop.getBlockPos().getY());
 						buf.writeInt(mop.getBlockPos().getZ());
-						buf.writeByte((byte) ((mop.getLocation().x - mop.getBlockPos().getX()) * 16));
-						buf.writeByte((byte) ((mop.getLocation().y - mop.getBlockPos().getY()) * 16));
-						buf.writeByte((byte) ((mop.getLocation().z - mop.getBlockPos().getZ()) * 16));
+						buf.writeByte((byte) ((mop.getLocation().x - ((BlockHitResult) mop).getBlockPos().getX()) * 16));
+						buf.writeByte((byte) ((mop.getLocation().y - ((BlockHitResult) mop).getBlockPos().getY()) * 16));
+						buf.writeByte((byte) ((mop.getLocation().z - ((BlockHitResult) mop).getBlockPos().getZ()) * 16));
 					}
-					buf.writeFloat(((float[]) mop.hitInfo)[1]);
+					buf.writeFloat(((float[]) TF2HitResult.getHitInfo(mop))[1]);
 
 				}
 		}
@@ -319,7 +323,7 @@ public abstract class TF2Message implements IMessage {
 	public static class CapabilityMessage extends TF2Message {
 		int entityID;
 		long totalTime;
-		List<SynchedEntityData.DataEntry<?>> entries;
+		List<SynchedEntityData.DataItem<?>> entries;
 		boolean sendAll;
 
 		public CapabilityMessage() {}
@@ -331,7 +335,7 @@ public abstract class TF2Message implements IMessage {
 			if (sendAll) {
 				this.entries = cap.entityData.getAll();
 			} else {
-				this.entries = cap.entityData.getDirty();
+				this.entries = cap.entityData.packDirty();
 			}
 		}
 
@@ -339,28 +343,22 @@ public abstract class TF2Message implements IMessage {
 		public void fromBytes(ByteBuf buf) {
 			entityID = buf.readInt();
 			totalTime = buf.readLong();
-			try {
-				entries = SynchedEntityData.readEntries(new FriendlyByteBuf(buf));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			entries = SynchedEntityData.unpack(new FriendlyByteBuf(buf));
+
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
 			buf.writeInt(entityID);
 			buf.writeLong(totalTime);
-			try {
-				SynchedEntityData.writeEntries(entries, new FriendlyByteBuf(buf));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			SynchedEntityData.pack(entries, new FriendlyByteBuf(buf));
+
 		}
 
 	}
 
 	public static class GameArenaMessage extends TF2Message {
-		Map<UUID, List<SynchedEntityData.DataEntry<?>>> playerfoUUID = new HashMap<>();
+		Map<UUID, List<SynchedEntityData.DataItem<?>>> playerfoUUID = new HashMap<>();
 		int arenaId;
 		Type type;
 
@@ -378,7 +376,7 @@ public abstract class TF2Message implements IMessage {
 					if (type == Type.ADD) {
 						playerfoUUID.put(entry.getKey(), entry.getValue().getAll());
 					} else {
-						playerfoUUID.put(entry.getKey(), entry.getValue().getDirty());
+						playerfoUUID.put(entry.getKey(), entry.getValue().packDirty());
 					}
 				}
 			}
@@ -389,12 +387,9 @@ public abstract class TF2Message implements IMessage {
 			this.type = Type.values()[buf.readByte()];
 			this.arenaId = buf.readInt();
 			while (buf.readableBytes() > 0) {
-				try {
-					UUID uuid = new FriendlyByteBuf(buf).readUniqueId();
-					playerfoUUID.put(uuid, SynchedEntityData.readEntries(new FriendlyByteBuf(buf)));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+									UUID uuid = new FriendlyByteBuf(buf).readUUID();
+					playerfoUUID.put(uuid, SynchedEntityData.unpack(new FriendlyByteBuf(buf)));
+
 			}
 		}
 
@@ -402,20 +397,17 @@ public abstract class TF2Message implements IMessage {
 		public void toBytes(ByteBuf buf) {
 			buf.writeByte(this.type.ordinal());
 			buf.writeInt(this.arenaId);
-			for (Entry<UUID, List<SynchedEntityData.DataEntry<?>>> entry : playerfoUUID.entrySet()) {
-				new FriendlyByteBuf(buf).writeUniqueId(entry.getKey());
-				try {
-					SynchedEntityData.writeEntries(entry.getValue(), new FriendlyByteBuf(buf));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			for (Entry<UUID, List<SynchedEntityData.DataItem<?>>> entry : playerfoUUID.entrySet()) {
+				new FriendlyByteBuf(buf).writeUUID(entry.getKey());
+				SynchedEntityData.pack(entry.getValue(), new FriendlyByteBuf(buf));
+
 			}
 		}
 
 	}
 
 	public static class PlayerCapabilityMessage extends TF2Message {
-		List<SynchedEntityData.DataEntry<?>> entries;
+		List<SynchedEntityData.DataItem<?>> entries;
 		int entityID;
 		boolean global;
 
@@ -429,13 +421,13 @@ public abstract class TF2Message implements IMessage {
 				if (sendAll) {
 					this.entries = cap.dataManagerGlobal.getAll();
 				} else {
-					this.entries = cap.dataManagerGlobal.getDirty();
+					this.entries = cap.dataManagerGlobal.packDirty();
 				}
 			} else {
 				if (sendAll) {
 					this.entries = cap.entityData.getAll();
 				} else {
-					this.entries = cap.entityData.getDirty();
+					this.entries = cap.entityData.packDirty();
 				}
 			}
 		}
@@ -444,22 +436,16 @@ public abstract class TF2Message implements IMessage {
 		public void fromBytes(ByteBuf buf) {
 			entityID = buf.readInt();
 			this.global = buf.readBoolean();
-			try {
-				entries = SynchedEntityData.readEntries(new FriendlyByteBuf(buf));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			entries = SynchedEntityData.unpack(new FriendlyByteBuf(buf));
+
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
 			buf.writeInt(entityID);
 			buf.writeBoolean(global);
-			try {
-				SynchedEntityData.writeEntries(entries, new FriendlyByteBuf(buf));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			SynchedEntityData.pack(entries, new FriendlyByteBuf(buf));
+
 		}
 
 	}
@@ -505,15 +491,15 @@ public abstract class TF2Message implements IMessage {
 			buf.writeByte(this.slot);
 			buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 			for (HitResult mop : target) {
-				buf.writeInt(mop.getEntity().getId());
+				buf.writeInt(TF2HitResult.getEntity(mop).getId());
 				// if(mop.hitVec!=null){
 				// buf.writeFloat((float) mop.hitVec.x);
 				// buf.writeFloat((float) mop.hitVec.y);
 				// buf.writeFloat((float) mop.hitVec.z);
 				// }
 				// buf.writeInt(mop.entityHit.getEntityId());
-				buf.writeBoolean(((float[]) mop.hitInfo)[0] == 1);
-				buf.writeFloat(((float[]) mop.hitInfo)[1]);
+				buf.writeBoolean(((float[]) TF2HitResult.getHitInfo(mop))[0] == 1);
+				buf.writeFloat(((float[]) TF2HitResult.getHitInfo(mop))[1]);
 			}
 
 		}
@@ -577,17 +563,14 @@ public abstract class TF2Message implements IMessage {
 		@Override
 		public void fromBytes(ByteBuf buf) {
 			pos = new FriendlyByteBuf(buf).readBlockPos();
-			try {
-				tag = new FriendlyByteBuf(buf).readCompoundTag();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+							tag = new FriendlyByteBuf(buf).readNbt();
+
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
 			new FriendlyByteBuf(buf).writeBlockPos(pos);
-			new FriendlyByteBuf(buf).writeCompoundTag(tag);
+			new FriendlyByteBuf(buf).writeNbt(tag);
 		}
 
 		public CompoundTag getTag() {
@@ -625,11 +608,8 @@ public abstract class TF2Message implements IMessage {
 		public void fromBytes(ByteBuf buf) {
 			id = buf.readByte();
 			if (buf.readableBytes() > 0) {
-				try {
-					data = new FriendlyByteBuf(buf).readCompoundTag();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+									data = new FriendlyByteBuf(buf).readNbt();
+
 			}
 		}
 
@@ -637,7 +617,7 @@ public abstract class TF2Message implements IMessage {
 		public void toBytes(ByteBuf buf) {
 			buf.writeByte(id);
 			if (data != null) {
-				new FriendlyByteBuf(buf).writeCompoundTag(data);
+				new FriendlyByteBuf(buf).writeNbt(data);
 			}
 		}
 
@@ -690,18 +670,15 @@ public abstract class TF2Message implements IMessage {
 		public void fromBytes(ByteBuf buf) {
 			slot = buf.readByte();
 			entityID = buf.readInt();
-			try {
-				stack = new FriendlyByteBuf(buf).readItemStack();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+							stack = new FriendlyByteBuf(buf).readItem();
+
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
 			buf.writeByte(slot);
 			buf.writeInt(entityID);
-			new FriendlyByteBuf(buf).writeItemStack(stack);
+			new FriendlyByteBuf(buf).writeItem(stack);
 
 		}
 
@@ -723,12 +700,12 @@ public abstract class TF2Message implements IMessage {
 
 		@Override
 		public void fromBytes(ByteBuf buf) {
-			this.name = new FriendlyByteBuf(buf).readString(256);
+			this.name = new FriendlyByteBuf(buf).readUtf(256);
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
-			new FriendlyByteBuf(buf).writeString(name);
+			new FriendlyByteBuf(buf).writeUtf(name);
 
 		}
 
@@ -752,13 +729,13 @@ public abstract class TF2Message implements IMessage {
 
 		@Override
 		public void fromBytes(ByteBuf buf) {
-			this.name = new FriendlyByteBuf(buf).readString(256);
+			this.name = new FriendlyByteBuf(buf).readUtf(256);
 			this.time = buf.readShort();
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
-			new FriendlyByteBuf(buf).writeString(name);
+			new FriendlyByteBuf(buf).writeUtf(name);
 			buf.writeShort(time);
 		}
 
@@ -783,7 +760,7 @@ public abstract class TF2Message implements IMessage {
 		@Override
 		public void fromBytes(ByteBuf buf) {
 			this.id = buf.readByte();
-			String name = new FriendlyByteBuf(buf).readString(256);
+			String name = new FriendlyByteBuf(buf).readUtf(256);
 			int expireDay = buf.readInt();
 			int progress = buf.readShort();
 			Objective[] objectives = new Objective[buf.readByte()];
@@ -799,7 +776,7 @@ public abstract class TF2Message implements IMessage {
 		@Override
 		public void toBytes(ByteBuf buf) {
 			buf.writeByte(id);
-			new FriendlyByteBuf(buf).writeString(contract.className);
+			new FriendlyByteBuf(buf).writeUtf(contract.className);
 			buf.writeInt(contract.expireDay);
 			buf.writeShort(contract.progress);
 			buf.writeByte(contract.objectives.length);
@@ -983,7 +960,7 @@ public abstract class TF2Message implements IMessage {
 
 		@Override
 		public void fromBytes(ByteBuf buf) {
-			this.event = SoundEvent.REGISTRY.getObjectById(buf.readInt());
+			this.event = net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(new FriendlyByteBuf(buf).readResourceLocation());
 			this.volume = buf.readFloat();
 			this.pitch = buf.readFloat();
 			this.category = SoundSource.values()[buf.readByte()];
@@ -997,7 +974,7 @@ public abstract class TF2Message implements IMessage {
 
 		@Override
 		public void toBytes(ByteBuf buf) {
-			buf.writeInt(SoundEvent.REGISTRY.getIDForObject(this.event));
+			new FriendlyByteBuf(buf).writeResourceLocation(net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getKey(this.event));
 			buf.writeFloat(this.volume);
 			buf.writeFloat(this.pitch);
 			buf.writeByte(this.category.ordinal());
@@ -1035,49 +1012,47 @@ public abstract class TF2Message implements IMessage {
 		}
 	}
 
+	/** Server -> client on login: networked config values (UDP is not ported). */
 	public static class InitMessage extends TF2Message {
 
 		int port;
-
 		int id;
-
 		boolean energyUse;
-
-		Multimap<String, Property> property;
+		Map<String, String> property = new HashMap<>();
 
 		public InitMessage() {
-
 		}
 
 		public InitMessage(int port, int id, boolean energyUse) {
 			this.port = port;
 			this.id = id;
 			this.energyUse = energyUse;
+			for (Entry<String, net.minecraftforge.common.ForgeConfigSpec.ConfigValue<?>> entry : TF2ConfigVars.NETWORKED
+					.entrySet())
+				this.property.put(entry.getKey(), String.valueOf(entry.getValue().get()));
 		}
 
 		@Override
 		public void fromBytes(ByteBuf buf) {
-			this.port = buf.readUnsignedShort();
-			this.id = buf.readShort();
-			this.energyUse = buf.readBoolean();
 			FriendlyByteBuf packet = new FriendlyByteBuf(buf);
-			property = HashMultimap.create();
-			while (packet.readableBytes() > 0) {
-				property.put(packet.readString(255),
-						new Property(packet.readString(255), packet.readString(255), Type.STRING));
-			}
+			this.port = packet.readUnsignedShort();
+			this.id = packet.readShort();
+			this.energyUse = packet.readBoolean();
+			int count = packet.readVarInt();
+			for (int i = 0; i < count; i++)
+				this.property.put(packet.readUtf(255), packet.readUtf(255));
 		}
 
 		@Override
 		public void toBytes(ByteBuf buf) {
-			buf.writeShort(this.port);
-			buf.writeShort(id);
-			buf.writeBoolean(this.energyUse);
 			FriendlyByteBuf packet = new FriendlyByteBuf(buf);
-			for (Entry<ConfigCategory, Property> entry : TF2ConfigVars.propertyNetworked.entries()) {
-				packet.writeString(entry.getKey().getName());
-				packet.writeString(entry.getValue().getName());
-				packet.writeString(entry.getValue().getString());
+			packet.writeShort(this.port);
+			packet.writeShort(id);
+			packet.writeBoolean(this.energyUse);
+			packet.writeVarInt(this.property.size());
+			for (Entry<String, String> entry : this.property.entrySet()) {
+				packet.writeUtf(entry.getKey());
+				packet.writeUtf(entry.getValue());
 			}
 		}
 	}
@@ -1094,16 +1069,18 @@ public abstract class TF2Message implements IMessage {
 
 		}
 
-		public InitClientMessage(Configuration conf) {
-			ConfigCategory cat = conf.getCategory("default building targets");
-			this.sentryTargets = cat.get("Attack on hurt").getBoolean() ? 1 : 0;
-			this.sentryTargets += cat.get("Attack other players").getBoolean() ? 2 : 0;
-			this.sentryTargets += cat.get("Attack hostile mobs").getBoolean() ? 4 : 0;
-			this.sentryTargets += cat.get("Attack friendly creatures").getBoolean() ? 8 : 0;
-			this.dispenserPlayer = cat.get("Dispensers heal neutral players").getBoolean();
-			this.teleporterPlayer = cat.get("Neutral players can teleport").getBoolean();
-			this.teleporterEntity = cat.get("Entities can teleport").getBoolean();
-			this.breakBlocks = TF2ConfigVars.swapAttackButton;
+		/** Client -> server: this player's default building settings from their config. */
+		public static InitClientMessage fromConfig() {
+			InitClientMessage msg = new InitClientMessage();
+			msg.sentryTargets = TF2ConfigVars.getDefaultBuildingTarget("Attack on hurt") ? 1 : 0;
+			msg.sentryTargets += TF2ConfigVars.getDefaultBuildingTarget("Attack other players") ? 2 : 0;
+			msg.sentryTargets += TF2ConfigVars.getDefaultBuildingTarget("Attack hostile mobs") ? 4 : 0;
+			msg.sentryTargets += TF2ConfigVars.getDefaultBuildingTarget("Attack friendly creatures") ? 8 : 0;
+			msg.dispenserPlayer = TF2ConfigVars.getDefaultBuildingTarget("Dispensers heal neutral players");
+			msg.teleporterPlayer = TF2ConfigVars.getDefaultBuildingTarget("Neutral players can teleport");
+			msg.teleporterEntity = TF2ConfigVars.getDefaultBuildingTarget("Entities can teleport");
+			msg.breakBlocks = TF2ConfigVars.swapAttackButton;
+			return msg;
 		}
 
 		@Override
@@ -1122,47 +1099,6 @@ public abstract class TF2Message implements IMessage {
 			buf.writeBoolean(this.teleporterPlayer);
 			buf.writeBoolean(this.teleporterEntity);
 			buf.writeBoolean(this.breakBlocks);
-		}
-	}
-
-	public static class ContractNewMessage extends TF2Message {
-		Packet<?> packet;
-		int type;
-
-		public ContractNewMessage() {
-
-		}
-
-		public ContractNewMessage(Packet<?> packet) {
-			if (packet instanceof SPacketAdvancementInfo)
-				type = 0;
-			else if (packet instanceof SPacketSelectAdvancementsTab)
-				type = 1;
-			this.packet = packet;
-		}
-
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			this.type = buf.readByte();
-			if (type == 0)
-				this.packet = new SPacketAdvancementInfo();
-			else
-				this.packet = new SPacketSelectAdvancementsTab();
-			try {
-				this.packet.readPacketData(new FriendlyByteBuf(buf));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void toBytes(ByteBuf buf) {
-			buf.writeByte(type);
-			try {
-				this.packet.writePacketData(new FriendlyByteBuf(buf));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

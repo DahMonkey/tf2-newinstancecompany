@@ -1,13 +1,14 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiScreen;
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 
-public class GuiConfirm extends Screen {
+public class GuiConfirm extends GuiScreen {
 	protected String messageLine1;
 	private final String messageLine2;
 	private final List<String> listLines = Lists.<String>newArrayList();
@@ -39,7 +40,7 @@ public class GuiConfirm extends Screen {
 	 * for buttons)
 	 */
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		mc.setScreen(null);
 	}
 

@@ -1,13 +1,13 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 
-public class GuiTooltip extends Button {
+public class GuiTooltip extends GuiButton {
 
 	private Screen screen;
 	private List<String> list;

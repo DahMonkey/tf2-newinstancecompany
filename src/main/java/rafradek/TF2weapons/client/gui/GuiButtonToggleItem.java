@@ -1,13 +1,14 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 import rafradek.TF2weapons.client.compat.RenderHelper;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.world.item.ItemStack;
 
-public class GuiButtonToggleItem extends Button {
+public class GuiButtonToggleItem extends GuiButton {
 
 	public boolean selected;
 	public ItemStack stackToDraw = ItemStack.EMPTY;

@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiScreen;
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -9,12 +12,10 @@ import rafradek.TF2weapons.util.Contract;
 import java.io.IOException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 
-public class GuiContracts extends Screen {
+public class GuiContracts extends GuiScreen {
 
 	private int leftPos;
 	private int topPos;
@@ -33,9 +34,9 @@ public class GuiContracts extends Screen {
 		super.initGui();
 		leftPos = width / 2 - 128;
 		topPos = height / 2 - 108;
-		buttonList.add(new Button(0, leftPos + 7, topPos + 189, 100, 20, I18n.get("gui.contracts.accept")));
-		buttonList.add(new Button(1, leftPos + 107, topPos + 189, 71, 20, I18n.get("gui.contracts.reject")));
-		buttonList.add(new Button(2, leftPos + 178, topPos + 189, 71, 20, I18n.get("gui.done")));
+		buttonList.add(new GuiButton(0, leftPos + 7, topPos + 189, 100, 20, I18n.get("gui.contracts.accept")));
+		buttonList.add(new GuiButton(1, leftPos + 107, topPos + 189, 71, 20, I18n.get("gui.contracts.reject")));
+		buttonList.add(new GuiButton(2, leftPos + 178, topPos + 189, 71, 20, I18n.get("gui.done")));
 		if (selectedContract != null) {
 			buttonList.get(1).enabled = true;
 			buttonList.get(0).enabled = !selectedContract.active || selectedContract.rewards > 0;
@@ -47,13 +48,13 @@ public class GuiContracts extends Screen {
 		}
 		for (int i = 0; i < mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.size(); i++) {
 			Contract contract = mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.get(i);
-			buttonList.add(new Button(i + 3, this.leftPos + 7, this.topPos + 16 + i * 20, 74, 20,
+			buttonList.add(new GuiButton(i + 3, this.leftPos + 7, this.topPos + 16 + i * 20, 74, 20,
 					I18n.get("gui.contracts." + contract.className, new Object[0]) + ": " + contract.progress + " CP"));
 		}
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button.id > 2) {
 			selectedId = button.id - 3;
 			selectedContract = mc.player.getCapability(TF2weapons.PLAYER_CAP).orElse(null).contracts.get(button.id - 3);
@@ -104,7 +105,7 @@ public class GuiContracts extends Screen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, CONTRACTS_GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, CONTRACTS_GUI_TEXTURES);
 		drawTexturedModalRect(leftPos, topPos, 0, 0, 256, 216);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		int contractDay = mc.player.getStatFileWriter().readStat(TF2Achievements.CONTRACT_DAY);
@@ -115,7 +116,7 @@ public class GuiContracts extends Screen {
 		}
 		if (selectedContract != null) {
 			fontRenderer.drawString(I18n.get("gui.contracts." + selectedContract.className, new Object[0]), leftPos + 83, topPos + 18, 0xFFFFFF);
-			this.font.drawString(I18n.get("gui.contracts.objectives"), leftPos + 83, topPos + 35, 0xFFFFFF);
+			this.fontRenderer.drawString(I18n.get("gui.contracts.objectives"), leftPos + 83, topPos + 35, 0xFFFFFF);
 			if (!selectedContract.className.equals("kill")) fontRenderer.drawString(I18n.get("gui.contracts.objectives_t",
 							I18n.get("entity." + selectedContract.className + ".name")), leftPos + 83, topPos + 47, 0xFFFFFF);
 			for (int i = 0; i < selectedContract.objectives.length; i++) {

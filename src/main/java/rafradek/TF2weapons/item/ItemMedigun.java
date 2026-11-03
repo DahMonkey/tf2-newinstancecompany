@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -59,10 +60,10 @@ public class ItemMedigun extends ItemUsable {
 		if (world.isClientSide && living == Minecraft.getInstance().player) {
 			HitResult trace = this.trace(stack, living, world);
 			if (world.getEntity(living.getCapability(TF2weapons.WEAPONS_CAP).orElse(null).getHealTarget()) == null
-					&& trace != null && trace.getEntity() != null && trace.getEntity() instanceof LivingEntity
-					&& !(trace.getEntity() instanceof EntityBuilding)) {
+					&& trace != null && TF2HitResult.getEntity(trace) != null && TF2HitResult.getEntity(trace) instanceof LivingEntity
+					&& !(TF2HitResult.getEntity(trace) instanceof EntityBuilding)) {
 				List<HitResult> list = new ArrayList<>();
-				trace.hitInfo = new float[] { 0, 0 };
+				TF2HitResult.setHitInfo(trace, new float[] { 0, 0 });
 				list.add(trace);
 				message.target = list;
 			}
@@ -423,7 +424,7 @@ public class ItemMedigun extends ItemUsable {
 		if (((newState & 1) - (oldState & 1)) == 1) {
 			if (world.isClientSide) {
 				HitResult trace = this.trace(stack, living, world);
-				if (trace == null || trace.getEntity() == null || !(trace.getEntity() instanceof LivingEntity))
+				if (trace == null || TF2HitResult.getEntity(trace) == null || !(TF2HitResult.getEntity(trace) instanceof LivingEntity))
 					ClientProxy.playWeaponSound(living, ItemFromData.getSound(stack, PropertyType.NO_TARGET_SOUND),
 							false, 1, stack);
 			} else {

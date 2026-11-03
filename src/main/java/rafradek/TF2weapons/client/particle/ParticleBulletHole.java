@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.client.particle;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 
 import net.minecraft.client.particle.Particle;
@@ -13,9 +14,9 @@ public class ParticleBulletHole extends Particle {
 	HitResult block;
 
 	public ParticleBulletHole(Level world, HitResult result) {
-		super(world, result.getLocation().x + result.getDirection().getStepX() * 0.012,
-				result.getLocation().y + result.getDirection().getStepY() * 0.012,
-				result.getLocation().z + result.getDirection().getStepZ() * 0.012);
+		super(world, result.getLocation().x + ((BlockHitResult) result).getDirection().getStepX() * 0.012,
+				result.getLocation().y + ((BlockHitResult) result).getDirection().getStepY() * 0.012,
+				result.getLocation().z + ((BlockHitResult) result).getDirection().getStepZ() * 0.012);
 		this.block = result;
 		this.rCol = 0.05F;
 		this.gCol = 0.05F;
@@ -38,7 +39,7 @@ public class ParticleBulletHole extends Particle {
 		// this.move(this.motionX, this.motionY, this.motionZ);
 
 		if (this.level.getBlockState(block.getBlockPos()).getBlock()
-				.isAir(this.level.getBlockState(block.getBlockPos()), world, block.getBlockPos())) {
+				.isAir(this.level.getBlockState(block.getBlockPos()), world, ((BlockHitResult) block).getBlockPos())) {
 			this.setExpired();
 		}
 

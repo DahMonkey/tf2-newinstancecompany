@@ -19,11 +19,24 @@ public class TF2HitResult extends EntityHitResult {
 	}
 
 	public static boolean isHeadshot(HitResult result) {
-		return result instanceof TF2HitResult && Boolean.TRUE.equals(((TF2HitResult) result).hitInfo);
+		return Boolean.TRUE.equals(getHitInfo(result));
 	}
 
+	/** Extra data attached to any hit result (1.12 RayTraceResult.hitInfo). */
+	private static final java.util.Map<HitResult, Object> EXTRA = java.util.Collections
+			.synchronizedMap(new java.util.WeakHashMap<>());
+
 	public static Object getHitInfo(HitResult result) {
-		return result instanceof TF2HitResult ? ((TF2HitResult) result).hitInfo : null;
+		if (result instanceof TF2HitResult)
+			return ((TF2HitResult) result).hitInfo;
+		return result == null ? null : EXTRA.get(result);
+	}
+
+	public static void setHitInfo(HitResult result, Object info) {
+		if (result instanceof TF2HitResult)
+			((TF2HitResult) result).hitInfo = info;
+		else if (result != null)
+			EXTRA.put(result, info);
 	}
 
 	public static Entity getEntity(HitResult result) {

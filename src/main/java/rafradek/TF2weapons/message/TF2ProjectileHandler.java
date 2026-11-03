@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.message;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.message.TF2Message.PredictionMessage;
 import java.util.ArrayList;
@@ -33,13 +34,13 @@ public class TF2ProjectileHandler implements IMessageHandler<TF2Message.Predicti
 						Vec3 hit1 = new Vec3((Byte) obj[6] / 16D + entity.getX(), (Byte) obj[7] / 16D + entity.getY(),
 								(Byte) obj[8] / 16D + entity.getZ());
 						result = new HitResult(entity, hit1);
-						result.hitInfo = new float[] { (Boolean) obj[1] ? 1f : 0f, (Float) obj[2] };
+						TF2HitResult.setHitInfo(result, new float[] { (Boolean) obj[1] ? 1f : 0f, (Float) obj[2] });
 					} else {
 						BlockPos pos = new BlockPos((Integer) obj[3], (Integer) obj[4], (Integer) obj[5]);
 						Vec3 hit2 = new Vec3((Byte) obj[6] / 16D + pos.getX(), (Byte) obj[7] / 16D + pos.getY(),
 								(Byte) obj[8] / 16D + pos.getZ());
 						result = new HitResult(hit2, Direction.from3DDataValue((Byte) obj[1]), pos);
-						result.hitInfo = new float[] { (Float) obj[2] };
+						TF2HitResult.setHitInfo(result, new float[] { (Float) obj[2] });
 					}
 					message.target.add(result);
 				}

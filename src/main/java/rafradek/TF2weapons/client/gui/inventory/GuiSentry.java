@@ -1,5 +1,8 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiContainer;
+import rafradek.TF2weapons.client.compat.GuiButton;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -14,23 +17,21 @@ import java.util.List;
 import java.util.regex.Pattern;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 
-public class GuiSentry extends AbstractContainerScreen {
+public class GuiSentry extends GuiContainer {
 
 	public EntitySentry sentry;
-	public Button doneBtn;
-	public Button grab;
+	public GuiButton doneBtn;
+	public GuiButton grab;
 	public int channel;
 	public boolean exit;
-	private Button attackEnemyTeamBtn;
-	private Button attackOnHurtBtn;
-	private Button attackOtherPlayersBtn;
-	private Button attackHostileMobsBtn;
-	private Button attackFriendlyMobsBtn;
+	private GuiButton attackEnemyTeamBtn;
+	private GuiButton attackOnHurtBtn;
+	private GuiButton attackOtherPlayersBtn;
+	private GuiButton attackHostileMobsBtn;
+	private GuiButton attackFriendlyMobsBtn;
 	public int attackFlags;
 
 	private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/building.png");
@@ -47,15 +48,15 @@ public class GuiSentry extends AbstractContainerScreen {
 	public void initGui() {
 		initGui();
 		buttonList.clear();
-		buttonList.add(attackOnHurtBtn = new Button(1, leftPos + 181, topPos + 14, 25, 20, "no"));
-		buttonList.add(attackOtherPlayersBtn = new Button(2, leftPos + 181, topPos + 34, 25, 20, "no"));
-		buttonList.add(attackHostileMobsBtn = new Button(3, leftPos + 181, topPos + 54, 25, 20, "no"));
-		buttonList.add(attackFriendlyMobsBtn = new Button(4, leftPos + 181, topPos + 74, 25, 20, "no"));
-		buttonList.add(grab = new Button(5, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
+		buttonList.add(attackOnHurtBtn = new GuiButton(1, leftPos + 181, topPos + 14, 25, 20, "no"));
+		buttonList.add(attackOtherPlayersBtn = new GuiButton(2, leftPos + 181, topPos + 34, 25, 20, "no"));
+		buttonList.add(attackHostileMobsBtn = new GuiButton(3, leftPos + 181, topPos + 54, 25, 20, "no"));
+		buttonList.add(attackFriendlyMobsBtn = new GuiButton(4, leftPos + 181, topPos + 74, 25, 20, "no"));
+		buttonList.add(grab = new GuiButton(5, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (!button.enabled) return;
 		if (button.id >= 1 && button.id <= 4) {
 			attackFlags ^= 1 << (button.id - 1);
@@ -103,7 +104,7 @@ public class GuiSentry extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
 		int x = (width - imageWidth) / 2;
 		int y = (height - imageHeight) / 2;
 		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);

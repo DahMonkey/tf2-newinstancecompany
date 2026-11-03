@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.message;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.TF2PlayerCapability;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientHandler;
@@ -323,7 +324,7 @@ public class TF2ActionHandler implements IMessageHandler<TF2Message.ActionMessag
 							HitResult trace = player.level.rayTraceBlocks(player.getEyePosition(1),
 									player.getEyePosition(1).add(player.getViewVector(1).scale(40)));
 							if (trace != null) {
-								BlockPos pos3 = trace.getBlockPos().relative(trace.getDirection());
+								BlockPos pos3 = ((BlockHitResult) trace).getBlockPos().relative(trace.getDirection());
 								List<EntityTF2Character> list3 = player.level.getEntitiesOfClass(
 										EntityTF2Character.class, player.getBoundingBox().inflate(20, 8, 20),
 										test8 -> (test8.getOwner() == player));

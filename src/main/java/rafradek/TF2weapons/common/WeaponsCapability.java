@@ -545,7 +545,7 @@ public class WeaponsCapability implements ICapabilityProvider, INBTSerializable<
 				// null && TF2Util.pierce(this.owner.world, this.owner, this.owner.posX,
 				// this.owner.posY + this.owner.getEyeHeight(), this.owner.posZ,
 				// this.grapplingHook.posX, this.grapplingHook.posY, this.grapplingHook.posZ,
-				// false, 0f, false).get(0).typeOfHit == RayTraceResult.Type.BLOCK)
+				// false, 0f, false).get(0).typeOfHit == RayTraceResult.HitResult.Type.BLOCK)
 				// this.setGrapplingHook(null);
 				// else {
 				Vec3 motionVec = new Vec3(this.grapplingHook.getX() - this.owner.getX(),

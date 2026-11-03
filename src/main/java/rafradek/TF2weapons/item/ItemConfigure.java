@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.EntityPickup;
 import rafradek.TF2weapons.message.TF2Message;
@@ -61,8 +62,8 @@ public class ItemConfigure extends LegacyItem {
 		if (world.isClientSide) {
 			HitResult ray = world.rayTraceBlocks(player.getEyePosition(1f),
 					player.getEyePosition(1f).add(player.getLookAngle().scale(256)), false);
-			if (ray != null && ray.getBlockPos() != null) {
-				BlockPos pos = ray.getBlockPos();
+			if (ray != null && ((BlockHitResult) ray).getBlockPos() != null) {
+				BlockPos pos = ((BlockHitResult) ray).getBlockPos();
 				BlockEntity ent = world.getBlockEntity(pos);
 				if (!(ent instanceof IEntityConfigurable)) {
 					Screen.setClipboardString(pos.getX() + " " + pos.getY() + " " + pos.getZ());

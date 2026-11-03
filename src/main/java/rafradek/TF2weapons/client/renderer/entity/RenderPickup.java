@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.client.renderer.entity;
 
+import rafradek.TF2weapons.client.compat.RenderItem;
+
 import rafradek.TF2weapons.client.compat.Render;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 

@@ -98,6 +98,11 @@ R = [
     (r"\.isSpectatedByPlayer\(", ".broadcastToPlayer("),
     (r"\.getRidingEntity\(\)", ".getVehicle()"),
     (r"\.setAir\(", ".setAirSupply("),
+    (r"\.readCompoundTag\(\)", ".readNbt()"), (r"\.writeCompoundTag\(", ".writeNbt("),
+    (r"\.readItemStack\(\)", ".readItem()"), (r"\.writeItemStack\(", ".writeItem("),
+    (r"\.readString\(", ".readUtf("), (r"\.writeString\(", ".writeUtf("),
+    (r"\.readUniqueId\(\)", ".readUUID()"), (r"\.writeUniqueId\(", ".writeUUID("),
+    (r"\.readEnumValue\(", ".readEnum("), (r"\.writeEnumValue\(", ".writeEnum("),
     (r"\.getHeight\(\)", ".getBbHeight()"),
     (r"\.getWidth\(\)", ".getBbWidth()"),
 ]

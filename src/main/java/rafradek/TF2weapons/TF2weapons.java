@@ -358,7 +358,7 @@ public class TF2weapons {
 		int version = 0;
 		try {
 			if (versionFile.exists())
-				version = Integer.parseInt(Files.readString(versionFile.toPath()).trim());
+				version = Integer.parseInt(Files.readUtf(versionFile.toPath()).trim());
 		} catch (Exception e) {
 			version = 0;
 		}
@@ -369,7 +369,7 @@ public class TF2weapons {
 			extractData("weapons/crates.json", new File(this.weaponDir, "Crates.json"));
 			extractData("robots/robot_squad.json", squadFile);
 			try {
-				Files.writeString(versionFile.toPath(), String.valueOf(getCurrentWeaponVersion()));
+				Files.writeUtf(versionFile.toPath(), String.valueOf(getCurrentWeaponVersion()));
 			} catch (IOException e) {
 				LOGGER.error("Cannot write weapon config version", e);
 			}
@@ -420,7 +420,7 @@ public class TF2weapons {
 	}
 
 	public static void loadConfig(File file, DataOutput output) throws IOException {
-		loadConfig(Files.readString(file.toPath(), StandardCharsets.UTF_8), file.getName(), output);
+		loadConfig(Files.readUtf(file.toPath(), StandardCharsets.UTF_8), file.getName(), output);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

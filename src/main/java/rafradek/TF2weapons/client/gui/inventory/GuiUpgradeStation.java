@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiContainer;
+import rafradek.TF2weapons.client.compat.GuiButton;
+import rafradek.TF2weapons.client.compat.LegacyInput;
+
 import rafradek.TF2weapons.util.TF2Util;
 import rafradek.TF2weapons.client.compat.GlStateManager;
 
@@ -15,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-public class GuiUpgradeStation extends AbstractContainerScreen {
+public class GuiUpgradeStation extends GuiContainer {
 	public GuiUpgradeStation(AbstractContainerMenu inventorySlotsIn) {
 		super(inventorySlotsIn);
 	}
@@ -36,8 +38,8 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 
 	// public ItemStack[] itemsToRender;
 	public ArrayList<GuiTooltip> tooltip = new ArrayList<>();
-	public Button[] buttons = new Button[12];
-	public Button refund;
+	public GuiButton[] buttons = new GuiButton[12];
+	public GuiButton refund;
 	public int firstIndex;
 	public float scroll;
 	public int tabid;
@@ -63,11 +65,11 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 		super.initGui();
 		tooltip.clear();
 		for (int x = 0; x < 2; x++) for (int y = 0; y < 3; y++) {
-			buttonList.add(buttons[x * 2 + y * 4] = new Button(x * 2 + y * 4, leftPos + 81 + x * 101, topPos + 47 + y * 30, 12, 12, "+"));
-			buttonList.add(buttons[x * 2 + y * 4 + 1] = new Button(x * 2 + y * 4 + 1, leftPos + 94 + x * 101, topPos + 47 + y * 30, 12, 12, "-"));
+			buttonList.add(buttons[x * 2 + y * 4] = new GuiButton(x * 2 + y * 4, leftPos + 81 + x * 101, topPos + 47 + y * 30, 12, 12, "+"));
+			buttonList.add(buttons[x * 2 + y * 4 + 1] = new GuiButton(x * 2 + y * 4 + 1, leftPos + 94 + x * 101, topPos + 47 + y * 30, 12, 12, "-"));
 		}
 		tooltip.add(new GuiTooltip(leftPos + 128, topPos + 15, 100, 12, I18n.get("container.upgrades.info"), this));
-		buttonList.add(refund = new Button(12, leftPos + 123, topPos + 121, 100, 20, I18n.get("container.upgrades.refund")));
+		buttonList.add(refund = new GuiButton(12, leftPos + 123, topPos + 121, 100, 20, I18n.get("container.upgrades.refund")));
 		setButtons();
 	}
 
@@ -87,7 +89,7 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
-		boolean flag = Mouse.isButtonDown(0);
+		boolean flag = LegacyInput.isMouseButtonDown(0);
 		int i = leftPos;
 		int j = topPos;
 		int k = i + 209;
@@ -98,7 +100,7 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 		if (!flag) isScrolling = false;
 		wasClicking = flag;
 		if (isScrolling) {
-			int size = ((ContainerUpgrades) slots).applicable.size();
+			int size = ((ContainerUpgrades) menu).applicable.size();
 			if (size >= 6) {
 				scroll = (mouseY - l - 7.5F) / (j1 - l - 15.0F);
 				scroll = Mth.clamp(scroll, 0.0F, 1.0F);
@@ -106,8 +108,8 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 				setButtons();
 			}
 		}
-		refund.enabled = !slots.slots.get(0).getStack().isEmpty()
-				&& slots.slots.get(0).getStack().getTag().getInt("TotalSpent") > 0;
+		refund.enabled = !menu.slots.get(0).getStack().isEmpty()
+				&& menu.slots.get(0).getStack().getTag().getInt("TotalSpent") > 0;
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		renderHoveredToolTip(mouseX, mouseY);
 		for (GuiTooltip tooltip : tooltip) tooltip.drawButton(mc, mouseX, mouseY, partialTicks);
@@ -119,9 +121,9 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
-		if (button.id < 12) mc.playerController.sendEnchantPacket(slots.windowId, button.id + firstIndex * 2);
-		else if (button.id == 12) mc.playerController.sendEnchantPacket(slots.windowId, -1);
+	protected void actionPerformed(GuiButton button) throws IOException {
+		if (button.id < 12) mc.gameMode.handleInventoryButtonClick(menu.containerId, button.id + firstIndex * 2);
+		else if (button.id == 12) mc.gameMode.handleInventoryButtonClick(menu.containerId, -1);
 	}
 
 	/**
@@ -130,16 +132,16 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		int expPoints = ((ContainerUpgrades) slots).playerCredits;
-		int size = ((ContainerUpgrades) slots).applicable.size();
-		ItemStack stack = slots.slots.get(0).getStack();
+		int expPoints = ((ContainerUpgrades) menu).playerCredits;
+		int size = ((ContainerUpgrades) menu).applicable.size();
+		ItemStack stack = menu.slots.get(0).getStack();
 		for (int i = 0; i < 6; i++) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			mc.RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
+			RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
 			if (i + firstIndex < size) {
-				TF2Attribute attr = ((ContainerUpgrades) this.slots).applicable.get(i + firstIndex)
+				TF2Attribute attr = ((ContainerUpgrades) this.menu).applicable.get(i + firstIndex)
 						.getAttributeReplacement(stack);
-				TF2Attribute attrorig = ((ContainerUpgrades) this.slots).applicable.get(i + firstIndex);
+				TF2Attribute attrorig = ((ContainerUpgrades) this.menu).applicable.get(i + firstIndex);
 				if (attr == null) {
 					continue;
 				}
@@ -193,7 +195,7 @@ public class GuiUpgradeStation extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, UPGRADES_GUI_TEXTURES);
 		int x = (width - imageWidth) / 2;
 		int y = (height - imageHeight) / 2;
 		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);

@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
@@ -88,7 +89,7 @@ public class EntityProjectileSimple extends EntityProjectileBase {
 
 	@Override
 	public void onHitMob(Entity entityHit, HitResult mop) {
-		attackDirect(entityHit, 1, mop.hitInfo instanceof Boolean ? (Boolean) mop.hitInfo : false, mop.getLocation());
+		attackDirect(entityHit, 1, TF2HitResult.getHitInfo(mop) instanceof Boolean ? (Boolean) TF2HitResult.getHitInfo(mop) : false, mop.getLocation());
 	}
 
 	@Override

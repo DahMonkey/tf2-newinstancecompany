@@ -1,5 +1,10 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiScreen;
+import rafradek.TF2weapons.client.compat.GuiButton;
+import rafradek.TF2weapons.client.compat.GuiTextField;
+import rafradek.TF2weapons.client.compat.LegacyInput;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 import rafradek.TF2weapons.client.compat.OpenGlHelper;
 import rafradek.TF2weapons.client.compat.RenderHelper;
@@ -16,9 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -33,10 +35,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class GuiDisguiseKit extends Screen {
+public class GuiDisguiseKit extends GuiScreen {
 
-	public Button playerDisguise;
-	private EditBox playerNameField;
+	public GuiButton playerDisguise;
+	private GuiTextField playerNameField;
 	public Player player;
 	public ArrayList<LivingEntity> mobList = new ArrayList<>();
 	public boolean needUpdating;
@@ -61,18 +63,18 @@ public class GuiDisguiseKit extends Screen {
 		}
 		Collections.sort(mobList, (o1, o2) -> EntityList.getKey(o2).toString().compareTo(EntityList.getKey(o1).toString()));
 		Keyboard.enableRepeatEvents(true);
-		playerNameField = new EditBox(6, fontRenderer, width / 2 + 26, height / 2 + 60, 108, 19);
+		playerNameField = new GuiTextField(6, fontRenderer, width / 2 + 26, height / 2 + 60, 108, 19);
 		playerNameField.setMaxStringLength(64);
 		playerNameField.setFocused(true);
 		buttonList.clear();
-		for (int i = 0; i < 16; i++) buttonList.add(new Button(i, this.width / 2 - 135 + (i % 2) * 70, this.height / 2 - 60 + i / 2 * 20,
+		for (int i = 0; i < 16; i++) buttonList.add(new GuiButton(i, this.width / 2 - 135 + (i % 2) * 70, this.height / 2 - 60 + i / 2 * 20,
 					70, 20, I18n.get(EntityList.getTranslationName(EntityList.getKey(Zombie.class)), new Object[0])));
-		buttonList.add(playerDisguise = new Button(30, width / 2 + 25, height / 2 + 80, 110, 20, "Player"));
+		buttonList.add(playerDisguise = new GuiButton(30, width / 2 + 25, height / 2 + 80, 110, 20, "Player"));
 		setButtons();
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (!button.enabled) return;
 		if (button.id == 30) TF2weapons.network.sendToServer(new TF2Message.DisguiseMessage("P:" + playerNameField.getText()));
 		if (button.id < 16) TF2weapons.network.sendToServer(new TF2Message.DisguiseMessage("M:" + EntityList.getKey(mobList.get(button.id + firstIndex)).toString()));
@@ -119,7 +121,7 @@ public class GuiDisguiseKit extends Screen {
 			}
 		if (entdraw == -1) drawEntityOnScreen(width / 2 + 75, height / 2 + 40, 35, player);
 		else drawEntityOnScreen(width / 2 + 75, height / 2 + 40, 35, mobList.get(entdraw));
-		boolean flag = Mouse.isButtonDown(0);
+		boolean flag = LegacyInput.isMouseButtonDown(0);
 		int i = width / 2;
 		int j = height / 2;
 		int k = i + 5;
@@ -136,7 +138,7 @@ public class GuiDisguiseKit extends Screen {
 			firstIndex = Math.round(scroll * rows) * 2;
 			setButtons();
 		}
-		mc.RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
 		k = width / 2 + 6;
 		l = height / 2 - 59;
 		i = l + 160;

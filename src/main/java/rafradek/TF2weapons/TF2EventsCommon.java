@@ -1,5 +1,6 @@
 package rafradek.TF2weapons;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.common.TF2Achievements;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
@@ -963,7 +964,7 @@ public class TF2EventsCommon {
 		if (event.getEntity() instanceof Player) {
 			if (event.getEntity().level.isClientSide) {
 				if (event.getEntity() == ClientProxy.getLocalPlayer())
-					TF2weapons.network.sendToServer(new TF2Message.InitClientMessage(TF2weapons.conf));
+					TF2weapons.network.sendToServer(TF2Message.InitClientMessage.fromConfig());
 				TF2weapons.network.sendToServer(new TF2Message.ActionMessage(99, (LivingEntity) event.getEntity()));
 			}
 			if (event.getEntity().level != null && !event.getEntity().level.isClientSide
@@ -1953,7 +1954,7 @@ public class TF2EventsCommon {
 					true, 0.08f, false), null);
 			float armor = (float) ((LivingEntity) event.getRayTraceResult().getEntity())
 					.getAttribute(Attributes.ARMOR).getValue();
-			if (trace.hitInfo instanceof Boolean && ((Boolean) trace.hitInfo)) {
+			if (TF2HitResult.getHitInfo(trace) instanceof Boolean && ((Boolean) TF2HitResult.getHitInfo(trace))) {
 				event.getArrow().getPersistentData().putBoolean("CritHeadshot", true);
 				if (((LivingEntity) event.getRayTraceResult().getEntity())
 						.getItemBySlot(EquipmentSlot.HEAD).isEmpty())

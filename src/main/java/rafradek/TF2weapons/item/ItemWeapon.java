@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -377,12 +378,12 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 			Vec3 forward = living.getViewVector(1f).scale(120).add(living.getEyePosition(1));
 			HitResult result = TF2Util.pierce(world, living, living.getX(), living.getY() + living.getEyeHeight(),
 					living.getZ(), forward.x, forward.y, forward.z, false, 0.5f, false).get(0);
-			if (result.getEntity() != null && result.getEntity() instanceof EntityBuilding
-					&& !((EntityBuilding) result.getEntity()).isDisabled()
-					&& ((EntityBuilding) result.getEntity()).getOwner() == living
+			if (TF2HitResult.getEntity(result) != null && TF2HitResult.getEntity(result) instanceof EntityBuilding
+					&& !((EntityBuilding) TF2HitResult.getEntity(result)).isDisabled()
+					&& ((EntityBuilding) TF2HitResult.getEntity(result)).getOwner() == living
 					&& WeaponsCapability.get(living).consumeMetal(100, false) != 0) {
-				result.getEntity().setPos(living.getX(), living.getY(), living.getZ());
-				((EntityBuilding) result.getEntity()).grab();
+				TF2HitResult.getEntity(result).setPos(living.getX(), living.getY(), living.getZ());
+				((EntityBuilding) TF2HitResult.getEntity(result)).grab();
 			}
 		}
 		if (!world.isClientSide && this.getRageType(stack, living) == RageType.MINICRIT

@@ -1,7 +1,6 @@
 package rafradek.TF2weapons.client;
 
 import rafradek.TF2weapons.TF2weapons;
-import rafradek.TF2weapons.client.gui.GuiConfigurable2;
 import rafradek.TF2weapons.client.gui.GuiTeamSelect;
 import rafradek.TF2weapons.client.particle.EnumTF2Particles;
 import rafradek.TF2weapons.item.ItemFromData;
@@ -41,7 +40,9 @@ public class ClientHandler {
 	}
 
 	public static void createConfigGui(GuiConfigMessage message) {
-		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(GuiConfigurable2.create(message.getTag(), message.getBlockPos())));
+		// The arena block configuration screen used Forge 1.12's config GUI, which no longer exists.
+		// It returns with the arena features in a later stage of the port.
+		rafradek.TF2weapons.TF2weapons.LOGGER.info("Arena block configuration is not available in this version yet");
 	}
 
 	public static void createGui(ShowGuiMessage message) {

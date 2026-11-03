@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.client.gui;
 
+import rafradek.TF2weapons.client.compat.GuiScreen;
+import rafradek.TF2weapons.client.compat.GuiButton;
+import rafradek.TF2weapons.client.compat.LegacyInput;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 import rafradek.TF2weapons.client.compat.RenderHelper;
 
@@ -12,15 +16,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-public class GuiPages extends Screen {
+public class GuiPages extends GuiScreen {
 
 	private static final ResourceLocation CRAFTING_TABLE_GUI_TEXTURES = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/cabinet.png");
 
@@ -50,7 +52,7 @@ public class GuiPages extends Screen {
 							leftPos + 4 + x * 18, topPos + 34 + y * 18, 18, 18);
 					buttonList.add(button);
 				}
-		buttonList.add(new Button(96, leftPos + 200, topPos + 14, "Back"));
+		buttonList.add(new GuiButton(96, leftPos + 200, topPos + 14, "Back"));
 		// this.buttonList.get(96).visible=false;
 		setButtons();
 
@@ -60,7 +62,7 @@ public class GuiPages extends Screen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 		if (selectedIndex == -1) {
-			boolean flag = Mouse.isButtonDown(0);
+			boolean flag = LegacyInput.isMouseButtonDown(0);
 			int i = leftPos;
 			int j = topPos;
 			int k = i + 292;
@@ -77,7 +79,7 @@ public class GuiPages extends Screen {
 				firstIndex = Math.round(scroll * rows) * 16;
 				setButtons();
 			}
-			mc.RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
+			RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
 			k = leftPos + 293;
 			l = topPos + 35;
 			i = l + 108;
@@ -102,7 +104,7 @@ public class GuiPages extends Screen {
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button.id < 96) selectedIndex = button.id + firstIndex;
 			// this.displayItem(((GuiButtonToggleItem)button).stackToDraw);
 		if (button.id == 96) selectedIndex = -1;

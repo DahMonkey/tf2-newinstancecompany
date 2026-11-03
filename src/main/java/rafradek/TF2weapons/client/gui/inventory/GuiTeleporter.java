@@ -1,5 +1,9 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiContainer;
+import rafradek.TF2weapons.client.compat.GuiButton;
+import rafradek.TF2weapons.client.compat.GuiTextField;
+
 import rafradek.TF2weapons.client.compat.GlStateManager;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -12,22 +16,19 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class GuiTeleporter extends AbstractContainerScreen {
+public class GuiTeleporter extends GuiContainer {
 
 	public EntityTeleporter teleporter;
-	public Button doneBtn;
-	public Button teleportUpBtn;
-	public Button teleportDownBtn;
-	public Button exitToggle;
-	public Button grab;
-	private EditBox teleportField;
+	public GuiButton doneBtn;
+	public GuiButton teleportUpBtn;
+	public GuiButton teleportDownBtn;
+	public GuiButton exitToggle;
+	public GuiButton grab;
+	private GuiTextField teleportField;
 	public int channel;
 	public boolean exit;
 
@@ -47,14 +48,14 @@ public class GuiTeleporter extends AbstractContainerScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		teleportField = new EditBox(5, fontRenderer, width / 2 - 40, height / 2 - 40, 30, 20);
+		teleportField = new GuiTextField(5, fontRenderer, width / 2 - 40, height / 2 - 40, 30, 20);
 		teleportField.setMaxStringLength(3);
 		teleportField.setFocused(true);
 		teleportField.setText(Integer.toString(channel + 1));
-		buttonList.add(teleportUpBtn = new Button(1, width / 2 - 60, height / 2 - 40, 20, 20, "+"));
-		buttonList.add(teleportDownBtn = new Button(2, width / 2 - 10, height / 2 - 40, 20, 20, "-"));
-		buttonList.add(exitToggle = new Button(3, width / 2 + 10, height / 2 - 40, 50, 20, "Exit"));
-		buttonList.add(grab = new Button(4, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
+		buttonList.add(teleportUpBtn = new GuiButton(1, width / 2 - 60, height / 2 - 40, 20, 20, "+"));
+		buttonList.add(teleportDownBtn = new GuiButton(2, width / 2 - 10, height / 2 - 40, 20, 20, "-"));
+		buttonList.add(exitToggle = new GuiButton(3, width / 2 + 10, height / 2 - 40, 50, 20, "Exit"));
+		buttonList.add(grab = new GuiButton(4, leftPos + 86, topPos + 90, 40, 20, I18n.get("gui.teleporter.drop", new Object[0])));
 		if (channel == 127) {
 			teleportField.setEnabled(false);
 			teleportUpBtn.enabled = false;
@@ -64,7 +65,7 @@ public class GuiTeleporter extends AbstractContainerScreen {
 	}
 
 	@Override
-	protected void actionPerformed(Button button) throws IOException {
+	protected void actionPerformed(GuiButton button) throws IOException {
 		if (!button.enabled) return;
 		if (button.id == 1) {
 			channel++;
@@ -140,7 +141,7 @@ public class GuiTeleporter extends AbstractContainerScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.RenderSystem.setShaderTexture(0, GUI_TEXTURES);
+		RenderSystem.setShaderTexture(0, GUI_TEXTURES);
 		int x = (width - imageWidth) / 2;
 		int y = (height - imageHeight) / 2;
 		drawTexturedModalRect(x, y, 0, 0, imageWidth, imageHeight);

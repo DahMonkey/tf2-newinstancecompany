@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.building;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
@@ -316,21 +317,21 @@ public class EntitySentry extends EntityBuilding {
 								bullet.getLocation().z, 1, 0, TF2Util.getTeamColor(this), 1280);
 				}
 
-				if (bullet.getEntity() != null) {
+				if (TF2HitResult.getEntity(bullet) != null) {
 
 					DamageSource src = TF2Util.causeBulletDamage(this.getItemInHand(InteractionHand.OFF_HAND), owner, this)
 							.setProjectile();
 					if (this.fromPDA)
 						((TF2DamageSource) src).addAttackFlag(TF2DamageSource.SENTRY_PDA);
 
-					float range = bullet.getEntity().distanceTo(this);
+					float range = TF2HitResult.getEntity(bullet).distanceTo(this);
 					if (range >= (float) this.getAttribute(Attributes.FOLLOW_RANGE)
 							.getValue())
 						range = Math.max(0.5f, (float) this.getAttribute(Attributes.FOLLOW_RANGE)
 								.getValue() / range);
 					else
 						range = 1;
-					if (bullet.getEntity() instanceof Player && !(owner instanceof Player)
+					if (TF2HitResult.getEntity(bullet) instanceof Player && !(owner instanceof Player)
 							&& TF2ConfigVars.scaleAttributes) {
 						if (this.isControlled())
 							damage *= 0.92f;
@@ -340,11 +341,11 @@ public class EntitySentry extends EntityBuilding {
 							damage *= 0.8f;
 						}
 					}
-					if (TF2Util.dealDamage(bullet.getEntity(), this.level, owner, this.getItemInHand(InteractionHand.OFF_HAND),
-							TF2Util.calculateCritPost(bullet.getEntity(), null, 0, ItemStack.EMPTY, src), range * damage,
+					if (TF2Util.dealDamage(TF2HitResult.getEntity(bullet), this.level, owner, this.getItemInHand(InteractionHand.OFF_HAND),
+							TF2Util.calculateCritPost(TF2HitResult.getEntity(bullet), null, 0, ItemStack.EMPTY, src), range * damage,
 							src)) {
-						Vec3 dist = new Vec3(bullet.getEntity().getX() - this.getX(), bullet.getEntity().getY() - this.getY(),
-								bullet.getEntity().getZ() - this.getZ()).normalize();
+						Vec3 dist = new Vec3(TF2HitResult.getEntity(bullet).getX() - this.getX(), TF2HitResult.getEntity(bullet).getY() - this.getY(),
+								TF2HitResult.getEntity(bullet).getZ() - this.getZ()).normalize();
 						dist = dist.scale(0.25 * (this.getLevel() > 1 ? 0.7 : 1));
 						if (this.isMini())
 							dist = dist.scale(0.55);
@@ -352,26 +353,26 @@ public class EntitySentry extends EntityBuilding {
 							dist = dist.scale(0.35);
 						if (this.isHeat())
 							dist = dist.scale(1.5f + 1.5f * this.getHeat());
-						if ((bullet.getEntity() instanceof EntityTF2Character)
-								&& ((EntityTF2Character) bullet.getEntity()).isGiant())
+						if ((TF2HitResult.getEntity(bullet) instanceof EntityTF2Character)
+								&& ((EntityTF2Character) TF2HitResult.getEntity(bullet)).isGiant())
 							dist = dist.scale(0.35);
-						if (bullet.getEntity() instanceof LivingEntity)
-							dist = dist.scale(1 - ((LivingEntity) bullet.getEntity())
+						if (TF2HitResult.getEntity(bullet) instanceof LivingEntity)
+							dist = dist.scale(1 - ((LivingEntity) TF2HitResult.getEntity(bullet))
 									.getAttribute(Attributes.KNOCKBACK_RESISTANCE)
 									.getValue());
 						if (dist.lengthSqr() > 0f) {
-							bullet.getEntity().push(dist.x, dist.y, dist.z);
-							bullet.getEntity().hasImpulse = bullet.getEntity().getDeltaMovement().y > 0.05;
-							if (bullet.getEntity() instanceof ServerPlayer)
+							TF2HitResult.getEntity(bullet).push(dist.x, dist.y, dist.z);
+							TF2HitResult.getEntity(bullet).hasImpulse = TF2HitResult.getEntity(bullet).getDeltaMovement().y > 0.05;
+							if (TF2HitResult.getEntity(bullet) instanceof ServerPlayer)
 								TF2weapons.network.sendTo(
-										new TF2Message.VelocityAddMessage(dist, bullet.getEntity().hasImpulse),
-										(ServerPlayer) bullet.getEntity());
+										new TF2Message.VelocityAddMessage(dist, TF2HitResult.getEntity(bullet).hasImpulse),
+										(ServerPlayer) TF2HitResult.getEntity(bullet));
 
-							if (bullet.getEntity() instanceof LivingEntity) {
-								((LivingEntity) bullet.getEntity()).setLastAttackedEntity(this);
-								((LivingEntity) bullet.getEntity()).setLastHurtByMob(this);
-								if (!bullet.getEntity().isAlive()) {
-									this.scoreKill((LivingEntity) bullet.getEntity());
+							if (TF2HitResult.getEntity(bullet) instanceof LivingEntity) {
+								((LivingEntity) TF2HitResult.getEntity(bullet)).setLastAttackedEntity(this);
+								((LivingEntity) TF2HitResult.getEntity(bullet)).setLastHurtByMob(this);
+								if (!TF2HitResult.getEntity(bullet).isAlive()) {
+									this.scoreKill((LivingEntity) TF2HitResult.getEntity(bullet));
 								}
 							}
 						}

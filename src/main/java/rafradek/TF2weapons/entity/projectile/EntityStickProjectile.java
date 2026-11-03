@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import net.minecraft.world.phys.BlockHitResult;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -25,11 +26,11 @@ public class EntityStickProjectile extends EntityProjectileSimple {
 	public void onHitGround(int x, int y, int z, HitResult mop) {
 		super.onHitGround(x, y, z, mop);
 		if (!this.level.isEmptyBlock(mop.getBlockPos())) {
-			this.setPos(mop.getLocation().x + mop.getDirection().getStepX() * 0.1,
-					mop.getLocation().y + mop.getDirection().getStepY() * 0.1f,
-					mop.getLocation().z + mop.getDirection().getStepZ() * 0.1);
+			this.setPos(mop.getLocation().x + ((BlockHitResult) mop).getDirection().getStepX() * 0.1,
+					mop.getLocation().y + ((BlockHitResult) mop).getDirection().getStepY() * 0.1f,
+					mop.getLocation().z + ((BlockHitResult) mop).getDirection().getStepZ() * 0.1);
 			this.sticked = true;
-			this.stickedBlock = mop.getBlockPos();
+			this.stickedBlock = ((BlockHitResult) mop).getBlockPos();
 		}
 	}
 

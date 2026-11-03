@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.entity.projectile;
 
+import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.TF2weapons;
 import net.minecraft.world.entity.EntityType;
 import rafradek.TF2weapons.client.audio.TF2Sounds;
@@ -134,10 +135,10 @@ public class EntityGrenade extends EntityProjectileBase {
 	public void onHitMob(Entity entityHit, HitResult mop) {
 		if (!this.hitGround && !this.isBurst()) {
 			if (getBomb() == 0) {
-				this.explode(mop.getLocation().x, mop.getLocation().y, mop.getLocation().z, mop.getEntity(), 1);
+				this.explode(mop.getLocation().x, mop.getLocation().y, mop.getLocation().z, TF2HitResult.getEntity(mop), 1);
 			} else if (!this.hitEntities.contains(entityHit)) {
 
-				if (this.attackDirect(entityHit, 1, mop.hitInfo instanceof Boolean ? (Boolean) mop.hitInfo : false,
+				if (this.attackDirect(entityHit, 1, TF2HitResult.getHitInfo(mop) instanceof Boolean ? (Boolean) TF2HitResult.getHitInfo(mop) : false,
 						mop.getLocation()) && entityHit instanceof LivingEntity) {
 					((LivingEntity) entityHit).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3));
 

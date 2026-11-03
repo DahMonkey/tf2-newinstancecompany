@@ -1,14 +1,15 @@
 package rafradek.TF2weapons.client.gui.inventory;
 
+import rafradek.TF2weapons.client.compat.GuiContainer;
+
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.inventory.ContainerRobotDeploy;
 import rafradek.TF2weapons.tileentity.TileEntityRobotDeploy;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class GuiRobotDeploy extends AbstractContainerScreen {
+public class GuiRobotDeploy extends GuiContainer {
 
 	private static final ResourceLocation ROBOT_DEPLOY_TEXTURE = new ResourceLocation(TF2weapons.MOD_ID, "textures/gui/container/robotdeploy.png");
 
@@ -31,11 +32,11 @@ public class GuiRobotDeploy extends AbstractContainerScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		mc.RenderSystem.setShaderTexture(0, ROBOT_DEPLOY_TEXTURE);
+		RenderSystem.setShaderTexture(0, ROBOT_DEPLOY_TEXTURE);
 		int i = (width - imageWidth) / 2;
 		int j = (height - imageHeight) / 2;
 		drawTexturedModalRect(i, j, 0, 0, imageWidth, imageHeight);
-		float pr = (float) ((ContainerRobotDeploy) slots).progress / ((ContainerRobotDeploy) slots).maxprogress;
+		float pr = (float) ((ContainerRobotDeploy) menu).progress / ((ContainerRobotDeploy) menu).maxprogress;
 		if (tileEntity.produceGiant()) {
 			drawTexturedModalRect(i + 142, j + 23, 192, 31, 24, 48);
 			drawTexturedModalRect(i + 142, j + 23 + (int) (48 * (1 - pr)), 216, 31 + (int) (48 * (1 - pr)), 24, (int) (48 * pr));

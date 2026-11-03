@@ -1,5 +1,7 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.world.phys.BlockHitResult;
+import rafradek.TF2weapons.util.TF2HitResult;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.client.ClientProxy;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -148,15 +150,15 @@ public class ItemBulletWeapon extends ItemWeapon {
 				int totalCrit = TF2Util.calculateCritPre(stack, living);
 				HashMap<Entity, float[]> shotInfo = new HashMap<>();
 				for (HitResult obj : message.target) {
-					Entity target = obj.getEntity();
+					Entity target = TF2HitResult.getEntity(obj);
 					if (target == null)
 						continue;
 
 					if (!shotInfo.containsKey(target) || shotInfo.get(target) == null)
 						shotInfo.put(target, new float[3]);
 					int critical = totalCrit;
-					// System.out.println(var4.hitInfo);
-					if (((float[]) obj.hitInfo)[0] != 0 && critical != 2) {
+					// System.out.println(TF2HitResult.getHitInfo(var4));
+					if (((float[]) TF2HitResult.getHitInfo(obj))[0] != 0 && critical != 2) {
 						critical = this.getHeadshotCrit(living, stack);
 						flags |= TF2DamageSource.HEADSHOT;
 					}
@@ -166,7 +168,7 @@ public class ItemBulletWeapon extends ItemWeapon {
 					float[] values = shotInfo.get(target);
 					// System.out.println(obj[2]+" "+critical);
 					values[0]++;
-					values[1] = ((float[]) obj.hitInfo)[1];
+					values[1] = ((float[]) TF2HitResult.getHitInfo(obj))[1];
 				}
 				// living.getCapability(TF2weapons.WEAPONS_CAP,
 				// null).predictionList.add(message);
@@ -276,35 +278,35 @@ public class ItemBulletWeapon extends ItemWeapon {
 								target -> (target instanceof EntityProjectileBase && !(target instanceof EntityFlame)),
 								TF2Util.TARGETABLE));
 		for (HitResult var4 : list)
-			if (var4.getEntity() != null) {
+			if (TF2HitResult.getEntity(var4) != null) {
 				float distance = 0;
 				if (living != null) {
-					distance = (float) TF2Util.getDistanceBox(living, var4.getEntity().getX(), var4.getEntity().getY(),
-							var4.getEntity().getZ(), var4.getEntity().getBbWidth(), var4.getEntity().getBbHeight());
+					distance = (float) TF2Util.getDistanceBox(living, TF2HitResult.getEntity(var4).getX(), TF2HitResult.getEntity(var4).getY(),
+							TF2HitResult.getEntity(var4).getZ(), TF2HitResult.getEntity(var4).getBbWidth(), TF2HitResult.getEntity(var4).getBbHeight());
 					// distance -= living.width / 2 + var4.entityHit.width / 2;
 
 					// if (distance < 0)
 					// distance = 0;
 				}
 				if (!world.isClientSide && !(living instanceof Player)) {
-					if (!lastShot.get().containsKey(var4.getEntity()) || lastShot.get().get(var4.getEntity()) == null)
-						lastShot.get().put(var4.getEntity(), new float[3]);
-					// System.out.println(var4.hitInfo);
-					if (var4.hitInfo != null && var4.hitInfo instanceof Boolean && (Boolean) var4.hitInfo
+					if (!lastShot.get().containsKey(TF2HitResult.getEntity(var4)) || lastShot.get().get(TF2HitResult.getEntity(var4)) == null)
+						lastShot.get().put(TF2HitResult.getEntity(var4), new float[3]);
+					// System.out.println(TF2HitResult.getHitInfo(var4));
+					if (TF2HitResult.getHitInfo(var4) != null && TF2HitResult.getHitInfo(var4) instanceof Boolean && (Boolean) TF2HitResult.getHitInfo(var4)
 							&& critical != 2) {
 						critical = this.getHeadshotCrit(living, stack);
 						lastFlags.set(lastFlags.get() | TF2DamageSource.HEADSHOT);
 					}
 					ItemWeapon.critical = critical;
-					float[] values = lastShot.get().get(var4.getEntity());
+					float[] values = lastShot.get().get(TF2HitResult.getEntity(var4));
 					values[0]++;
 					values[1] = distance;
 					// values[2]=distance;
 				} else if (world.isClientSide) {
-					// System.out.println(var4.hitInfo);
-					var4.hitInfo = new float[] {
-							var4.hitInfo != null && var4.hitInfo instanceof Boolean && (Boolean) var4.hitInfo ? 1 : 0,
-							distance };
+					// System.out.println(TF2HitResult.getHitInfo(var4));
+					TF2HitResult.setHitInfo(var4, new float[] {
+							TF2HitResult.getHitInfo(var4) != null && TF2HitResult.getHitInfo(var4) instanceof Boolean && (Boolean) TF2HitResult.getHitInfo(var4) ? 1 : 0,
+							distance });
 					lastShotClient.add(var4);
 				}
 			} else if (var4.getBlockPos() != null)
@@ -313,11 +315,11 @@ public class ItemBulletWeapon extends ItemWeapon {
 					ClientProxy.spawnBulletHoleParticle(world, var4);
 					for (int i = 0; i < 2; i++)
 						world.addParticle(ParticleTypes.BLOCK_CRACK,
-								var4.getLocation().x + var4.getDirection().getStepX() * 0.05,
-								var4.getLocation().y + var4.getDirection().getStepY() * 0.05,
-								var4.getLocation().z + var4.getDirection().getStepZ() * 0.05,
-								var4.getDirection().getStepX() * 0.07 * i, var4.getDirection().getStepY() * 0.07 * i,
-								var4.getDirection().getStepZ() * 0.07 * i,
+								var4.getLocation().x + ((BlockHitResult) var4).getDirection().getStepX() * 0.05,
+								var4.getLocation().y + ((BlockHitResult) var4).getDirection().getStepY() * 0.05,
+								var4.getLocation().z + ((BlockHitResult) var4).getDirection().getStepZ() * 0.05,
+								((BlockHitResult) var4).getDirection().getStepX() * 0.07 * i, ((BlockHitResult) var4).getDirection().getStepY() * 0.07 * i,
+								((BlockHitResult) var4).getDirection().getStepZ() * 0.07 * i,
 								new int[] { Block.getStateId(world.getBlockState(var4.getBlockPos())) });
 					if (getData(stack).hasProperty(PropertyType.HIT_SOUND)) {
 						SoundEvent event = getData(stack).hasProperty(PropertyType.HIT_WORLD_SOUND)
@@ -329,9 +331,9 @@ public class ItemBulletWeapon extends ItemWeapon {
 				} else if (!world.isClientSide) {
 					if (TF2Attribute.getModifier("Explode Bullet", stack, 0, living) != 0) {
 						TF2Util.explosion(world, living, stack, living, null,
-								var4.getLocation().x + var4.getDirection().getStepX() * 0.05,
-								var4.getLocation().y + var4.getDirection().getStepY() * 0.05,
-								var4.getLocation().z + var4.getDirection().getStepZ() * 0.05,
+								var4.getLocation().x + ((BlockHitResult) var4).getDirection().getStepX() * 0.05,
+								var4.getLocation().y + ((BlockHitResult) var4).getDirection().getStepY() * 0.05,
+								var4.getLocation().z + ((BlockHitResult) var4).getDirection().getStepZ() * 0.05,
 								TF2Attribute.getModifier("Explode Bullet", stack, 0, living), 1, critical,
 								(float) living.position().distanceTo(var4.getLocation()));
 					} else if (removeBlocks) {

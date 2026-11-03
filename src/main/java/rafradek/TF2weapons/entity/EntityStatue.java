@@ -151,20 +151,20 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 		FriendlyByteBuf buff = new FriendlyByteBuf(buffer);
 		buffer.writeBoolean(player);
 		if (profile != null) {
-			buff.writeUniqueId(profile.getId());
-			buff.writeString(profile.getName());
+			buff.writeUUID(profile.getId());
+			buff.writeUtf(profile.getName());
 			buff.writeVarInt(profile.getProperties().size());
 			for (Property property : profile.getProperties().values()) {
-				buff.writeString(property.getName());
-				buff.writeString(property.getValue());
+				buff.writeUtf(property.getName());
+				buff.writeUtf(property.getValue());
 				if (property.hasSignature()) {
 					buff.writeBoolean(true);
-					buff.writeString(property.getSignature());
+					buff.writeUtf(property.getSignature());
 				} else buff.writeBoolean(false);
 			}
 		}
 		int pos = buff.writerIndex();
-		buff.writeCompoundTag(data);
+		buff.writeNbt(data);
 		if (buff.writerIndex() - pos >= 2097152) buff.clear();
 		buff.writeBoolean(useHand);
 	}
@@ -176,13 +176,13 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 		try {
 			FriendlyByteBuf buff = new FriendlyByteBuf(additionalData);
 			if (buff.readBoolean()) {
-				profile = new GameProfile(buff.readUniqueId(), buff.readString(16));
+				profile = new GameProfile(buff.readUUID(), buff.readUtf(16));
 				int l = buff.readVarInt();
 				int i1 = 0;
 				for (; i1 < l; ++i1) {
-					String s = buff.readString(32767);
-					String s1 = buff.readString(32767);
-					if (buff.readBoolean()) profile.getProperties().put(s, new Property(s, s1, buff.readString(32767)));
+					String s = buff.readUtf(32767);
+					String s1 = buff.readUtf(32767);
+					if (buff.readBoolean()) profile.getProperties().put(s, new Property(s, s1, buff.readUtf(32767)));
 					else profile.getProperties().put(s, new Property(s, s1));
 				}
 				final PlayerInfo info = new PlayerInfo(profile);
@@ -193,8 +193,8 @@ public class EntityStatue extends Entity implements IEntityAdditionalSpawnData {
 						return info;
 					}
 				};
-				entity.readFromNBT(buff.readCompoundTag());
-			} else entity = (LivingEntity) EntityList.createEntityFromNBT(buff.readCompoundTag(), world);
+				entity.readFromNBT(buff.readNbt());
+			} else entity = (LivingEntity) EntityList.createEntityFromNBT(buff.readNbt(), world);
 			if (entity == null) {
 				discard();
 				return;
