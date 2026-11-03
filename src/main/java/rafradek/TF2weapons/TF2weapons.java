@@ -260,7 +260,6 @@ public class TF2weapons {
 	/* Block entity types */
 	public static BlockEntityType<TileEntityUpgrades> TILE_UPGRADES;
 	public static BlockEntityType<TileEntityAmmoFurnace> TILE_AMMO_FURNACE;
-	public static BlockEntityType<TileEntityResupplyCabinet> TILE_RESUPPLY_CABINET;
 
 	/** Menus, indexed by the 1.12 GUI id (see {@link TF2GuiHandler}). */
 	public static final MenuType<?>[] MENU_TYPES = new MenuType<?>[8];
@@ -597,7 +596,7 @@ public class TF2weapons {
 		helper.register(id("ammo_furnace"), blockAmmoFurnace = new BlockAmmoFurnace(false,
 				blockProps(Material.METAL, MaterialColor.METAL, 5f, 10f).requiresCorrectToolForDrops()));
 		helper.register(id("upgrade_station"), blockUpgradeStation = new BlockUpgradeStation(
-				blockProps(Material.METAL, MaterialColor.METAL, 5f, 10f).requiresCorrectToolForDrops()));
+				blockProps(Material.METAL, MaterialColor.METAL, 5f, 10f).requiresCorrectToolForDrops().noOcclusion()));
 		helper.register(id("copper_ore"), blockCopperOre = new DropExperienceBlock(
 				blockProps(Material.STONE, MaterialColor.STONE, 3f, 5f).requiresCorrectToolForDrops()));
 		helper.register(id("lead_ore"), blockLeadOre = new DropExperienceBlock(
@@ -607,8 +606,6 @@ public class TF2weapons {
 		helper.register(id("australium_block"), blockAustralium = new Block(
 				blockProps(Material.METAL, MaterialColor.GOLD, 9f, 20f).requiresCorrectToolForDrops()
 						.sound(SoundType.METAL)));
-		helper.register(id("resupply_cabinet"), blockResupplyCabinet = new BlockResupplyCabinet(
-				blockProps(Material.METAL, MaterialColor.METAL, -1f, 6000000f).noLootTable()));
 		helper.register(id("prop_block"), blockProp = new BlockProp(
 				blockProps(Material.WOOD, MaterialColor.GOLD, 0.75f, 2f).noLootTable()));
 	}
@@ -652,7 +649,6 @@ public class TF2weapons {
 		helper.register(id("eventmaker"), itemEventMaker = new ItemEventMaker());
 		helper.register(id("boss_spawner"), itemBossSpawn = new ItemBossSpawner());
 		helper.register(id("money"), itemMoney = new ItemMoney());
-		helper.register(id("configurator"), itemConfigurator = new ItemConfigure());
 		helper.register(id("pickup"), itemPickup = new ItemPickup());
 
 		// Weapon items, one per weapon class ("bullet", "minigun", ...). Several classes can share
@@ -664,8 +660,8 @@ public class TF2weapons {
 				helper.register(id(entry.getKey().toLowerCase(Locale.ROOT)), entry.getValue());
 
 		for (Block block : new Block[] { blockCabinet, blockAmmoFurnace, blockUpgradeStation, blockCopperOre,
-				blockLeadOre, blockAustraliumOre, blockAustralium, blockResupplyCabinet }) {
-			CreativeModeTab tab = block == blockResupplyCabinet ? tabarenatf2 : tabsurvivaltf2;
+				blockLeadOre, blockAustraliumOre, blockAustralium }) {
+			CreativeModeTab tab = tabsurvivaltf2;
 			helper.register(ForgeRegistries.BLOCKS.getKey(block), new BlockItem(block, props(tab)));
 		}
 	}
@@ -878,7 +874,6 @@ public class TF2weapons {
 	private static void registerTileEntities(RegisterEvent.RegisterHelper<BlockEntityType<?>> helper) {
 		TILE_UPGRADES = tile(helper, "upgrade_station", TileEntityUpgrades::new, blockUpgradeStation);
 		TILE_AMMO_FURNACE = tile(helper, "ammo_furnace", TileEntityAmmoFurnace::new, blockAmmoFurnace);
-		TILE_RESUPPLY_CABINET = tile(helper, "resupply_cabinet", TileEntityResupplyCabinet::new, blockResupplyCabinet);
 	}
 
 	private void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -918,7 +913,6 @@ public class TF2weapons {
 		network.registerMessage(TF2ParticleSpawnHandler.class, TF2Message.ParticleSpawnMessage.class, 21, null, true);
 		network.registerMessage(TF2PlayerCapabilityHandler.class, TF2Message.PlayerCapabilityMessage.class, 22, null,
 				false);
-		network.registerMessage(TF2GuiConfigHandler.class, TF2Message.GuiConfigMessage.class, 23, null, false);
 		network.registerMessage(TF2ShowGuiHandler.class, TF2Message.ShowGuiMessage.class, 25, null, false);
 		network.registerMessage(TF2NetworkedSoundHandler.class, TF2Message.NetworkedSoundMessage.class, 27, null,
 				false);

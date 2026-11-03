@@ -1,20 +1,19 @@
 package rafradek.TF2weapons.tileentity;
 
-import net.minecraft.util.RandomSource;
-import rafradek.TF2weapons.common.TF2Attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import rafradek.TF2weapons.TF2weapons;
+import rafradek.TF2weapons.common.TF2Attribute;
 
 public class TileEntityUpgrades extends BlockEntity {
 
@@ -24,12 +23,8 @@ public class TileEntityUpgrades extends BlockEntity {
 	private int maxSize;
 	public boolean placed;
 
-	public TileEntityUpgrades() {
-		super();
-	}
-
-	public TileEntityUpgrades(Level world) {
-		this.level = world;
+	public TileEntityUpgrades(BlockPos pos, BlockState state) {
+		super(TF2weapons.TILE_UPGRADES, pos, state);
 	}
 
 	/**
@@ -60,8 +55,8 @@ public class TileEntityUpgrades extends BlockEntity {
 	}
 
 	@Override
-	public void readFromNBT(CompoundTag compound) {
-		super.readFromNBT(compound);
+	public void load(CompoundTag compound) {
+		super.load(compound);
 		this.attributeList.clear();
 		this.attributes.clear();
 		this.maxSize = compound.getShort("MaxS");
@@ -79,8 +74,8 @@ public class TileEntityUpgrades extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag saveAdditional(CompoundTag compound) {
-		super.writeToNBT(compound);
+	protected void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		CompoundTag attrs = new CompoundTag();
 		ListTag attrList = new ListTag();
 		compound.putShort("MaxS", (short) this.maxSize);
@@ -92,30 +87,22 @@ public class TileEntityUpgrades extends BlockEntity {
 				attrList.add(IntTag.valueOf(attr.id));
 				attrs.putInt(String.valueOf(attr.id), this.attributes.get(attr));
 			}
-
-		return compound;
-	}
-
-	@Override
-	public boolean shouldRefresh(Level world, BlockPos pos, BlockState oldState, BlockState newSate) {
-		return oldState.getBlock() != newSate.getBlock();
 	}
 
 	@Override
 	public ClientboundBlockEntityDataPacket getUpdatePacket() {
-		// System.out.println("Sending packet");
-		return new ClientboundBlockEntityDataPacket(this.pos, 29, this.getUpdateTag());
+		return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
 	public CompoundTag getUpdateTag() {
-		return this.save(new CompoundTag());
+		return this.saveWithoutMetadata();
 	}
 
 	@Override
-	public void onDataPacket(Connection net,
-			ClientboundBlockEntityDataPacket pkt) {
-		// System.out.println("Received: "+pkt.getNbtCompound());
-		this.readFromNBT(pkt.getNbtCompound());
+	public void setChanged() {
+		super.setChanged();
+		if (this.level != null && !this.level.isClientSide)
+			this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
 	}
 }

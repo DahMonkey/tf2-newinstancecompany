@@ -16,18 +16,20 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ContainerAmmoFurnace extends LegacyContainer {
 
 	public final Container tileFurnace;
-	private int cookTime;
-	private int totalCookTime;
-	private int furnaceBurnTime;
-	private int currentItemBurnTime;
 
 	public ContainerAmmoFurnace(Inventory inventory, Container furnaceInventory) {
 		this.tileFurnace = furnaceInventory;
 		for (int i = 0; i < 9; i++)
 			this.addSlot(new Slot(furnaceInventory, i, 9 + (i % 3) * 18, 17 + (i / 3) * 18));
-		this.addSlot(new SlotFurnaceFuel(furnaceInventory, 9, 80, 53));
+		this.addSlot(new Slot(furnaceInventory, 9, 80, 53) {
+			@Override
+			public boolean mayPlace(ItemStack stack) {
+				return net.minecraftforge.common.ForgeHooks.getBurnTime(stack, null) > 0
+						|| stack.is(net.minecraft.world.item.Items.BUCKET);
+			}
+		});
 		for (int i = 0; i < 9; i++)
-			this.addSlot(new SlotFurnaceOutput(inventory.player, furnaceInventory, i + 10,
+			this.addSlot(new net.minecraft.world.inventory.FurnaceResultSlot(inventory.player, furnaceInventory, i + 10,
 					116 + (i % 3) * 18, 17 + (i / 3) * 18));
 
 		for (int i = 0; i < 3; ++i)
@@ -36,52 +38,13 @@ public class ContainerAmmoFurnace extends LegacyContainer {
 
 		for (int k = 0; k < 9; ++k)
 			this.addSlot(new Slot(inventory, k, 8 + k * 18, 142));
-	}
-
-	@Override
-	public void addListener(ContainerListener listener) {
-		super.addListener(listener);
-		listener.sendAllWindowProperties(this, this.tileFurnace);
-	}
-
-	/**
-	 * Looks for changes made in the container, sends them to every listener.
-	 */
-	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-
-		for (int i = 0; i < this.listeners.size(); ++i) {
-			ContainerListener icontainerlistener = this.listeners.get(i);
-
-			if (this.cookTime != this.tileFurnace.getField(2))
-				icontainerlistener.sendWindowProperty(this, 2, this.tileFurnace.getField(2));
-
-			if (this.furnaceBurnTime != this.tileFurnace.getField(0))
-				icontainerlistener.sendWindowProperty(this, 0, this.tileFurnace.getField(0));
-
-			if (this.currentItemBurnTime != this.tileFurnace.getField(1))
-				icontainerlistener.sendWindowProperty(this, 1, this.tileFurnace.getField(1));
-
-			if (this.totalCookTime != this.tileFurnace.getField(3))
-				icontainerlistener.sendWindowProperty(this, 3, this.tileFurnace.getField(3));
-		}
-
-		this.cookTime = this.tileFurnace.getField(2);
-		this.furnaceBurnTime = this.tileFurnace.getField(0);
-		this.currentItemBurnTime = this.tileFurnace.getField(1);
-		this.totalCookTime = this.tileFurnace.getField(3);
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void updateProgressBar(int id, int data) {
-		this.tileFurnace.setField(id, data);
+		if (furnaceInventory instanceof IFieldHolder)
+			this.addDataSlots(((IFieldHolder) furnaceInventory).asContainerData());
 	}
 
 	@Override
 	public boolean canInteractWith(Player player) {
-		return this.tileFurnace.isUsableByPlayer(player);
+		return this.tileFurnace.stillValid(player);
 	}
 
 	/**
@@ -94,19 +57,19 @@ public class ContainerAmmoFurnace extends LegacyContainer {
 		Slot slot = this.slots.get(index);
 
 		if (slot != null && slot.hasItem()) {
-			ItemStack itemstack1 = slot.getStack();
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 
 			if (index > 9 && index < 19) {
 				if (!this.moveItemStackTo(itemstack1, 19, 55, true))
 					return ItemStack.EMPTY;
 
-				slot.onSlotChange(itemstack1, itemstack);
+				slot.onQuickCraft(itemstack1, itemstack);
 			} else if (index > 9) {
 				if (itemstack1.getItem() instanceof ItemAmmo) {
 					if (!this.moveItemStackTo(itemstack1, 0, 9, false))
 						return ItemStack.EMPTY;
-				} else if (AbstractFurnaceBlockEntity.isItemFuel(itemstack1)) {
+				} else if (net.minecraftforge.common.ForgeHooks.getBurnTime(itemstack1, null) > 0) {
 					if (!this.moveItemStackTo(itemstack1, 9, 10, false))
 						return ItemStack.EMPTY;
 				} else if (index >= 19 && index < 46) {

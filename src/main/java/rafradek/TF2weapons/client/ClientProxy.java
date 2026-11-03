@@ -154,6 +154,8 @@ public class ClientProxy extends CommonProxy {
 	private void clientSetup(FMLClientSetupEvent event) {
 		event.enqueueWork(() -> {
 			registerScreens();
+			net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(TF2weapons.blockUpgradeStation,
+					net.minecraft.client.renderer.RenderType.cutout());
 			for (LegacyItem.PropertyOverride override : LegacyItem.PROPERTY_OVERRIDES)
 				ItemProperties.register(override.item(), override.name(),
 						(stack, level, entity, seed) -> override.getter().get(stack, level, entity));
@@ -179,8 +181,6 @@ public class ClientProxy extends CommonProxy {
 				Component t) -> new GuiAmmoFurnace((ContainerAmmoFurnace) m));
 		MenuScreens.register(menu(5), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
 				Component t) -> GuiBuildingFactory.create(m));
-		MenuScreens.register(menu(7), (AbstractContainerMenu m, net.minecraft.world.entity.player.Inventory inv,
-				Component t) -> new GuiConfigurable((ContainerConfigurable) m));
 	}
 
 	/** Remembers which block classes react to right-click, as the 1.12 code did with reflection. */

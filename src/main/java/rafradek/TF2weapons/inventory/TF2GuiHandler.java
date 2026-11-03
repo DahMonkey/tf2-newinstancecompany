@@ -15,7 +15,6 @@ import rafradek.TF2weapons.block.BlockCabinet;
 import rafradek.TF2weapons.entity.building.EntityBuilding;
 import rafradek.TF2weapons.entity.building.EntityDispenser;
 import rafradek.TF2weapons.entity.mercenary.EntityTF2Character;
-import rafradek.TF2weapons.tileentity.IEntityConfigurable;
 import rafradek.TF2weapons.tileentity.TileEntityAmmoFurnace;
 import rafradek.TF2weapons.tileentity.TileEntityUpgrades;
 
@@ -83,9 +82,6 @@ public class TF2GuiHandler {
 		case 6:
 			break;
 		case 7:
-			if (tile instanceof IEntityConfigurable)
-				return new ContainerConfigurable(player, player.getInventory(), (IEntityConfigurable) tile, world,
-						pos);
 			break;
 		}
 		// Something changed between opening and creating the menu: give an empty menu.

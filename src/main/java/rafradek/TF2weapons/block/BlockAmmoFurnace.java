@@ -1,35 +1,38 @@
 package rafradek.TF2weapons.block;
 
-import net.minecraft.util.RandomSource;
-import rafradek.TF2weapons.TF2weapons;
-import rafradek.TF2weapons.tileentity.TileEntityAmmoFurnace;
-import java.util.Random;
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.Material;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.phys.BlockHitResult;
+import rafradek.TF2weapons.TF2weapons;
+import rafradek.TF2weapons.tileentity.TileEntityAbstractAmmoFurnace;
+import rafradek.TF2weapons.tileentity.TileEntityAmmoFurnace;
 
 public class BlockAmmoFurnace extends BaseEntityBlock {
 
@@ -37,138 +40,104 @@ public class BlockAmmoFurnace extends BaseEntityBlock {
 	public static final BooleanProperty BURNING = BooleanProperty.create("burning");
 	private final boolean electric;
 
-	public BlockAmmoFurnace(boolean electric) {
-		super(Material.IRON);
-		this.setSoundType(SoundType.METAL);
-		this.setDefaultState(
-				this.blockState.getBaseState().setValue(FACING, Direction.NORTH).setValue(BURNING, false));
-		setCreativeTab(TF2weapons.tabsurvivaltf2);
+	public BlockAmmoFurnace(boolean electric, Properties properties) {
+		super(properties);
+		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(BURNING, false));
 		this.electric = electric;
 	}
 
 	@Override
-	public RenderShape getRenderType(BlockState state) {
+	public RenderShape getRenderShape(BlockState state) {
 		return RenderShape.MODEL;
 	}
 
 	@Override
-	public BlockEntity createNewTileEntity(Level world, int meta) {
-		return new TileEntityAmmoFurnace();
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new TileEntityAmmoFurnace(pos, state);
 	}
 
 	@Override
-	public boolean onBlockActivated(Level world, BlockPos pos, BlockState state, Player player,
-			InteractionHand hand, Direction side, float hitX, float hitY, float hitZ) {
+	@Nullable
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+		return level.isClientSide ? null
+				: createTickerHelper(type, TF2weapons.TILE_AMMO_FURNACE, TileEntityAbstractAmmoFurnace::serverTick);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
+			BlockHitResult hit) {
 		if (!world.isClientSide)
-			TF2weapons.openGui((net.minecraft.world.entity.player.Player) player, 3, world, pos.getX(), pos.getY(), pos.getZ());
-		return true;
+			TF2weapons.openGui(player, 3, world, pos.getX(), pos.getY(), pos.getZ());
+		return InteractionResult.sidedSuccess(world.isClientSide);
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
-	@SuppressWarnings("incomplete-switch")
-	public void randomDisplayTick(BlockState stateIn, Level world, BlockPos pos, RandomSource random) {
+	public void animateTick(BlockState stateIn, Level world, BlockPos pos, RandomSource random) {
 		if (stateIn.getValue(BURNING)) {
 			Direction enumfacing = stateIn.getValue(FACING);
 			double d0 = pos.getX() + 0.5D;
 			double d1 = pos.getY() + random.nextDouble() * 6.0D / 16.0D;
 			double d2 = pos.getZ() + 0.5D;
-			double d3 = 0.52D;
 			double d4 = random.nextDouble() * 0.6D - 0.3D;
-
 			if (random.nextDouble() < 0.1D)
-				world.playSound(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-						SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F, false);
-
-			switch (enumfacing) {
-			case WEST:
-				world.addParticle(ParticleTypes.SMOKE, d0 - 0.52D, d1, d2 + d4, 0.0D, 0.0D, 0.0D,
-						new int[0]);
-				world.addParticle(ParticleTypes.FLAME, d0 - 0.52D, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-				break;
-			case EAST:
-				world.addParticle(ParticleTypes.SMOKE, d0 + 0.52D, d1, d2 + d4, 0.0D, 0.0D, 0.0D,
-						new int[0]);
-				world.addParticle(ParticleTypes.FLAME, d0 + 0.52D, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-				break;
-			case NORTH:
-				world.addParticle(ParticleTypes.SMOKE, d0 + d4, d1, d2 - 0.52D, 0.0D, 0.0D, 0.0D,
-						new int[0]);
-				world.addParticle(ParticleTypes.FLAME, d0 + d4, d1, d2 - 0.52D, 0.0D, 0.0D, 0.0D, new int[0]);
-				break;
-			case SOUTH:
-				world.addParticle(ParticleTypes.SMOKE, d0 + d4, d1, d2 + 0.52D, 0.0D, 0.0D, 0.0D,
-						new int[0]);
-				world.addParticle(ParticleTypes.FLAME, d0 + d4, d1, d2 + 0.52D, 0.0D, 0.0D, 0.0D, new int[0]);
-			}
+				world.playLocalSound(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, SoundEvents.FURNACE_FIRE_CRACKLE,
+						SoundSource.BLOCKS, 1.0F, 1.0F, false);
+			double x = d0 + enumfacing.getStepX() * 0.52D + (enumfacing.getAxis() == Direction.Axis.Z ? d4 : 0);
+			double z = d2 + enumfacing.getStepZ() * 0.52D + (enumfacing.getAxis() == Direction.Axis.X ? d4 : 0);
+			world.addParticle(ParticleTypes.SMOKE, x, d1, z, 0.0D, 0.0D, 0.0D);
+			world.addParticle(ParticleTypes.FLAME, x, d1, z, 0.0D, 0.0D, 0.0D);
 		}
 	}
 
 	@Override
-	public BlockState getStateForPlacement(Level world, BlockPos pos, Direction facing, float hitX, float hitY,
-			float hitZ, int meta, LivingEntity placer) {
-		return getDefaultState().setValue(FACING, placer.getDirection().getOpposite());
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
 	}
 
 	@Override
-	public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-		world.setBlock(pos, state.setValue(FACING, placer.getDirection().getOpposite()), 2);
+	public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		if (stack.hasCustomHoverName()) {
 			BlockEntity tileentity = world.getBlockEntity(pos);
-			if (tileentity instanceof TileEntityAmmoFurnace)
-				((TileEntityAmmoFurnace) tileentity).setCustomInventoryName(stack.getHoverName());
+			if (tileentity instanceof TileEntityAbstractAmmoFurnace)
+				((TileEntityAbstractAmmoFurnace) tileentity).setCustomInventoryName(stack.getHoverName());
 		}
 	}
 
 	@Override
-	public void breakBlock(Level world, BlockPos pos, BlockState state) {
-		BlockEntity tileentity = world.getBlockEntity(pos);
-		if (tileentity instanceof TileEntityAmmoFurnace) {
-			Containers.dropInventoryItems(world, pos, (TileEntityAmmoFurnace) tileentity);
-			world.updateComparatorOutputLevel(pos, this);
+	@SuppressWarnings("deprecation")
+	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (!state.is(newState.getBlock())) {
+			BlockEntity tileentity = world.getBlockEntity(pos);
+			if (tileentity instanceof TileEntityAbstractAmmoFurnace) {
+				Containers.dropContents(world, pos, (TileEntityAbstractAmmoFurnace) tileentity);
+				world.updateNeighbourForOutputSignal(pos, this);
+			}
 		}
-		super.breakBlock(world, pos, state);
+		super.onRemove(state, world, pos, newState, isMoving);
 	}
 
-	/**
-	 * Returns the blockstate with the given mirror of the passed blockstate. If
-	 * inapplicable, returns the passed blockstate.
-	 */
 	@Override
-	public BlockState withRotation(BlockState state, Rotation rot) {
+	@SuppressWarnings("deprecation")
+	public BlockState rotate(BlockState state, Rotation rot) {
 		return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
 	@Override
-	public BlockState withMirror(BlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
+	@SuppressWarnings("deprecation")
+	public BlockState mirror(BlockState state, Mirror mirrorIn) {
+		return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
 	}
 
 	@Override
-	public BlockState getStateFromMeta(int meta) {
-		Direction facing = Direction.from3DDataValue(meta & 7);
-		if (facing.getAxis() == Direction.Axis.Y)
-			facing = Direction.NORTH;
-		return getDefaultState().setValue(FACING, facing).setValue(BURNING, (meta & 8) == 8);
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		builder.add(FACING, BURNING);
 	}
 
-	@Override
-	public int getMetaFromState(BlockState state) {
-		return state.getValue(FACING).get3DDataValue() + (state.getValue(BURNING) ? 8 : 0);
-	}
-
-	@Override
-	protected StateDefinition createBlockState() {
-		return new StateDefinition(this, new Property[] { FACING, BURNING });
-	}
-
+	/** Switches the burning flag; 1.19 keeps the block entity when only the state changes. */
 	public static void setState(boolean active, Level world, BlockPos pos) {
 		BlockState iblockstate = world.getBlockState(pos);
-		BlockEntity tileentity = world.getBlockEntity(pos);
-		world.setBlockAndUpdate(pos, iblockstate.setValue(BURNING, active));
-		if (tileentity != null) {
-			tileentity.validate();
-			world.setTileEntity(pos, tileentity);
-		}
+		if (iblockstate.hasProperty(BURNING) && iblockstate.getValue(BURNING) != active)
+			world.setBlock(pos, iblockstate.setValue(BURNING, active), 3);
 	}
 }
