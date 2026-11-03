@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.util.TF2Util;
 
 import com.google.gson.JsonDeserializationContext;
@@ -131,7 +132,7 @@ public class ItemCrate extends ItemFromData {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		/*
 		 * if (!par1ItemStack.hasTagCompound()) { par1ItemStack.getTagCompound()=new
 		 * NBTTagCompound(); par1ItemStack.getTagCompound().setTag("Attributes",
@@ -142,15 +143,15 @@ public class ItemCrate extends ItemFromData {
 			super.appendHoverText(stack, world, tooltip, advanced);
 
 			if (stack.getTag().getBoolean("Open")) {
-				tooltip.add("The crate is opened now");
-				tooltip.add("Right click to get the item");
+				tooltip.add(Component.literal("The crate is opened now"));
+				tooltip.add(Component.literal("Right click to get the item"));
 			}
 
-			tooltip.add("Possible content:");
+			tooltip.add(Component.literal("Possible content:"));
 			for (String name : getData(stack).get(PropertyType.CONTENT).content.keySet()) {
 				WeaponData data = MapList.nameToData.get(name);
 				if (data != null)
-					tooltip.add(I18n.get("weapon." + data.getName()));
+					tooltip.add(Component.literal(I18n.get("weapon." + data.getName())));
 			}
 		}
 	}

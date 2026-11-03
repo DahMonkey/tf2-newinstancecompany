@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 
@@ -60,7 +61,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Predicate;
 
 @SuppressWarnings("deprecation")
-public class ItemFromData extends Item implements IItemOverlay {
+public class ItemFromData extends LegacyItem implements IItemOverlay {
 
 	public static class PropertyAttribute extends PropertyType<AttributeProvider> {
 
@@ -144,7 +145,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		if (getData(stack) == BLANK_DATA && par3Entity instanceof Player) {
 			((Player) par3Entity).getInventory().setItem(par4, ItemStack.EMPTY);
 			stack.setCount(0);
@@ -377,9 +378,9 @@ public class ItemFromData extends Item implements IItemOverlay {
 	}
 
 	@Override
-	public String getName(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		if (ItemFromData.getData(stack) == BLANK_DATA)
-			return "Weapon";
+			return Component.literal("Weapon");
 		String name = getTranslatedName(stack);
 		if (stack.getTag().getBoolean("Strange"))
 			name = ChatFormatting.GOLD
@@ -388,7 +389,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 			name = ChatFormatting.GOLD + "Australium " + name;
 		if (stack.getTag().getBoolean("Valve"))
 			name = ChatFormatting.DARK_PURPLE + "Valve " + name;
-		return name;
+		return Component.literal(name);
 	}
 
 	public static SoundEvent getSound(ItemStack stack, PropertyType<String> name) {
@@ -416,7 +417,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		/*
 		 * if (!par1ItemStack.hasTagCompound()) { par1ItemStack.getTagCompound()=new
 		 * NBTTagCompound(); par1ItemStack.getTagCompound().setTag("Attributes",
@@ -435,7 +436,7 @@ public class ItemFromData extends Item implements IItemOverlay {
 					TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
 					// System.out.println("Attribute id: "+name);
 					if (attribute != null && attribute.state != State.HIDDEN)
-						tooltip.add(attribute.getTranslatedString(tagFloat.getFloat(), true));
+						tooltip.add(Component.literal(attribute.getTranslatedString(tagFloat.getFloat(), true)));
 				}
 			}
 			attributeList = MapList.buildInAttributes.get(getData(stack).getName());
@@ -449,30 +450,30 @@ public class ItemFromData extends Item implements IItemOverlay {
 					TF2Attribute attribute = TF2Attribute.attributes[Integer.parseInt(name)];
 					// System.out.println("Attribute id: "+name);
 					if (attribute != null && attribute.state != State.HIDDEN)
-						tooltip.add(attribute.getTranslatedString(tagFloat.getFloat(), true));
+						tooltip.add(Component.literal(attribute.getTranslatedString(tagFloat.getFloat(), true)));
 				}
 			}
 
 			if (stack.getTag().contains(NBTLiterals.STREAK_ATTRIB)) {
-				tooltip.add("Killstreak Active");
+				tooltip.add(Component.literal("Killstreak Active"));
 				TF2Attribute attribute = TF2Attribute.attributes[stack.getTag()
 						.getShort(NBTLiterals.STREAK_ATTRIB)];
 				if (attribute != null && attribute.state != State.HIDDEN)
-					tooltip.add(attribute.getTranslatedString(
+					tooltip.add(Component.literal(attribute.getTranslatedString(
 							ItemKillstreakKit.getKillstreakBonus(attribute,
 									stack.getTag().getByte(NBTLiterals.STREAK_LEVEL),
 									stack.getTag().getInt(NBTLiterals.STREAK_KILLS), getData(stack)),
-							true));
+							true)));
 			}
 
 			if (getData(stack).hasProperty(PropertyType.DESC)) {
-				tooltip.add("");
+				tooltip.add(Component.literal(""));
 				for (String line : getData(stack).getString(PropertyType.DESC).split("\n"))
-					tooltip.add(line);
+					tooltip.add(Component.literal(line));
 			}
 			if (stack.getTag().getBoolean("Bought")) {
-				tooltip.add("");
-				tooltip.add("This item cannot be destroyed");
+				tooltip.add(Component.literal(""));
+				tooltip.add(Component.literal("This item cannot be destroyed"));
 			}
 		}
 	}

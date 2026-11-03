@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.EntityStatue;
 import java.util.List;
@@ -19,7 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import rafradek.TF2weapons.util.TF2Util;
 
 @SuppressWarnings("deprecation")
-public class ItemStatue extends Item {
+public class ItemStatue extends LegacyItem {
 
 	public ItemStatue() {
 		this.setUnlocalizedName(TF2weapons.MOD_ID + ".statue");
@@ -56,25 +57,24 @@ public class ItemStatue extends Item {
 	}
 
 	@Override
-	public String getName(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		if (!stack.hasTag())
-			return super.getName(stack);
+			return Component.literal(super.getName(stack).getString());
 		if (!stack.getTag().getCompound("Statue").getBoolean("Player"))
-			return TF2Util.translate("entity."
+			return Component.literal(TF2Util.translate("entity."
 					+ EntityList.getTranslationName(new ResourceLocation(
 							stack.getTag().getCompound("Statue").getCompound("Entity").getString("id")))
-					+ ".name") + " " + TF2Util.translate(this.getDescriptionId() + ".name");
+					+ ".name") + " " + TF2Util.translate(this.getDescriptionId() + ".name"));
 		else
-			return TF2Util.translate(this.getDescriptionId() + ".player.name");
+			return Component.literal(TF2Util.translate(this.getDescriptionId() + ".player.name"));
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (stack.hasTag()) {
 			if (stack.getTag().getCompound("Statue").getBoolean("Player")) {
-				tooltip.add(
-						stack.getTag().getCompound("Statue").getCompound("Profile").getString("Name"));
+				tooltip.add(Component.literal(stack.getTag().getCompound("Statue").getCompound("Profile").getString("Name")));
 			}
 		}
 	}

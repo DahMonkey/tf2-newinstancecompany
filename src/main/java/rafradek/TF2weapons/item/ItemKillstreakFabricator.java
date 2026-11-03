@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.NBTLiterals;
@@ -31,7 +32,7 @@ public class ItemKillstreakFabricator extends ItemFabricator {
 
 	@Override
 	public void fillItemCategory(CreativeModeTab par2CreativeTabs, NonNullList<ItemStack> par3List) {
-		if (!this.isInCreativeTab(par2CreativeTabs))
+		if (!this.allowedIn(par2CreativeTabs))
 			return;
 		for (TF2Attribute attribute : TF2Attribute.attributes) {
 			if (attribute != null && attribute.perKill != 0) {
@@ -80,18 +81,18 @@ public class ItemKillstreakFabricator extends ItemFabricator {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 
 		TF2Attribute attrib = this.getAttribute(stack);
 
 		if (attrib != null) {
-			tooltip.add("For each kill gain up to:");
-			tooltip.add(attrib.getTranslatedString(
+			tooltip.add(Component.literal("For each kill gain up to:"));
+			tooltip.add(Component.literal(attrib.getTranslatedString(
 					attrib.defaultValue
 							+ attrib.perKill * ItemKillstreakKit.getBonusMult(this.getLevel(stack), attrib, null),
-					true));
+					true)));
 		}
-		tooltip.add("");
+		tooltip.add(Component.literal(""));
 		super.appendHoverText(stack, world, tooltip, advanced);
 	}
 

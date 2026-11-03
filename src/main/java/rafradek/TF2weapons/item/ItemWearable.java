@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import rafradek.TF2weapons.TF2weapons;
@@ -107,23 +108,23 @@ public class ItemWearable extends ItemFromData {
 	}
 
 	@Override
-	public String getName(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		String name = super.getName(stack);
 		if (stack.hasTag() && stack.getTag().contains("UEffect"))
 			name = ChatFormatting.DARK_PURPLE + "Unusual " + name;
-		return name;
+		return Component.literal(name);
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		super.appendHoverText(stack, world, tooltip, advanced);
 		if (stack.hasTag()) {
 
 			if (stack.getTag().contains("UEffect")) {
-				tooltip.add("");
+				tooltip.add(Component.literal(""));
 				String str = I18n.get("item.wearable.effect." + stack.getTag().getByte("UEffect"));
-				tooltip.add(I18n.get("item.wearable.effect") + " " + str);
+				tooltip.add(Component.literal(I18n.get("item.wearable.effect") + " " + str));
 			}
 		}
 	}

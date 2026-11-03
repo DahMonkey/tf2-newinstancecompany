@@ -19,7 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemHorn extends Item implements IBackpackItem {
+public class ItemHorn extends LegacyItem implements IBackpackItem {
 
 	public ItemHorn() {
 		this.setMaxStackSize(1);
@@ -36,7 +36,7 @@ public class ItemHorn extends Item implements IBackpackItem {
 	}
 
 	@Override
-	public void onUpdate(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		this.checkItem(par1ItemStack, par2World, par3Entity, par4, par5);
 	}
 

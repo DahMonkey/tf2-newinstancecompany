@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2EventsCommon;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.TF2Attribute;
@@ -46,7 +47,7 @@ public class ItemCloak extends ItemFromData {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void onUpdate(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
 		if (par1ItemStack.getTag().getBoolean("Active") && WeaponsCapability.get(par3Entity).isInvisible()) {
 			// System.out.println("uncharge");
@@ -205,11 +206,11 @@ public class ItemCloak extends ItemFromData {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		super.appendHoverText(stack, world, tooltip, advanced);
 
-		tooltip.add("Charge: "
-				+ (100 - (int) (100 * ((float) stack.getDamageValue() / (float) this.getMaxDamage(stack)))) + "%");
+		tooltip.add(Component.literal("Charge: "
+				+ (100 - (int) (100 * ((float) stack.getDamageValue() / (float) this.getMaxDamage(stack)))) + "%"));
 	}
 
 	@Override

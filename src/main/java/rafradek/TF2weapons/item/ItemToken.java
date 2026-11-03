@@ -22,7 +22,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class ItemToken extends Item {
+public class ItemToken extends LegacyItem {
 
 	public static final UUID SPEED_UUID = UUID.fromString("769e0d47-bb57-45ed-8fe4-ab84592d842b");
 	public static final UUID HEALTH_UUID = UUID.fromString("ff0b26f3-cf6d-49e6-9989-3886ec3d3b83");

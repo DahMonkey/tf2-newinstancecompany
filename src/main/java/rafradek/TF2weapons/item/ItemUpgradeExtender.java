@@ -6,7 +6,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemUpgradeExtender extends Item {
+public class ItemUpgradeExtender extends LegacyItem {
 
 	public ItemUpgradeExtender() {
 		this.setCreativeTab(TF2weapons.tabsurvivaltf2);

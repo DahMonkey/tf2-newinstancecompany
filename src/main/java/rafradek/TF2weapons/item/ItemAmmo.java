@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemAmmo extends Item {
+public class ItemAmmo extends LegacyItem {
 
 	public static final String[] AMMO_TYPES = new String[] { "none", "shotgun", "minigun", "pistol", "revolver", "smg",
 			"sniper", "rocket", "grenade", "syringe", "fire", "sticky", "medigun", "flare", "ball", "custom" };
@@ -64,7 +64,7 @@ public class ItemAmmo extends Item {
 	}
 
 	@Override
-	public int getItemStackLimit(ItemStack stack) {
+	public int getMaxStackSize(ItemStack stack) {
 		return AMMO_MAX_STACK[Mth.clamp(stack.getDamageValue(), 0, AMMO_MAX_STACK.length - 1)];
 	}
 

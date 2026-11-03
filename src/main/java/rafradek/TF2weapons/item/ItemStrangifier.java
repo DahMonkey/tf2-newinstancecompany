@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.common.MapList;
 import rafradek.TF2weapons.util.PropertyType;
 import java.util.List;
@@ -16,23 +17,23 @@ public class ItemStrangifier extends ItemApplicableEffect {
 	}
 
 	@Override
-	public String getName(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		if (stack.hasTag() && MapList.nameToData.containsKey(stack.getTag().getString("Weapon"))) {
-			return I18n.get("weapon." + stack.getTag().getString("Weapon")) + " "
-					+ super.getName(stack);
+			return Component.literal(I18n.get("weapon." + stack.getTag().getString("Weapon")) + " "
+					+ super.getName(stack).getString());
 		}
-		return super.getName(stack);
+		return Component.literal(super.getName(stack).getString());
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (!stack.hasTag())
-			tooltip.add("Applicable to any weapon");
-		tooltip.add("Combine with the matching weapon in a crafting table");
+			tooltip.add(Component.literal("Applicable to any weapon"));
+		tooltip.add(Component.literal("Combine with the matching weapon in a crafting table"));
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		if (stack.hasTag() && stack.getTag().contains("class")) {
 			ItemStack data = ItemFromData.getRandomWeapon(par2World.random,
 					Predicates.and(ItemFromData.VISIBLE_WEAPON, weapon -> (weapon.getInt(PropertyType.COST) >= 9

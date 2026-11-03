@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -30,7 +31,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.function.Predicate;
 
-public abstract class ItemFabricator extends Item {
+public abstract class ItemFabricator extends LegacyItem {
 
 	public static class PropertyItemList extends PropertyType<ItemList> {
 
@@ -162,11 +163,11 @@ public abstract class ItemFabricator extends Item {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
-		tooltip.add("When used, this item will produce");
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
+		tooltip.add(Component.literal("When used, this item will produce"));
 		tooltip.addAll(this.getOutputNames(stack));
-		tooltip.add("");
-		tooltip.add("After consuming those items from inventory");
+		tooltip.add(Component.literal(""));
+		tooltip.add(Component.literal("After consuming those items from inventory"));
 		tooltip.addAll(this.getInputNames(stack));
 	}
 

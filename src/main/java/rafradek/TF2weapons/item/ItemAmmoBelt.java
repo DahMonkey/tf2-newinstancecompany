@@ -17,7 +17,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class ItemAmmoBelt extends Item {
+public class ItemAmmoBelt extends LegacyItem {
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player living, InteractionHand hand) {

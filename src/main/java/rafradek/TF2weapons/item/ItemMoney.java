@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemMoney extends Item {
+public class ItemMoney extends LegacyItem {
 
 	public ItemMoney() {
 		this.setHasSubtypes(true);
@@ -53,8 +54,8 @@ public class ItemMoney extends Item {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
-		tooltip.add(I18n.get("item."+TF2weapons.MOD_ID+".tf2money.desc", getValue(stack)));
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
+		tooltip.add(Component.literal(I18n.get("item."+TF2weapons.MOD_ID+".tf2money.desc", getValue(stack))));
 	}
 
 	public static void collect(ItemStack stack, Player player) {

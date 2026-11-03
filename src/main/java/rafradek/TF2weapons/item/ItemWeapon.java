@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -86,7 +87,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
-	public void onUpdate(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
 		if (!par2World.isClientSide
 				&& TF2Attribute.getModifier("No Disguise Kit", par1ItemStack, 0, (LivingEntity) par3Entity) != 0) {
@@ -300,11 +301,11 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		super.appendHoverText(stack, world, tooltip, advanced);
 
 		if (this.hasClip(stack))
-			tooltip.add("Clip: " + (this.getClip(stack)) + "/" + this.getWeaponClipSize(stack, null));
+			tooltip.add(Component.literal("Clip: " + (this.getClip(stack)) + "/" + this.getWeaponClipSize(stack, null)));
 	}
 
 	@Override
@@ -585,7 +586,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
-	public boolean onEntitySwing(LivingEntity entityLiving, ItemStack stack) {
+	public boolean onEntitySwing(ItemStack stack, LivingEntity entityLiving) {
 		return !shouldSwing;
 	}
 
@@ -912,7 +913,7 @@ public abstract class ItemWeapon extends ItemUsable implements IItemNoSwitch {
 	}
 
 	@Override
-	public boolean hasEffect(ItemStack stack) {
+	public boolean isFoil(ItemStack stack) {
 		return super.hasEffect(stack) || (stack.hasTag() && this.hasKillstreak(stack, 2)
 				&& stack.getTag().getInt(NBTLiterals.STREAK_KILLS) > 0);
 	}

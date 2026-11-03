@@ -34,7 +34,7 @@ public class ItemFireAmmo extends ItemAmmo {
 
 	@Override
 	public void fillItemCategory(CreativeModeTab par2CreativeTabs, NonNullList<ItemStack> par3List) {
-		if (!this.isInCreativeTab(par2CreativeTabs))
+		if (!this.allowedIn(par2CreativeTabs))
 			return;
 		par3List.add(new ItemStack(this));
 	}
@@ -46,7 +46,7 @@ public class ItemFireAmmo extends ItemAmmo {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public int getItemStackLimit(ItemStack stack) {
+	public int getMaxStackSize(ItemStack stack) {
 		return this.getMaxStackSize();
 	}
 

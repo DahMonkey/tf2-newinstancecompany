@@ -8,7 +8,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemRobotPart extends Item {
+public class ItemRobotPart extends LegacyItem {
 
 	public static final int[] LEVEL = { 0, 0, 0, 1, 1, 2, 2 };
 	public static final int[] LEVEL1 = { 0, 1, 2 };

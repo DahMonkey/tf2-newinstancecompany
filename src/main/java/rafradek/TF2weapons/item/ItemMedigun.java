@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 import rafradek.TF2weapons.client.compat.DefaultVertexFormats;
@@ -207,7 +208,7 @@ public class ItemMedigun extends ItemUsable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onUpdate(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
 		LivingEntity living = (LivingEntity) par3Entity;
 		if (par1ItemStack.isEmpty())
@@ -347,7 +348,7 @@ public class ItemMedigun extends ItemUsable {
 	}
 
 	@Override
-	public boolean onEntitySwing(LivingEntity entityLiving, ItemStack stack) {
+	public boolean onEntitySwing(ItemStack stack, LivingEntity entityLiving) {
 		return true;
 	}
 
@@ -411,11 +412,10 @@ public class ItemMedigun extends ItemUsable {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		super.appendHoverText(stack, world, tooltip, advanced);
 
-		tooltip.add(
-				"Charge: " + Integer.toString(Math.round((stack.getTag().getFloat("ubercharge")) * 100)) + "%");
+		tooltip.add(Component.literal("Charge: " + Integer.toString(Math.round((stack.getTag().getFloat("ubercharge")) * 100)) + "%"));
 	}
 
 	@Override

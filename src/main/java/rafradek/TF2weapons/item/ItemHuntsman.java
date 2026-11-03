@@ -125,7 +125,7 @@ public class ItemHuntsman extends ItemProjectileWeapon {
 	}
 
 	@Override
-	public void onUpdate(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack par1ItemStack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		super.onUpdate(par1ItemStack, par2World, par3Entity, par4, par5);
 		if (!par2World.isClientSide && par3Entity.tickCount % 10 == 0) {
 			WeaponsCapability cap = par3Entity.getCapability(TF2weapons.WEAPONS_CAP).orElse(null);

@@ -151,7 +151,7 @@ public class ItemFlameThrower extends ItemAirblast {
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		super.onUpdate(stack, par2World, par3Entity, par4, par5);
 		if (WeaponsCapability.get(par3Entity).isRageActive(RageType.PHLOG)) {
 			if (par5 && par3Entity.tickCount % 5 == 0) {

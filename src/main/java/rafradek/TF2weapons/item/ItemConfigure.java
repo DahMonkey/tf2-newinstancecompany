@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 
-public class ItemConfigure extends Item {
+public class ItemConfigure extends LegacyItem {
 
 	public ItemConfigure() {
 		this.setUnlocalizedName(TF2weapons.MOD_ID + ".configurator");

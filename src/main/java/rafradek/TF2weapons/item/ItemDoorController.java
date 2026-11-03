@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class ItemDoorController extends Item {
+public class ItemDoorController extends LegacyItem {
 
 	public static final String[] NAMES = { "players", "mobs", "RED", "BLU" };
 

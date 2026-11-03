@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.client.compat.Tessellator;
 import rafradek.TF2weapons.client.compat.BufferBuilder;
 
@@ -27,7 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemDisguiseKit extends Item implements IItemSlotNumber, IItemOverlay {
+public class ItemDisguiseKit extends LegacyItem implements IItemSlotNumber, IItemOverlay {
 
 	public ItemDisguiseKit() {
 		this.setCreativeTab(TF2weapons.tabutilitytf2);

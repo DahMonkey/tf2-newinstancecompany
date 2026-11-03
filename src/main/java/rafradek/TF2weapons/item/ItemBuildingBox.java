@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.util.TF2Class;
 import java.util.List;
@@ -32,7 +33,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 	}
 
 	@Override
-	public int getItemStackLimit(ItemStack stack) {
+	public int getMaxStackSize(ItemStack stack) {
 		return stack.hasTag() && stack.getTag().contains("MaxStack")
 				? stack.getTag().getInt("MaxStack")
 				: 1;
@@ -40,7 +41,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 
 	@Override
 	public void fillItemCategory(CreativeModeTab par2CreativeTabs, NonNullList<ItemStack> par3List) {
-		if (!this.isInCreativeTab(par2CreativeTabs))
+		if (!this.allowedIn(par2CreativeTabs))
 			return;
 		for (int i = 18; i < 24; i++)
 			par3List.add(TF2Util.metaStack(this, 1, i));
@@ -66,7 +67,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 	}
 
 	@Override
-	public String getName(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		// (I18n.translateToLocal(this.getUnlocalizedName()+".name")).trim();
 		int i = stack.getDamageValue() / 2;
 		String s1 = "sentry";
@@ -80,7 +81,7 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 			s1 = "teleporter";
 			break;
 		}
-		return TF2Util.translate(this.getDescriptionId() + "." + s1 + ".name");
+		return Component.literal(TF2Util.translate(this.getDescriptionId() + "." + s1 + ".name"));
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -90,14 +91,14 @@ public class ItemBuildingBox extends ItemMonsterPlacerPlus implements IItemNoSwi
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
-			tooltip.add("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn natural building");
+			tooltip.add(Component.literal("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn natural building"));
 		}
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, Level world, Entity entityIn, int itemSlot, boolean isSelected) {
+	public void inventoryTick(ItemStack stack, Level world, Entity entityIn, int itemSlot, boolean isSelected) {
 		this.forceItemSlot(stack, world, entityIn, itemSlot, isSelected);
 	}
 

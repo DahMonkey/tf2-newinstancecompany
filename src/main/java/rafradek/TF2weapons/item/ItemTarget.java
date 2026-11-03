@@ -21,7 +21,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
-public class ItemTarget extends Item {
+public class ItemTarget extends LegacyItem {
 
 	public ItemTarget() {
 		this.setCreativeTab(TF2weapons.tabutilitytf2);

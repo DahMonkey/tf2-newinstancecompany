@@ -28,7 +28,7 @@ import net.minecraft.world.level.material.Material;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemBossSpawner extends Item {
+public class ItemBossSpawner extends LegacyItem {
 
 	public static final String[] NAMES = { "hhh", "monoculus", "merasmus" };
 
@@ -59,8 +59,8 @@ public class ItemBossSpawner extends Item {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
-		tooltip.add(I18n.get("item." + TF2weapons.MOD_ID + NAMES[stack.getDamageValue() % NAMES.length] + ".desc"));
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
+		tooltip.add(Component.literal(I18n.get("item." + TF2weapons.MOD_ID + NAMES[stack.getDamageValue() % NAMES.length] + ".desc")));
 	}
 
 	@Override

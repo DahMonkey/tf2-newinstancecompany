@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2ConfigVars;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.common.WeaponsCapability;
@@ -51,18 +52,18 @@ public class ItemJar extends ItemProjectileWeapon {
 	}
 
 	@Override
-	public String getName(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		String string = super.getName(stack);
 		if (stack.hasTag() && stack.getTag().getBoolean("IsEmpty"))
 			string = "Empty Jar - ".concat(string);
-		return string;
+		return Component.literal(string);
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (stack.hasTag() && stack.getTag().getBoolean("IsEmpty"))
-			tooltip.add("Right click to fill the container");
+			tooltip.add(Component.literal("Right click to fill the container"));
 		super.appendHoverText(stack, world, tooltip, advanced);
 	}
 
@@ -108,7 +109,7 @@ public class ItemJar extends ItemProjectileWeapon {
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
+	public void inventoryTick(ItemStack stack, Level par2World, Entity par3Entity, int par4, boolean par5) {
 		super.onUpdate(stack, par2World, par3Entity, par4, par5);
 		if (!par2World.isClientSide && par3Entity instanceof Player && stack.getTag().getBoolean("IsEmpty")) {
 			Integer value = WeaponsCapability.get(par3Entity).effectsCool.get(getData(stack).getName());

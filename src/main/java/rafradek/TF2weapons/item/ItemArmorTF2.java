@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +30,8 @@ public class ItemArmorTF2 extends ArmorItem {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
-		tooltip.add(description);
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
+		tooltip.add(Component.literal(description));
 	}
 
 	@Override

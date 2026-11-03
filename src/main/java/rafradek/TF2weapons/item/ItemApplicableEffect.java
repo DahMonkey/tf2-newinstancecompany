@@ -3,7 +3,7 @@ package rafradek.TF2weapons.item;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemApplicableEffect extends Item {
+public class ItemApplicableEffect extends LegacyItem {
 
 	public boolean isApplicable(ItemStack stack, ItemStack weapon) {
 		return stack.hasTag()

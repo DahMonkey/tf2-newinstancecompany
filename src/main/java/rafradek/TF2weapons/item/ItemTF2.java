@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.util.TF2Util;
 
 import rafradek.TF2weapons.TF2weapons;
@@ -20,7 +21,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-public class ItemTF2 extends Item {
+public class ItemTF2 extends LegacyItem {
 
 	public static final String[] NAMES = new String[] { "ingotCopper", "ingotLead", "ingotAustralium", "scrapMetal",
 			"reclaimedMetal", "refinedMetal", "nuggetAustralium", "key", "crate", "randomWeapon", "randomHat",
@@ -43,7 +44,7 @@ public class ItemTF2 extends Item {
 	}
 
 	@Override
-	public int getItemStackLimit(ItemStack stack) {
+	public int getMaxStackSize(ItemStack stack) {
 		return (stack.getDamageValue() == 9 || stack.getDamageValue() == 10) ? 1 : 64;
 	}
 
@@ -59,12 +60,12 @@ public class ItemTF2 extends Item {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (stack.hasTag() && stack.getTag().contains("Token")) {
-			tooltip.add(TF2Class.getClass(stack.getTag().getByte("Token")).getLocalizedName().getString());
+			tooltip.add(Component.literal(TF2Class.getClass(stack.getTag().getByte("Token")).getLocalizedName().getString()));
 		}
 		if (stack.getDamageValue() == 12 || stack.getDamageValue() == 13)
-			tooltip.add("Right click to gain robot parts");
+			tooltip.add(Component.literal("Right click to gain robot parts"));
 	}
 
 	@Override

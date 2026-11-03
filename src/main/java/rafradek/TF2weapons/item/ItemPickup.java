@@ -15,7 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class ItemPickup extends Item {
+public class ItemPickup extends LegacyItem {
 
 	public ItemPickup() {
 		this.setHasSubtypes(true);

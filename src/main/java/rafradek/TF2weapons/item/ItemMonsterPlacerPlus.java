@@ -1,5 +1,6 @@
 package rafradek.TF2weapons.item;
 
+import net.minecraft.network.chat.Component;
 import rafradek.TF2weapons.TF2weapons;
 import rafradek.TF2weapons.entity.boss.EntityHHH;
 import rafradek.TF2weapons.entity.boss.EntityMerasmus;
@@ -38,7 +39,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import rafradek.TF2weapons.util.TF2Util;
 
 @SuppressWarnings("deprecation")
-public class ItemMonsterPlacerPlus extends Item {
+public class ItemMonsterPlacerPlus extends LegacyItem {
 
 	public ItemMonsterPlacerPlus() {
 		this.setHasSubtypes(true);
@@ -273,7 +274,7 @@ public class ItemMonsterPlacerPlus extends Item {
 	}
 
 	@Override
-	public String getName(ItemStack p_77653_1_) {
+	public Component getName(ItemStack p_77653_1_) {
 		String s = ("" + TF2Util.translate(this.getDescriptionId() + ".name")).trim();
 		int i = p_77653_1_.getDamageValue();
 		String s1 = "hale";
@@ -288,15 +289,15 @@ public class ItemMonsterPlacerPlus extends Item {
 		s1 = TF2Util.translate("entity." + s1 + ".name");
 		if (p_77653_1_.getDamageValue() == 27)
 			s1 = s1.concat(" " + TF2Util.translate("item." + TF2weapons.MOD_ID + ".placer.hostile"));
-		return s.concat(" " + s1);
+		return Component.literal(s.concat(" " + s1));
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<String> tooltip, TooltipFlag advanced) {
+	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced) {
 		if (stack.getDamageValue() < 18)
-			tooltip.add("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn with default equipment");
+			tooltip.add(Component.literal("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn with default equipment"));
 		if (stack.getDamageValue() >= 36 && stack.getDamageValue() < 45)
-			tooltip.add("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn a giant");
+			tooltip.add(Component.literal("Hold " + KeyMapping.getDisplayString("key.sneak").get() + " to spawn a giant"));
 	}
 }
